@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Rooms - Meeting Room Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Fix dropdown styling */
+        select {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        select option {
+            background-color: #1a202c !important;
+            color: white !important;
+            padding: 8px 12px !important;
+        }
+        
+        select option:hover {
+            background-color: #2d3748 !important;
+            color: white !important;
+        }
+        
+        select option:checked {
+            background-color: #3182ce !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Navigation -->
+    <nav class="glass-effect shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h1 class="text-xl font-bold text-white">Manage Rooms</h1>
+                        <p class="text-white/80 text-sm">Admin Panel</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex space-x-6">
+                        <a href="{{ route('admin.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
+                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                        </a>
+                        <a href="{{ route('admin.users') }}" class="text-white/80 hover:text-white transition-colors">
+                            <i class="fas fa-users mr-1"></i>Users
+                        </a>
+                        <a href="{{ route('admin.rooms') }}" class="text-white hover:text-white/80 transition-colors">
+                            <i class="fas fa-door-open mr-1"></i>Rooms
+                        </a>
+                        <a href="{{ route('admin.bookings') }}" class="text-white/80 hover:text-white transition-colors">
+                            <i class="fas fa-calendar-check mr-1"></i>Bookings
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-white/80 text-sm">
+                            <i class="fas fa-user-shield mr-1"></i>
+                            {{ session('user_data.full_name') }}
+                        </span>
+                        <a href="{{ route('logout') }}" 
+                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-2">Manage Meeting Rooms</h2>
+                    <p class="text-white/80">View and manage all meeting rooms</p>
+                </div>
+                <div class="flex space-x-4">
+                    <button class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        <i class="fas fa-plus mr-2"></i>Add Room
+                    </button>
+                    <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        <i class="fas fa-download mr-2"></i>Export
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse($rooms as $room)
+            <div class="glass-effect rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-white">{{ $room->name }}</h3>
+                    <span class="px-2 py-1 rounded-full text-xs font-medium
+                        {{ $room->is_active ? 'bg-green-500 text-white' : 'bg-red-500 text-white' }}">
+                        {{ $room->is_active ? 'Active' : 'Inactive' }}
+                    </span>
+                </div>
+                
+                <p class="text-white/80 text-sm mb-4">{{ $room->description }}</p>
+                
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-white/60 text-sm">Capacity:</span>
+                        <span class="text-white font-medium">{{ $room->capacity }} seats</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-white/60 text-sm">Location:</span>
+                        <span class="text-white font-medium">{{ $room->location }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-white/60 text-sm">Rate:</span>
+                        <span class="text-white font-medium">Rp {{ number_format($room->hourly_rate, 0, ',', '.') }}/hour</span>
+                    </div>
+                </div>
+                
+                @if($room->getAmenitiesList())
+                <div class="mb-4">
+                    <p class="text-white/60 text-sm mb-2">Amenities:</p>
+                    <div class="flex flex-wrap gap-1">
+                        @foreach($room->getAmenitiesList() as $amenity)
+                        <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded">
+                            {{ ucfirst(str_replace('_', ' ', $amenity)) }}
+                        </span>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+                
+                <div class="flex items-center justify-between pt-4 border-t border-white/20">
+                    <div class="text-white/60 text-sm">
+                        <i class="fas fa-calendar mr-1"></i>
+                        {{ $room->bookings_count ?? 0 }} bookings
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="text-blue-400 hover:text-blue-300 transition-colors" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit Room">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-red-400 hover:text-red-300 transition-colors" title="Delete Room">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-door-open text-white/40 text-6xl mb-4"></i>
+                <h3 class="text-xl font-bold text-white mb-2">No Rooms Found</h3>
+                <p class="text-white/60">There are no meeting rooms in the system yet.</p>
+            </div>
+            @endforelse
+        </div>
+        
+        @if($rooms->count() > 0)
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-8">
+            <div class="text-white/80 text-sm">
+                Showing {{ $rooms->firstItem() }} to {{ $rooms->lastItem() }} of {{ $rooms->total() }} rooms
+            </div>
+            <div class="flex space-x-2">
+                @if($rooms->previousPageUrl())
+                <a href="{{ $rooms->previousPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                @endif
+                
+                @for($i = 1; $i <= $rooms->lastPage(); $i++)
+                <a href="{{ $rooms->url($i) }}" 
+                   class="px-3 py-2 rounded-lg transition-colors {{ $rooms->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold' : 'bg-white/20 text-white hover:bg-white/30' }}">
+                    {{ $i }}
+                </a>
+                @endfor
+                
+                @if($rooms->nextPageUrl())
+                <a href="{{ $rooms->nextPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                @endif
+            </div>
+        </div>
+        @endif
+    </div>
+
+    <!-- Success Message -->
+    @if (session('success'))
+        <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    <script>
+        // Export functionality
+        document.getElementById('export-btn').addEventListener('click', function() {
+            // Simple CSV export
+            const rooms = @json($rooms->items());
+            let csv = 'ID,Name,Description,Capacity,Location,Rate,Status,Amenities\n';
+            
+            rooms.forEach(room => {
+                csv += `"${room.id}","${room.name}","${room.description}","${room.capacity}","${room.location}","${room.hourly_rate}","${room.is_active ? 'Active' : 'Inactive'}","${room.amenities ? room.amenities.join(', ') : ''}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'rooms-export.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+
+        // Auto-hide success message
+        setTimeout(() => {
+            const successMessage = document.getElementById('success-message');
+            if (successMessage) {
+                successMessage.style.transition = 'opacity 0.5s';
+                successMessage.style.opacity = '0';
+                setTimeout(() => successMessage.remove(), 500);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
