@@ -19,6 +19,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/users/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     Route::get('/rooms', [AdminController::class, 'rooms'])->name('admin.rooms');
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('admin.bookings');

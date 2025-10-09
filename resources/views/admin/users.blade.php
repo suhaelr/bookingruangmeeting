@@ -440,8 +440,37 @@
             if (editForm) {
                 editForm.addEventListener('submit', function(e) {
                     e.preventDefault();
-                    // Handle form submission here
-                    alert('Edit functionality will be implemented with backend integration');
+                    
+                    const formData = new FormData(this);
+                    const userId = currentUserId;
+                    
+                    fetch(`/admin/users/${userId}`, {
+                        method: 'PUT',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        } else {
+                            throw new Error('Network response was not ok');
+                        }
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message);
+                            closeModal('userEditModal');
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Error updating user');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error updating user: ' + error.message);
+                    });
                 });
             }
 

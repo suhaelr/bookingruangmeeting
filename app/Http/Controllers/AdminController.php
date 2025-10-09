@@ -205,4 +205,35 @@ class AdminController extends Controller
 
         return response()->json($notifications);
     }
+
+    public function updateUser(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            
+            $request->validate([
+                'full_name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'phone' => 'nullable|string|max:20',
+                'department' => 'nullable|string|max:100',
+            ]);
+
+            $user->update([
+                'full_name' => $request->full_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'department' => $request->department,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User berhasil diupdate!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupdate user: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
