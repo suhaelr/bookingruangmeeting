@@ -440,6 +440,9 @@
             }
         }
 
+        // Debug: Log rooms data
+        console.log('Rooms data:', @json($rooms->items()));
+        
         // Export functionality
         document.getElementById('export-btn').addEventListener('click', function() {
             // Simple CSV export

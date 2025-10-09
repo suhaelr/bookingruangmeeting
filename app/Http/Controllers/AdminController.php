@@ -78,7 +78,21 @@ class AdminController extends Controller
 
     public function rooms()
     {
-        $rooms = MeetingRoom::orderBy('created_at', 'desc')->paginate(10);
+        $rooms = MeetingRoom::withCount('bookings')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        // Debug: Log booking counts
+        \Log::info('Admin rooms - booking counts:', [
+            'rooms' => $rooms->map(function($room) {
+                return [
+                    'id' => $room->id,
+                    'name' => $room->name,
+                    'bookings_count' => $room->bookings_count
+                ];
+            })
+        ]);
+        
         return view('admin.rooms', compact('rooms'));
     }
 
