@@ -16,7 +16,7 @@ class TestEmailVerificationCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'test:email-verification {email}';
+    protected $signature = 'test:email-verification {email} {--driver=log : Mail driver to use (log, smtp)}';
 
     /**
      * The console command description.
@@ -31,10 +31,15 @@ class TestEmailVerificationCommand extends Command
     public function handle()
     {
         $email = $this->argument('email');
+        $driver = $this->option('driver');
         
         $this->info("Testing email verification system for: {$email}");
+        $this->info("Using mail driver: {$driver}");
         
         try {
+            // Clean up any existing test user with this email
+            User::where('email', $email)->delete();
+            
             // Create a test user
             $verificationToken = Str::random(64);
             
@@ -58,6 +63,12 @@ class TestEmailVerificationCommand extends Command
 
             // Send verification email
             $verificationUrl = route('email.verify', ['token' => $verificationToken]);
+            
+            // Use log driver for testing
+            if ($driver === 'log') {
+                config(['mail.default' => 'log']);
+            }
+            
             Mail::to($email)->send(new EmailVerificationMail($user, $verificationUrl));
 
             $this->info("✅ Email verification sent successfully!");
