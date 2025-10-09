@@ -6,7 +6,49 @@
     <title>Add Room - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Fix dropdown styling */
+        select {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        select option {
+            background-color: #1a202c !important;
+            color: white !important;
+            padding: 8px 12px !important;
+        }
+        
+        select option:hover {
+            background-color: #2d3748 !important;
+            color: white !important;
+        }
+        
+        select option:checked {
+            background-color: #3182ce !important;
+            color: white !important;
+        }
+        
+        /* Input styling improvements */
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+        
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6) !important;
+        }
+        
+        input:focus, textarea:focus {
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            border-color: #3182ce !important;
+            box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.2) !important;
+        }
+    </style>
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Navigation -->

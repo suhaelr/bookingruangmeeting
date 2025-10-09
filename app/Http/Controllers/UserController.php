@@ -178,9 +178,24 @@ class UserController extends Controller
             ])->withInput();
         }
 
-        // Calculate total cost
-        $duration = $startTime->diffInHours($endTime);
+        // Calculate total cost with decimal precision
+        $duration = $startTime->diffInHours($endTime) + ($startTime->diffInMinutes($endTime) % 60) / 60;
         $totalCost = $duration * $room->hourly_rate;
+        
+        // Round to 2 decimal places and ensure it doesn't exceed database limits
+        $totalCost = round($totalCost, 2);
+        
+        // Check if total cost exceeds maximum allowed value
+        $maxValue = 9999999999.99; // Maximum for decimal(12,2)
+        if ($totalCost > $maxValue) {
+            \Log::warning('Total cost exceeds maximum allowed value', [
+                'calculated_cost' => $totalCost,
+                'max_allowed' => $maxValue,
+                'duration_hours' => $duration,
+                'hourly_rate' => $room->hourly_rate
+            ]);
+            $totalCost = $maxValue;
+        }
 
         // Process attendees - convert string to array
         $attendees = [];
@@ -204,53 +219,155 @@ class UserController extends Controller
         // Send notification to admin
         $this->notifyAdmin('New Booking Request', "User {$user['full_name']} has requested a new booking: {$booking->title}");
 
+        \Log::info('New booking created', [
+            'booking_id' => $booking->id,
+            'user_id' => $user['id'],
+            'title' => $booking->title,
+            'total_cost' => $booking->total_cost
+        ]);
+
         return redirect()->route('user.bookings')
             ->with('success', 'Booking berhasil dibuat! Menunggu konfirmasi admin.');
     }
 
     public function updateBooking(Request $request, $id)
     {
-        $user = session('user_data');
-        $booking = Booking::where('id', $id)
-            ->where('user_id', $user['id'])
-            ->firstOrFail();
+        try {
+            $user = session('user_data');
+            $booking = Booking::where('id', $id)
+                ->where('user_id', $user['id'])
+                ->firstOrFail();
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'start_time' => 'required|date|after:now',
-            'end_time' => 'required|date|after:start_time',
-            'special_requirements' => 'nullable|string',
-        ]);
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'start_time' => 'required|date|after:now',
+                'end_time' => 'required|date|after:start_time',
+                'special_requirements' => 'nullable|string',
+            ]);
 
-        $startTime = Carbon::parse($request->start_time);
-        $endTime = Carbon::parse($request->end_time);
-        
-        // Check for conflicts excluding current booking
-        $conflictingBookings = $this->getConflictingBookings($booking->meeting_room_id, $startTime, $endTime, $id);
-        
-        if ($conflictingBookings->count() > 0) {
-            $conflictDetails = $this->formatConflictDetails($conflictingBookings, $booking->meetingRoom);
-            return back()->withErrors([
-                'start_time' => $conflictDetails
-            ])->withInput();
+            $startTime = Carbon::parse($request->start_time);
+            $endTime = Carbon::parse($request->end_time);
+            
+            // Check for conflicts excluding current booking
+            $conflictingBookings = $this->getConflictingBookings($booking->meeting_room_id, $startTime, $endTime, $id);
+            
+            if ($conflictingBookings->count() > 0) {
+                $conflictDetails = $this->formatConflictDetails($conflictingBookings, $booking->meetingRoom);
+                return response()->json([
+                    'success' => false,
+                    'message' => $conflictDetails
+                ], 422);
+            }
+
+            // Recalculate total cost
+            $duration = $startTime->diffInHours($endTime) + ($startTime->diffInMinutes($endTime) % 60) / 60;
+            $totalCost = $duration * $booking->meetingRoom->hourly_rate;
+            $totalCost = round($totalCost, 2);
+
+            // Update booking
+            $booking->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'special_requirements' => $request->special_requirements,
+                'total_cost' => $totalCost,
+            ]);
+
+            // Send notification to admin
+            $this->notifyAdmin('Booking Updated', "User {$user['full_name']} updated their booking: {$booking->title}");
+
+            \Log::info('Booking updated successfully', [
+                'booking_id' => $booking->id,
+                'user_id' => $user['id'],
+                'updated_fields' => $request->only(['title', 'description', 'start_time', 'end_time', 'special_requirements'])
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Booking berhasil diupdate!'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in updateBooking', [
+                'errors' => $e->errors(),
+                'booking_id' => $id,
+                'user_id' => session('user_data')['id'] ?? null,
+                'input' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error: ' . implode(', ', array_flatten($e->errors())),
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error in updateBooking', [
+                'message' => $e->getMessage(),
+                'booking_id' => $id,
+                'user_id' => session('user_data')['id'] ?? null,
+                'input' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupdate booking: ' . $e->getMessage()
+            ], 500);
         }
+    }
 
-        // Update booking
-        $booking->update([
-            'title' => $request->title,
-            'description' => $request->description,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'special_requirements' => $request->special_requirements,
-        ]);
+    public function cancelBooking(Request $request, $id)
+    {
+        try {
+            $user = session('user_data');
+            $booking = Booking::where('id', $id)
+                ->where('user_id', $user['id'])
+                ->firstOrFail();
 
-        // Send notification to admin
-        $this->notifyAdmin('Booking Updated', "User {$user['full_name']} updated their booking: {$booking->title}");
+            // Check if booking can be cancelled
+            if (!$booking->canBeCancelled()) {
+                return back()->with('error', 'Booking tidak dapat dibatalkan pada waktu ini.');
+            }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking berhasil diupdate!'
+            // Update booking status
+            $booking->updateStatus('cancelled', 'Cancelled by user');
+
+            // Send notification to admin
+            $this->notifyAdmin('Booking Cancelled', "User {$user['full_name']} cancelled their booking: {$booking->title}");
+
+            \Log::info('Booking cancelled successfully', [
+                'booking_id' => $booking->id,
+                'user_id' => $user['id']
+            ]);
+
+            return back()->with('success', 'Booking berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            \Log::error('Error in cancelBooking', [
+                'message' => $e->getMessage(),
+                'booking_id' => $id,
+                'user_id' => session('user_data')['id'] ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Gagal membatalkan booking: ' . $e->getMessage());
+        }
+    }
+
+    private function notifyAdmin($title, $message)
+    {
+        // Store notification in session for admin
+        $notifications = session('admin_notifications', []);
+        $notifications[] = [
+            'id' => uniqid(),
+            'title' => $title,
+            'message' => $message,
+            'time' => now()->format('Y-m-d H:i:s'),
+            'read' => false,
+            'type' => 'success'
+        ];
+        session(['admin_notifications' => $notifications]);
+        
+        \Log::info('Admin notification sent', [
+            'title' => $title,
+            'message' => $message
         ]);
     }
 

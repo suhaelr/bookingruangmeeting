@@ -124,8 +124,8 @@
                                             <i class="fas fa-user text-white"></i>
                                         </div>
                                         <div>
-                                            <p class="text-white font-medium">{{ $user->full_name }}</p>
-                                            <p class="text-white/60 text-sm">@{{ $user->username }}</p>
+                                            <p class="text-white font-medium">{{ $user->full_name ?? $user->name }}</p>
+                                            <p class="text-white/60 text-sm">@{{ $user->username ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -136,7 +136,16 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
-                                    <span class="text-white">{{ $user->department ?? 'N/A' }}</span>
+                                    <div>
+                                        <span class="text-white">{{ $user->department ?? 'N/A' }}</span>
+                                        @if($user->role)
+                                        <div class="mt-1">
+                                            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium {{ $user->role === 'admin' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white' }}">
+                                                {{ ucfirst($user->role) }}
+                                            </span>
+                                        </div>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="py-3 px-4">
                                     @if($user->last_login_at)
@@ -288,6 +297,16 @@
         </div>
     @endif
 
+    <!-- Error Message -->
+    @if (session('error'))
+        <div id="error-message" class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                {{ session('error') }}
+            </div>
+        </div>
+    @endif
+
     <script>
         let currentUserId = null;
 
@@ -336,7 +355,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
                                 <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">
-                                    ${user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                    ${user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}
                                 </span>
                             </div>
                             <div>
@@ -363,11 +382,11 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                            <input type="text" name="full_name" value="${user.full_name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="text" name="full_name" value="${user.full_name || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input type="email" name="email" value="${user.email}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <input type="email" name="email" value="${user.email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
@@ -376,6 +395,14 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
                             <input type="text" name="department" value="${user.department || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                            <select name="role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select role</option>
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
                         </div>
                     </div>
                 `;
@@ -448,7 +475,8 @@
                         method: 'PUT',
                         body: formData,
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
                         }
                     })
                     .then(response => {
@@ -487,15 +515,23 @@
             });
         });
 
-        // Auto-hide success message
+        // Auto-hide success and error messages
         setTimeout(() => {
             const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            
             if (successMessage) {
                 successMessage.style.transition = 'opacity 0.5s';
                 successMessage.style.opacity = '0';
                 setTimeout(() => successMessage.remove(), 500);
             }
-        }, 3000);
+            
+            if (errorMessage) {
+                errorMessage.style.transition = 'opacity 0.5s';
+                errorMessage.style.opacity = '0';
+                setTimeout(() => errorMessage.remove(), 500);
+            }
+        }, 5000);
     </script>
 </body>
 </html>

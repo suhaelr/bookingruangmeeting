@@ -103,10 +103,29 @@ class AdminController extends Controller
                 'phone' => $request->phone,
                 'department' => $request->department,
                 'role' => $request->role,
+                'email_verified_at' => now(),
+            ]);
+
+            \Log::info('User created successfully', [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'role' => $user->role
             ]);
 
             return redirect()->route('admin.users')->with('success', 'User berhasil ditambahkan!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in storeUser', [
+                'errors' => $e->errors(),
+                'input' => $request->all()
+            ]);
+            return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
+            \Log::error('Error in storeUser', [
+                'message' => $e->getMessage(),
+                'input' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->with('error', 'Gagal menambahkan user: ' . $e->getMessage())->withInput();
         }
     }
@@ -188,7 +207,7 @@ class AdminController extends Controller
             $booking = Booking::findOrFail($id);
             
             $request->validate([
-                'status' => 'required|in:pending,confirmed,cancelled',
+                'status' => 'required|in:pending,confirmed,cancelled,completed',
                 'reason' => 'nullable|string|max:255'
             ]);
 
@@ -336,23 +355,48 @@ class AdminController extends Controller
             
             $request->validate([
                 'full_name' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
+                'email' => 'required|email|max:255|unique:users,email,' . $id,
                 'phone' => 'nullable|string|max:20',
                 'department' => 'nullable|string|max:100',
+                'role' => 'required|in:admin,user'
             ]);
 
             $user->update([
                 'full_name' => $request->full_name,
+                'name' => $request->full_name, // Update name field too
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'department' => $request->department,
+                'role' => $request->role,
+            ]);
+
+            \Log::info('User updated successfully', [
+                'user_id' => $user->id,
+                'updated_fields' => $request->only(['full_name', 'email', 'phone', 'department', 'role'])
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'User berhasil diupdate!'
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Validation error in updateUser', [
+                'errors' => $e->errors(),
+                'user_id' => $id,
+                'input' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error: ' . implode(', ', $e->errors()['email'] ?? []),
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
+            \Log::error('Error in updateUser', [
+                'message' => $e->getMessage(),
+                'user_id' => $id,
+                'input' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengupdate user: ' . $e->getMessage()
