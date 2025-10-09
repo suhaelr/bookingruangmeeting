@@ -25,6 +25,10 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
+// Email Verification Routes
+Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('email.verify');
+Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
+
 // Admin Routes
 Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

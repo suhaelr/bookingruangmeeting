@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Mail\WelcomeEmail;
 use App\Mail\PasswordResetEmail;
+use App\Mail\EmailVerificationMail;
 
 class AuthController extends Controller
 {
@@ -68,6 +69,13 @@ class AuthController extends Controller
         $user = User::where('username', $credentials['username'])->first();
         
         if ($user && Hash::check($credentials['password'], $user->password)) {
+            // Check if email is verified
+            if (!$user->email_verified_at) {
+                return back()->withErrors([
+                    'username' => 'Email belum diverifikasi. Silakan cek email Anda dan klik link verifikasi.',
+                ])->withInput($request->only('username'));
+            }
+
             Session::put('user_logged_in', true);
             Session::put('user_data', [
                 'id' => $user->id,
@@ -114,6 +122,8 @@ class AuthController extends Controller
         ]);
 
         try {
+            $verificationToken = Str::random(64);
+            
             $user = User::create([
                 'username' => $request->username,
                 'name' => $request->full_name,
@@ -123,23 +133,26 @@ class AuthController extends Controller
                 'phone' => $request->phone,
                 'department' => $request->department,
                 'role' => 'user',
-                'email_verified_at' => now(),
+                'email_verified_at' => null, // Not verified yet
+                'email_verification_token' => Hash::make($verificationToken),
             ]);
 
-            // Send welcome email
-            Mail::to($user->email)->send(new WelcomeEmail($user));
+            // Send verification email
+            $verificationUrl = route('email.verify', ['token' => $verificationToken]);
+            Mail::to($user->email)->send(new EmailVerificationMail($user, $verificationUrl));
 
-            \Log::info('User registered successfully', [
+            \Log::info('User registered successfully, verification email sent', [
                 'user_id' => $user->id,
                 'username' => $user->username,
                 'email' => $user->email
             ]);
 
-            return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan login dengan akun Anda.');
+            return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan cek email Anda untuk verifikasi akun.');
         } catch (\Exception $e) {
             \Log::error('Registration error', [
                 'message' => $e->getMessage(),
-                'input' => $request->all()
+                'input' => $request->all(),
+                'trace' => $e->getTraceAsString()
             ]);
             return back()->with('error', 'Gagal mendaftar: ' . $e->getMessage())->withInput();
         }
@@ -235,6 +248,86 @@ class AuthController extends Controller
                 'email' => $request->email
             ]);
             return back()->with('error', 'Gagal reset password: ' . $e->getMessage());
+        }
+    }
+
+    public function verifyEmail($token)
+    {
+        try {
+            $user = User::whereNotNull('email_verification_token')
+                ->get()
+                ->first(function ($user) use ($token) {
+                    return Hash::check($token, $user->email_verification_token);
+                });
+
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'Token verifikasi tidak valid atau sudah kadaluarsa.');
+            }
+
+            // Check if token is not older than 24 hours
+            if ($user->created_at->diffInHours(now()) > 24) {
+                $user->delete(); // Delete unverified user
+                return redirect()->route('login')->with('error', 'Token verifikasi sudah kadaluarsa. Silakan daftar ulang.');
+            }
+
+            // Verify email
+            $user->update([
+                'email_verified_at' => now(),
+                'email_verification_token' => null
+            ]);
+
+            \Log::info('Email verified successfully', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+
+            return redirect()->route('login')->with('success', 'Email berhasil diverifikasi! Silakan login dengan akun Anda.');
+        } catch (\Exception $e) {
+            \Log::error('Email verification error', [
+                'message' => $e->getMessage(),
+                'token' => $token,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->route('login')->with('error', 'Gagal verifikasi email: ' . $e->getMessage());
+        }
+    }
+
+    public function resendVerification(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email'
+        ]);
+
+        try {
+            $user = User::where('email', $request->email)
+                ->whereNull('email_verified_at')
+                ->first();
+
+            if (!$user) {
+                return back()->with('error', 'Email sudah diverifikasi atau tidak ditemukan.');
+            }
+
+            // Generate new token
+            $verificationToken = Str::random(64);
+            $user->update(['email_verification_token' => Hash::make($verificationToken)]);
+
+            // Send verification email
+            $verificationUrl = route('email.verify', ['token' => $verificationToken]);
+            Mail::to($user->email)->send(new EmailVerificationMail($user, $verificationUrl));
+
+            \Log::info('Verification email resent', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+
+            return back()->with('success', 'Email verifikasi telah dikirim ulang!');
+        } catch (\Exception $e) {
+            \Log::error('Resend verification error', [
+                'message' => $e->getMessage(),
+                'email' => $request->email,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Gagal mengirim ulang email verifikasi: ' . $e->getMessage());
         }
     }
 }
