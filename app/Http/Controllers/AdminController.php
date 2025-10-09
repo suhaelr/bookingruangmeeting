@@ -94,6 +94,11 @@ class AdminController extends Controller
     public function updateBookingStatus(Request $request, $id)
     {
         try {
+            \Log::info('AdminController::updateBookingStatus called', [
+                'booking_id' => $id,
+                'request_data' => $request->all()
+            ]);
+
             $booking = Booking::findOrFail($id);
             
             $request->validate([
@@ -101,7 +106,15 @@ class AdminController extends Controller
                 'reason' => 'nullable|string|max:255'
             ]);
 
+            \Log::info('Validation passed, updating booking status', [
+                'booking_id' => $booking->id,
+                'old_status' => $booking->status,
+                'new_status' => $request->status
+            ]);
+
             $booking->updateStatus($request->status, $request->reason);
+
+            \Log::info('Booking status updated successfully');
 
             // Send notification to admin about status change
             $this->notifyAdmin('Booking Status Updated', "Booking '{$booking->title}' status changed to {$request->status}");
@@ -111,6 +124,12 @@ class AdminController extends Controller
                 'message' => 'Status booking berhasil diupdate!'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error in updateBookingStatus: ' . $e->getMessage(), [
+                'booking_id' => $id,
+                'request_data' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengupdate status: ' . $e->getMessage()

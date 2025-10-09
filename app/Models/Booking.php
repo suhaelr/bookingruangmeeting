@@ -112,13 +112,20 @@ class Booking extends Model
 
     public function updateStatus($status, $reason = null)
     {
-        $this->status = $status;
-        
-        if ($status === 'cancelled') {
-            $this->cancelled_at = now();
-            $this->cancellation_reason = $reason;
+        try {
+            $this->status = $status;
+            
+            if ($status === 'cancelled') {
+                $this->cancelled_at = now();
+                $this->cancellation_reason = $reason;
+            }
+            
+            $this->save();
+            
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Error updating booking status: ' . $e->getMessage());
+            throw $e;
         }
-        
-        $this->save();
     }
 }
