@@ -37,6 +37,11 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <!-- Mobile Sidebar -->
+    @include('components.mobile-sidebar', [
+        'userRole' => 'guest',
+        'pageTitle' => 'Daftar'
+    ])
     <div class="glass-effect rounded-2xl p-8 w-full max-w-md shadow-2xl">
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">

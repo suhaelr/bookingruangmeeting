@@ -331,37 +331,4 @@ class AuthController extends Controller
         }
     }
 
-    public function verifyEmail($token)
-    {
-        try {
-            $user = User::whereNotNull('email_verification_token')
-                ->get()
-                ->first(function ($user) use ($token) {
-                    return Hash::check($token, $user->email_verification_token);
-                });
-
-            if (!$user) {
-                return redirect()->route('login')->with('error', 'Token verifikasi tidak valid atau sudah kadaluarsa.');
-            }
-
-            $user->update([
-                'email_verified_at' => now(),
-                'email_verification_token' => null,
-            ]);
-
-            \Log::info('Email verified successfully', [
-                'user_id' => $user->id,
-                'email' => $user->email
-            ]);
-
-            return redirect()->route('login')->with('success', 'Email berhasil diverifikasi! Silakan login untuk melanjutkan.');
-        } catch (\Exception $e) {
-            \Log::error('Email verification error', [
-                'message' => $e->getMessage(),
-                'token' => $token,
-                'trace' => $e->getTraceAsString()
-            ]);
-            return redirect()->route('login')->with('error', 'Gagal memverifikasi email: ' . $e->getMessage());
-        }
-    }
 }

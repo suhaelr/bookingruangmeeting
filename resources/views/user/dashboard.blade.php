@@ -9,8 +9,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="gradient-bg min-h-screen">
-    <!-- Navigation -->
-    <nav class="glass-effect shadow-lg">
+    <!-- Desktop Navigation -->
+    <nav class="glass-effect shadow-lg desktop-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
@@ -60,6 +60,14 @@
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Sidebar -->
+    @include('components.mobile-sidebar', [
+        'userRole' => 'user',
+        'userName' => session('user_data.full_name'),
+        'userEmail' => session('user_data.email'),
+        'pageTitle' => 'Dashboard Pengguna'
+    ])
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

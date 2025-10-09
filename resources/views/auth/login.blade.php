@@ -9,6 +9,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <!-- Mobile Sidebar -->
+    @include('components.mobile-sidebar', [
+        'userRole' => 'guest',
+        'pageTitle' => 'Login'
+    ])
     <div class="w-full max-w-md">
         <!-- Logo/Header -->
         <div class="text-center mb-8">
