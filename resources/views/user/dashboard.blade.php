@@ -292,6 +292,9 @@
         </div>
     </div>
 
+    <!-- WhatsApp Floating Button -->
+    @include('components.whatsapp-float')
+
     <script>
         // Notification functions
         function toggleNotifications() {

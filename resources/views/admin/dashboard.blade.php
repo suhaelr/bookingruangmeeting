@@ -229,6 +229,9 @@
         </div>
     </div>
 
+    <!-- WhatsApp Floating Button -->
+    @include('components.whatsapp-float')
+
     <script>
         // Monthly Chart
         const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');

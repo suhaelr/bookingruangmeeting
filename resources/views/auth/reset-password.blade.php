@@ -108,5 +108,8 @@
             </p>
         </div>
     </div>
+
+    <!-- WhatsApp Floating Button -->
+    @include('components.whatsapp-float')
 </body>
 </html>

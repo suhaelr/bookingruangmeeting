@@ -533,5 +533,8 @@
             }
         }, 5000);
     </script>
+
+    <!-- WhatsApp Floating Button -->
+    @include('components.whatsapp-float')
 </body>
 </html>
