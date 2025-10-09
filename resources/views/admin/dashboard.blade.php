@@ -317,74 +317,47 @@
         function loadAdminNotifications() {
             const notificationList = document.getElementById('adminNotificationList');
             
-            // Sample admin notifications - in real app, this would come from backend
-            let notifications = [
-                {
-                    id: 1,
-                    title: 'Booking Updated',
-                    message: 'User John Doe updated their booking "Team Meeting" for tomorrow',
-                    time: '5 minutes ago',
-                    read: false,
-                    type: 'info'
-                },
-                {
-                    id: 2,
-                    title: 'Booking Cancelled',
-                    message: 'User Jane Smith cancelled their booking "Project Review"',
-                    time: '15 minutes ago',
-                    read: false,
-                    type: 'warning'
-                },
-                {
-                    id: 3,
-                    title: 'New Booking Request',
-                    message: 'User Mike Johnson requested a new booking for Conference Room A',
-                    time: '1 hour ago',
-                    read: true,
-                    type: 'success'
-                },
-                {
-                    id: 4,
-                    title: 'Room Conflict Detected',
-                    message: 'Potential schedule conflict detected for Meeting Room B at 2:00 PM',
-                    time: '2 hours ago',
-                    read: false,
-                    type: 'error'
-                }
-            ];
+            // Fetch notifications from backend
+            fetch('/admin/notifications')
+                .then(response => response.json())
+                .then(notifications => {
+                    // Check session storage for read status
+                    const readNotifications = JSON.parse(sessionStorage.getItem('adminReadNotifications') || '[]');
+                    notifications = notifications.map(notification => ({
+                        ...notification,
+                        read: readNotifications.includes(notification.id) || notification.read
+                    }));
 
-            // Check session storage for read status
-            const readNotifications = JSON.parse(sessionStorage.getItem('adminReadNotifications') || '[]');
-            notifications = notifications.map(notification => ({
-                ...notification,
-                read: readNotifications.includes(notification.id) || notification.read
-            }));
+                    const unreadCount = notifications.filter(n => !n.read).length;
+                    const badge = document.getElementById('admin-notification-badge');
+                    
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
 
-            const unreadCount = notifications.filter(n => !n.read).length;
-            const badge = document.getElementById('admin-notification-badge');
-            
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-
-            notificationList.innerHTML = notifications.map(notification => `
-                <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAdminNotificationAsRead(${notification.id})">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-${getAdminNotificationIcon(notification.type)} text-${getAdminNotificationColor(notification.type)}"></i>
+                    notificationList.innerHTML = notifications.map(notification => `
+                        <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAdminNotificationAsRead(${notification.id})">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-${getAdminNotificationIcon(notification.type)} text-${getAdminNotificationColor(notification.type)}"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-gray-900">${notification.title}</p>
+                                    <p class="text-sm text-gray-600">${notification.message}</p>
+                                    <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
+                                </div>
+                                ${!notification.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>' : ''}
+                            </div>
                         </div>
-                        <div class="ml-3 flex-1">
-                            <p class="text-sm font-medium text-gray-900">${notification.title}</p>
-                            <p class="text-sm text-gray-600">${notification.message}</p>
-                            <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
-                        </div>
-                        ${!notification.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>' : ''}
-                    </div>
-                </div>
-            `).join('');
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                    notificationList.innerHTML = '<div class="p-3 text-center text-gray-500">Error loading notifications</div>';
+                });
         }
 
         function getAdminNotificationIcon(type) {
@@ -445,6 +418,9 @@
         // Load admin notifications on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadAdminNotifications();
+            
+            // Auto-refresh notifications every 30 seconds
+            setInterval(loadAdminNotifications, 30000);
         });
 
         // Auto-hide success message

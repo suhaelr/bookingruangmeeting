@@ -93,16 +93,29 @@ class AdminController extends Controller
 
     public function updateBookingStatus(Request $request, $id)
     {
-        $booking = Booking::findOrFail($id);
-        
-        $request->validate([
-            'status' => 'required|in:pending,confirmed,cancelled',
-            'reason' => 'nullable|string|max:255'
-        ]);
+        try {
+            $booking = Booking::findOrFail($id);
+            
+            $request->validate([
+                'status' => 'required|in:pending,confirmed,cancelled',
+                'reason' => 'nullable|string|max:255'
+            ]);
 
-        $booking->updateStatus($request->status, $request->reason);
+            $booking->updateStatus($request->status, $request->reason);
 
-        return back()->with('success', 'Status booking berhasil diupdate!');
+            // Send notification to admin about status change
+            $this->notifyAdmin('Booking Status Updated', "Booking '{$booking->title}' status changed to {$request->status}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status booking berhasil diupdate!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupdate status: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function deleteUser($id)
@@ -125,5 +138,71 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menghapus user: ' . $e->getMessage());
         }
+    }
+
+    private function notifyAdmin($title, $message)
+    {
+        // In a real application, this would send notifications via:
+        // - Database notifications
+        // - Real-time websockets
+        // - Email notifications
+        // - Push notifications
+        
+        // For now, we'll store in session for demo purposes
+        $notifications = session('admin_notifications', []);
+        $notifications[] = [
+            'id' => uniqid(),
+            'title' => $title,
+            'message' => $message,
+            'time' => now()->format('Y-m-d H:i:s'),
+            'read' => false,
+            'type' => $title === 'Booking Status Updated' ? 'info' : 'success'
+        ];
+        session(['admin_notifications' => $notifications]);
+    }
+
+    public function getNotifications()
+    {
+        $notifications = session('admin_notifications', []);
+        
+        // Add some default notifications if none exist
+        if (empty($notifications)) {
+            $notifications = [
+                [
+                    'id' => 1,
+                    'title' => 'Booking Updated',
+                    'message' => 'User John Doe updated their booking "Team Meeting" for tomorrow',
+                    'time' => '5 minutes ago',
+                    'read' => false,
+                    'type' => 'info'
+                ],
+                [
+                    'id' => 2,
+                    'title' => 'Booking Cancelled',
+                    'message' => 'User Jane Smith cancelled their booking "Project Review"',
+                    'time' => '15 minutes ago',
+                    'read' => false,
+                    'type' => 'warning'
+                ],
+                [
+                    'id' => 3,
+                    'title' => 'New Booking Request',
+                    'message' => 'User Mike Johnson requested a new booking for Conference Room A',
+                    'time' => '1 hour ago',
+                    'read' => true,
+                    'type' => 'success'
+                ],
+                [
+                    'id' => 4,
+                    'title' => 'Room Conflict Detected',
+                    'message' => 'Potential schedule conflict detected for Meeting Room B at 2:00 PM',
+                    'time' => '2 hours ago',
+                    'read' => false,
+                    'type' => 'error'
+                ]
+            ];
+        }
+
+        return response()->json($notifications);
     }
 }

@@ -442,17 +442,24 @@
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             }
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw new Error('Network response was not ok');
+                            }
+                        })
                         .then(data => {
                             if (data.success) {
+                                alert(data.message);
                                 location.reload();
                             } else {
-                                alert('Error updating status');
+                                alert(data.message || 'Error updating status');
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Error updating status');
+                            alert('Error updating status: ' + error.message);
                         });
                     }
                 });
