@@ -93,6 +93,21 @@
                 </button>
             </form>
 
+            <!-- Additional Links -->
+            <div class="mt-6 space-y-3">
+                <div class="text-center">
+                    <a href="{{ route('password.request') }}" class="text-white/80 hover:text-white text-sm underline">
+                        <i class="fas fa-key mr-1"></i>
+                        Lupa Password?
+                    </a>
+                </div>
+                <div class="text-center">
+                    <a href="{{ route('register') }}" class="text-white/80 hover:text-white text-sm underline">
+                        <i class="fas fa-user-plus mr-1"></i>
+                        Daftar Akun Baru
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Footer -->

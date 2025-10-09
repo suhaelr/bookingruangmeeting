@@ -476,45 +476,6 @@ class UserController extends Controller
         return $start1->lt($end2) && $end1->gt($start2);
     }
 
-    public function cancelBooking($id)
-    {
-        $user = session('user_data');
-        $booking = Booking::where('id', $id)
-            ->where('user_id', $user['id'])
-            ->firstOrFail();
-
-        if (!$booking->canBeCancelled()) {
-            return back()->with('error', 'Booking tidak dapat dibatalkan.');
-        }
-
-        $booking->updateStatus('cancelled', 'Dibatalkan oleh user');
-
-        // Send notification to admin
-        $this->notifyAdmin('Booking Cancelled', "User {$user['full_name']} cancelled their booking: {$booking->title}");
-
-        return back()->with('success', 'Booking berhasil dibatalkan.');
-    }
-
-    private function notifyAdmin($title, $message)
-    {
-        // In a real application, this would send notifications via:
-        // - Database notifications
-        // - Real-time websockets
-        // - Email notifications
-        // - Push notifications
-        
-        // For now, we'll store in session for demo purposes
-        $notifications = session('admin_notifications', []);
-        $notifications[] = [
-            'id' => uniqid(),
-            'title' => $title,
-            'message' => $message,
-            'time' => now()->format('Y-m-d H:i:s'),
-            'read' => false,
-            'type' => $title === 'Booking Cancelled' ? 'warning' : 'info'
-        ];
-        session(['admin_notifications' => $notifications]);
-    }
 
     public function changePassword(Request $request)
     {
