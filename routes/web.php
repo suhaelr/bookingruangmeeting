@@ -22,6 +22,8 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::delete('/users/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     Route::get('/rooms', [AdminController::class, 'rooms'])->name('admin.rooms');
+    Route::put('/rooms/{id}', [AdminController::class, 'updateRoom'])->name('admin.rooms.update');
+    Route::delete('/rooms/{id}', [AdminController::class, 'deleteRoom'])->name('admin.rooms.delete');
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('admin.bookings');
     Route::post('/bookings/{id}/status', [AdminController::class, 'updateBookingStatus'])->name('admin.bookings.status');
     Route::get('/notifications', [AdminController::class, 'getNotifications'])->name('admin.notifications');

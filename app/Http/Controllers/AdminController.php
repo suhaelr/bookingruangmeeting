@@ -255,4 +255,71 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function updateRoom(Request $request, $id)
+    {
+        try {
+            $room = MeetingRoom::findOrFail($id);
+            
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'capacity' => 'required|integer|min:1',
+                'location' => 'required|string|max:255',
+                'hourly_rate' => 'required|numeric|min:0',
+                'is_active' => 'required|boolean',
+                'amenities' => 'nullable|string'
+            ]);
+
+            $amenities = $request->amenities ? 
+                array_map('trim', explode(',', $request->amenities)) : [];
+
+            $room->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'capacity' => $request->capacity,
+                'location' => $request->location,
+                'hourly_rate' => $request->hourly_rate,
+                'is_active' => $request->is_active,
+                'amenities' => $amenities
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Room berhasil diupdate!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengupdate room: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteRoom($id)
+    {
+        try {
+            $room = MeetingRoom::findOrFail($id);
+            
+            // Check if room has bookings
+            if ($room->bookings()->count() > 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak dapat menghapus room yang memiliki bookings. Hapus bookings terlebih dahulu.'
+                ], 400);
+            }
+
+            $room->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Room berhasil dihapus!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menghapus room: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
