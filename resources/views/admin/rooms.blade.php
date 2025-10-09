@@ -89,9 +89,9 @@
                     <p class="text-white/80">View and manage all meeting rooms</p>
                 </div>
                 <div class="flex space-x-4">
-                    <button class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                    <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-plus mr-2"></i>Add Room
-                    </button>
+                    </a>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-download mr-2"></i>Export
                     </button>

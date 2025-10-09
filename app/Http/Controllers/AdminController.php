@@ -76,6 +76,41 @@ class AdminController extends Controller
         return view('admin.users', compact('users'));
     }
 
+    public function createUser()
+    {
+        return view('admin.users.create');
+    }
+
+    public function storeUser(Request $request)
+    {
+        try {
+            $request->validate([
+                'username' => 'required|string|max:255|unique:users',
+                'full_name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'phone' => 'nullable|string|max:20',
+                'department' => 'nullable|string|max:100',
+                'role' => 'required|in:admin,user'
+            ]);
+
+            $user = User::create([
+                'username' => $request->username,
+                'name' => $request->full_name,
+                'full_name' => $request->full_name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'phone' => $request->phone,
+                'department' => $request->department,
+                'role' => $request->role,
+            ]);
+
+            return redirect()->route('admin.users')->with('success', 'User berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menambahkan user: ' . $e->getMessage())->withInput();
+        }
+    }
+
     public function rooms()
     {
         $rooms = MeetingRoom::withCount('bookings')
@@ -94,6 +129,43 @@ class AdminController extends Controller
         ]);
         
         return view('admin.rooms', compact('rooms'));
+    }
+
+    public function createRoom()
+    {
+        return view('admin.rooms.create');
+    }
+
+    public function storeRoom(Request $request)
+    {
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'capacity' => 'required|integer|min:1',
+                'location' => 'required|string|max:255',
+                'hourly_rate' => 'required|numeric|min:0',
+                'is_active' => 'required|boolean',
+                'amenities' => 'nullable|string'
+            ]);
+
+            $amenities = $request->amenities ? 
+                array_map('trim', explode(',', $request->amenities)) : [];
+
+            $room = MeetingRoom::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'capacity' => $request->capacity,
+                'location' => $request->location,
+                'hourly_rate' => $request->hourly_rate,
+                'is_active' => $request->is_active,
+                'amenities' => $amenities
+            ]);
+
+            return redirect()->route('admin.rooms')->with('success', 'Room berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal menambahkan room: ' . $e->getMessage())->withInput();
+        }
     }
 
     public function bookings()
@@ -237,6 +309,24 @@ class AdminController extends Controller
         }
 
         return response()->json($notifications);
+    }
+
+    public function clearAllNotifications()
+    {
+        try {
+            // Clear all notifications from session
+            session()->forget('admin_notifications');
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'All notifications cleared successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to clear notifications: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function updateUser(Request $request, $id)

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dashboard Admin - Sistem Pemesanan Ruang Meeting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -218,9 +219,12 @@
         <div id="adminNotificationList" class="p-2">
             <!-- Admin notifications will be loaded here -->
         </div>
-        <div class="p-2 border-t">
-            <button onclick="markAllAdminNotificationsAsRead()" class="w-full text-center text-blue-500 hover:text-blue-700 text-sm py-2">
+        <div class="p-2 border-t flex space-x-2">
+            <button onclick="markAllAdminNotificationsAsRead()" class="flex-1 text-center text-blue-500 hover:text-blue-700 text-sm py-2">
                 Mark all as read
+            </button>
+            <button onclick="clearAllAdminNotifications()" class="flex-1 text-center text-red-500 hover:text-red-700 text-sm py-2">
+                Clear all
             </button>
         </div>
     </div>
@@ -403,6 +407,39 @@
             
             // Reload notifications to update UI
             loadAdminNotifications();
+        }
+
+        function clearAllAdminNotifications() {
+            if (confirm('Are you sure you want to clear all notifications? This action cannot be undone.')) {
+                console.log('Clearing all admin notifications');
+                
+                fetch('/admin/notifications/clear', {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear session storage
+                        sessionStorage.removeItem('adminReadNotifications');
+                        
+                        // Reload notifications to update UI
+                        loadAdminNotifications();
+                        
+                        // Show success message
+                        alert(data.message);
+                    } else {
+                        alert(data.message || 'Failed to clear notifications');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error clearing notifications');
+                });
+            }
         }
 
         // Close admin notification dropdown when clicking outside
