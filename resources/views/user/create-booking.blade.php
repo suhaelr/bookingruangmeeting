@@ -69,7 +69,8 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Book Meeting Room</h1>
+                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'User' }}!</h1>
+                        <p class="text-white/80 text-sm">Pesan Ruang Meeting</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
