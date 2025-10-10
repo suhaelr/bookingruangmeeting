@@ -45,6 +45,12 @@ Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('a
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
+// User Management Routes (Admin only)
+Route::middleware('admin.auth')->group(function () {
+    Route::get('/admin/users/api', [AuthController::class, 'getAllUsers'])->name('admin.users.api');
+    Route::put('/admin/users/{userId}/role', [AuthController::class, 'updateUserRole'])->name('admin.users.role.update');
+});
+
 // Privacy Policy Route
 Route::get('/privacy-policy', function () {
     return view('privacy-policy');

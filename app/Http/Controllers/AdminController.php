@@ -66,8 +66,7 @@ class AdminController extends Controller
 
     public function users()
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(10);
-        return view('admin.users', compact('users'));
+        return view('admin.users-enhanced');
     }
 
     public function createUser()

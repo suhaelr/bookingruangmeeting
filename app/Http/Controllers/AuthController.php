@@ -547,12 +547,19 @@ class AuthController extends Controller
             \Log::info('Google OAuth login successful', [
                 'user_id' => $user->id,
                 'email' => $user->email,
-                'google_id' => $userInfo['id'] ?? null
+                'google_id' => $userInfo['id'] ?? null,
+                'role' => $user->role
             ]);
 
-            return $user->role === 'admin' 
-                ? redirect()->route('admin.dashboard')->with('success', 'Login dengan Google berhasil!')
-                : redirect()->route('user.dashboard')->with('success', 'Login dengan Google berhasil!');
+            // Force session to be saved before redirect
+            Session::save();
+
+            // Redirect based on user role
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Login dengan Google berhasil!');
+            } else {
+                return redirect()->route('user.dashboard')->with('success', 'Login dengan Google berhasil!');
+            }
 
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [
@@ -715,6 +722,107 @@ class AuthController extends Controller
         }
 
         return $result;
+    }
+
+    /**
+     * Update user role (Admin only)
+     */
+    public function updateUserRole(Request $request, $userId)
+    {
+        // Check if current user is admin
+        $currentUser = session('user_data');
+        if (!$currentUser || $currentUser['role'] !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'role' => 'required|in:admin,user'
+        ]);
+
+        try {
+            $user = User::findOrFail($userId);
+            
+            // Prevent admin from changing their own role
+            if ($user->id == $currentUser['id']) {
+                return response()->json(['error' => 'Cannot change your own role'], 400);
+            }
+
+            $oldRole = $user->role;
+            $user->update(['role' => $request->role]);
+
+            \Log::info('User role updated by admin', [
+                'admin_id' => $currentUser['id'],
+                'admin_email' => $currentUser['email'],
+                'target_user_id' => $user->id,
+                'target_user_email' => $user->email,
+                'old_role' => $oldRole,
+                'new_role' => $request->role
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User role updated successfully',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->full_name ?? $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                    'google_id' => $user->google_id
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to update user role', [
+                'admin_id' => $currentUser['id'],
+                'target_user_id' => $userId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Failed to update user role'], 500);
+        }
+    }
+
+    /**
+     * Get all users for admin management
+     */
+    public function getAllUsers()
+    {
+        // Check if current user is admin
+        $currentUser = session('user_data');
+        if (!$currentUser || $currentUser['role'] !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        try {
+            $users = User::select('id', 'username', 'name', 'full_name', 'email', 'role', 'google_id', 'created_at', 'last_login_at')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'username' => $user->username,
+                        'name' => $user->full_name ?? $user->name,
+                        'email' => $user->email,
+                        'role' => $user->role,
+                        'google_id' => $user->google_id ? 'Yes' : 'No',
+                        'created_at' => $user->created_at->format('d/m/Y H:i'),
+                        'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : 'Never'
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'users' => $users
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to get users list', [
+                'admin_id' => $currentUser['id'],
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Failed to get users list'], 500);
+        }
     }
 
 }
