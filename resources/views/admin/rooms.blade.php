@@ -438,6 +438,11 @@
                 
                 const formData = new FormData(this);
                 const roomId = currentRoomId;
+
+                const isActiveField = this.querySelector('select[name="is_active"]');
+                if (isActiveField) {
+                    formData.set('is_active', isActiveField.value);
+                }
                 
                 fetch(`/admin/rooms/${roomId}`, {
                     method: 'PUT',
