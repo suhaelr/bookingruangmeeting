@@ -268,8 +268,8 @@
                             <option value="">Select status</option>
                             <option value="pending">Menunggu</option>
                             <option value="confirmed">Dikonfirmasi</option>
-                            <option value="cancelled">Batalled</option>
-                            <option value="completed">Completed</option>
+                            <option value="cancelled">Dibatalkan</option>
+                            <option value="completed">Selesai</option>
                         </select>
                     </div>
                     <div class="mb-6">
