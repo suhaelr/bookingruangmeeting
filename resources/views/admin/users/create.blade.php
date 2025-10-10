@@ -56,6 +56,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
+                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
+                            <i class="fas fa-bars"></i>
+                        </button>
                         <div class="flex-shrink-0">
                             <i class="fas fa-calendar-alt text-2xl text-white"></i>
                         </div>

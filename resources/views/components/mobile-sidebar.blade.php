@@ -303,26 +303,33 @@
     font-size: 1.25rem;
 }
 
-/* Show mobile menu button only on mobile */
+/* Show mobile menu button on all devices */
+.mobile-menu-btn {
+    display: flex !important;
+}
+
+/* Show mobile sidebar on all devices when active */
+.mobile-sidebar.active {
+    display: block !important;
+}
+
+/* Hide desktop navigation on mobile */
 @media (max-width: 768px) {
-    .mobile-menu-btn {
-        display: block;
-    }
-    
-    /* Hide desktop navigation on mobile */
     .desktop-nav {
         display: none !important;
     }
 }
 
-/* Hide mobile sidebar on desktop */
+/* Desktop specific styles */
 @media (min-width: 769px) {
     .mobile-sidebar {
-        display: none !important;
+        width: 300px;
     }
     
     .mobile-menu-btn {
-        display: none !important;
+        position: fixed;
+        top: 0.75rem;
+        left: 1rem;
     }
 }
 
