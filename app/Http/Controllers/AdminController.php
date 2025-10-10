@@ -157,7 +157,7 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'required|string|in:0,1,true,false,on,off',
+                'is_active' => 'required|string|in:0,1,true,false,on,off,',
                 'amenities' => 'nullable|string'
             ]);
 
@@ -443,7 +443,7 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'nullable|string|in:0,1,true,false,on,off',
+                'is_active' => 'nullable|string|in:0,1,true,false,on,off,',
                 'amenities' => 'nullable|string'
             ]);
 
