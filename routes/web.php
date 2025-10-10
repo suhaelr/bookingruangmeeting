@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
@@ -64,6 +65,21 @@ Route::get('/test/oauth', function() {
         'session_id' => session()->getId()
     ]);
 })->name('test.oauth');
+
+// OAuth callback debug route
+Route::get('/oauth/debug', function(Request $request) {
+    return response()->json([
+        'message' => 'OAuth callback debug endpoint',
+        'timestamp' => now(),
+        'session_id' => session()->getId(),
+        'request_data' => $request->all(),
+        'headers' => $request->headers->all(),
+        'ip' => $request->ip(),
+        'user_agent' => $request->userAgent(),
+        'url' => $request->url(),
+        'method' => $request->method()
+    ]);
+})->name('oauth.debug');
 
 // User Management Routes (Admin only)
 Route::middleware('admin.auth')->group(function () {

@@ -447,6 +447,23 @@ class AuthController extends Controller
      */
     public function handleGoogleCallback(Request $request)
     {
+        // Log all request data for debugging
+        \Log::info('Google OAuth callback accessed', [
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'url' => $request->url(),
+            'method' => $request->method(),
+            'all_params' => $request->all(),
+            'headers' => $request->headers->all(),
+            'session_id' => session()->getId()
+        ]);
+
+        // Check if this is a direct access (no OAuth parameters)
+        if (!$request->has('code') && !$request->has('error')) {
+            \Log::warning('OAuth callback accessed without OAuth parameters');
+            return view('auth.oauth-callback-debug');
+        }
+
         // Aggressive Cloudflare bypass headers
         $request->headers->set('CF-Connecting-IP', $request->ip());
         $request->headers->set('X-Forwarded-For', $request->ip());
@@ -460,13 +477,6 @@ class AuthController extends Controller
         $request->headers->set('DNT', '1');
         $request->headers->set('Connection', 'keep-alive');
         $request->headers->set('Upgrade-Insecure-Requests', '1');
-        
-        \Log::info('Google OAuth callback started with aggressive Cloudflare bypass', [
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'url' => $request->url(),
-            'method' => $request->method()
-        ]);
 
         // Check for OAuth errors
         if ($request->has('error')) {
