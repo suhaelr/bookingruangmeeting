@@ -503,9 +503,15 @@ class AdminController extends Controller
                     'amenities' => 'nullable|string'
                 ]
             ]);
+            // Flatten errors manually for compatibility
+            $flattenedErrors = [];
+            foreach ($e->errors() as $field => $messages) {
+                $flattenedErrors = array_merge($flattenedErrors, $messages);
+            }
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error: ' . implode(', ', array_flatten($e->errors())),
+                'message' => 'Validation error: ' . implode(', ', $flattenedErrors),
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
