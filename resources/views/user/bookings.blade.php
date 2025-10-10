@@ -79,9 +79,6 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('user.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-left mr-1"></i>Kembali ke Beranda
-                    </a>
                     <a href="{{ route('user.bookings.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-plus mr-2"></i>Pemesanan Baru
                     </a>

@@ -70,9 +70,6 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('user.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-left mr-1"></i>Kembali ke Beranda
-                    </a>
                     <div class="flex items-center space-x-2">
                         <span class="text-white/80 text-sm">
                             <i class="fas fa-user mr-1"></i>

@@ -463,4 +463,17 @@ document.addEventListener('DOMContentLoaded', function() {
         viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
     }
 });
+
+// Notification functions
+function toggleNotifikasis() {
+    // Toggle notification panel for user
+    console.log('Toggle user notifications');
+    // Add your notification logic here
+}
+
+function toggleAdminNotifikasis() {
+    // Toggle notification panel for admin
+    console.log('Toggle admin notifications');
+    // Add your notification logic here
+}
 </script>
