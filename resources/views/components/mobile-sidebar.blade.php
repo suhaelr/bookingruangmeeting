@@ -11,8 +11,8 @@
                 <div class="flex items-center">
                     <i class="fas fa-calendar-alt text-2xl text-white mr-3"></i>
                     <div>
-                        <h1 class="text-lg font-bold text-white">Meeting Room</h1>
-                        <p class="text-white/80 text-xs">{{ $pageTitle ?? 'Booking System' }}</p>
+                        <h1 class="text-lg font-bold text-white">Sistem Pemesanan</h1>
+                        <p class="text-white/80 text-xs">Ruang Meeting</p>
                     </div>
                 </div>
                 <button onclick="toggleMobileSidebar()" class="text-white/80 hover:text-white p-2">
@@ -101,9 +101,9 @@
                         <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
                             <i class="fas fa-user text-white"></i>
                         </div>
-                        <div>
-                            <p class="text-white font-medium text-sm">{{ $userName ?? 'User' }}</p>
-                            <p class="text-white/60 text-xs">{{ $userEmail ?? 'user@example.com' }}</p>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-white font-medium text-sm truncate">{{ $userName ?? 'User' }}</p>
+                            <p class="text-white/60 text-xs truncate">{{ $userEmail ?? 'user@example.com' }}</p>
                         </div>
                     </div>
                 </div>

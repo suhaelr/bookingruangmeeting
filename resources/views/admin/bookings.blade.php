@@ -32,6 +32,34 @@
             background-color: #3182ce !important;
             color: white !important;
         }
+        
+        /* Mobile responsive table */
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table-responsive table {
+                min-width: 800px;
+            }
+            
+            .table-responsive th,
+            .table-responsive td {
+                white-space: nowrap;
+                min-width: 120px;
+            }
+            
+            .table-responsive th:first-child,
+            .table-responsive td:first-child {
+                min-width: 60px;
+            }
+            
+            .table-responsive th:last-child,
+            .table-responsive td:last-child {
+                min-width: 100px;
+            }
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
@@ -59,7 +87,7 @@
                             <i class="fas fa-door-open mr-1"></i>Ruang
                         </a>
                         <a href="{{ route('admin.bookings') }}" class="text-white hover:text-white/80 transition-colors">
-                            <i class="fas fa-calendar-check mr-1"></i>Bookings
+                            <i class="fas fa-calendar-check mr-1"></i>Pemesanan
                         </a>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -85,18 +113,18 @@
             <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-2xl font-bold text-white mb-2">Kelola Bookings</h2>
-                    <p class="text-white/80">Monitor and manage all meeting room bookings</p>
+                    <p class="text-white/80">Pantau dan kelola semua pemesanan ruang meeting</p>
                 </div>
                 <div class="flex space-x-4">
                     <select id="status-filter" class="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
-                        <option value="">All Status</option>
+                        <option value="">Semua Status</option>
                         <option value="pending">Menunggu</option>
                         <option value="confirmed">Dikonfirmasi</option>
-                        <option value="cancelled">Batalled</option>
-                        <option value="completed">Completed</option>
+                        <option value="cancelled">Dibatalkan</option>
+                        <option value="completed">Selesai</option>
                     </select>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-download mr-2"></i>Export
+                        <i class="fas fa-download mr-2"></i>Ekspor
                     </button>
                 </div>
             </div>
@@ -123,20 +151,24 @@
                             @foreach($bookings as $booking)
                             <tr class="border-b border-white/10 hover:bg-white/5 transition-colors booking-row" data-status="{{ $booking->status }}">
                                 <td class="py-3 px-4">#{{ $booking->id }}</td>
-                                <td class="py-3 px-4 font-medium">{{ $booking->title }}</td>
                                 <td class="py-3 px-4">
-                                    <div>
-                                        <p class="text-white font-medium">{{ $booking->user->full_name }}</p>
-                                        <p class="text-white/60 text-sm">{{ $booking->user->email }}</p>
+                                    <div class="min-w-0">
+                                        <p class="text-white font-medium truncate" title="{{ $booking->title }}">{{ $booking->title }}</p>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <div class="min-w-0">
+                                        <p class="text-white font-medium truncate">{{ $booking->user->full_name }}</p>
+                                        <p class="text-white/60 text-sm truncate" title="{{ $booking->user->email }}">{{ $booking->user->email }}</p>
                                         @if($booking->unit_kerja)
-                                            <p class="text-white/60 text-xs">Unit: {{ $booking->unit_kerja }}</p>
+                                            <p class="text-white/60 text-xs truncate">Unit: {{ $booking->unit_kerja }}</p>
                                         @endif
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
-                                    <div>
-                                        <p class="text-white font-medium">{{ $booking->meetingRoom->name }}</p>
-                                        <p class="text-white/60 text-sm">{{ $booking->meetingRoom->location }}</p>
+                                    <div class="min-w-0">
+                                        <p class="text-white font-medium truncate">{{ $booking->meetingRoom->name }}</p>
+                                        <p class="text-white/60 text-sm truncate">{{ $booking->meetingRoom->location }}</p>
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
@@ -186,7 +218,7 @@
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-8">
                     <div class="text-white/80 text-sm">
-                        Showing {{ $bookings->firstItem() }} to {{ $bookings->lastItem() }} of {{ $bookings->total() }} bookings
+                        Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
                     </div>
                     <div class="flex space-x-2">
                         @if($bookings->previousPageUrl())
@@ -506,6 +538,14 @@
             }
         }, 3000);
     </script>
+
+    <!-- Mobile Sidebar -->
+    @include('components.mobile-sidebar', [
+        'userRole' => 'admin',
+        'userName' => session('user_data.full_name'),
+        'userEmail' => session('user_data.email'),
+        'pageTitle' => 'Kelola Bookings'
+    ])
 
     <!-- WhatsApp Floating Button -->
     @include('components.whatsapp-float')

@@ -512,6 +512,14 @@
         }, 3000);
     </script>
 
+    <!-- Mobile Sidebar -->
+    @include('components.mobile-sidebar', [
+        'userRole' => 'admin',
+        'userName' => session('user_data.full_name'),
+        'userEmail' => session('user_data.email'),
+        'pageTitle' => 'Kelola Ruang'
+    ])
+
     <!-- WhatsApp Floating Button -->
     @include('components.whatsapp-float')
 </body>

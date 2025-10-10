@@ -512,6 +512,14 @@
         });
     </script>
 
+    <!-- Mobile Sidebar -->
+    @include('components.mobile-sidebar', [
+        'userRole' => 'user',
+        'userName' => session('user_data.full_name'),
+        'userEmail' => session('user_data.email'),
+        'pageTitle' => 'Profil'
+    ])
+
     <!-- WhatsApp Floating Button -->
     @include('components.whatsapp-float')
 </body>
