@@ -8,6 +8,16 @@ use App\Http\Controllers\UserController;
 // Redirect root to login
 Route::get('/', function () {
     return redirect()->route('login');
+})->name('home');
+
+// Test route
+Route::get('/test', function () {
+    return response()->json(['status' => 'ok', 'message' => 'Laravel is working']);
+});
+
+// Fallback route
+Route::fallback(function () {
+    return redirect()->route('login');
 });
 
 // Authentication Routes
@@ -76,4 +86,4 @@ Route::get('/dashboard', function () {
     return $user['role'] === 'admin' 
         ? redirect()->route('admin.dashboard')
         : redirect()->route('user.dashboard');
-})->middleware('admin.auth');
+})->middleware('admin.auth')->name('dashboard');
