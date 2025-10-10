@@ -39,8 +39,7 @@ MAIL_ENCRYPTION=ssl
 MAIL_FROM_ADDRESS=admin@pusdatinbgn.web.id
 MAIL_FROM_NAME="Meeting Room Booking System"
 
-# SSL/TLS Settings
-MAIL_SCHEME=ssl
+# SSL/TLS Settings (MAIL_SCHEME removed - not supported by Laravel)
 MAIL_VERIFY_PEER=false
 MAIL_VERIFY_PEER_NAME=false
 MAIL_ALLOW_SELF_SIGNED=true
@@ -80,6 +79,8 @@ Mail::raw('Test email', function($message) {
 - Pastikan port 465 tidak diblokir firewall
 - Pastikan SSL certificate valid
 - Pastikan kredensial email benar
+- **IMPORTANT:** Jangan gunakan MAIL_SCHEME=ssl (tidak didukung Laravel)
+- Gunakan MAIL_ENCRYPTION=ssl untuk SSL encryption
 
 ### Security Notes:
 - Password email disimpan di .env file

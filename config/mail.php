@@ -39,7 +39,6 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME', 'ssl'),
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', 'mail.pusdatinbgn.web.id'),
             'port' => env('MAIL_PORT', 465),
