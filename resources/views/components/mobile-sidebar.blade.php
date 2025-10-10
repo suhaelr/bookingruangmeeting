@@ -276,7 +276,7 @@
 
 .mobile-menu-btn {
     position: fixed;
-    top: 1rem;
+    top: 0.75rem;
     left: 1rem;
     z-index: 1000;
     background: rgba(0, 0, 0, 0.7);
@@ -287,7 +287,11 @@
     cursor: pointer;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
-    display: none;
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .mobile-menu-btn:hover {
