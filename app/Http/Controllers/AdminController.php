@@ -155,7 +155,7 @@ class AdminController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'capacity' => 'required|integer|min:1',
+                'capacity' => 'required|numeric|min:1',
                 'location' => 'required|string|max:255',
                 'is_active' => 'required|string|in:0,1,true,false,on,off,',
                 'amenities' => 'nullable|string'
@@ -176,7 +176,7 @@ class AdminController extends Controller
             $room = MeetingRoom::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'capacity' => $request->capacity,
+                'capacity' => (int)$request->capacity,
                 'location' => $request->location,
                 'is_active' => $isActive,
                 'amenities' => $amenities
@@ -441,7 +441,7 @@ class AdminController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'capacity' => 'required|integer|min:1',
+                'capacity' => 'required|numeric|min:1',
                 'location' => 'required|string|max:255',
                 'is_active' => 'nullable|string|in:0,1,true,false,on,off,',
                 'amenities' => 'nullable|string'
@@ -470,7 +470,7 @@ class AdminController extends Controller
             $room->update([
                 'name' => $request->name,
                 'description' => $request->description,
-                'capacity' => $request->capacity,
+                'capacity' => (int)$request->capacity,
                 'location' => $request->location,
                 'is_active' => $isActive,
                 'amenities' => $amenities
@@ -490,14 +490,22 @@ class AdminController extends Controller
                 'message' => 'Room tidak ditemukan'
             ], 404);
         } catch (ValidationException $e) {
-            \Log::warning('Validation error in updateRoom', [
+            \Log::error('Validation error in updateRoom', [
                 'errors' => $e->errors(),
                 'room_id' => $id,
-                'input' => $request->all()
+                'input' => $request->all(),
+                'validation_rules' => [
+                    'name' => 'required|string|max:255',
+                    'description' => 'nullable|string',
+                    'capacity' => 'required|integer|min:1',
+                    'location' => 'required|string|max:255',
+                    'is_active' => 'nullable|string|in:0,1,true,false,on,off,',
+                    'amenities' => 'nullable|string'
+                ]
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error',
+                'message' => 'Validation error: ' . implode(', ', array_flatten($e->errors())),
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
