@@ -135,9 +135,6 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <p class="text-white">{{ $user->email }}</p>
-                                    @if($user->phone)
-                                    <p class="text-white/60 text-sm">{{ $user->phone }}</p>
-                                    @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     <div>
