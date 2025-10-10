@@ -528,6 +528,16 @@ class AuthController extends Controller
                 'user_data' => Session::get('user_data'),
                 'session_all' => Session::all()
             ]);
+            
+            // Test session persistence by making a request to debug route
+            try {
+                $response = \Http::get(url('/debug/session'));
+                \Log::info('Session test after save', [
+                    'debug_response' => $response->json()
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Session test failed', ['error' => $e->getMessage()]);
+            }
 
             // Update last login
             $user->update(['last_login_at' => now()]);
