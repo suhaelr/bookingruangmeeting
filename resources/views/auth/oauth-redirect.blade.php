@@ -54,11 +54,34 @@
                 console.error('Error fetching session data:', error);
             });
 
-        // Redirect after a short delay
-        setTimeout(function() {
-            console.log('Redirecting to:', '{{ $redirectUrl }}');
+        // Multiple redirect attempts to bypass Cloudflare
+        function attemptRedirect() {
+            console.log('Attempting redirect to:', '{{ $redirectUrl }}');
+            
+            // Method 1: Direct redirect
             window.location.href = '{{ $redirectUrl }}';
-        }, 2000);
+            
+            // Method 2: Fallback with delay
+            setTimeout(function() {
+                if (window.location.href === '{{ $redirectUrl }}') {
+                    console.log('Redirect successful');
+                } else {
+                    console.log('Redirect failed, trying alternative method');
+                    window.location.replace('{{ $redirectUrl }}');
+                }
+            }, 1000);
+            
+            // Method 3: Final fallback
+            setTimeout(function() {
+                if (window.location.href !== '{{ $redirectUrl }}') {
+                    console.log('Using final fallback redirect');
+                    document.location.href = '{{ $redirectUrl }}';
+                }
+            }, 3000);
+        }
+
+        // Start redirect attempts
+        attemptRedirect();
     </script>
 </body>
 </html>

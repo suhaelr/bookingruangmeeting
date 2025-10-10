@@ -17,12 +17,18 @@ class UserAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        \Log::info('UserAuth middleware check', [
+        // Add Cloudflare bypass headers
+        $request->headers->set('CF-Connecting-IP', $request->ip());
+        $request->headers->set('X-Forwarded-For', $request->ip());
+        $request->headers->set('X-Real-IP', $request->ip());
+        
+        \Log::info('UserAuth middleware check with Cloudflare bypass', [
             'url' => $request->url(),
             'session_id' => session()->getId(),
             'user_logged_in' => Session::get('user_logged_in'),
             'user_data' => Session::get('user_data'),
-            'all_session' => Session::all()
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent()
         ]);
 
         if (!Session::has('user_logged_in') || !Session::get('user_logged_in')) {

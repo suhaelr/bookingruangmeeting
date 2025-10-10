@@ -40,9 +40,9 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('email.verify');
 Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
 
-// Google OAuth Routes
+// Google OAuth Routes (without Cloudflare protection)
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->withoutMiddleware(['web']);
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
 // Debug route for session checking

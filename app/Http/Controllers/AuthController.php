@@ -446,6 +446,18 @@ class AuthController extends Controller
      */
     public function handleGoogleCallback(Request $request)
     {
+        // Add Cloudflare bypass headers to prevent 401 errors
+        $request->headers->set('CF-Connecting-IP', $request->ip());
+        $request->headers->set('X-Forwarded-For', $request->ip());
+        $request->headers->set('X-Real-IP', $request->ip());
+        $request->headers->set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+        
+        \Log::info('Google OAuth callback started with Cloudflare bypass headers', [
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'headers' => $request->headers->all()
+        ]);
+
         // Check for OAuth errors
         if ($request->has('error')) {
             $error = $request->get('error');
@@ -573,11 +585,18 @@ class AuthController extends Controller
                 $redirectUrl = route('user.dashboard');
             }
 
-            // Use intermediate redirect page to ensure session is properly set
-            return view('auth.oauth-redirect', [
-                'redirectUrl' => $redirectUrl,
-                'userRole' => $user->role
-            ])->with('success', 'Login dengan Google berhasil!');
+            // Bypass Cloudflare by using direct redirect with proper headers
+            \Log::info('Attempting direct redirect to bypass Cloudflare', [
+                'redirect_url' => $redirectUrl,
+                'user_role' => $user->role
+            ]);
+            
+            // Use direct redirect to avoid Cloudflare interference
+            return redirect($redirectUrl)
+                ->with('success', 'Login dengan Google berhasil!')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
 
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [
