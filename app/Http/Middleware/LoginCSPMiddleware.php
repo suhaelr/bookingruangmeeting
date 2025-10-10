@@ -21,20 +21,17 @@ class LoginCSPMiddleware
         if ($request->is('login') || $request->is('auth/*')) {
             $csp = "default-src 'self'; " .
                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
-                   "https://cdn.tailwindcss.com " .
                    "https://apis.google.com " .
                    "https://challenges.cloudflare.com " .
                    "https://cdn.jsdelivr.net " .
                    "https://cdnjs.cloudflare.com; " .
                    "style-src 'self' 'unsafe-inline' " .
-                   "https://cdn.tailwindcss.com " .
                    "https://cdn.jsdelivr.net " .
                    "https://cdnjs.cloudflare.com; " .
                    "img-src 'self' data: https: " .
                    "https://developers.google.com " .
                    "https://challenges.cloudflare.com; " .
                    "font-src 'self' " .
-                   "https://cdn.tailwindcss.com " .
                    "https://cdn.jsdelivr.net " .
                    "https://cdnjs.cloudflare.com; " .
                    "connect-src 'self' " .
