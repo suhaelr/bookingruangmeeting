@@ -21,6 +21,17 @@
             </div>
         </div>
 
+        <!-- Logout Button - At Top -->
+        @if(isset($userRole) && in_array($userRole, ['admin', 'user']))
+            <div class="mobile-nav-actions px-4 py-2">
+                <a href="{{ route('logout') }}" class="mobile-nav-item text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Keluar</span>
+                </a>
+            </div>
+            <div class="mobile-nav-divider"></div>
+        @endif
+
         <!-- Navigation Menu -->
         <nav class="mobile-sidebar-nav">
             @if(isset($userRole) && $userRole === 'admin')
@@ -126,15 +137,6 @@
                             <span id="notification-badge" class="mobile-notification-badge hidden">0</span>
                         </button>
                     @endif
-                </div>
-                
-                <!-- Logout Button - Separate Section -->
-                <div class="mobile-nav-divider"></div>
-                <div class="mobile-nav-actions">
-                    <a href="{{ route('logout') }}" class="mobile-nav-item text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span>Keluar</span>
-                    </a>
                 </div>
             </div>
         @endif
