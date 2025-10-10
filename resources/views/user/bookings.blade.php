@@ -70,23 +70,15 @@
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
+        <nav class="glass-effect shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                        </div>
                     </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="{{ route('user.bookings.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Pemesanan Baru
-                    </a>
                     <div class="flex items-center space-x-2">
-                        <span class="text-white/80 text-sm">
-                            <i class="fas fa-user mr-1"></i>
-                            {{ session('user_data.full_name') }}
-                        </span>
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
@@ -95,8 +87,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -115,9 +106,6 @@
                         <option value="cancelled">Dibatalkan</option>
                         <option value="completed">Selesai</option>
                     </select>
-                    <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-download mr-2"></i>Ekspor
-                    </button>
                 </div>
             </div>
         </div>
@@ -150,7 +138,6 @@
                                             @else bg-gray-500 text-white @endif">
                                             {{ $booking->status_text }}
                                         </span>
-                                        <p class="text-white/60 text-sm mt-1">Rp {{ number_format($booking->total_cost, 0, ',', '.') }}</p>
                                     </div>
                                 </div>
                                 
@@ -213,9 +200,13 @@
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-8">
                     <div class="text-white/80 text-sm">
-                        Showing {{ $bookings->firstItem() }} to {{ $bookings->lastItem() }} of {{ $bookings->total() }} bookings
+                        Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
                     </div>
-                    <div class="flex space-x-2">
+                    <div class="flex items-center space-x-4">
+                        <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                            <i class="fas fa-download mr-2"></i>Ekspor
+                        </button>
+                        <div class="flex space-x-2">
                         @if($bookings->previousPageUrl())
                         <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
                             <i class="fas fa-chevron-left"></i>
@@ -234,6 +225,7 @@
                             <i class="fas fa-chevron-right"></i>
                         </a>
                         @endif
+                        </div>
                     </div>
                 </div>
             @else

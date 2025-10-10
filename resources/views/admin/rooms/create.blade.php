@@ -53,34 +53,15 @@
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="hidden md:flex space-x-6">
-                        <a href="{{ route('admin.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
-                        </a>
-                        <a href="{{ route('admin.users') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-users mr-1"></i>Pengguna
-                        </a>
-                        <a href="{{ route('admin.rooms') }}" class="text-white hover:text-white/80 transition-colors">
-                            <i class="fas fa-door-open mr-1"></i>Ruang
-                        </a>
-                        <a href="{{ route('admin.bookings') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-calendar-check mr-1"></i>Pemesanan
-                        </a>
+        <nav class="glass-effect shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                        </div>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <span class="text-white/80 text-sm">
-                            <i class="fas fa-user-shield mr-1"></i>
-                            {{ session('user_data.full_name') }}
-                        </span>
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
@@ -89,8 +70,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -25,42 +25,15 @@
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Desktop Navigation -->
-    <nav class="glass-effect shadow-lg desktop-nav">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="hidden md:flex space-x-6">
-                        <a href="{{ route('user.dashboard') }}" class="text-white hover:text-white/80 transition-colors navbar-menu">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
-                        </a>
-                        <a href="{{ route('user.bookings') }}" class="text-white/80 hover:text-white transition-colors navbar-menu">
-                            <i class="fas fa-calendar-check mr-1"></i>Pemesanan Saya
-                        </a>
-                        <a href="{{ route('user.bookings.create') }}" class="text-white/80 hover:text-white transition-colors navbar-menu">
-                            <i class="fas fa-plus mr-1"></i>Pemesanan Baru
-                        </a>
-                        <a href="{{ route('user.profile') }}" class="text-white/80 hover:text-white transition-colors navbar-menu">
-                            <i class="fas fa-user mr-1"></i>Profil
-                        </a>
+        <nav class="glass-effect shadow-lg desktop-nav">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                        </div>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <!-- Notifikasi Bell -->
-                        <div class="relative">
-                            <button onclick="toggleNotifikasis()" class="text-white/80 hover:text-white transition-colors p-2">
-                                <i class="fas fa-bell text-lg"></i>
-                                <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">3</span>
-                            </button>
-                        </div>
-                        
-                        <span class="text-white/80 text-sm">
-                            <i class="fas fa-user mr-1"></i>
-                            {{ session('user_data.full_name') }}
-                        </span>
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
@@ -69,8 +42,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
     <!-- Mobile Sidebar -->
     @include('components.mobile-sidebar', [
