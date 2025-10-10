@@ -436,29 +436,33 @@
             editForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                const formData = new FormData(this);
                 const roomId = currentRoomId;
+                
+                // Collect form data manually
+                const formData = {
+                    name: this.querySelector('input[name="name"]').value,
+                    capacity: this.querySelector('input[name="capacity"]').value,
+                    description: this.querySelector('textarea[name="description"]').value,
+                    location: this.querySelector('input[name="location"]').value,
+                    amenities: this.querySelector('input[name="amenities"]').value
+                };
 
                 const isActiveField = this.querySelector('select[name="is_active"]');
                 if (isActiveField) {
-                    // Convert string value to proper format
-                    const isActiveValue = isActiveField.value === '1' ? '1' : '0';
-                    formData.set('is_active', isActiveValue);
-                    console.log('is_active field value:', isActiveField.value, 'converted to:', isActiveValue);
+                    formData.is_active = isActiveField.value === '1' ? '1' : '0';
+                    console.log('is_active field value:', isActiveField.value, 'converted to:', formData.is_active);
                 }
                 
                 // Debug: Log all form data
-                console.log('Form data being sent:');
-                for (let [key, value] of formData.entries()) {
-                    console.log(key, ':', value);
-                }
+                console.log('Form data being sent:', formData);
                 
                 fetch(`/admin/rooms/${roomId}`, {
                     method: 'PUT',
-                    body: formData,
+                    body: JSON.stringify(formData),
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'Accept': 'application/json',
+                        'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })

@@ -432,29 +432,34 @@ class AdminController extends Controller
             \Log::info('updateRoom called', [
                 'room_id' => $id,
                 'payload' => $request->all(),
+                'json_payload' => $request->json()->all(),
                 'headers' => $request->headers->all(),
                 'method' => $request->method(),
                 'url' => $request->url(),
+                'content_type' => $request->header('Content-Type'),
                 'timestamp' => now()
             ]);
 
             $room = MeetingRoom::findOrFail($id);
             
+            // Get data from JSON or form data
+            $data = $request->json()->all() ?: $request->all();
+            
             // Debug: Log individual field values
             \Log::info('Field values received', [
-                'name' => $request->input('name'),
-                'capacity' => $request->input('capacity'),
-                'description' => $request->input('description'),
-                'location' => $request->input('location'),
-                'is_active' => $request->input('is_active'),
-                'amenities' => $request->input('amenities'),
-                'name_type' => gettype($request->input('name')),
-                'capacity_type' => gettype($request->input('capacity')),
-                'location_type' => gettype($request->input('location'))
+                'name' => $data['name'] ?? null,
+                'capacity' => $data['capacity'] ?? null,
+                'description' => $data['description'] ?? null,
+                'location' => $data['location'] ?? null,
+                'is_active' => $data['is_active'] ?? null,
+                'amenities' => $data['amenities'] ?? null,
+                'name_type' => gettype($data['name'] ?? null),
+                'capacity_type' => gettype($data['capacity'] ?? null),
+                'location_type' => gettype($data['location'] ?? null)
             ]);
             
-            // More flexible validation rules
-            $request->validate([
+            // Validate the data
+            $validator = \Illuminate\Support\Facades\Validator::make($data, [
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'capacity' => 'required|numeric|min:1',
@@ -463,14 +468,18 @@ class AdminController extends Controller
                 'amenities' => 'nullable|string'
             ]);
 
-            $amenities = $request->amenities ? 
-                array_map('trim', explode(',', $request->amenities)) : [];
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
+            }
+
+            $amenities = isset($data['amenities']) && $data['amenities'] ? 
+                array_map('trim', explode(',', $data['amenities'])) : [];
             $amenities = array_values(array_filter($amenities, fn($item) => $item !== ''));
 
             // Handle is_active conversion from string to boolean
             $isActive = $room->is_active; // Default to current value
-            if ($request->has('is_active')) {
-                $isActiveValue = $request->input('is_active');
+            if (isset($data['is_active'])) {
+                $isActiveValue = $data['is_active'];
                 \Log::info('is_active value received', [
                     'value' => $isActiveValue,
                     'type' => gettype($isActiveValue)
@@ -484,10 +493,10 @@ class AdminController extends Controller
             }
 
             $room->update([
-                'name' => $request->name,
-                'description' => $request->description,
-                'capacity' => (int)$request->capacity,
-                'location' => $request->location,
+                'name' => $data['name'],
+                'description' => $data['description'] ?? null,
+                'capacity' => (int)$data['capacity'],
+                'location' => $data['location'],
                 'is_active' => $isActive,
                 'amenities' => $amenities
             ]);
