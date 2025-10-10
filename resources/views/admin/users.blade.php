@@ -129,7 +129,7 @@
                                         </div>
                                         <div>
                                             <p class="text-white font-medium">{{ $user->full_name ?? $user->name }}</p>
-                                            <p class="text-white/60 text-sm">@{{ $user->username ?? 'N/A' }}</p>
+                                            <p class="text-white/60 text-sm">{{ $user->username ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -156,7 +156,7 @@
                                         <p class="text-white">{{ $user->last_login_at->format('M d, Y') }}</p>
                                         <p class="text-white/60 text-sm">{{ $user->last_login_at->format('H:i') }}</p>
                                     @else
-                                        <span class="text-white/60">Never</span>
+                                        <span class="text-white/60">Belum pernah</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
@@ -191,7 +191,7 @@
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-8">
                     <div class="text-white/80 text-sm">
-                        Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} users
+                        Menampilkan {{ $users->firstItem() }} sampai {{ $users->lastItem() }} dari {{ $users->total() }} pengguna
                     </div>
                     <div class="flex space-x-2">
                         @if($users->previousPageUrl())
