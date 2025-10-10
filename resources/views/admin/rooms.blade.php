@@ -117,21 +117,17 @@
                 <div class="space-y-2 mb-4">
                     <div class="flex items-center justify-between">
                         <span class="text-white/60 text-sm">Kapasitas:</span>
-                        <span class="text-white font-medium">{{ $room->capacity }} seats</span>
+                        <span class="text-white font-medium">{{ $room->capacity }} kursi</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-white/60 text-sm">Lokasi:</span>
                         <span class="text-white font-medium">{{ $room->location }}</span>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-white/60 text-sm">Tarif:</span>
-                        <span class="text-white font-medium">Rp {{ number_format($room->hourly_rate, 0, ',', '.') }}/hour</span>
-                    </div>
                 </div>
                 
                 @if($room->getAmenitiesList())
                 <div class="mb-4">
-                    <p class="text-white/60 text-sm mb-2">Amenities:</p>
+                    <p class="text-white/60 text-sm mb-2">Fasilitas:</p>
                     <div class="flex flex-wrap gap-1">
                         @foreach($room->getAmenitiesList() as $amenity)
                         <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded">
@@ -145,16 +141,16 @@
                 <div class="flex items-center justify-between pt-4 border-t border-white/20">
                     <div class="text-white/60 text-sm">
                         <i class="fas fa-calendar mr-1"></i>
-                        {{ $room->bookings_count ?? 0 }} bookings
+                        {{ $room->bookings_count ?? 0 }} pemesanan
                     </div>
                     <div class="flex space-x-2">
                         <button onclick="viewRoom({{ $room->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button onclick="editRoom({{ $room->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit Room">
+                        <button onclick="editRoom({{ $room->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit Ruang">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="deleteRoom({{ $room->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Hapus Room">
+                        <button onclick="deleteRoom({{ $room->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Hapus Ruang">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -163,8 +159,8 @@
             @empty
             <div class="col-span-full text-center py-12">
                 <i class="fas fa-door-open text-white/40 text-6xl mb-4"></i>
-                <h3 class="text-xl font-bold text-white mb-2">No Ruang Found</h3>
-                <p class="text-white/60">There are no meeting rooms in the system yet.</p>
+                <h3 class="text-xl font-bold text-white mb-2">Tidak Ada Ruang</h3>
+                <p class="text-white/60">Belum ada ruang meeting dalam sistem.</p>
             </div>
             @endforelse
         </div>
@@ -173,7 +169,7 @@
         <!-- Pagination -->
         <div class="flex justify-between items-center mt-8">
             <div class="text-white/80 text-sm">
-                Showing {{ $rooms->firstItem() }} to {{ $rooms->lastItem() }} of {{ $rooms->total() }} rooms
+                Menampilkan {{ $rooms->firstItem() }} sampai {{ $rooms->lastItem() }} dari {{ $rooms->total() }} ruang
             </div>
             <div class="flex space-x-2">
                 @if($rooms->previousPageUrl())
