@@ -43,9 +43,6 @@
                     <div class="flex-shrink-0">
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
-                    <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">{{ session('user_data.full_name') ?? 'Pengguna' }}</h1>
-                    </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{{ route('user.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
@@ -56,6 +53,11 @@
                             <i class="fas fa-user mr-1"></i>
                             {{ session('user_data.full_name') }}
                         </span>
+                        <a href="{{ route('logout') }}" 
+                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
+                            <i class="fas fa-sign-out-alt mr-2"></i>
+                            Keluar
+                        </a>
                     </div>
                 </div>
             </div>
