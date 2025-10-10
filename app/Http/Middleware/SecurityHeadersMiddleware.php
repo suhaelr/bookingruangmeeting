@@ -26,11 +26,25 @@ class SecurityHeadersMiddleware
         
         // Content Security Policy to prevent XSS and injection attacks
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-               "img-src 'self' data: https:; " .
-               "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-               "connect-src 'self'; " .
+               "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
+               "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com " .
+               "https://cdn.tailwindcss.com " .
+               "https://apis.google.com " .
+               "https://challenges.cloudflare.com; " .
+               "style-src 'self' 'unsafe-inline' " .
+               "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com " .
+               "https://cdn.tailwindcss.com; " .
+               "img-src 'self' data: https: " .
+               "https://developers.google.com; " .
+               "font-src 'self' " .
+               "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com " .
+               "https://cdn.tailwindcss.com; " .
+               "connect-src 'self' " .
+               "https://challenges.cloudflare.com " .
+               "https://oauth2.googleapis.com " .
+               "https://www.googleapis.com; " .
+               "frame-src 'self' " .
+               "https://challenges.cloudflare.com; " .
                "frame-ancestors 'none'; " .
                "base-uri 'self'; " .
                "form-action 'self';";

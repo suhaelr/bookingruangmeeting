@@ -23,7 +23,7 @@ Route::fallback(function () {
 });
 
 // Authentication Routes with rate limiting
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('login.csp');
 Route::post('/login', [AuthController::class, 'login'])->middleware(RateLimitMiddleware::class);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -41,9 +41,9 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('email.verify');
 Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
 
-// Google OAuth Routes with Cloudflare bypass
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware('cloudflare.bypass');
+// Google OAuth Routes with Cloudflare bypass and relaxed CSP
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google')->middleware('login.csp');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware(['cloudflare.bypass', 'login.csp']);
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
 // Debug route for session checking
