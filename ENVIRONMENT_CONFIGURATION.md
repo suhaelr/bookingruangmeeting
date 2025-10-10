@@ -13,8 +13,8 @@ GOOGLE_REDIRECT_URI=https://www.pusdatinbgn.web.id/auth/google/callback
 
 ### Cloudflare Turnstile Configuration
 ```env
-TURNSTILE_SITE_KEY=your_turnstile_site_key_here
-TURNSTILE_SECRET_KEY=your_turnstile_secret_key_here
+CLOUDFLARE_SITE_KEY=0x4AAAAAAB56ltjhELoBWYew
+CLOUDFLARE_SECRET_KEY=0x4AAAAAAB56ljRNTob9cGtXsqh8c-ZuxxE
 ```
 
 ## Production Setup

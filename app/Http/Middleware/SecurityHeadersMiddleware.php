@@ -30,8 +30,8 @@ class SecurityHeadersMiddleware
                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://fonts.googleapis.com; " .
                "img-src 'self' data: https: https://developers.google.com https://www.gstatic.com; " .
                "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; " .
-               "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; " .
-               "frame-src 'self' https://accounts.google.com; " .
+               "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://challenges.cloudflare.com; " .
+               "frame-src 'self' https://accounts.google.com https://challenges.cloudflare.com; " .
                "frame-ancestors 'none'; " .
                "base-uri 'self'; " .
                "form-action 'self';";

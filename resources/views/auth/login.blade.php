@@ -8,6 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+        // Alternative loading method for Turnstile
+        window.addEventListener('load', function() {
+            if (typeof window.turnstile === 'undefined') {
+                console.log('Loading Turnstile script manually...');
+                const script = document.createElement('script');
+                script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
+        });
+    </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
     <style>
@@ -164,16 +177,20 @@
                 </div>
 
                 <!-- Cloudflare Turnstile -->
-                @if(env('CLOUDFLARE_SITE_KEY'))
-                <div class="flex justify-center">
+                <div class="flex justify-center mb-4">
                     <div class="cf-turnstile" 
-                         data-sitekey="{{ env('CLOUDFLARE_SITE_KEY') }}" 
+                         data-sitekey="0x4AAAAAAB56ltjhELoBWYew" 
                          data-callback="onTurnstileSuccess"
                          data-error-callback="onTurnstileError"
-                         data-theme="light">
+                         data-theme="light"
+                         style="min-height: 65px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9;">
                     </div>
                 </div>
-                @endif
+                
+                <!-- Fallback message if Turnstile doesn't load -->
+                <div id="turnstile-fallback" style="display: none; text-align: center; padding: 10px; background: #f0f0f0; border-radius: 8px; margin-bottom: 10px;">
+                    <p style="color: #666; font-size: 14px;">Security verification loading...</p>
+                </div>
                 
                 <!-- Hidden input for Turnstile response -->
                 <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response" value="">
@@ -252,21 +269,35 @@
         function onTurnstileSuccess(token) {
             console.log('Turnstile success:', token);
             document.getElementById('cf-turnstile-response').value = token;
+            document.getElementById('turnstile-fallback').style.display = 'none';
         }
         
         function onTurnstileError(error) {
             console.error('Turnstile error:', error);
             document.getElementById('cf-turnstile-response').value = '';
+            document.getElementById('turnstile-fallback').style.display = 'block';
         }
         
-        // Initialize Turnstile only if site key is available
+        // Initialize Turnstile with real site key
         document.addEventListener('DOMContentLoaded', function() {
-            const siteKey = '{{ env("CLOUDFLARE_SITE_KEY") }}';
-            if (!siteKey) {
-                console.log('Cloudflare Turnstile site key not configured, skipping Turnstile');
-                // Set a dummy value to pass validation
-                document.getElementById('cf-turnstile-response').value = 'turnstile-disabled';
+            console.log('Cloudflare Turnstile initialized with site key: 0x4AAAAAAB56ltjhELoBWYew');
+            
+            // Check if Turnstile script loaded
+            if (typeof window.turnstile === 'undefined') {
+                console.error('Turnstile script not loaded');
+                document.getElementById('turnstile-fallback').style.display = 'block';
+            } else {
+                console.log('Turnstile script loaded successfully');
             }
+            
+            // Show fallback after 3 seconds if Turnstile doesn't load
+            setTimeout(function() {
+                const turnstileElement = document.querySelector('.cf-turnstile');
+                if (turnstileElement && turnstileElement.children.length === 0) {
+                    console.warn('Turnstile widget not rendered, showing fallback');
+                    document.getElementById('turnstile-fallback').style.display = 'block';
+                }
+            }, 3000);
         });
         
         // Password toggle function
@@ -285,3 +316,4 @@
     </script>
 </body>
 </html>
+

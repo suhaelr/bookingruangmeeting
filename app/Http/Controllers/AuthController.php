@@ -39,9 +39,9 @@ class AuthController extends Controller
 
         $credentials = $request->only(['username', 'password']);
 
-        // Verify Cloudflare Turnstile (only if site key is configured and response is provided)
+        // Verify Cloudflare Turnstile
         $turnstileResponse = $request->input('cf-turnstile-response');
-        if (env('CLOUDFLARE_SITE_KEY') && $turnstileResponse && $turnstileResponse !== 'turnstile-disabled') {
+        if ($turnstileResponse && $turnstileResponse !== 'turnstile-disabled') {
             if (!$this->verifyTurnstile($turnstileResponse, $request->ip())) {
                 return back()->withErrors(['cf-turnstile-response' => 'Verifikasi keamanan gagal. Silakan coba lagi.'])->withInput();
             }
@@ -881,7 +881,7 @@ class AuthController extends Controller
      */
     private function verifyTurnstile($token, $remoteIp = null)
     {
-        $secretKey = env('CLOUDFLARE_SECRET_KEY');
+        $secretKey = env('CLOUDFLARE_SECRET_KEY', '0x4AAAAAAB56ljRNTob9cGtXsqh8c-ZuxxE');
         
         if (!$secretKey) {
             \Log::error('Cloudflare secret key not configured');
