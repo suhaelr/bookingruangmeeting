@@ -1,3 +1,47 @@
+# PHP Handler Configuration
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php84 .php
+</IfModule>
+
+# Alternative LiteSpeed Handler (uncomment if needed)
+# <IfModule lsapi_module>
+#   SetHandler application/x-lsphp84
+# </IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Hide sensitive files
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "composer.json">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "composer.lock">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Disable directory browsing
+Options -Indexes
+
+# Prevent access to backup files
+<FilesMatch "\.(bak|backup|old|orig|save|swp|tmp)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
