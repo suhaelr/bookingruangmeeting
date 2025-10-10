@@ -113,11 +113,11 @@
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex items-center">
                     <div class="p-3 bg-purple-500 rounded-lg">
-                        <i class="fas fa-dollar-sign text-white text-xl"></i>
+                        <i class="fas fa-check-circle text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Revenue This Month</p>
-                        <p class="text-2xl font-bold text-white">Rp {{ number_format($stats['revenue_this_month'], 0, ',', '.') }}</p>
+                        <p class="text-white/80 text-sm">Confirmed Bookings</p>
+                        <p class="text-2xl font-bold text-white">{{ $stats['confirmed_bookings'] ?? 0 }}</p>
                     </div>
                 </div>
             </div>

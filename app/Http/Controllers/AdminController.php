@@ -20,10 +20,6 @@ class AdminController extends Controller
             'pending_bookings' => Booking::where('status', 'pending')->count(),
             'confirmed_bookings' => Booking::where('status', 'confirmed')->count(),
             'cancelled_bookings' => Booking::where('status', 'cancelled')->count(),
-            'revenue_this_month' => Booking::where('status', 'confirmed')
-                ->whereMonth('created_at', now()->month)
-                ->whereYear('created_at', now()->year)
-                ->sum('total_cost'),
             'active_rooms' => MeetingRoom::where('is_active', true)->count(),
         ];
 
@@ -48,10 +44,6 @@ class AdminController extends Controller
                 'bookings' => Booking::whereMonth('created_at', $date->month)
                     ->whereYear('created_at', $date->year)
                     ->count(),
-                'revenue' => Booking::where('status', 'confirmed')
-                    ->whereMonth('created_at', $date->month)
-                    ->whereYear('created_at', $date->year)
-                    ->sum('total_cost'),
             ];
         }
 
