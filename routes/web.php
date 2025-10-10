@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\RateLimitMiddleware;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -22,12 +23,12 @@ Route::fallback(function () {
 
 // Authentication Routes with rate limiting
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->middleware('rate.limit');
+Route::post('/login', [AuthController::class, 'login'])->middleware(RateLimitMiddleware::class);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Registration Routes with rate limiting
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->middleware('rate.limit');
+Route::post('/register', [AuthController::class, 'register'])->middleware(RateLimitMiddleware::class);
 
 // Password Reset Routes
 Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
