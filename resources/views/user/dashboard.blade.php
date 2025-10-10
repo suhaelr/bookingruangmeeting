@@ -226,7 +226,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-white font-medium">{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
+                            <p class="text-white font-medium">{{ $booking->start_time ? $booking->start_time->format('H:i') : 'Tidak tersedia' }} - {{ $booking->end_time ? $booking->end_time->format('H:i') : 'Tidak tersedia' }}</p>
                             <span class="px-2 py-1 rounded-full text-xs font-medium
                                 @if($booking->status === 'pending') bg-yellow-500 text-white
                                 @elseif($booking->status === 'confirmed') bg-green-500 text-white

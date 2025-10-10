@@ -168,7 +168,7 @@
                                 @else bg-gray-500 text-white @endif">
                                 {{ ucfirst($booking->status) }}
                             </span>
-                            <p class="text-white/60 text-sm mt-1">{{ $booking->created_at->format('M d, H:i') }}</p>
+                            <p class="text-white/60 text-sm mt-1">{{ $booking->created_at ? $booking->created_at->format('M d, H:i') : 'Tidak tersedia' }}</p>
                         </div>
                     </div>
                     @empty
@@ -196,7 +196,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-white font-medium">{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
+                            <p class="text-white font-medium">{{ $booking->start_time ? $booking->start_time->format('H:i') : 'Tidak tersedia' }} - {{ $booking->end_time ? $booking->end_time->format('H:i') : 'Tidak tersedia' }}</p>
                             <p class="text-white/60 text-sm">{{ $booking->user->full_name }}</p>
                         </div>
                     </div>

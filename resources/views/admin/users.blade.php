@@ -163,8 +163,12 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
-                                    <p class="text-white">{{ $user->created_at->format('M d, Y') }}</p>
-                                    <p class="text-white/60 text-sm">{{ $user->created_at->diffForHumans() }}</p>
+                                    @if($user->created_at)
+                                        <p class="text-white">{{ $user->created_at->format('M d, Y') }}</p>
+                                        <p class="text-white/60 text-sm">{{ $user->created_at->diffForHumans() }}</p>
+                                    @else
+                                        <span class="text-white/60">Tidak tersedia</span>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">
