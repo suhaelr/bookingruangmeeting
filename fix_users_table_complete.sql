@@ -36,3 +36,4 @@ ALTER TABLE users ADD COLUMN remember_token VARCHAR(100) NULL;
 
 -- 12. Verifikasi struktur tabel
 DESCRIBE users;
+

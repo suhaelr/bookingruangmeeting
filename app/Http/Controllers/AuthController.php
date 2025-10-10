@@ -34,7 +34,16 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'cf-turnstile-response' => 'required|string',
         ]);
+
+        // Verify Cloudflare Turnstile
+        $turnstileResponse = $this->verifyTurnstile($request->input('cf-turnstile-response'), $request->ip());
+        if (!$turnstileResponse) {
+            return back()->withErrors([
+                'cf-turnstile-response' => 'Verifikasi keamanan gagal. Silakan coba lagi.',
+            ])->withInput($request->only('username'));
+        }
 
         // Check hardcoded credentials first
         if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin') {
@@ -334,6 +343,69 @@ class AuthController extends Controller
             ]);
             return back()->with('error', 'Gagal mengirim ulang email verifikasi: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Verify Cloudflare Turnstile response
+     */
+    private function verifyTurnstile($token, $remoteIp = null)
+    {
+        $secretKey = '0x4AAAAAAB56ljRNTob9cGtXsqh8c-ZuxxE';
+        
+        $data = [
+            'secret' => $secretKey,
+            'response' => $token,
+        ];
+        
+        if ($remoteIp) {
+            $data['remoteip'] = $remoteIp;
+        }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$response) {
+            \Log::error('Turnstile verification failed', [
+                'http_code' => $httpCode,
+                'response' => $response,
+                'token' => $token
+            ]);
+            return false;
+        }
+
+        $result = json_decode($response, true);
+        
+        if (!$result || !isset($result['success'])) {
+            \Log::error('Invalid Turnstile response', [
+                'response' => $response,
+                'token' => $token
+            ]);
+            return false;
+        }
+
+        if (!$result['success']) {
+            \Log::warning('Turnstile verification failed', [
+                'result' => $result,
+                'token' => $token
+            ]);
+            return false;
+        }
+
+        \Log::info('Turnstile verification successful', [
+            'token' => $token,
+            'remote_ip' => $remoteIp
+        ]);
+
+        return true;
     }
 
 }
