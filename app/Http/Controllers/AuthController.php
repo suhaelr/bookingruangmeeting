@@ -427,8 +427,8 @@ class AuthController extends Controller
             'scope' => $scope,
             'response_type' => 'code',
             'state' => $state,
-            'access_type' => 'offline',
-            'prompt' => 'consent'
+            'access_type' => 'online',
+            'prompt' => 'select_account'
         ]);
         
         return redirect($authUrl);
@@ -439,6 +439,19 @@ class AuthController extends Controller
      */
     public function handleGoogleCallback(Request $request)
     {
+        // Check for OAuth errors
+        if ($request->has('error')) {
+            $error = $request->get('error');
+            $errorDescription = $request->get('error_description', 'Unknown error');
+            
+            \Log::error('Google OAuth error', [
+                'error' => $error,
+                'error_description' => $errorDescription
+            ]);
+            
+            return redirect()->route('login')->with('error', 'OAuth error: ' . $errorDescription);
+        }
+
         // Verify state parameter for CSRF protection
         $state = $request->get('state');
         if (!$state || $state !== session('google_oauth_state')) {
