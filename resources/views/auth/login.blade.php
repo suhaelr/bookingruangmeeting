@@ -10,6 +10,36 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
     <style>
+        /* Background gradient */
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            min-height: 100vh !important;
+        }
+        
+        /* Glass effect */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Override any conflicting styles */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        }
+        
+        /* Ensure text is white */
+        .text-white {
+            color: white !important;
+        }
+        
+        /* Ensure form styling is correct */
+        .glass-effect h1,
+        .glass-effect h2,
+        .glass-effect p,
+        .glass-effect label {
+            color: white !important;
+        }
         
         /* Google Sign-In button styling */
         .google-signin-button {
