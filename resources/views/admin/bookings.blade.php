@@ -469,16 +469,28 @@
                             headers: {
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                                 'Accept': 'application/json',
-                                'Content-Type': 'application/x-www-form-urlencoded'
+                                'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
-                        .then(response => {
+                        .then(async response => {
                             console.log('Response status:', response.status);
-                            if (response.ok) {
-                                return response.json();
-                            } else {
-                                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                            let data = null;
+                            try {
+                                data = await response.json();
+                            } catch (jsonError) {
+                                console.error('JSON parsing error:', jsonError);
                             }
+
+                            if (response.ok && data) {
+                                return data;
+                            }
+
+                            const errorMessage = data?.message
+                                ?? (data?.errors ? Object.values(data.errors).flat().join(', ') : null)
+                                ?? `HTTP ${response.status}: ${response.statusText}`;
+
+                            console.error('Error response:', errorMessage);
+                            throw new Error(errorMessage);
                         })
                         .then(data => {
                             console.log('Response data:', data);
