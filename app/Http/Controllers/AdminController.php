@@ -432,7 +432,7 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'required|boolean',
+                'is_active' => 'nullable|boolean',
                 'amenities' => 'nullable|string'
             ]);
 
@@ -440,12 +440,16 @@ class AdminController extends Controller
                 array_map('trim', explode(',', $request->amenities)) : [];
             $amenities = array_values(array_filter($amenities, fn($item) => $item !== ''));
 
+            $isActive = $request->has('is_active')
+                ? $request->boolean('is_active')
+                : $room->is_active;
+
             $room->update([
                 'name' => $request->name,
                 'description' => $request->description,
                 'capacity' => $request->capacity,
                 'location' => $request->location,
-                'is_active' => $request->boolean('is_active'),
+                'is_active' => $isActive,
                 'amenities' => $amenities
             ]);
 
