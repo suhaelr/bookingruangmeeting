@@ -26,42 +26,11 @@ class SecurityHeadersMiddleware
         
         // Content Security Policy to prevent XSS and injection attacks
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
-               "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com " .
-               "https://cdn.tailwindcss.com " .
-               "https://unpkg.com " .
-               "https://cdn.skypack.dev " .
-               "https://esm.sh " .
-               "https://apis.google.com " .
-               "https://challenges.cloudflare.com " .
-               "https://www.google.com " .
-               "https://accounts.google.com " .
-               "https://www.gstatic.com; " .
-               "style-src 'self' 'unsafe-inline' " .
-               "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com " .
-               "https://cdn.tailwindcss.com " .
-               "https://unpkg.com " .
-               "https://fonts.googleapis.com " .
-               "https://www.google.com; " .
-               "img-src 'self' data: https: " .
-               "https://developers.google.com " .
-               "https://www.google.com " .
-               "https://www.gstatic.com " .
-               "https://challenges.cloudflare.com; " .
-               "font-src 'self' " .
-               "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com " .
-               "https://fonts.gstatic.com " .
-               "https://fonts.googleapis.com " .
-               "https://unpkg.com; " .
-               "connect-src 'self' " .
-               "https://challenges.cloudflare.com " .
-               "https://oauth2.googleapis.com " .
-               "https://www.googleapis.com " .
-               "https://accounts.google.com " .
-               "https://www.google.com; " .
-               "frame-src 'self' " .
-               "https://challenges.cloudflare.com " .
-               "https://accounts.google.com; " .
+               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
+               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
+               "img-src 'self' data: https:; " .
+               "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
+               "connect-src 'self'; " .
                "frame-ancestors 'none'; " .
                "base-uri 'self'; " .
                "form-action 'self';";

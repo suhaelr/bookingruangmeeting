@@ -18,8 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
             'input.validation' => \App\Http\Middleware\InputValidationMiddleware::class,
             'cloudflare.bypass' => \App\Http\Middleware\CloudflareBypass::class,
-            'login.csp' => \App\Http\Middleware\LoginCSPMiddleware::class,
-            'dev.csp' => \App\Http\Middleware\DevelopmentCSPMiddleware::class,
         ]);
         
         // Apply security middleware globally

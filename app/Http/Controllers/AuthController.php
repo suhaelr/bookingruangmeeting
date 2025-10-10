@@ -34,16 +34,7 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
-            'cf-turnstile-response' => 'required|string',
         ]);
-
-        // Verify Cloudflare Turnstile
-        $turnstileResponse = $this->verifyTurnstile($request->input('cf-turnstile-response'), $request->ip());
-        if (!$turnstileResponse) {
-            return back()->withErrors([
-                'cf-turnstile-response' => 'Verifikasi keamanan gagal. Silakan coba lagi.',
-            ])->withInput($request->only('username'));
-        }
 
         // Check hardcoded credentials first
         if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin') {

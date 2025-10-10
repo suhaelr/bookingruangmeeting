@@ -5,16 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk - Sistem Pemesanan Ruang Meeting</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
     <style>
-        /* Custom styling for Cloudflare Turnstile */
-        .cf-turnstile {
-            border-radius: 8px !important;
-        }
         
         /* Google Sign-In button styling */
         .google-signin-button {
@@ -90,7 +85,6 @@
 
             <form method="POST" action="{{ route('login') }}" class="space-y-6">
                 @csrf
-                <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response">
                 
                 <!-- Username/Email Field -->
                 <div>
@@ -133,23 +127,11 @@
                     </div>
                 </div>
 
-                <!-- Cloudflare Turnstile -->
-                <div class="flex justify-center">
-                    <div class="cf-turnstile" 
-                         data-sitekey="0x4AAAAAAB56ltjhELoBWYew"
-                         data-theme="light"
-                         data-size="normal"
-                         data-callback="onTurnstileSuccess"
-                         data-error-callback="onTurnstileError">
-                    </div>
-                </div>
-
                 <!-- Login Button -->
                 <button 
                     type="submit" 
                     id="loginButton"
-                    class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled
+                    class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     Masuk
@@ -215,19 +197,6 @@
     @include('components.whatsapp-float')
 
     <script>
-        // Turnstile callback functions
-        function onTurnstileSuccess(token) {
-            console.log('Turnstile verification successful');
-            document.getElementById('cf-turnstile-response').value = token;
-            document.getElementById('loginButton').disabled = false;
-        }
-
-        function onTurnstileError(error) {
-            console.error('Turnstile verification failed:', error);
-            document.getElementById('cf-turnstile-response').value = '';
-            document.getElementById('loginButton').disabled = true;
-        }
-
         // Password toggle function
         function togglePassword() {
             const passwordInput = document.getElementById('password');
