@@ -126,8 +126,12 @@
                             <span id="notification-badge" class="mobile-notification-badge hidden">0</span>
                         </button>
                     @endif
-                    
-                    <a href="{{ route('logout') }}" class="mobile-nav-item text-red-400 hover:text-red-300">
+                </div>
+                
+                <!-- Logout Button - Separate Section -->
+                <div class="mobile-nav-divider"></div>
+                <div class="mobile-nav-actions">
+                    <a href="{{ route('logout') }}" class="mobile-nav-item text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Keluar</span>
                     </a>
