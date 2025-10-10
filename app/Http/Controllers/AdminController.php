@@ -157,19 +157,28 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'required|boolean',
+                'is_active' => 'required|in:0,1,true,false',
                 'amenities' => 'nullable|string'
             ]);
 
             $amenities = $request->amenities ? 
                 array_map('trim', explode(',', $request->amenities)) : [];
 
+            // Handle is_active conversion from string to boolean
+            $isActiveValue = $request->input('is_active');
+            $isActive = false;
+            if ($isActiveValue === '1' || $isActiveValue === 'true' || $isActiveValue === true) {
+                $isActive = true;
+            } elseif ($isActiveValue === '0' || $isActiveValue === 'false' || $isActiveValue === false) {
+                $isActive = false;
+            }
+
             $room = MeetingRoom::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'capacity' => $request->capacity,
                 'location' => $request->location,
-                'is_active' => $request->boolean('is_active'),
+                'is_active' => $isActive,
                 'amenities' => $amenities
             ]);
 
@@ -432,7 +441,7 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'nullable|boolean',
+                'is_active' => 'nullable|in:0,1,true,false',
                 'amenities' => 'nullable|string'
             ]);
 
@@ -440,9 +449,16 @@ class AdminController extends Controller
                 array_map('trim', explode(',', $request->amenities)) : [];
             $amenities = array_values(array_filter($amenities, fn($item) => $item !== ''));
 
-            $isActive = $request->has('is_active')
-                ? $request->boolean('is_active')
-                : $room->is_active;
+            // Handle is_active conversion from string to boolean
+            $isActive = $room->is_active; // Default to current value
+            if ($request->has('is_active')) {
+                $isActiveValue = $request->input('is_active');
+                if ($isActiveValue === '1' || $isActiveValue === 'true' || $isActiveValue === true) {
+                    $isActive = true;
+                } elseif ($isActiveValue === '0' || $isActiveValue === 'false' || $isActiveValue === false) {
+                    $isActive = false;
+                }
+            }
 
             $room->update([
                 'name' => $request->name,

@@ -441,7 +441,9 @@
 
                 const isActiveField = this.querySelector('select[name="is_active"]');
                 if (isActiveField) {
-                    formData.set('is_active', isActiveField.value);
+                    // Convert string value to proper format
+                    const isActiveValue = isActiveField.value === '1' ? '1' : '0';
+                    formData.set('is_active', isActiveValue);
                 }
                 
                 fetch(`/admin/rooms/${roomId}`, {
