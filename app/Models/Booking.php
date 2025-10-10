@@ -22,6 +22,8 @@ class Booking extends Model
         'attendees',
         'attachments',
         'special_requirements',
+        'unit_kerja',
+        'dokumen_perizinan',
         'total_cost',
         'cancelled_at',
         'cancellation_reason',

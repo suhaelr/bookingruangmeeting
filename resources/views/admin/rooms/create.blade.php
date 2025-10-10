@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Room - Admin Panel</title>
+    <title>Tambah Room - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -60,23 +60,23 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'Admin' }}!</h1>
-                        <p class="text-white/80 text-sm">Admin Panel</p>
+                        <h1 class="text-xl font-bold text-white">Admin Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Administrator' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ route('admin.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
                         <a href="{{ route('admin.users') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-users mr-1"></i>Users
+                            <i class="fas fa-users mr-1"></i>Pengguna
                         </a>
                         <a href="{{ route('admin.rooms') }}" class="text-white hover:text-white/80 transition-colors">
-                            <i class="fas fa-door-open mr-1"></i>Rooms
+                            <i class="fas fa-door-open mr-1"></i>Ruang
                         </a>
                         <a href="{{ route('admin.bookings') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-calendar-check mr-1"></i>Bookings
+                            <i class="fas fa-calendar-check mr-1"></i>Pemesanan
                         </a>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -87,7 +87,7 @@
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
+                            Keluar
                         </a>
                     </div>
                 </div>
@@ -101,11 +101,11 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Add New Meeting Room</h2>
-                    <p class="text-white/80">Create a new meeting room</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Baru Meeting Room</h2>
+                    <p class="text-white/80">Buat a new meeting room</p>
                 </div>
                 <a href="{{ route('admin.rooms') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Rooms
+                    <i class="fas fa-arrow-left mr-2"></i>Kembali to Ruang
                 </a>
             </div>
         </div>
@@ -126,42 +126,42 @@
                 @endif
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Room Name -->
+                    <!-- Room Nama -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-white mb-2">Room Name *</label>
+                        <label for="name" class="block text-sm font-medium text-white mb-2">Room Nama *</label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Enter room name" required>
                     </div>
 
-                    <!-- Capacity -->
+                    <!-- Kapasitas -->
                     <div>
-                        <label for="capacity" class="block text-sm font-medium text-white mb-2">Capacity *</label>
+                        <label for="capacity" class="block text-sm font-medium text-white mb-2">Kapasitas *</label>
                         <input type="number" id="capacity" name="capacity" value="{{ old('capacity') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Enter capacity" min="1" required>
                     </div>
 
-                    <!-- Location -->
+                    <!-- Lokasi -->
                     <div>
-                        <label for="location" class="block text-sm font-medium text-white mb-2">Location *</label>
+                        <label for="location" class="block text-sm font-medium text-white mb-2">Lokasi *</label>
                         <input type="text" id="location" name="location" value="{{ old('location') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Enter location" required>
                     </div>
 
-                    <!-- Hourly Rate -->
+                    <!-- Hourly Tarif -->
                     <div>
-                        <label for="hourly_rate" class="block text-sm font-medium text-white mb-2">Hourly Rate *</label>
+                        <label for="hourly_rate" class="block text-sm font-medium text-white mb-2">Hourly Tarif *</label>
                         <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Enter hourly rate" min="0" step="0.01" required>
                     </div>
                 </div>
 
-                <!-- Description -->
+                <!-- Deskripsi -->
                 <div class="mt-6">
-                    <label for="description" class="block text-sm font-medium text-white mb-2">Description</label>
+                    <label for="description" class="block text-sm font-medium text-white mb-2">Deskripsi</label>
                     <textarea id="description" name="description" rows="3" 
                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                               placeholder="Enter room description">{{ old('description') }}</textarea>
@@ -181,20 +181,20 @@
                     <label for="is_active" class="block text-sm font-medium text-white mb-2">Status *</label>
                     <select id="is_active" name="is_active" 
                             class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                        <option value="">Select status</option>
-                        <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Active</option>
+                        <option value="">Pilih status</option>
+                        <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Aktif</option>
                         <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
 
-                <!-- Submit Button -->
+                <!-- Kirim Button -->
                 <div class="flex justify-end space-x-4 mt-8">
                     <a href="{{ route('admin.rooms') }}" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300">
-                        Cancel
+                        Batal
                     </a>
                     <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-save mr-2"></i>
-                        Create Room
+                        Buat Room
                     </button>
                 </div>
             </form>

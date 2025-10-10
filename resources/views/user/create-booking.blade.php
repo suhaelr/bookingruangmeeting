@@ -69,13 +69,13 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'User' }}!</h1>
-                        <p class="text-white/80 text-sm">Pesan Ruang Meeting</p>
+                        <h1 class="text-xl font-bold text-white">User Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Pengguna' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{{ route('user.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-left mr-1"></i>Back to Dashboard
+                        <i class="fas fa-arrow-left mr-1"></i>Kembali ke Beranda
                     </a>
                     <div class="flex items-center space-x-2">
                         <span class="text-white/80 text-sm">
@@ -85,7 +85,7 @@
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
+                            Keluar
                         </a>
                     </div>
                 </div>
@@ -117,7 +117,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('user.bookings.store') }}" class="space-y-6">
+            <form method="POST" action="{{ route('user.bookings.store') }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 
                 <!-- Meeting Room Selection -->
@@ -132,11 +132,10 @@
                             @foreach($rooms as $room)
                             <option value="{{ $room->id }}" 
                                     data-capacity="{{ $room->capacity }}"
-                                    data-rate="{{ $room->hourly_rate }}"
                                     data-amenities="{{ json_encode($room->getAmenitiesList()) }}"
                                     class="bg-gray-800 text-white"
                                     {{ old('meeting_room_id') == $room->id ? 'selected' : '' }}>
-                                {{ $room->name }} - {{ $room->location }} ({{ $room->capacity }} seats) - Rp {{ number_format($room->hourly_rate, 0, ',', '.') }}/hour
+                                {{ $room->name }} - {{ $room->location }} ({{ $room->capacity }} kursi)
                             </option>
                             @endforeach
                         </select>
@@ -149,65 +148,61 @@
                 <!-- Room Details Display -->
                 <div id="room-details" class="hidden bg-white/10 rounded-lg p-4">
                     <h4 class="text-white font-medium mb-2">Room Details</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
-                            <span class="text-white/60">Capacity:</span>
+                            <span class="text-white/60">Kapasitas:</span>
                             <span id="room-capacity" class="text-white ml-2"></span>
                         </div>
                         <div>
-                            <span class="text-white/60">Rate:</span>
-                            <span id="room-rate" class="text-white ml-2"></span>
-                        </div>
-                        <div>
-                            <span class="text-white/60">Amenities:</span>
+                            <span class="text-white/60">Fasilitas:</span>
                             <span id="room-amenities" class="text-white ml-2"></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Meeting Title -->
+                <!-- Meeting Judul -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-heading mr-2"></i>Meeting Title *
+                        <i class="fas fa-heading mr-2"></i>Meeting Judul *
                     </label>
                     <input type="text" id="title" name="title" value="{{ old('title') }}" required
                            class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
                            placeholder="Enter meeting title">
                 </div>
 
-                <!-- Description -->
+                <!-- Deskripsi -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-align-left mr-2"></i>Description
+                        <i class="fas fa-align-left mr-2"></i>Deskripsi
                     </label>
                     <textarea id="description" name="description" rows="3"
                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
                               placeholder="Enter meeting description">{{ old('description') }}</textarea>
                 </div>
 
-                <!-- Date and Time -->
+                <!-- Tanggal and Waktu -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="start_time" class="block text-sm font-medium text-white mb-2">
-                            <i class="fas fa-clock mr-2"></i>Start Time *
+                            <i class="fas fa-clock mr-2"></i>Mulai Waktu *
                         </label>
                         <input type="datetime-local" id="start_time" name="start_time" value="{{ old('start_time') }}" required
                                class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
                     </div>
                     <div>
                         <label for="end_time" class="block text-sm font-medium text-white mb-2">
-                            <i class="fas fa-clock mr-2"></i>End Time *
+                            <i class="fas fa-clock mr-2"></i>Selesai Waktu *
                         </label>
                         <input type="datetime-local" id="end_time" name="end_time" value="{{ old('end_time') }}" required
                                class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
                     </div>
                 </div>
 
-                <!-- Attendees -->
+                <!-- Peserta -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="attendees_count" class="block text-sm font-medium text-white mb-2">
-                            <i class="fas fa-users mr-2"></i>Number of Attendees *
+                            <i class="fas fa-users mr-2"></i>Number of Peserta *
                         </label>
                         <input type="number" id="attendees_count" name="attendees_count" value="{{ old('attendees_count', 1) }}" min="1" required
                                class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
@@ -226,35 +221,39 @@
                 <!-- Special Requirements -->
                 <div>
                     <label for="special_requirements" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-clipboard-list mr-2"></i>Special Requirements
+                        <i class="fas fa-clipboard-list mr-2"></i>Kebutuhan Khusus
                     </label>
                     <textarea id="special_requirements" name="special_requirements" rows="3"
                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                              placeholder="Any special requirements for the meeting">{{ old('special_requirements') }}</textarea>
+                              placeholder="Kebutuhan khusus untuk meeting">{{ old('special_requirements') }}</textarea>
                 </div>
 
-                <!-- Cost Calculation -->
-                <div id="cost-calculation" class="hidden bg-white/10 rounded-lg p-4">
-                    <h4 class="text-white font-medium mb-2">Cost Calculation</h4>
-                    <div class="flex justify-between items-center">
-                        <span class="text-white/60">Duration:</span>
-                        <span id="duration" class="text-white"></span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-white/60">Rate per hour:</span>
-                        <span id="rate-per-hour" class="text-white"></span>
-                    </div>
-                    <div class="flex justify-between items-center border-t border-white/20 pt-2 mt-2">
-                        <span class="text-white font-medium">Total Cost:</span>
-                        <span id="total-cost" class="text-white font-bold text-lg"></span>
-                    </div>
+                <!-- Unit Kerja -->
+                <div>
+                    <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-building mr-2"></i>Unit Kerja *
+                    </label>
+                    <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}" required
+                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                           placeholder="Masukkan unit kerja Anda">
                 </div>
 
-                <!-- Submit Button -->
+                <!-- Dokumen Perizinan -->
+                <div>
+                    <label for="dokumen_perizinan" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-file-pdf mr-2"></i>Dokumen Perizinan (PDF, Max 2MB) *
+                    </label>
+                    <input type="file" id="dokumen_perizinan" name="dokumen_perizinan" accept=".pdf" required
+                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
+                    <p class="text-white/60 text-xs mt-1">Upload dokumen perizinan dalam format PDF (maksimal 2MB)</p>
+                </div>
+
+
+                <!-- Kirim Button -->
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('user.dashboard') }}" 
                        class="px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors duration-300">
-                        Cancel
+                        Batal
                     </a>
                     <button type="submit" 
                             class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
@@ -278,11 +277,9 @@
                     
                     if (this.value) {
                         const capacity = selectedOption.dataset.capacity;
-                        const rate = selectedOption.dataset.rate;
                         const amenities = JSON.parse(selectedOption.dataset.amenities);
                         
-                        document.getElementById('room-capacity').textContent = capacity + ' seats';
-                        document.getElementById('room-rate').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(rate) + '/hour';
+                        document.getElementById('room-capacity').textContent = capacity + ' kursi';
                         document.getElementById('room-amenities').textContent = amenities.join(', ');
                         
                         roomDetails.classList.remove('hidden');
@@ -293,57 +290,18 @@
             }
         });
 
-            // Time change handler for cost calculation
-            function calculateCost() {
-                const startTime = document.getElementById('start_time').value;
-                const endTime = document.getElementById('end_time').value;
-                const selectedRoom = document.getElementById('meeting_room_id');
-                const costCalculation = document.getElementById('cost-calculation');
-                
-                if (startTime && endTime && selectedRoom.value) {
-                    const start = new Date(startTime);
-                    const end = new Date(endTime);
-                    const duration = (end - start) / (1000 * 60 * 60); // hours
-                    
-                    if (duration > 0) {
-                        const selectedOption = selectedRoom.options[selectedRoom.selectedIndex];
-                        const rate = parseFloat(selectedOption.dataset.rate);
-                        const totalCost = duration * rate;
-                        
-                        document.getElementById('duration').textContent = duration.toFixed(1) + ' hours';
-                        document.getElementById('rate-per-hour').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(rate);
-                        document.getElementById('total-cost').textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalCost);
-                        
-                        costCalculation.classList.remove('hidden');
-                    } else {
-                        costCalculation.classList.add('hidden');
-                    }
-                } else {
-                    costCalculation.classList.add('hidden');
-                }
-            }
 
             // Set up event listeners
-            const startTimeInput = document.getElementById('start_time');
-            const endTimeInput = document.getElementById('end_time');
+            const startWaktuInput = document.getElementById('start_time');
+            const endWaktuInput = document.getElementById('end_time');
             const attendeesInput = document.getElementById('attendees');
 
-            if (startTimeInput) {
-                startTimeInput.addEventListener('change', calculateCost);
-                startTimeInput.addEventListener('change', function() {
-                    const startTime = new Date(this.value);
-                    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000); // Add 1 hour
-                    document.getElementById('end_time').value = endTime.toISOString().slice(0, 16);
-                    calculateCost();
+            if (startWaktuInput) {
+                startWaktuInput.addEventListener('change', function() {
+                    const startWaktu = new Date(this.value);
+                    const endWaktu = new Date(startWaktu.getTime() + 60 * 60 * 1000); // Add 1 hour
+                    document.getElementById('end_time').value = endWaktu.toISOString().slice(0, 16);
                 });
-            }
-
-            if (endTimeInput) {
-                endTimeInput.addEventListener('change', calculateCost);
-            }
-
-            if (meetingRoomSelect) {
-                meetingRoomSelect.addEventListener('change', calculateCost);
             }
 
             if (attendeesInput) {
@@ -354,17 +312,17 @@
             }
 
             // Set minimum date to today
-            const today = new Date().toISOString().slice(0, 16);
-            if (startTimeInput) startTimeInput.min = today;
-            if (endTimeInput) endTimeInput.min = today;
+            const today = new Tanggal().toISOString().slice(0, 16);
+            if (startWaktuInput) startWaktuInput.min = today;
+            if (endWaktuInput) endWaktuInput.min = today;
 
             // Real-time availability check
             function checkAvailability() {
                 const roomId = document.getElementById('meeting_room_id').value;
-                const startTime = document.getElementById('start_time').value;
-                const endTime = document.getElementById('end_time').value;
+                const startWaktu = document.getElementById('start_time').value;
+                const endWaktu = document.getElementById('end_time').value;
                 
-                if (roomId && startTime && endTime) {
+                if (roomId && startWaktu && endWaktu) {
                     fetch('{{ route("user.check-availability") }}', {
                         method: 'POST',
                         headers: {
@@ -373,8 +331,8 @@
                         },
                         body: JSON.stringify({
                             room_id: roomId,
-                            start_time: startTime,
-                            end_time: endTime
+                            start_time: startWaktu,
+                            end_time: endWaktu
                         })
                     })
                     .then(response => response.json())
@@ -383,7 +341,7 @@
                         if (!availabilityDiv) {
                             const newDiv = document.createElement('div');
                             newDiv.id = 'availability-status';
-                            newDiv.className = 'mt-4';
+                            newDiv.classNama = 'mt-4';
                             document.querySelector('form').insertBefore(newDiv, document.querySelector('.flex.justify-end'));
                         }
                         
@@ -420,11 +378,11 @@
             if (meetingRoomSelect) {
                 meetingRoomSelect.addEventListener('change', checkAvailability);
             }
-            if (startTimeInput) {
-                startTimeInput.addEventListener('change', checkAvailability);
+            if (startWaktuInput) {
+                startWaktuInput.addEventListener('change', checkAvailability);
             }
-            if (endTimeInput) {
-                endTimeInput.addEventListener('change', checkAvailability);
+            if (endWaktuInput) {
+                endWaktuInput.addEventListener('change', checkAvailability);
             }
 
             // Ensure form submission works

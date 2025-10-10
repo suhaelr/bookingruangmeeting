@@ -24,12 +24,12 @@
                 <div class="flex items-center space-x-4">
                     <span class="text-white/80 text-sm">
                         <i class="fas fa-user mr-1"></i>
-                        Welcome, {{ session('admin_username') }}
+                        Selamat Datang, {{ session('admin_username') }}
                     </span>
                     <a href="{{ route('logout') }}" 
                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-sign-out-alt mr-2"></i>
-                        Logout
+                        Keluar
                     </a>
                 </div>
             </div>
@@ -38,7 +38,7 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Card -->
+        <!-- Selamat Datang Card -->
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex items-center justify-between">
                 <div>
@@ -80,13 +80,13 @@
                 </div>
             </div>
 
-            <!-- Search and Filter -->
+            <!-- Cari and Filter -->
             <div class="mb-6 flex flex-col sm:flex-row gap-4">
                 <div class="flex-1">
                     <div class="relative">
                         <input 
                             type="text" 
-                            placeholder="Search data..." 
+                            placeholder="Cari data..." 
                             class="w-full px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
                         >
                         <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60"></i>
@@ -105,11 +105,11 @@
                     <thead>
                         <tr class="border-b border-white/20">
                             <th class="text-left py-3 px-4 font-semibold">ID</th>
-                            <th class="text-left py-3 px-4 font-semibold">Name</th>
+                            <th class="text-left py-3 px-4 font-semibold">Nama</th>
                             <th class="text-left py-3 px-4 font-semibold">Email</th>
                             <th class="text-left py-3 px-4 font-semibold">Status</th>
                             <th class="text-left py-3 px-4 font-semibold">Created</th>
-                            <th class="text-left py-3 px-4 font-semibold">Actions</th>
+                            <th class="text-left py-3 px-4 font-semibold">Aksis</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -120,13 +120,13 @@
                             <td class="py-3 px-4">{{ $item['email'] }}</td>
                             <td class="py-3 px-4">
                                 @php
-                                    $statusColors = [
+                                    $statusWarnas = [
                                         'Active' => 'bg-green-500',
                                         'Pending' => 'bg-yellow-500',
                                         'Inactive' => 'bg-red-500',
                                         'New' => 'bg-blue-500'
                                     ];
-                                    $color = $statusColors[$item['status']] ?? 'bg-gray-500';
+                                    $color = $statusWarnas[$item['status']] ?? 'bg-gray-500';
                                 @endphp
                                 <span class="{{ $color }} text-white px-2 py-1 rounded-full text-xs">{{ $item['status'] }}</span>
                             </td>

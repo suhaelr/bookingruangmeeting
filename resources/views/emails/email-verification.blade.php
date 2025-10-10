@@ -90,7 +90,7 @@
     
     <div class="footer">
         <p>Email ini dikirim secara otomatis dari Meeting Room Booking System</p>
-        <p>© {{ date('Y') }} Jadixpert.com - All rights reserved</p>
+        <p>© {{ date('Y') }} Jadixpert.com - Semua hak dilindungi</p>
     </div>
 </body>
 </html>

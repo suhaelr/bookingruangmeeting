@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Manage Bookings - Meeting Room Booking</title>
+    <title>Kelola Bookings - Meeting Room Booking</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -44,20 +44,20 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'Admin' }}!</h1>
-                        <p class="text-white/80 text-sm">Admin Panel</p>
+                        <h1 class="text-xl font-bold text-white">Admin Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Administrator' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ route('admin.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
                         <a href="{{ route('admin.users') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-users mr-1"></i>Users
+                            <i class="fas fa-users mr-1"></i>Pengguna
                         </a>
                         <a href="{{ route('admin.rooms') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-door-open mr-1"></i>Rooms
+                            <i class="fas fa-door-open mr-1"></i>Ruang
                         </a>
                         <a href="{{ route('admin.bookings') }}" class="text-white hover:text-white/80 transition-colors">
                             <i class="fas fa-calendar-check mr-1"></i>Bookings
@@ -71,7 +71,7 @@
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
+                            Keluar
                         </a>
                     </div>
                 </div>
@@ -85,15 +85,15 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Manage Bookings</h2>
+                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Bookings</h2>
                     <p class="text-white/80">Monitor and manage all meeting room bookings</p>
                 </div>
                 <div class="flex space-x-4">
                     <select id="status-filter" class="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
                         <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="pending">Menunggu</option>
+                        <option value="confirmed">Dikonfirmasi</option>
+                        <option value="cancelled">Batalled</option>
                         <option value="completed">Completed</option>
                     </select>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
@@ -111,13 +111,13 @@
                         <thead>
                             <tr class="border-b border-white/20">
                                 <th class="text-left py-3 px-4 font-semibold">ID</th>
-                                <th class="text-left py-3 px-4 font-semibold">Title</th>
+                                <th class="text-left py-3 px-4 font-semibold">Judul</th>
                                 <th class="text-left py-3 px-4 font-semibold">User</th>
                                 <th class="text-left py-3 px-4 font-semibold">Room</th>
-                                <th class="text-left py-3 px-4 font-semibold">Date & Time</th>
+                                <th class="text-left py-3 px-4 font-semibold">Tanggal & Waktu</th>
                                 <th class="text-left py-3 px-4 font-semibold">Status</th>
-                                <th class="text-left py-3 px-4 font-semibold">Cost</th>
-                                <th class="text-left py-3 px-4 font-semibold">Actions</th>
+                                <th class="text-left py-3 px-4 font-semibold">Biaya</th>
+                                <th class="text-left py-3 px-4 font-semibold">Aksis</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -158,10 +158,10 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">
-                                        <button onclick="viewBooking({{ $booking->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="View Details">
+                                        <button onclick="viewBooking({{ $booking->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Update Status">
+                                        <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Perbarui Status">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
@@ -230,20 +230,20 @@
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800">Update Booking Status</h3>
+                    <h3 class="text-xl font-bold text-gray-800">Perbarui Booking Status</h3>
                     <button onclick="closeModal('bookingStatusModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="statusUpdateForm">
+                <form id="statusPerbaruiForm">
                     @csrf
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                         <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             <option value="">Select status</option>
-                            <option value="pending">Pending</option>
-                            <option value="confirmed">Confirmed</option>
-                            <option value="cancelled">Cancelled</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="confirmed">Dikonfirmasi</option>
+                            <option value="cancelled">Batalled</option>
                             <option value="completed">Completed</option>
                         </select>
                     </div>
@@ -253,10 +253,10 @@
                     </div>
                     <div class="flex justify-end space-x-4">
                         <button type="button" onclick="closeModal('bookingStatusModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                            Cancel
+                            Batal
                         </button>
                         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                            Update Status
+                            Perbarui Status
                         </button>
                     </div>
                 </form>
@@ -264,7 +264,7 @@
         </div>
     </div>
 
-    <!-- Success Message -->
+    <!-- Berhasil Message -->
     @if (session('success'))
         <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
             <div class="flex items-center">
@@ -315,19 +315,19 @@
                                 <p class="text-gray-600 text-sm">${booking.meeting_room.location}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                                <p class="text-gray-900">${new Date(booking.start_time).toLocaleString()}</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mulai Waktu</label>
+                                <p class="text-gray-900">${new Tanggal(booking.start_time).toLocaleString()}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                                <p class="text-gray-900">${new Date(booking.end_time).toLocaleString()}</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Selesai Waktu</label>
+                                <p class="text-gray-900">${new Tanggal(booking.end_time).toLocaleString()}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
                                 <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} hours</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Cost</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Biaya</label>
                                 <p class="text-gray-900 font-semibold">Rp ${new Intl.NumberFormat('id-ID').format(booking.total_cost)}</p>
                             </div>
                         </div>
@@ -347,7 +347,7 @@
                         ` : ''}
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Attendees</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Peserta</label>
                             <p class="text-gray-900">${booking.attendees_count} people</p>
                             ${booking.attendees && booking.attendees.length > 0 ? `
                                 <div class="mt-2">
@@ -366,7 +366,7 @@
             const booking = @json($bookings->items()).find(b => b.id == bookingId);
             
             if (booking) {
-                const statusSelect = document.querySelector('#statusUpdateForm select[name="status"]');
+                const statusSelect = document.querySelector('#statusPerbaruiForm select[name="status"]');
                 statusSelect.value = booking.status;
                 openModal('bookingStatusModal');
             }
@@ -381,9 +381,9 @@
             return colors[status] || 'bg-gray-100 text-gray-800';
         }
 
-        function calculateDuration(startTime, endTime) {
-            const start = new Date(startTime);
-            const end = new Date(endTime);
+        function calculateDuration(startWaktu, endWaktu) {
+            const start = new Tanggal(startWaktu);
+            const end = new Tanggal(endWaktu);
             const diffMs = end - start;
             const diffHours = diffMs / (1000 * 60 * 60);
             return diffHours.toFixed(1);
@@ -413,7 +413,7 @@
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
                     const bookings = @json($bookings->items());
-                    let csv = 'ID,Title,User,Email,Room,Start Time,End Time,Status,Cost\n';
+                    let csv = 'ID,Judul,User,Email,Room,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
                     
                     bookings.forEach(booking => {
                         csv += `"${booking.id}","${booking.title}","${booking.user.full_name}","${booking.user.email}","${booking.meeting_room.name}","${booking.start_time}","${booking.end_time}","${booking.status}","${booking.total_cost}"\n`;
@@ -430,7 +430,7 @@
             }
 
             // Status update form
-            const statusForm = document.getElementById('statusUpdateForm');
+            const statusForm = document.getElementById('statusPerbaruiForm');
             if (statusForm) {
                 statusForm.addEventListener('submit', function(e) {
                     e.preventDefault();
@@ -486,12 +486,12 @@
         });
 
         // Auto-hide success message
-        setTimeout(() => {
+        setWaktuout(() => {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
                 successMessage.style.transition = 'opacity 0.5s';
                 successMessage.style.opacity = '0';
-                setTimeout(() => successMessage.remove(), 500);
+                setWaktuout(() => successMessage.remove(), 500);
             }
         }, 3000);
     </script>

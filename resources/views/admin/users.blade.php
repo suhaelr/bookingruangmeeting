@@ -43,14 +43,14 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'Admin' }}!</h1>
-                        <p class="text-white/80 text-sm">Admin Panel</p>
+                        <h1 class="text-xl font-bold text-white">Admin Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Administrator' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ route('admin.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
                         <a href="{{ route('admin.users') }}" class="text-white hover:text-white/80 transition-colors">
                             <i class="fas fa-users mr-1"></i>Pengguna
@@ -80,8 +80,8 @@
 
     <!-- Mobile Sidebar -->
     @include('components.mobile-sidebar', [
-        'userRole' => 'admin',
-        'userName' => session('user_data.full_name'),
+        'userPeran' => 'admin',
+        'userNama' => session('user_data.full_name'),
         'userEmail' => session('user_data.email'),
         'pageTitle' => 'Panel Admin'
     ])
@@ -92,12 +92,12 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Manage Users</h2>
-                    <p class="text-white/80">View and manage all system users</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Users</h2>
+                    <p class="text-white/80">Lihat and manage all system users</p>
                 </div>
                 <div class="flex space-x-4">
                     <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Add User
+                        <i class="fas fa-plus mr-2"></i>Tambah User
                     </a>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-download mr-2"></i>Export
@@ -116,10 +116,10 @@
                                 <th class="text-left py-3 px-4 font-semibold">ID</th>
                                 <th class="text-left py-3 px-4 font-semibold">User</th>
                                 <th class="text-left py-3 px-4 font-semibold">Email</th>
-                                <th class="text-left py-3 px-4 font-semibold">Department</th>
+                                <th class="text-left py-3 px-4 font-semibold">Departemen</th>
                                 <th class="text-left py-3 px-4 font-semibold">Last Login</th>
                                 <th class="text-left py-3 px-4 font-semibold">Joined</th>
-                                <th class="text-left py-3 px-4 font-semibold">Actions</th>
+                                <th class="text-left py-3 px-4 font-semibold">Aksis</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -169,14 +169,14 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">
-                                        <button onclick="viewUser({{ $user->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="View Details">
+                                        <button onclick="viewUser({{ $user->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button onclick="editUser({{ $user->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit User">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         @if($user->role !== 'admin')
-                                        <button onclick="deleteUser({{ $user->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Delete User">
+                                        <button onclick="deleteUser({{ $user->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Hapus User">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         @endif
@@ -258,10 +258,10 @@
                     </div>
                     <div class="flex justify-end space-x-4 mt-6">
                         <button type="button" onclick="closeModal('userEditModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                            Cancel
+                            Batal
                         </button>
                         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                            Update User
+                            Perbarui User
                         </button>
                     </div>
                 </form>
@@ -269,8 +269,8 @@
         </div>
     </div>
 
-    <!-- User Delete Modal -->
-    <div id="userDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <!-- User Hapus Modal -->
+    <div id="userHapusModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex items-center mb-4">
@@ -278,17 +278,17 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-800">Delete User</h3>
+                        <h3 class="text-lg font-bold text-gray-800">Hapus User</h3>
                         <p class="text-gray-600">This action cannot be undone</p>
                     </div>
                 </div>
                 <p class="text-gray-700 mb-6">Are you sure you want to delete this user? All their bookings will also be deleted.</p>
                 <div class="flex justify-end space-x-4">
-                    <button onclick="closeModal('userDeleteModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                        Cancel
+                    <button onclick="closeModal('userHapusModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        Batal
                     </button>
-                    <button onclick="confirmDeleteUser()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                        Delete User
+                    <button onclick="confirmHapusUser()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        Hapus User
                     </button>
                 </div>
             </div>
@@ -353,26 +353,26 @@
                                 <p class="text-gray-900">${user.email}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
                                 <p class="text-gray-900">${user.phone || 'Not provided'}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
                                 <p class="text-gray-900">${user.department || 'Not specified'}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Peran</label>
                                 <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">
                                     ${user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}
                                 </span>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Last Login</label>
-                                <p class="text-gray-900">${user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never'}</p>
+                                <p class="text-gray-900">${user.last_login_at ? new Tanggal(user.last_login_at).toLocaleString() : 'Never'}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Joined</label>
-                                <p class="text-gray-900">${new Date(user.created_at).toLocaleDateString()}</p>
+                                <p class="text-gray-900">${new Tanggal(user.created_at).toLocaleTanggalString()}</p>
                             </div>
                         </div>
                     </div>
@@ -389,7 +389,7 @@
                 document.getElementById('userEditContent').innerHTML = `
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Nama</label>
                             <input type="text" name="full_name" value="${user.full_name || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
@@ -397,15 +397,15 @@
                             <input type="email" name="email" value="${user.email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
                             <input type="text" name="phone" value="${user.phone || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Departemen</label>
                             <input type="text" name="department" value="${user.department || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Peran</label>
                             <select name="role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                                 <option value="">Select role</option>
                                 <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
@@ -420,12 +420,12 @@
 
         function deleteUser(userId) {
             currentUserId = userId;
-            openModal('userDeleteModal');
+            openModal('userHapusModal');
         }
 
-        function confirmDeleteUser() {
+        function confirmHapusUser() {
             if (currentUserId) {
-                // Create form and submit
+                // Buat form and submit
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = `/admin/users/${currentUserId}/delete`;
@@ -454,7 +454,7 @@
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
                     const users = @json($users->items());
-                    let csv = 'ID,Username,Full Name,Email,Phone,Department,Role,Last Login,Joined\n';
+                    let csv = 'ID,Username,Full Nama,Email,Telepon,Departemen,Peran,Last Login,Joined\n';
                     
                     users.forEach(user => {
                         csv += `"${user.id}","${user.username}","${user.full_name}","${user.email}","${user.phone || ''}","${user.department || ''}","${user.role}","${user.last_login_at || ''}","${user.created_at}"\n`;
@@ -513,7 +513,7 @@
             // Close modal on outside click
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('fixed')) {
-                    const modals = ['userDetailModal', 'userEditModal', 'userDeleteModal'];
+                    const modals = ['userDetailModal', 'userEditModal', 'userHapusModal'];
                     modals.forEach(modalId => {
                         if (!document.getElementById(modalId).classList.contains('hidden')) {
                             closeModal(modalId);
@@ -524,20 +524,20 @@
         });
 
         // Auto-hide success and error messages
-        setTimeout(() => {
+        setWaktuout(() => {
             const successMessage = document.getElementById('success-message');
             const errorMessage = document.getElementById('error-message');
             
             if (successMessage) {
                 successMessage.style.transition = 'opacity 0.5s';
                 successMessage.style.opacity = '0';
-                setTimeout(() => successMessage.remove(), 500);
+                setWaktuout(() => successMessage.remove(), 500);
             }
             
             if (errorMessage) {
                 errorMessage.style.transition = 'opacity 0.5s';
                 errorMessage.style.opacity = '0';
-                setTimeout(() => errorMessage.remove(), 500);
+                setWaktuout(() => errorMessage.remove(), 500);
             }
         }, 5000);
     </script>

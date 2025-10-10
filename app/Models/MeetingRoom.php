@@ -15,7 +15,6 @@ class MeetingRoom extends Model
         'capacity',
         'amenities',
         'location',
-        'hourly_rate',
         'images',
         'is_active',
     ];
@@ -24,7 +23,6 @@ class MeetingRoom extends Model
         'amenities' => 'array',
         'images' => 'array',
         'is_active' => 'boolean',
-        'hourly_rate' => 'decimal:2',
     ];
 
     public function bookings()

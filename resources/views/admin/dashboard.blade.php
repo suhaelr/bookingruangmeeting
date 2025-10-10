@@ -20,14 +20,14 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'Admin' }}!</h1>
-                        <p class="text-white/80 text-sm">Panel Admin</p>
+                        <h1 class="text-xl font-bold text-white">Admin Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Administrator' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ route('admin.dashboard') }}" class="text-white hover:text-white/80 transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
                         <a href="{{ route('admin.users') }}" class="text-white/80 hover:text-white transition-colors">
                             <i class="fas fa-users mr-1"></i>Pengguna
@@ -40,9 +40,9 @@
                         </a>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <!-- Admin Notification Bell -->
+                        <!-- Admin Notifikasi Bell -->
                         <div class="relative">
-                            <button onclick="toggleAdminNotifications()" class="text-white/80 hover:text-white transition-colors p-2">
+                            <button onclick="toggleAdminNotifikasis()" class="text-white/80 hover:text-white transition-colors p-2">
                                 <i class="fas fa-bell text-lg"></i>
                                 <span id="admin-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                             </button>
@@ -219,19 +219,19 @@
         </div>
     @endif
 
-    <!-- Admin Notification Dropdown -->
-    <div id="adminNotificationDropdown" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg border hidden z-50 w-80 max-h-96 overflow-y-auto">
+    <!-- Admin Notifikasi Dropdown -->
+    <div id="adminNotifikasiDropdown" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg border hidden z-50 w-80 max-h-96 overflow-y-auto">
         <div class="p-4 border-b">
-            <h3 class="font-semibold text-gray-800">Admin Notifications</h3>
+            <h3 class="font-semibold text-gray-800">Admin Notifikasis</h3>
         </div>
-        <div id="adminNotificationList" class="p-2">
+        <div id="adminNotifikasiList" class="p-2">
             <!-- Admin notifications will be loaded here -->
         </div>
         <div class="p-2 border-t flex space-x-2">
-            <button onclick="markAllAdminNotificationsAsRead()" class="flex-1 text-center text-blue-500 hover:text-blue-700 text-sm py-2">
+            <button onclick="markAllAdminNotifikasisAsRead()" class="flex-1 text-center text-blue-500 hover:text-blue-700 text-sm py-2">
                 Mark all as read
             </button>
-            <button onclick="clearAllAdminNotifications()" class="flex-1 text-center text-red-500 hover:text-red-700 text-sm py-2">
+            <button onclick="clearAllAdminNotifikasis()" class="flex-1 text-center text-red-500 hover:text-red-700 text-sm py-2">
                 Clear all
             </button>
         </div>
@@ -250,8 +250,8 @@
                 datasets: [{
                     label: 'Bookings',
                     data: {!! json_encode(array_column($monthlyStats, 'bookings')) !!},
-                    borderColor: 'rgb(59, 130, 246)',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWarna: 'rgb(59, 130, 246)',
+                    backgroundWarna: 'rgba(59, 130, 246, 0.1)',
                     tension: 0.4
                 }]
             },
@@ -298,7 +298,7 @@
                         {{ $stats['confirmed_bookings'] }},
                         {{ $stats['cancelled_bookings'] }}
                     ],
-                    backgroundColor: [
+                    backgroundWarna: [
                         'rgb(245, 158, 11)',
                         'rgb(34, 197, 94)',
                         'rgb(239, 68, 68)'
@@ -318,29 +318,29 @@
         });
 
         // Admin notification functions
-        function toggleAdminNotifications() {
-            const dropdown = document.getElementById('adminNotificationDropdown');
+        function toggleAdminNotifikasis() {
+            const dropdown = document.getElementById('adminNotifikasiDropdown');
             
             if (dropdown.classList.contains('hidden')) {
                 dropdown.classList.remove('hidden');
-                loadAdminNotifications();
+                loadAdminNotifikasis();
             } else {
                 dropdown.classList.add('hidden');
             }
         }
 
-        function loadAdminNotifications() {
-            const notificationList = document.getElementById('adminNotificationList');
+        function loadAdminNotifikasis() {
+            const notificationList = document.getElementById('adminNotifikasiList');
             
             // Fetch notifications from backend
             fetch('/admin/notifications')
                 .then(response => response.json())
                 .then(notifications => {
                     // Check session storage for read status
-                    const readNotifications = JSON.parse(sessionStorage.getItem('adminReadNotifications') || '[]');
+                    const readNotifikasis = JSON.parse(sessionStorage.getItem('adminReadNotifikasis') || '[]');
                     notifications = notifications.map(notification => ({
                         ...notification,
-                        read: readNotifications.includes(notification.id) || notification.read
+                        read: readNotifikasis.includes(notification.id) || notification.read
                     }));
 
                     const unreadCount = notifications.filter(n => !n.read).length;
@@ -354,10 +354,10 @@
                     }
 
                     notificationList.innerHTML = notifications.map(notification => `
-                        <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAdminNotificationAsRead(${notification.id})">
+                        <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAdminNotifikasiAsRead(${notification.id})">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
-                                    <i class="fas fa-${getAdminNotificationIcon(notification.type)} text-${getAdminNotificationColor(notification.type)}"></i>
+                                    <i class="fas fa-${getAdminNotifikasiIcon(notification.type)} text-${getAdminNotifikasiWarna(notification.type)}"></i>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <p class="text-sm font-medium text-gray-900">${notification.title}</p>
@@ -375,7 +375,7 @@
                 });
         }
 
-        function getAdminNotificationIcon(type) {
+        function getAdminNotifikasiIcon(type) {
             const icons = {
                 'success': 'check-circle',
                 'info': 'info-circle',
@@ -385,7 +385,7 @@
             return icons[type] || 'bell';
         }
 
-        function getAdminNotificationColor(type) {
+        function getAdminNotifikasiWarna(type) {
             const colors = {
                 'success': 'green-500',
                 'info': 'blue-500',
@@ -395,32 +395,32 @@
             return colors[type] || 'gray-500';
         }
 
-        function markAdminNotificationAsRead(notificationId) {
+        function markAdminNotifikasiAsRead(notificationId) {
             console.log('Marking admin notification as read:', notificationId);
             
             // Add to read notifications in session storage
-            const readNotifications = JSON.parse(sessionStorage.getItem('adminReadNotifications') || '[]');
-            if (!readNotifications.includes(notificationId)) {
-                readNotifications.push(notificationId);
-                sessionStorage.setItem('adminReadNotifications', JSON.stringify(readNotifications));
+            const readNotifikasis = JSON.parse(sessionStorage.getItem('adminReadNotifikasis') || '[]');
+            if (!readNotifikasis.includes(notificationId)) {
+                readNotifikasis.push(notificationId);
+                sessionStorage.setItem('adminReadNotifikasis', JSON.stringify(readNotifikasis));
             }
             
             // Reload notifications to update UI
-            loadAdminNotifications();
+            loadAdminNotifikasis();
         }
 
-        function markAllAdminNotificationsAsRead() {
+        function markAllAdminNotifikasisAsRead() {
             console.log('Marking all admin notifications as read');
             
             // Mark all notifications as read in session storage
-            const allNotificationIds = [1, 2, 3, 4]; // All admin notification IDs
-            sessionStorage.setItem('adminReadNotifications', JSON.stringify(allNotificationIds));
+            const allNotifikasiIds = [1, 2, 3, 4]; // All admin notification IDs
+            sessionStorage.setItem('adminReadNotifikasis', JSON.stringify(allNotifikasiIds));
             
             // Reload notifications to update UI
-            loadAdminNotifications();
+            loadAdminNotifikasis();
         }
 
-        function clearAllAdminNotifications() {
+        function clearAllAdminNotifikasis() {
             if (confirm('Are you sure you want to clear all notifications? This action cannot be undone.')) {
                 console.log('Clearing all admin notifications');
                 
@@ -435,10 +435,10 @@
                 .then(data => {
                     if (data.success) {
                         // Clear session storage
-                        sessionStorage.removeItem('adminReadNotifications');
+                        sessionStorage.removeItem('adminReadNotifikasis');
                         
                         // Reload notifications to update UI
-                        loadAdminNotifications();
+                        loadAdminNotifikasis();
                         
                         // Show success message
                         alert(data.message);
@@ -455,8 +455,8 @@
 
         // Close admin notification dropdown when clicking outside
         document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('adminNotificationDropdown');
-            const bell = document.querySelector('[onclick="toggleAdminNotifications()"]');
+            const dropdown = document.getElementById('adminNotifikasiDropdown');
+            const bell = document.querySelector('[onclick="toggleAdminNotifikasis()"]');
             
             if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
                 dropdown.classList.add('hidden');
@@ -465,10 +465,10 @@
 
         // Load admin notifications on page load
         document.addEventListener('DOMContentLoaded', function() {
-            loadAdminNotifications();
+            loadAdminNotifikasis();
             
             // Auto-refresh notifications every 30 seconds
-            setInterval(loadAdminNotifications, 30000);
+            setInterval(loadAdminNotifikasis, 30000);
         });
 
         // Auto-hide success message

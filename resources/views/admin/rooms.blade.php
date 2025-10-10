@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Manage Rooms - Meeting Room Booking</title>
+    <title>Kelola Ruang - Meeting Room Booking</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -44,23 +45,23 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'Admin' }}!</h1>
-                        <p class="text-white/80 text-sm">Admin Panel</p>
+                        <h1 class="text-xl font-bold text-white">Admin Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Administrator' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ route('admin.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
                         <a href="{{ route('admin.users') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-users mr-1"></i>Users
+                            <i class="fas fa-users mr-1"></i>Pengguna
                         </a>
                         <a href="{{ route('admin.rooms') }}" class="text-white hover:text-white/80 transition-colors">
-                            <i class="fas fa-door-open mr-1"></i>Rooms
+                            <i class="fas fa-door-open mr-1"></i>Ruang
                         </a>
                         <a href="{{ route('admin.bookings') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-calendar-check mr-1"></i>Bookings
+                            <i class="fas fa-calendar-check mr-1"></i>Pemesanan
                         </a>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -71,7 +72,7 @@
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
+                            Keluar
                         </a>
                     </div>
                 </div>
@@ -85,12 +86,12 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Manage Meeting Rooms</h2>
-                    <p class="text-white/80">View and manage all meeting rooms</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Meeting Ruang</h2>
+                    <p class="text-white/80">Lihat dan kelola semua ruang meeting</p>
                 </div>
                 <div class="flex space-x-4">
                     <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Add Room
+                        <i class="fas fa-plus mr-2"></i>Tambah Ruang
                     </a>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-download mr-2"></i>Export
@@ -99,7 +100,7 @@
             </div>
         </div>
 
-        <!-- Rooms Grid -->
+        <!-- Ruang Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($rooms as $room)
             <div class="glass-effect rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-300">
@@ -107,7 +108,7 @@
                     <h3 class="text-xl font-bold text-white">{{ $room->name }}</h3>
                     <span class="px-2 py-1 rounded-full text-xs font-medium
                         {{ $room->is_active ? 'bg-green-500 text-white' : 'bg-red-500 text-white' }}">
-                        {{ $room->is_active ? 'Active' : 'Inactive' }}
+                        {{ $room->is_active ? 'Aktif' : 'Tidak Aktif' }}
                     </span>
                 </div>
                 
@@ -115,15 +116,15 @@
                 
                 <div class="space-y-2 mb-4">
                     <div class="flex items-center justify-between">
-                        <span class="text-white/60 text-sm">Capacity:</span>
+                        <span class="text-white/60 text-sm">Kapasitas:</span>
                         <span class="text-white font-medium">{{ $room->capacity }} seats</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-white/60 text-sm">Location:</span>
+                        <span class="text-white/60 text-sm">Lokasi:</span>
                         <span class="text-white font-medium">{{ $room->location }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-white/60 text-sm">Rate:</span>
+                        <span class="text-white/60 text-sm">Tarif:</span>
                         <span class="text-white font-medium">Rp {{ number_format($room->hourly_rate, 0, ',', '.') }}/hour</span>
                     </div>
                 </div>
@@ -147,13 +148,13 @@
                         {{ $room->bookings_count ?? 0 }} bookings
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="viewRoom({{ $room->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="View Details">
+                        <button onclick="viewRoom({{ $room->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
                             <i class="fas fa-eye"></i>
                         </button>
                         <button onclick="editRoom({{ $room->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit Room">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="deleteRoom({{ $room->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Delete Room">
+                        <button onclick="deleteRoom({{ $room->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Hapus Room">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -162,7 +163,7 @@
             @empty
             <div class="col-span-full text-center py-12">
                 <i class="fas fa-door-open text-white/40 text-6xl mb-4"></i>
-                <h3 class="text-xl font-bold text-white mb-2">No Rooms Found</h3>
+                <h3 class="text-xl font-bold text-white mb-2">No Ruang Found</h3>
                 <p class="text-white/60">There are no meeting rooms in the system yet.</p>
             </div>
             @endforelse
@@ -213,7 +214,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Room Details</h3>
+                    <h3 class="text-2xl font-bold text-gray-800">Detail Ruang</h3>
                     <button onclick="closeModal('roomDetailModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -230,7 +231,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Edit Room</h3>
+                    <h3 class="text-2xl font-bold text-gray-800">Edit Ruang</h3>
                     <button onclick="closeModal('roomEditModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -242,10 +243,10 @@
                     </div>
                     <div class="flex justify-end space-x-4 mt-6">
                         <button type="button" onclick="closeModal('roomEditModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                            Cancel
+                            Batal
                         </button>
                         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                            Update Room
+                            Perbarui Ruang
                         </button>
                     </div>
                 </form>
@@ -253,8 +254,8 @@
         </div>
     </div>
 
-    <!-- Room Delete Modal -->
-    <div id="roomDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <!-- Room Hapus Modal -->
+    <div id="roomHapusModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex items-center mb-4">
@@ -262,17 +263,17 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-800">Delete Room</h3>
-                        <p class="text-gray-600">This action cannot be undone</p>
+                        <h3 class="text-lg font-bold text-gray-800">Hapus Ruang</h3>
+                        <p class="text-gray-600">Tindakan ini tidak dapat dibatalkan</p>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-6">Are you sure you want to delete this room? All associated bookings will also be deleted.</p>
+                <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus ruang ini? Semua pemesanan terkait juga akan dihapus.</p>
                 <div class="flex justify-end space-x-4">
-                    <button onclick="closeModal('roomDeleteModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                        Cancel
+                    <button onclick="closeModal('roomHapusModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        Batal
                     </button>
-                    <button onclick="confirmDeleteRoom()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                        Delete Room
+                    <button onclick="confirmHapusRoom()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        Hapus Ruang
                     </button>
                 </div>
             </div>
@@ -303,42 +304,38 @@
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Basic Information</h4>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Informasi Dasar</h4>
                                 <div class="space-y-3">
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Room Name</label>
+                                        <label class="text-sm font-medium text-gray-600">Nama Ruang</label>
                                         <p class="text-gray-800">${room.name}</p>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Description</label>
+                                        <label class="text-sm font-medium text-gray-600">Deskripsi</label>
                                         <p class="text-gray-800">${room.description}</p>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Capacity</label>
-                                        <p class="text-gray-800">${room.capacity} seats</p>
+                                        <label class="text-sm font-medium text-gray-600">Kapasitas</label>
+                                        <p class="text-gray-800">${room.capacity} kursi</p>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Location</label>
+                                        <label class="text-sm font-medium text-gray-600">Lokasi</label>
                                         <p class="text-gray-800">${room.location}</p>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Pricing & Status</h4>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Status</h4>
                                 <div class="space-y-3">
-                                    <div>
-                                        <label class="text-sm font-medium text-gray-600">Hourly Rate</label>
-                                        <p class="text-gray-800">Rp ${room.hourly_rate.toLocaleString()}/hour</p>
-                                    </div>
                                     <div>
                                         <label class="text-sm font-medium text-gray-600">Status</label>
                                         <span class="px-2 py-1 rounded-full text-xs font-medium ${room.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                            ${room.is_active ? 'Active' : 'Inactive'}
+                                            ${room.is_active ? 'Aktif' : 'Tidak Aktif'}
                                         </span>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Total Bookings</label>
-                                        <p class="text-gray-800">${room.bookings_count || 0} bookings</p>
+                                        <label class="text-sm font-medium text-gray-600">Total Pemesanan</label>
+                                        <p class="text-gray-800">${room.bookings_count || 0} pemesanan</p>
                                     </div>
                                 </div>
                             </div>
@@ -346,7 +343,7 @@
                         
                         ${room.amenities && room.amenities.length > 0 ? `
                         <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Amenities</h4>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Fasilitas</h4>
                             <div class="flex flex-wrap gap-2">
                                 ${room.amenities.map(amenity => `
                                     <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
@@ -371,37 +368,33 @@
                     <div class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Room Name</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Ruang</label>
                                 <input type="text" name="name" value="${room.name}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Kapasitas</label>
                                 <input type="number" name="capacity" value="${room.capacity}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
                             <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${room.description}</textarea>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Lokasi</label>
                                 <input type="text" name="location" value="${room.location}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Hourly Rate</label>
-                                <input type="number" name="hourly_rate" value="${room.hourly_rate}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                             <select name="is_active" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="1" ${room.is_active ? 'selected' : ''}>Active</option>
-                                <option value="0" ${!room.is_active ? 'selected' : ''}>Inactive</option>
+                                <option value="1" ${room.is_active ? 'selected' : ''}>Aktif</option>
+                                <option value="0" ${!room.is_active ? 'selected' : ''}>Tidak Aktif</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Amenities (comma-separated)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fasilitas (pisahkan dengan koma)</label>
                             <input type="text" name="amenities" value="${room.amenities ? room.amenities.join(', ') : ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="projector, whiteboard, wifi, ac">
                         </div>
                     </div>
@@ -412,10 +405,10 @@
 
         function deleteRoom(roomId) {
             currentRoomId = roomId;
-            openModal('roomDeleteModal');
+            openModal('roomHapusModal');
         }
 
-        function confirmDeleteRoom() {
+        function confirmHapusRoom() {
             if (currentRoomId) {
                 fetch(`/admin/rooms/${currentRoomId}`, {
                     method: 'DELETE',
@@ -427,7 +420,7 @@
                 .then(data => {
                     if (data.success) {
                         alert(data.message);
-                        closeModal('roomDeleteModal');
+                        closeModal('roomHapusModal');
                         location.reload();
                     } else {
                         alert(data.message || 'Error deleting room');
@@ -441,16 +434,16 @@
         }
 
         // Debug: Log rooms data
-        console.log('Rooms data:', @json($rooms->items()));
+        console.log('Ruang data:', @json($rooms->items()));
         
         // Export functionality
         document.getElementById('export-btn').addEventListener('click', function() {
             // Simple CSV export
             const rooms = @json($rooms->items());
-            let csv = 'ID,Name,Description,Capacity,Location,Rate,Status,Amenities\n';
+            let csv = 'ID,Nama,Deskripsi,Kapasitas,Lokasi,Status,Fasilitas\n';
             
             rooms.forEach(room => {
-                csv += `"${room.id}","${room.name}","${room.description}","${room.capacity}","${room.location}","${room.hourly_rate}","${room.is_active ? 'Active' : 'Inactive'}","${room.amenities ? room.amenities.join(', ') : ''}"\n`;
+                csv += `"${room.id}","${room.name}","${room.description}","${room.capacity}","${room.location}","${room.is_active ? 'Aktif' : 'Tidak Aktif'}","${room.amenities ? room.amenities.join(', ') : ''}"\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv' });
@@ -491,12 +484,12 @@
                         closeModal('roomEditModal');
                         location.reload();
                     } else {
-                        alert(data.message || 'Error updating room');
+                        alert(data.message || 'Gagal mengupdate ruang');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error updating room: ' + error.message);
+                    alert('Gagal mengupdate ruang: ' + error.message);
                 });
             });
         }
@@ -504,7 +497,7 @@
         // Close modal on outside click
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('fixed')) {
-                const modals = ['roomDetailModal', 'roomEditModal', 'roomDeleteModal'];
+                const modals = ['roomDetailModal', 'roomEditModal', 'roomHapusModal'];
                 modals.forEach(modalId => {
                     if (!document.getElementById(modalId).classList.contains('hidden')) {
                         closeModal(modalId);

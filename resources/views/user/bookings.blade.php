@@ -78,16 +78,16 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'User' }}!</h1>
-                        <p class="text-white/80 text-sm">Pemesanan Saya</p>
+                        <h1 class="text-xl font-bold text-white">User Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Pengguna' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{{ route('user.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-left mr-1"></i>Back to Dashboard
+                        <i class="fas fa-arrow-left mr-1"></i>Kembali ke Beranda
                     </a>
                     <a href="{{ route('user.bookings.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>New Booking
+                        <i class="fas fa-plus mr-2"></i>Pemesanan Baru
                     </a>
                     <div class="flex items-center space-x-2">
                         <span class="text-white/80 text-sm">
@@ -97,7 +97,7 @@
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
+                            Keluar
                         </a>
                     </div>
                 </div>
@@ -117,10 +117,10 @@
                 <div class="flex space-x-4">
                     <select id="status-filter" class="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
                         <option value="">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="completed">Completed</option>
+                        <option value="pending">Menunggu</option>
+                        <option value="confirmed">Dikonfirmasi</option>
+                        <option value="cancelled">Batalled</option>
+                        <option value="completed">Selesai</option>
                     </select>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-download mr-2"></i>Export
@@ -176,7 +176,7 @@
                                 
                                 @if($booking->attendees && count($booking->attendees) > 0)
                                 <div class="mb-3">
-                                    <p class="text-white/60 text-sm mb-1">Attendees:</p>
+                                    <p class="text-white/60 text-sm mb-1">Peserta:</p>
                                     <div class="flex flex-wrap gap-1">
                                         @foreach($booking->attendees as $attendee)
                                         <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded">
@@ -191,21 +191,21 @@
                                 <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
                                     <p class="text-red-300 text-sm">
                                         <i class="fas fa-times-circle mr-1"></i>
-                                        <strong>Cancellation Reason:</strong> {{ $booking->cancellation_reason }}
+                                        <strong>Batallation Reason:</strong> {{ $booking->cancellation_reason }}
                                     </p>
                                 </div>
                                 @endif
                             </div>
                             
                             <div class="flex items-center space-x-2 mt-4 lg:mt-0 lg:ml-6">
-                                @if($booking->canBeCancelled())
+                                @if($booking->canBeBatalled())
                                 <button onclick="cancelBooking({{ $booking->id }})" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                                    <i class="fas fa-times mr-1"></i>Cancel
+                                    <i class="fas fa-times mr-1"></i>Batal
                                 </button>
                                 @endif
                                 
                                 <button onclick="viewBooking({{ $booking->id }})" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                                    <i class="fas fa-eye mr-1"></i>View
+                                    <i class="fas fa-eye mr-1"></i>Lihat
                                 </button>
                                 
                                 <button onclick="editBooking({{ $booking->id }})" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
@@ -292,10 +292,10 @@
                     </div>
                     <div class="flex justify-end space-x-4 mt-6">
                         <button type="button" onclick="closeModal('bookingEditModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                            Cancel
+                            Batal
                         </button>
                         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                            Update Booking
+                            Perbarui Booking
                         </button>
                     </div>
                 </form>
@@ -303,8 +303,8 @@
         </div>
     </div>
 
-    <!-- Booking Cancel Modal -->
-    <div id="bookingCancelModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <!-- Booking Batal Modal -->
+    <div id="bookingBatalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex items-center mb-4">
@@ -312,24 +312,24 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-800">Cancel Booking</h3>
+                        <h3 class="text-lg font-bold text-gray-800">Batal Booking</h3>
                         <p class="text-gray-600">This action cannot be undone</p>
                     </div>
                 </div>
                 <p class="text-gray-700 mb-6">Are you sure you want to cancel this booking?</p>
                 <div class="flex justify-end space-x-4">
-                    <button onclick="closeModal('bookingCancelModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                        Cancel
+                    <button onclick="closeModal('bookingBatalModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        Batal
                     </button>
-                    <button onclick="confirmCancelBooking()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                        Cancel Booking
+                    <button onclick="confirmBatalBooking()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                        Batal Booking
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Success Message -->
+    <!-- Berhasil Message -->
     @if (session('success'))
         <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
             <div class="flex items-center">
@@ -375,16 +375,16 @@
                                 <p class="text-gray-600 text-sm">${booking.meeting_room.location}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Date & Time</label>
-                                <p class="text-gray-900">${new Date(booking.start_time).toLocaleDateString()}</p>
-                                <p class="text-gray-600 text-sm">${new Date(booking.start_time).toLocaleTimeString()} - ${new Date(booking.end_time).toLocaleTimeString()}</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal & Waktu</label>
+                                <p class="text-gray-900">${new Tanggal(booking.start_time).toLocaleTanggalString()}</p>
+                                <p class="text-gray-600 text-sm">${new Tanggal(booking.start_time).toLocaleWaktuString()} - ${new Tanggal(booking.end_time).toLocaleWaktuString()}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
                                 <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} hours</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Cost</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Biaya</label>
                                 <p class="text-gray-900 font-semibold">Rp ${new Intl.NumberFormat('id-ID').format(booking.total_cost)}</p>
                             </div>
                         </div>
@@ -404,7 +404,7 @@
                         ` : ''}
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Attendees</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Peserta</label>
                             <p class="text-gray-900">${booking.attendees_count} people</p>
                             ${booking.attendees && booking.attendees.length > 0 ? `
                                 <div class="mt-2">
@@ -426,7 +426,7 @@
                 document.getElementById('bookingEditContent').innerHTML = `
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Judul</label>
                             <input type="text" name="title" value="${booking.title}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         </div>
                         <div>
@@ -435,12 +435,12 @@
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Start Time</label>
-                                <input type="datetime-local" name="start_time" value="${formatDateTimeLocal(booking.start_time)}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mulai Waktu</label>
+                                <input type="datetime-local" name="start_time" value="${formatTanggalWaktuLocal(booking.start_time)}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">End Time</label>
-                                <input type="datetime-local" name="end_time" value="${formatDateTimeLocal(booking.end_time)}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Selesai Waktu</label>
+                                <input type="datetime-local" name="end_time" value="${formatTanggalWaktuLocal(booking.end_time)}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                             </div>
                         </div>
                         <div>
@@ -455,10 +455,10 @@
 
         function cancelBooking(bookingId) {
             currentBookingId = bookingId;
-            openModal('bookingCancelModal');
+            openModal('bookingBatalModal');
         }
 
-        function confirmCancelBooking() {
+        function confirmBatalBooking() {
             if (currentBookingId) {
                 const form = document.createElement('form');
                 form.method = 'POST';
@@ -484,21 +484,21 @@
             return colors[status] || 'bg-gray-100 text-gray-800';
         }
 
-        function calculateDuration(startTime, endTime) {
-            const start = new Date(startTime);
-            const end = new Date(endTime);
+        function calculateDuration(startWaktu, endWaktu) {
+            const start = new Tanggal(startWaktu);
+            const end = new Tanggal(endWaktu);
             const diffMs = end - start;
             const diffHours = diffMs / (1000 * 60 * 60);
             return diffHours.toFixed(1);
         }
 
-        function formatDateTimeLocal(dateTime) {
-            const date = new Date(dateTime);
+        function formatTanggalWaktuLocal(dateWaktu) {
+            const date = new Tanggal(dateWaktu);
             const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padMulai(2, '0');
+            const day = String(date.getTanggal()).padMulai(2, '0');
+            const hours = String(date.getHours()).padMulai(2, '0');
+            const minutes = String(date.getMinutes()).padMulai(2, '0');
             return `${year}-${month}-${day}T${hours}:${minutes}`;
         }
 
@@ -526,7 +526,7 @@
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
                     const bookings = @json($bookings->items());
-                    let csv = 'Title,Room,Start Time,End Time,Status,Cost\n';
+                    let csv = 'Judul,Room,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
                     
                     bookings.forEach(booking => {
                         csv += `"${booking.title}","${booking.meeting_room.name}","${booking.start_time}","${booking.end_time}","${booking.status}","${booking.total_cost}"\n`;
@@ -579,7 +579,7 @@
             // Close modal on outside click
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('fixed')) {
-                    const modals = ['bookingDetailModal', 'bookingEditModal', 'bookingCancelModal'];
+                    const modals = ['bookingDetailModal', 'bookingEditModal', 'bookingBatalModal'];
                     modals.forEach(modalId => {
                         if (!document.getElementById(modalId).classList.contains('hidden')) {
                             closeModal(modalId);
@@ -590,12 +590,12 @@
         });
 
         // Auto-hide success message
-        setTimeout(() => {
+        setWaktuout(() => {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
                 successMessage.style.transition = 'opacity 0.5s';
                 successMessage.style.opacity = '0';
-                setTimeout(() => successMessage.remove(), 500);
+                setWaktuout(() => successMessage.remove(), 500);
             }
         }, 3000);
     </script>

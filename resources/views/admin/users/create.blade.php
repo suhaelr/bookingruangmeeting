@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add User - Admin Panel</title>
+    <title>Tambah User - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -60,23 +60,23 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'Admin' }}!</h1>
-                        <p class="text-white/80 text-sm">Admin Panel</p>
+                        <h1 class="text-xl font-bold text-white">Admin Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Administrator' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ route('admin.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
                         <a href="{{ route('admin.users') }}" class="text-white hover:text-white/80 transition-colors">
-                            <i class="fas fa-users mr-1"></i>Users
+                            <i class="fas fa-users mr-1"></i>Pengguna
                         </a>
                         <a href="{{ route('admin.rooms') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-door-open mr-1"></i>Rooms
+                            <i class="fas fa-door-open mr-1"></i>Ruang
                         </a>
                         <a href="{{ route('admin.bookings') }}" class="text-white/80 hover:text-white transition-colors">
-                            <i class="fas fa-calendar-check mr-1"></i>Bookings
+                            <i class="fas fa-calendar-check mr-1"></i>Pemesanan
                         </a>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -87,7 +87,7 @@
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
+                            Keluar
                         </a>
                     </div>
                 </div>
@@ -101,11 +101,11 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Add New User</h2>
-                    <p class="text-white/80">Create a new user account</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Baru User</h2>
+                    <p class="text-white/80">Buat a new user account</p>
                 </div>
                 <a href="{{ route('admin.users') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Users
+                    <i class="fas fa-arrow-left mr-2"></i>Kembali to Pengguna
                 </a>
             </div>
         </div>
@@ -134,9 +134,9 @@
                                placeholder="Enter username" required>
                     </div>
 
-                    <!-- Full Name -->
+                    <!-- Full Nama -->
                     <div>
-                        <label for="full_name" class="block text-sm font-medium text-white mb-2">Full Name *</label>
+                        <label for="full_name" class="block text-sm font-medium text-white mb-2">Full Nama *</label>
                         <input type="text" id="full_name" name="full_name" value="{{ old('full_name') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Enter full name" required>
@@ -150,50 +150,50 @@
                                placeholder="Enter email address" required>
                     </div>
 
-                    <!-- Phone -->
+                    <!-- Telepon -->
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-white mb-2">Phone</label>
+                        <label for="phone" class="block text-sm font-medium text-white mb-2">Telepon</label>
                         <input type="text" id="phone" name="phone" value="{{ old('phone') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Enter phone number">
                     </div>
 
-                    <!-- Department -->
+                    <!-- Departemen -->
                     <div>
-                        <label for="department" class="block text-sm font-medium text-white mb-2">Department</label>
+                        <label for="department" class="block text-sm font-medium text-white mb-2">Departemen</label>
                         <input type="text" id="department" name="department" value="{{ old('department') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                                placeholder="Enter department">
                     </div>
 
-                    <!-- Role -->
+                    <!-- Peran -->
                     <div>
-                        <label for="role" class="block text-sm font-medium text-white mb-2">Role *</label>
+                        <label for="role" class="block text-sm font-medium text-white mb-2">Peran *</label>
                         <select id="role" name="role" 
                                 class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            <option value="">Select role</option>
+                            <option value="">Pilih role</option>
                             <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Password -->
+                <!-- Kata Sandi -->
                 <div class="mt-6">
-                    <label for="password" class="block text-sm font-medium text-white mb-2">Password *</label>
+                    <label for="password" class="block text-sm font-medium text-white mb-2">Kata Sandi *</label>
                     <input type="password" id="password" name="password" 
                            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Enter password (min 8 characters)" required>
                 </div>
 
-                <!-- Submit Button -->
+                <!-- Kirim Button -->
                 <div class="flex justify-end space-x-4 mt-8">
                     <a href="{{ route('admin.users') }}" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300">
-                        Cancel
+                        Batal
                     </a>
                     <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-save mr-2"></i>
-                        Create User
+                        Buat User
                     </button>
                 </div>
             </form>

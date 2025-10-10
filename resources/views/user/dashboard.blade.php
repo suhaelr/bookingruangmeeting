@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Pengguna - Sistem Pemesanan Ruang Meeting</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -18,14 +19,14 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'User' }}!</h1>
-                        <p class="text-white/80 text-sm">Dashboard Pengguna</p>
+                        <h1 class="text-xl font-bold text-white">User Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Pengguna' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
                         <a href="{{ route('user.dashboard') }}" class="text-white hover:text-white/80 transition-colors">
-                            <i class="fas fa-tachometer-alt mr-1"></i>Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
                         <a href="{{ route('user.bookings') }}" class="text-white/80 hover:text-white transition-colors">
                             <i class="fas fa-calendar-check mr-1"></i>Pemesanan Saya
@@ -38,9 +39,9 @@
                         </a>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <!-- Notification Bell -->
+                        <!-- Notifikasi Bell -->
                         <div class="relative">
-                            <button onclick="toggleNotifications()" class="text-white/80 hover:text-white transition-colors p-2">
+                            <button onclick="toggleNotifikasis()" class="text-white/80 hover:text-white transition-colors p-2">
                                 <i class="fas fa-bell text-lg"></i>
                                 <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">3</span>
                             </button>
@@ -71,11 +72,11 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Section -->
+        <!-- Selamat Datang Section -->
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Welcome back, {{ session('user_data.full_name') }}!</h2>
+                    <h2 class="text-2xl font-bold text-white mb-2">Selamat Datang back, {{ session('user_data.full_name') }}!</h2>
                     <p class="text-white/80">Manage your meeting room bookings and stay organized</p>
                 </div>
                 <div class="hidden md:block">
@@ -285,13 +286,13 @@
         </div>
     @endif
 
-    <!-- Notification Dropdown -->
+    <!-- Notifikasi Dropdown -->
     <div id="notificationDropdown" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg border hidden z-50 w-80 max-h-96 overflow-y-auto">
         <div class="p-4 border-b">
-            <h3 class="font-semibold text-gray-800">Notifications</h3>
+            <h3 class="font-semibold text-gray-800">Notifikasis</h3>
         </div>
         <div id="notificationList" class="p-2">
-            <!-- Notifications will be loaded here -->
+            <!-- Notifikasis will be loaded here -->
         </div>
         <div class="p-2 border-t">
             <button onclick="markAllAsRead()" class="w-full text-center text-blue-500 hover:text-blue-700 text-sm py-2">
@@ -304,20 +305,20 @@
     @include('components.whatsapp-float')
 
     <script>
-        // Notification functions
-        function toggleNotifications() {
+        // Notifikasi functions
+        function toggleNotifikasis() {
             const dropdown = document.getElementById('notificationDropdown');
             const badge = document.getElementById('notification-badge');
             
             if (dropdown.classList.contains('hidden')) {
                 dropdown.classList.remove('hidden');
-                loadNotifications();
+                loadNotifikasis();
             } else {
                 dropdown.classList.add('hidden');
             }
         }
 
-        function loadNotifications() {
+        function loadNotifikasis() {
             const notificationList = document.getElementById('notificationList');
             
             // Sample notifications - in real app, this would come from backend
@@ -349,10 +350,10 @@
             ];
 
             // Check session storage for read status
-            const readNotifications = JSON.parse(sessionStorage.getItem('readNotifications') || '[]');
+            const readNotifikasis = JSON.parse(sessionStorage.getItem('readNotifikasis') || '[]');
             notifications = notifications.map(notification => ({
                 ...notification,
-                read: readNotifications.includes(notification.id) || notification.read
+                read: readNotifikasis.includes(notification.id) || notification.read
             }));
 
             const unreadCount = notifications.filter(n => !n.read).length;
@@ -369,7 +370,7 @@
                 <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAsRead(${notification.id})">
                     <div class="flex items-start">
                         <div class="flex-shrink-0">
-                            <i class="fas fa-${getNotificationIcon(notification.type)} text-${getNotificationColor(notification.type)}"></i>
+                            <i class="fas fa-${getNotifikasiIcon(notification.type)} text-${getNotifikasiWarna(notification.type)}"></i>
                         </div>
                         <div class="ml-3 flex-1">
                             <p class="text-sm font-medium text-gray-900">${notification.title}</p>
@@ -382,7 +383,7 @@
             `).join('');
         }
 
-        function getNotificationIcon(type) {
+        function getNotifikasiIcon(type) {
             const icons = {
                 'success': 'check-circle',
                 'info': 'info-circle',
@@ -392,7 +393,7 @@
             return icons[type] || 'bell';
         }
 
-        function getNotificationColor(type) {
+        function getNotifikasiWarna(type) {
             const colors = {
                 'success': 'green-500',
                 'info': 'blue-500',
@@ -407,14 +408,14 @@
             console.log('Marking notification as read:', notificationId);
             
             // Add to read notifications in session storage
-            const readNotifications = JSON.parse(sessionStorage.getItem('readNotifications') || '[]');
-            if (!readNotifications.includes(notificationId)) {
-                readNotifications.push(notificationId);
-                sessionStorage.setItem('readNotifications', JSON.stringify(readNotifications));
+            const readNotifikasis = JSON.parse(sessionStorage.getItem('readNotifikasis') || '[]');
+            if (!readNotifikasis.includes(notificationId)) {
+                readNotifikasis.push(notificationId);
+                sessionStorage.setItem('readNotifikasis', JSON.stringify(readNotifikasis));
             }
             
             // Reload notifications to update UI
-            loadNotifications();
+            loadNotifikasis();
         }
 
         function markAllAsRead() {
@@ -422,17 +423,17 @@
             console.log('Marking all notifications as read');
             
             // Mark all notifications as read in session storage
-            const allNotificationIds = [1, 2, 3]; // All notification IDs
-            sessionStorage.setItem('readNotifications', JSON.stringify(allNotificationIds));
+            const allNotifikasiIds = [1, 2, 3]; // All notification IDs
+            sessionStorage.setItem('readNotifikasis', JSON.stringify(allNotifikasiIds));
             
             // Reload notifications to update UI
-            loadNotifications();
+            loadNotifikasis();
         }
 
         // Close notification dropdown when clicking outside
         document.addEventListener('click', function(e) {
             const dropdown = document.getElementById('notificationDropdown');
-            const bell = document.querySelector('[onclick="toggleNotifications()"]');
+            const bell = document.querySelector('[onclick="toggleNotifikasis()"]');
             
             if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
                 dropdown.classList.add('hidden');
@@ -451,7 +452,7 @@
 
         // Load notifications on page load
         document.addEventListener('DOMContentLoaded', function() {
-            loadNotifications();
+            loadNotifikasis();
         });
     </script>
 </body>

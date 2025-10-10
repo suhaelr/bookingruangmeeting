@@ -163,7 +163,6 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'hourly_rate' => 'required|numeric|min:0',
                 'is_active' => 'required|boolean',
                 'amenities' => 'nullable|string'
             ]);
@@ -176,7 +175,6 @@ class AdminController extends Controller
                 'description' => $request->description,
                 'capacity' => $request->capacity,
                 'location' => $request->location,
-                'hourly_rate' => $request->hourly_rate,
                 'is_active' => $request->is_active,
                 'amenities' => $amenities
             ]);
@@ -414,7 +412,6 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'hourly_rate' => 'required|numeric|min:0',
                 'is_active' => 'required|boolean',
                 'amenities' => 'nullable|string'
             ]);
@@ -427,7 +424,6 @@ class AdminController extends Controller
                 'description' => $request->description,
                 'capacity' => $request->capacity,
                 'location' => $request->location,
-                'hourly_rate' => $request->hourly_rate,
                 'is_active' => $request->is_active,
                 'amenities' => $amenities
             ]);

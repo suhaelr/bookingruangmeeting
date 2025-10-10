@@ -44,13 +44,13 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Hai, {{ session('user_data.full_name') ?? 'User' }}!</h1>
-                        <p class="text-white/80 text-sm">Kelola Profil</p>
+                        <h1 class="text-xl font-bold text-white">User Panel</h1>
+                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Pengguna' }}</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <a href="{{ route('user.dashboard') }}" class="text-white/80 hover:text-white transition-colors">
-                        <i class="fas fa-arrow-left mr-1"></i>Back to Dashboard
+                        <i class="fas fa-arrow-left mr-1"></i>Kembali ke Beranda
                     </a>
                     <div class="flex items-center space-x-2">
                         <span class="text-white/80 text-sm">
@@ -60,7 +60,7 @@
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
-                            Logout
+                            Keluar
                         </a>
                     </div>
                 </div>
@@ -112,7 +112,7 @@
                 <div class="glass-effect rounded-2xl p-8 shadow-2xl">
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold text-white mb-2">Edit Profile</h2>
-                        <p class="text-white/80">Update your personal information</p>
+                        <p class="text-white/80">Perbarui your personal information</p>
                     </div>
 
                     @if (session('success'))
@@ -143,10 +143,10 @@
                     <form method="POST" action="{{ route('user.profile.update') }}" class="space-y-6">
                         @csrf
                         
-                        <!-- Full Name -->
+                        <!-- Full Nama -->
                         <div>
                             <label for="full_name" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-user mr-2"></i>Full Name *
+                                <i class="fas fa-user mr-2"></i>Full Nama *
                             </label>
                             <input type="text" id="full_name" name="full_name" value="{{ old('full_name', $user['full_name']) }}" required
                                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
@@ -163,24 +163,24 @@
                                    placeholder="Enter your email address">
                         </div>
 
-                        <!-- Phone -->
+                        <!-- Telepon -->
                         <div>
                             <label for="phone" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-phone mr-2"></i>Phone Number
+                                <i class="fas fa-phone mr-2"></i>Telepon Number
                             </label>
                             <input type="tel" id="phone" name="phone" value="{{ old('phone', $user['phone'] ?? '') }}"
                                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
                                    placeholder="Enter your phone number">
                         </div>
 
-                        <!-- Department -->
+                        <!-- Departemen -->
                         <div>
                             <label for="department" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-building mr-2"></i>Department
+                                <i class="fas fa-building mr-2"></i>Departemen
                             </label>
                             <select id="department" name="department"
                                     class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
-                                <option value="">Select Department</option>
+                                <option value="">Select Departemen</option>
                                 <option value="IT" {{ old('department', $user['department'] ?? '') == 'IT' ? 'selected' : '' }}>IT</option>
                                 <option value="HR" {{ old('department', $user['department'] ?? '') == 'HR' ? 'selected' : '' }}>HR</option>
                                 <option value="Finance" {{ old('department', $user['department'] ?? '') == 'Finance' ? 'selected' : '' }}>Finance</option>
@@ -191,52 +191,52 @@
                             </select>
                         </div>
 
-                        <!-- Submit Button -->
+                        <!-- Kirim Button -->
                         <div class="flex justify-end space-x-4">
                             <a href="{{ route('user.dashboard') }}" 
                                class="px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors duration-300">
-                                Cancel
+                                Batal
                             </a>
                             <button type="submit" 
                                     class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                                 <i class="fas fa-save mr-2"></i>
-                                Update Profile
+                                Perbarui Profile
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Account Settings -->
+                <!-- Account Pengaturan -->
                 <div class="glass-effect rounded-2xl p-8 shadow-2xl mt-8">
-                    <h3 class="text-xl font-bold text-white mb-4">Account Settings</h3>
+                    <h3 class="text-xl font-bold text-white mb-4">Account Pengaturan</h3>
                     <div class="space-y-4">
                         <div class="flex items-center justify-between p-4 bg-white/10 rounded-lg">
                             <div>
-                                <h4 class="text-white font-medium">Change Password</h4>
-                                <p class="text-white/60 text-sm">Update your account password</p>
+                                <h4 class="text-white font-medium">Change Kata Sandi</h4>
+                                <p class="text-white/60 text-sm">Perbarui your account password</p>
                             </div>
-                            <button onclick="openChangePasswordModal()" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-300">
+                            <button onclick="openChangeKata SandiModal()" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-300">
                                 Change
                             </button>
                         </div>
                         
                         <div class="flex items-center justify-between p-4 bg-white/10 rounded-lg">
                             <div>
-                                <h4 class="text-white font-medium">Notification Settings</h4>
+                                <h4 class="text-white font-medium">Notifikasi Pengaturan</h4>
                                 <p class="text-white/60 text-sm">Manage your notification preferences</p>
                             </div>
-                            <button onclick="openNotificationModal()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300">
-                                Settings
+                            <button onclick="openNotifikasiModal()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300">
+                                Pengaturan
                             </button>
                         </div>
                         
                         <div class="flex items-center justify-between p-4 bg-white/10 rounded-lg">
                             <div>
-                                <h4 class="text-white font-medium">Download Data</h4>
-                                <p class="text-white/60 text-sm">Download your booking history</p>
+                                <h4 class="text-white font-medium">Unduh Data</h4>
+                                <p class="text-white/60 text-sm">Unduh your booking history</p>
                             </div>
                             <button onclick="downloadUserData()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
-                                Download
+                                Unduh
                             </button>
                         </div>
                     </div>
@@ -245,41 +245,41 @@
         </div>
     </div>
 
-    <!-- Change Password Modal -->
-    <div id="changePasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <!-- Change Kata Sandi Modal -->
+    <div id="changeKata SandiModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800">Change Password</h3>
-                    <button onclick="closeModal('changePasswordModal')" class="text-gray-500 hover:text-gray-700">
+                    <h3 class="text-xl font-bold text-gray-800">Change Kata Sandi</h3>
+                    <button onclick="closeModal('changeKata SandiModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="changePasswordForm">
+                <form id="changeKata SandiForm">
                     @csrf
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Current Kata Sandi</label>
                             <input type="password" name="current_password" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">New Kata Sandi</label>
                             <input type="password" name="new_password" required minlength="6"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Kata Sandi</label>
                             <input type="password" name="new_password_confirmation" required minlength="6"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
                     <div class="flex justify-end space-x-4 mt-6">
-                        <button type="button" onclick="closeModal('changePasswordModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                            Cancel
+                        <button type="button" onclick="closeModal('changeKata SandiModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                            Batal
                         </button>
                         <button type="submit" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
-                            Change Password
+                            Change Kata Sandi
                         </button>
                     </div>
                 </form>
@@ -287,12 +287,12 @@
         </div>
     </div>
 
-    <!-- Notification Settings Modal -->
+    <!-- Notifikasi Pengaturan Modal -->
     <div id="notificationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800">Notification Settings</h3>
+                    <h3 class="text-xl font-bold text-gray-800">Notifikasi Pengaturan</h3>
                     <button onclick="closeModal('notificationModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -302,7 +302,7 @@
                     <div class="space-y-4">
                         <div class="flex items-center justify-between">
                             <div>
-                                <h4 class="text-gray-800 font-medium">Email Notifications</h4>
+                                <h4 class="text-gray-800 font-medium">Email Notifikasis</h4>
                                 <p class="text-gray-600 text-sm">Receive email notifications for booking updates</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
@@ -335,10 +335,10 @@
                     </div>
                     <div class="flex justify-end space-x-4 mt-6">
                         <button type="button" onclick="closeModal('notificationModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
-                            Cancel
+                            Batal
                         </button>
                         <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
-                            Save Settings
+                            Simpan Pengaturan
                         </button>
                     </div>
                 </form>
@@ -359,11 +359,11 @@
         }
 
         // Account settings functions
-        function openChangePasswordModal() {
-            openModal('changePasswordModal');
+        function openChangeKata SandiModal() {
+            openModal('changeKata SandiModal');
         }
 
-        function openNotificationModal() {
+        function openNotifikasiModal() {
             openModal('notificationModal');
         }
 
@@ -396,26 +396,26 @@
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             // Change password form
-            const changePasswordForm = document.getElementById('changePasswordForm');
-            if (changePasswordForm) {
-                changePasswordForm.addEventListener('submit', function(e) {
+            const changeKata SandiForm = document.getElementById('changeKata SandiForm');
+            if (changeKata SandiForm) {
+                changeKata SandiForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
                     const formData = new FormData(this);
-                    const newPassword = formData.get('new_password');
-                    const confirmPassword = formData.get('new_password_confirmation');
+                    const newKata Sandi = formData.get('new_password');
+                    const confirmKata Sandi = formData.get('new_password_confirmation');
                     
-                    if (newPassword !== confirmPassword) {
+                    if (newKata Sandi !== confirmKata Sandi) {
                         alert('New passwords do not match!');
                         return;
                     }
                     
-                    if (newPassword.length < 6) {
-                        alert('Password must be at least 6 characters long!');
+                    if (newKata Sandi.length < 6) {
+                        alert('Kata Sandi must be at least 6 characters long!');
                         return;
                     }
                     
-                    // Submit form
+                    // Kirim form
                     fetch('{{ route("user.change-password") }}', {
                         method: 'POST',
                         body: formData,
@@ -426,8 +426,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Password changed successfully!');
-                            closeModal('changePasswordModal');
+                            alert('Kata Sandi changed successfully!');
+                            closeModal('changeKata SandiModal');
                             this.reset();
                         } else {
                             alert(data.message || 'Error changing password');
@@ -440,7 +440,7 @@
                 });
             }
 
-            // Notification settings form
+            // Notifikasi settings form
             const notificationForm = document.getElementById('notificationForm');
             if (notificationForm) {
                 notificationForm.addEventListener('submit', function(e) {
@@ -458,7 +458,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Notification settings saved successfully!');
+                            alert('Notifikasi settings saved successfully!');
                             closeModal('notificationModal');
                         } else {
                             alert(data.message || 'Error saving settings');
@@ -474,7 +474,7 @@
             // Close modal on outside click
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('fixed')) {
-                    const modals = ['changePasswordModal', 'notificationModal'];
+                    const modals = ['changeKata SandiModal', 'notificationModal'];
                     modals.forEach(modalId => {
                         if (!document.getElementById(modalId).classList.contains('hidden')) {
                             closeModal(modalId);
@@ -496,10 +496,10 @@
 
         // Form validation
         document.querySelector('form[action="{{ route("user.profile.update") }}"]').addEventListener('submit', function(e) {
-            const fullName = document.getElementById('full_name').value.trim();
+            const fullNama = document.getElementById('full_name').value.trim();
             const email = document.getElementById('email').value.trim();
             
-            if (!fullName) {
+            if (!fullNama) {
                 e.preventDefault();
                 alert('Please enter your full name');
                 return;

@@ -155,6 +155,8 @@ class UserController extends Controller
             'attendees_count' => 'required|integer|min:1',
             'attendees' => 'nullable|string',
             'special_requirements' => 'nullable|string',
+            'unit_kerja' => 'required|string|max:255',
+            'dokumen_perizinan' => 'required|file|mimes:pdf|max:2048',
         ]);
 
         $room = MeetingRoom::findOrFail($request->meeting_room_id);
@@ -178,23 +180,12 @@ class UserController extends Controller
             ])->withInput();
         }
 
-        // Calculate total cost with decimal precision
-        $duration = $startTime->diffInHours($endTime) + ($startTime->diffInMinutes($endTime) % 60) / 60;
-        $totalCost = $duration * $room->hourly_rate;
-        
-        // Round to 2 decimal places and ensure it doesn't exceed database limits
-        $totalCost = round($totalCost, 2);
-        
-        // Check if total cost exceeds maximum allowed value
-        $maxValue = 9999999999.99; // Maximum for decimal(12,2)
-        if ($totalCost > $maxValue) {
-            \Log::warning('Total cost exceeds maximum allowed value', [
-                'calculated_cost' => $totalCost,
-                'max_allowed' => $maxValue,
-                'duration_hours' => $duration,
-                'hourly_rate' => $room->hourly_rate
-            ]);
-            $totalCost = $maxValue;
+        // Handle file upload
+        $dokumenPerizinanPath = null;
+        if ($request->hasFile('dokumen_perizinan')) {
+            $file = $request->file('dokumen_perizinan');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $dokumenPerizinanPath = $file->storeAs('dokumen_perizinan', $filename, 'public');
         }
 
         // Process attendees - convert string to array
@@ -213,7 +204,9 @@ class UserController extends Controller
             'attendees_count' => $request->attendees_count,
             'attendees' => $attendees,
             'special_requirements' => $request->special_requirements,
-            'total_cost' => $totalCost,
+            'unit_kerja' => $request->unit_kerja,
+            'dokumen_perizinan' => $dokumenPerizinanPath,
+            'total_cost' => 0, // Set to 0 since we removed pricing
         ]);
 
         // Send notification to admin
@@ -223,7 +216,7 @@ class UserController extends Controller
             'booking_id' => $booking->id,
             'user_id' => $user['id'],
             'title' => $booking->title,
-            'total_cost' => $booking->total_cost
+            'unit_kerja' => $booking->unit_kerja
         ]);
 
         return redirect()->route('user.bookings')

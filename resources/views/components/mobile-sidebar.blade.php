@@ -27,7 +27,7 @@
                 {{-- Admin Navigation --}}
                 <a href="{{ route('admin.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span>Beranda</span>
                 </a>
                 
                 <a href="{{ route('admin.users') }}" class="mobile-nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
@@ -49,7 +49,7 @@
                 
                 <a href="{{ route('admin.users.create') }}" class="mobile-nav-item">
                     <i class="fas fa-user-plus"></i>
-                    <span>Tambah User</span>
+                    <span>Tambah Pengguna</span>
                 </a>
                 
                 <a href="{{ route('admin.rooms.create') }}" class="mobile-nav-item">
@@ -61,7 +61,7 @@
                 {{-- User Navigation --}}
                 <a href="{{ route('user.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
+                    <span>Beranda</span>
                 </a>
                 
                 <a href="{{ route('user.bookings') }}" class="mobile-nav-item {{ request()->routeIs('user.bookings') ? 'active' : '' }}">
@@ -83,7 +83,7 @@
                 {{-- Guest Navigation --}}
                 <a href="{{ route('login') }}" class="mobile-nav-item">
                     <i class="fas fa-sign-in-alt"></i>
-                    <span>Login</span>
+                    <span>Masuk</span>
                 </a>
                 
                 <a href="{{ route('register') }}" class="mobile-nav-item">
@@ -112,15 +112,15 @@
                 
                 <div class="mobile-nav-actions">
                     @if(isset($userRole) && $userRole === 'admin')
-                        <!-- Admin Notification -->
-                        <button onclick="toggleAdminNotifications()" class="mobile-nav-item">
+                        <!-- Admin Notifikasi -->
+                        <button onclick="toggleAdminNotifikasis()" class="mobile-nav-item">
                             <i class="fas fa-bell"></i>
                             <span>Notifikasi</span>
                             <span id="admin-notification-badge" class="mobile-notification-badge hidden">0</span>
                         </button>
                     @elseif(isset($userRole) && $userRole === 'user')
-                        <!-- User Notification -->
-                        <button onclick="toggleNotifications()" class="mobile-nav-item">
+                        <!-- User Notifikasi -->
+                        <button onclick="toggleNotifikasis()" class="mobile-nav-item">
                             <i class="fas fa-bell"></i>
                             <span>Notifikasi</span>
                             <span id="notification-badge" class="mobile-notification-badge hidden">0</span>
@@ -129,7 +129,7 @@
                     
                     <a href="{{ route('logout') }}" class="mobile-nav-item text-red-400 hover:text-red-300">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>Logout</span>
+                        <span>Keluar</span>
                     </a>
                 </div>
             </div>
