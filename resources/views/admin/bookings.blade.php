@@ -115,8 +115,8 @@
                                 <th class="text-left py-3 px-4 font-semibold">Room</th>
                                 <th class="text-left py-3 px-4 font-semibold">Tanggal & Waktu</th>
                                 <th class="text-left py-3 px-4 font-semibold">Status</th>
-                                <th class="text-left py-3 px-4 font-semibold">Biaya</th>
-                                <th class="text-left py-3 px-4 font-semibold">Aksis</th>
+                                <th class="text-left py-3 px-4 font-semibold">Dokumen</th>
+                                <th class="text-left py-3 px-4 font-semibold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -128,6 +128,9 @@
                                     <div>
                                         <p class="text-white font-medium">{{ $booking->user->full_name }}</p>
                                         <p class="text-white/60 text-sm">{{ $booking->user->email }}</p>
+                                        @if($booking->unit_kerja)
+                                            <p class="text-white/60 text-xs">Unit: {{ $booking->unit_kerja }}</p>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
@@ -153,7 +156,16 @@
                                     </span>
                                 </td>
                                 <td class="py-3 px-4">
-                                    <span class="text-white font-medium">Rp {{ number_format($booking->total_cost, 0, ',', '.') }}</span>
+                                    @if($booking->dokumen_perizinan)
+                                        <a href="{{ route('admin.bookings.download', $booking->id) }}" 
+                                           class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors duration-300"
+                                           title="Download Dokumen Perizinan">
+                                            <i class="fas fa-download mr-1"></i>
+                                            Download PDF
+                                        </a>
+                                    @else
+                                        <span class="text-white/60 text-sm">Tidak ada dokumen</span>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">

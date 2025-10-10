@@ -197,7 +197,7 @@
                             </div>
                             
                             <div class="flex items-center space-x-2 mt-4 lg:mt-0 lg:ml-6">
-                                @if($booking->canBeBatalled())
+                                @if($booking->canBeCancelled())
                                 <button onclick="cancelBooking({{ $booking->id }})" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                                     <i class="fas fa-times mr-1"></i>Batal
                                 </button>

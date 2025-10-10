@@ -466,4 +466,39 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function downloadDokumenPerizinan($id)
+    {
+        try {
+            $booking = Booking::findOrFail($id);
+            
+            if (!$booking->dokumen_perizinan) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Dokumen perizinan tidak ditemukan'
+                ], 404);
+            }
+
+            $filePath = storage_path('app/public/' . $booking->dokumen_perizinan);
+            
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File dokumen tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->download($filePath, 'dokumen_perizinan_' . $booking->id . '.pdf');
+        } catch (\Exception $e) {
+            \Log::error('Error downloading dokumen perizinan: ' . $e->getMessage(), [
+                'booking_id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengunduh dokumen: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
