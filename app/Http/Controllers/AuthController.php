@@ -474,14 +474,14 @@ class AuthController extends Controller
             $user = User::where('email', $userInfo['email'])->first();
             
             if (!$user) {
-                // Create new user
+                // Create new user with role 'user' (Google users are always regular users)
                 $user = User::create([
                     'username' => $userInfo['email'], // Use email as username
                     'name' => $userInfo['name'] ?? $userInfo['given_name'] . ' ' . $userInfo['family_name'],
                     'full_name' => $userInfo['name'] ?? $userInfo['given_name'] . ' ' . $userInfo['family_name'],
                     'email' => $userInfo['email'],
                     'password' => Hash::make(Str::random(32)), // Random password for OAuth users
-                    'role' => 'user',
+                    'role' => 'user', // Google users are always regular users
                     'email_verified_at' => now(), // Google users are pre-verified
                     'google_id' => $userInfo['id'] ?? null,
                 ]);
@@ -489,6 +489,10 @@ class AuthController extends Controller
                 // Update existing user with Google ID if not set
                 if (!$user->google_id) {
                     $user->update(['google_id' => $userInfo['id'] ?? null]);
+                }
+                // Ensure Google users have role 'user' (override any existing role)
+                if ($user->role !== 'user') {
+                    $user->update(['role' => 'user']);
                 }
             }
 
@@ -536,81 +540,15 @@ class AuthController extends Controller
                 'session_id' => session()->getId()
             ]);
 
-            // Redirect based on user role
-            if ($user->role === 'admin') {
-                \Log::info('Redirecting to admin dashboard');
-                $redirectUrl = route('admin.dashboard');
-            } else {
-                \Log::info('Redirecting to user dashboard');
-                $redirectUrl = route('user.dashboard');
-            }
+            // Google OAuth users always go to user dashboard
+            \Log::info('Google OAuth user redirecting to user dashboard', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role
+            ]);
 
-            // Use JavaScript redirect to completely bypass Cloudflare
-            \Log::info('Using JavaScript redirect to bypass Cloudflare completely', [
-                'redirect_url' => $redirectUrl,
-                'user_role' => $user->role,
-                'user_email' => $user->email
-            ]);
-            
-            // Create HTML page with immediate JavaScript redirect
-            $html = '
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta http-equiv="refresh" content="0;url=' . $redirectUrl . '">
-                <title>Redirecting...</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-                    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
-                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                </style>
-            </head>
-            <body>
-                <h2>Login Berhasil!</h2>
-                <div class="spinner"></div>
-                <p>Mengarahkan ke dashboard...</p>
-                <p>Jika tidak otomatis redirect, <a href="' . $redirectUrl . '">klik di sini</a></p>
-                <script>
-                    console.log("OAuth redirect for user: ' . $user->email . '");
-                    console.log("Redirect URL: ' . $redirectUrl . '");
-                    
-                    // Immediate redirect
-                    window.location.href = "' . $redirectUrl . '";
-                    
-                    // Fallback redirects
-                    setTimeout(() => {
-                        if (window.location.href !== "' . $redirectUrl . '") {
-                            console.log("Fallback redirect 1");
-                            window.location.replace("' . $redirectUrl . '");
-                        }
-                    }, 500);
-                    
-                    setTimeout(() => {
-                        if (window.location.href !== "' . $redirectUrl . '") {
-                            console.log("Fallback redirect 2");
-                            document.location.href = "' . $redirectUrl . '";
-                        }
-                    }, 1000);
-                    
-                    setTimeout(() => {
-                        if (window.location.href !== "' . $redirectUrl . '") {
-                            console.log("Final fallback redirect");
-                            window.location = "' . $redirectUrl . '";
-                        }
-                    }, 2000);
-                </script>
-            </body>
-            </html>';
-            
-            return response($html, 200, [
-                'Content-Type' => 'text/html; charset=UTF-8',
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-                'X-Frame-Options' => 'DENY',
-                'X-Content-Type-Options' => 'nosniff'
-            ]);
+            // Direct redirect to user dashboard
+            return redirect()->route('user.dashboard')->with('success', 'Berhasil masuk dengan Google!');
 
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [
