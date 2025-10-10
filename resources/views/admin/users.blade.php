@@ -79,10 +79,10 @@
 
     <!-- Mobile Sidebar -->
     @include('components.mobile-sidebar', [
-        'userPeran' => 'admin',
-        'userNama' => session('user_data.full_name'),
+        'userRole' => 'admin',
+        'userName' => session('user_data.full_name'),
         'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Panel Admin'
+        'pageTitle' => 'Kelola Pengguna'
     ])
 
     <!-- Main Content -->

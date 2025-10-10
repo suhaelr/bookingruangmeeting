@@ -133,7 +133,7 @@
         <!-- Bookings Table -->
         <div class="glass-effect rounded-2xl p-6 shadow-2xl">
             @if($bookings->count() > 0)
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto table-responsive">
                     <table class="w-full text-white">
                         <thead>
                             <tr class="border-b border-white/20">

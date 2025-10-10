@@ -110,19 +110,19 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">My Meeting Bookings</h2>
-                    <p class="text-white/80">Manage and track your meeting room reservations</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Pemesanan Saya</h2>
+                    <p class="text-white/80">Kelola dan pantau pemesanan ruang meeting Anda</p>
                 </div>
                 <div class="flex space-x-4">
                     <select id="status-filter" class="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
-                        <option value="">All Status</option>
+                        <option value="">Semua Status</option>
                         <option value="pending">Menunggu</option>
                         <option value="confirmed">Dikonfirmasi</option>
-                        <option value="cancelled">Batalled</option>
+                        <option value="cancelled">Dibatalkan</option>
                         <option value="completed">Selesai</option>
                     </select>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-download mr-2"></i>Export
+                        <i class="fas fa-download mr-2"></i>Ekspor
                     </button>
                 </div>
             </div>
@@ -143,8 +143,8 @@
                                         <p class="text-white/80 text-sm mb-2">{{ $booking->meetingRoom->name }} • {{ $booking->meetingRoom->location }}</p>
                                         <div class="flex items-center space-x-4 text-sm text-white/60">
                                             <span><i class="fas fa-calendar mr-1"></i>{{ $booking->formatted_start_time }}</span>
-                                            <span><i class="fas fa-clock mr-1"></i>{{ $booking->duration }} hours</span>
-                                            <span><i class="fas fa-users mr-1"></i>{{ $booking->attendees_count }} attendees</span>
+                                            <span><i class="fas fa-clock mr-1"></i>{{ $booking->duration }} jam</span>
+                                            <span><i class="fas fa-users mr-1"></i>{{ $booking->attendees_count }} peserta</span>
                                         </div>
                                     </div>
                                     <div class="text-right">

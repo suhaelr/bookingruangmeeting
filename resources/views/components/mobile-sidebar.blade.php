@@ -352,6 +352,59 @@ body {
         min-height: 44px; /* iOS touch target */
         padding: 0.75rem 1rem;
     }
+    
+    /* Mobile sidebar improvements */
+    .mobile-sidebar-content {
+        width: 100%;
+        max-width: 90vw;
+    }
+    
+    .mobile-nav-item {
+        padding: 1rem 1.5rem;
+        min-height: 48px;
+    }
+    
+    .mobile-nav-item span {
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+    
+    .mobile-sidebar-header {
+        padding: 1rem;
+    }
+    
+    .mobile-sidebar-header h1 {
+        font-size: 1.125rem;
+        line-height: 1.2;
+    }
+    
+    .mobile-sidebar-header p {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+    
+    /* Ensure text doesn't wrap inappropriately */
+    .mobile-nav-item i {
+        flex-shrink: 0;
+        width: 24px;
+    }
+    
+    .mobile-nav-item span {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    /* Fix user info section */
+    .mobile-user-info {
+        padding: 0.5rem 0;
+    }
+    
+    .mobile-user-info p {
+        line-height: 1.2;
+        margin-bottom: 0.25rem;
+    }
 }
 </style>
 

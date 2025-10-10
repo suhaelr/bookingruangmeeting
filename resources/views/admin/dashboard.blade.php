@@ -67,7 +67,7 @@
         'userRole' => 'admin',
         'userName' => session('user_data.full_name'),
         'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Panel Admin'
+        'pageTitle' => 'Beranda Admin'
     ])
 
     <!-- Main Content -->

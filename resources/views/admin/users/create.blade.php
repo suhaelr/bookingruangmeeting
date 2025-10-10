@@ -199,6 +199,14 @@
         </div>
     </div>
 
+    <!-- Mobile Sidebar -->
+    @include('components.mobile-sidebar', [
+        'userRole' => 'admin',
+        'userName' => session('user_data.full_name'),
+        'userEmail' => session('user_data.email'),
+        'pageTitle' => 'Tambah Pengguna'
+    ])
+
     <!-- WhatsApp Floating Button -->
     @include('components.whatsapp-float')
 </body>
