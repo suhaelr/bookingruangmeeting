@@ -517,6 +517,17 @@ class AuthController extends Controller
                 'department' => $user->department
             ];
             Session::put('user_data', $userData);
+            
+            // Force session save immediately
+            Session::save();
+            
+            // Verify session data is saved
+            \Log::info('Session data verification after login', [
+                'session_id' => session()->getId(),
+                'user_logged_in' => Session::get('user_logged_in'),
+                'user_data' => Session::get('user_data'),
+                'session_all' => Session::all()
+            ]);
 
             // Update last login
             $user->update(['last_login_at' => now()]);
@@ -544,11 +555,28 @@ class AuthController extends Controller
             \Log::info('Google OAuth user redirecting to user dashboard', [
                 'user_id' => $user->id,
                 'email' => $user->email,
-                'role' => $user->role
+                'role' => $user->role,
+                'session_id' => session()->getId(),
+                'user_logged_in' => Session::get('user_logged_in'),
+                'user_data' => Session::get('user_data')
             ]);
 
-            // Direct redirect to user dashboard
-            return redirect()->route('user.dashboard')->with('success', 'Berhasil masuk dengan Google!');
+            // Force session save before redirect
+            Session::save();
+            
+            // Verify session is saved
+            \Log::info('Session verification before redirect', [
+                'session_id' => session()->getId(),
+                'user_logged_in' => Session::get('user_logged_in'),
+                'user_data' => Session::get('user_data')
+            ]);
+
+            // Use absolute URL redirect to ensure proper redirect
+            $dashboardUrl = url('/user/dashboard');
+            \Log::info('Redirecting to absolute URL', ['url' => $dashboardUrl]);
+            
+            // Direct redirect to user dashboard with absolute URL
+            return redirect($dashboardUrl)->with('success', 'Berhasil masuk dengan Google!');
 
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [

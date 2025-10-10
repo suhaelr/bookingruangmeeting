@@ -71,9 +71,23 @@ Route::get('/debug/session', function() {
         'user_logged_in' => session('user_logged_in'),
         'user_data' => session('user_data'),
         'all_session' => session()->all(),
-        'csrf_token' => csrf_token()
+        'csrf_token' => csrf_token(),
+        'request_url' => request()->url(),
+        'request_method' => request()->method()
     ]);
 })->name('debug.session');
+
+// Debug route for Google OAuth callback
+Route::get('/debug/oauth', function() {
+    return response()->json([
+        'session_id' => session()->getId(),
+        'user_logged_in' => session('user_logged_in'),
+        'user_data' => session('user_data'),
+        'google_oauth_state' => session('google_oauth_state'),
+        'google_refresh_token' => session('google_refresh_token'),
+        'all_session' => session()->all()
+    ]);
+})->name('debug.oauth');
 
 // Test OAuth callback route
 Route::get('/test/oauth', function() {
