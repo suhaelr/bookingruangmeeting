@@ -157,7 +157,7 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'required|in:0,1,true,false',
+                'is_active' => 'required|string|in:0,1,true,false,on,off',
                 'amenities' => 'nullable|string'
             ]);
 
@@ -167,9 +167,9 @@ class AdminController extends Controller
             // Handle is_active conversion from string to boolean
             $isActiveValue = $request->input('is_active');
             $isActive = false;
-            if ($isActiveValue === '1' || $isActiveValue === 'true' || $isActiveValue === true) {
+            if (in_array($isActiveValue, ['1', 'true', 'on', 1, true])) {
                 $isActive = true;
-            } elseif ($isActiveValue === '0' || $isActiveValue === 'false' || $isActiveValue === false) {
+            } elseif (in_array($isActiveValue, ['0', 'false', 'off', 0, false])) {
                 $isActive = false;
             }
 
@@ -431,17 +431,19 @@ class AdminController extends Controller
         try {
             \Log::info('updateRoom called', [
                 'room_id' => $id,
-                'payload' => $request->all()
+                'payload' => $request->all(),
+                'headers' => $request->headers->all()
             ]);
 
             $room = MeetingRoom::findOrFail($id);
             
+            // More flexible validation rules
             $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'nullable|in:0,1,true,false',
+                'is_active' => 'nullable|string|in:0,1,true,false,on,off',
                 'amenities' => 'nullable|string'
             ]);
 
@@ -453,9 +455,14 @@ class AdminController extends Controller
             $isActive = $room->is_active; // Default to current value
             if ($request->has('is_active')) {
                 $isActiveValue = $request->input('is_active');
-                if ($isActiveValue === '1' || $isActiveValue === 'true' || $isActiveValue === true) {
+                \Log::info('is_active value received', [
+                    'value' => $isActiveValue,
+                    'type' => gettype($isActiveValue)
+                ]);
+                
+                if (in_array($isActiveValue, ['1', 'true', 'on', 1, true])) {
                     $isActive = true;
-                } elseif ($isActiveValue === '0' || $isActiveValue === 'false' || $isActiveValue === false) {
+                } elseif (in_array($isActiveValue, ['0', 'false', 'off', 0, false])) {
                     $isActive = false;
                 }
             }

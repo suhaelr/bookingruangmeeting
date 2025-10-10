@@ -444,6 +444,13 @@
                     // Convert string value to proper format
                     const isActiveValue = isActiveField.value === '1' ? '1' : '0';
                     formData.set('is_active', isActiveValue);
+                    console.log('is_active field value:', isActiveField.value, 'converted to:', isActiveValue);
+                }
+                
+                // Debug: Log all form data
+                console.log('Form data being sent:');
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, ':', value);
                 }
                 
                 fetch(`/admin/rooms/${roomId}`, {
@@ -460,8 +467,12 @@
                     try {
                         data = await response.json();
                     } catch (jsonError) {
+                        console.error('JSON parsing error:', jsonError);
                         // Ignore JSON parsing errors so we can surface generic message below
                     }
+
+                    console.log('Response status:', response.status);
+                    console.log('Response data:', data);
 
                     if (response.ok && data) {
                         return data;
@@ -471,6 +482,7 @@
                         ?? (data?.errors ? Object.values(data.errors).flat().join(', ') : null)
                         ?? `Permintaan gagal dengan status ${response.status}`;
 
+                    console.error('Error response:', errorMessage);
                     throw new Error(errorMessage);
                 })
                 .then(data => {
