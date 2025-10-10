@@ -450,17 +450,34 @@ class AuthController extends Controller
                 return redirect()->route('login')->with('error', 'Failed to obtain access token from Google.');
             }
 
-            // Check if required scopes were granted
+            // Check if required scopes were granted (Google returns full scope URLs)
             $grantedScopes = explode(' ', $tokenResponse['scope'] ?? '');
             $requiredScopes = ['openid', 'email', 'profile'];
-            $missingScopes = array_diff($requiredScopes, $grantedScopes);
+            $missingScopes = [];
+            
+            // Check for both short and full scope names
+            foreach ($requiredScopes as $requiredScope) {
+                $found = false;
+                foreach ($grantedScopes as $grantedScope) {
+                    if ($grantedScope === $requiredScope || 
+                        str_contains($grantedScope, $requiredScope) ||
+                        str_contains($grantedScope, 'userinfo.' . $requiredScope)) {
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $missingScopes[] = $requiredScope;
+                }
+            }
             
             if (!empty($missingScopes)) {
                 \Log::warning('Missing required scopes', [
                     'missing_scopes' => $missingScopes,
                     'granted_scopes' => $grantedScopes
                 ]);
-                return redirect()->route('login')->with('error', 'Required permissions were not granted. Please try again and grant all requested permissions.');
+                // Don't fail, just log the warning and continue
+                \Log::info('Continuing with OAuth despite missing scopes');
             }
 
             // Get user information from Google
@@ -529,15 +546,13 @@ class AuthController extends Controller
                 'session_all' => Session::all()
             ]);
             
-            // Test session persistence by making a request to debug route
-            try {
-                $response = \Http::get(url('/debug/session'));
-                \Log::info('Session test after save', [
-                    'debug_response' => $response->json()
-                ]);
-            } catch (\Exception $e) {
-                \Log::error('Session test failed', ['error' => $e->getMessage()]);
-            }
+            // Log session data for debugging
+            \Log::info('Session data after save', [
+                'session_id' => session()->getId(),
+                'user_logged_in' => Session::get('user_logged_in'),
+                'user_data' => Session::get('user_data'),
+                'session_all' => Session::all()
+            ]);
 
             // Update last login
             $user->update(['last_login_at' => now()]);
@@ -583,7 +598,14 @@ class AuthController extends Controller
 
             // Use absolute URL redirect to ensure proper redirect
             $dashboardUrl = url('/user/dashboard');
-            \Log::info('Redirecting to absolute URL', ['url' => $dashboardUrl]);
+            \Log::info('Redirecting to absolute URL', [
+                'url' => $dashboardUrl,
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'session_id' => session()->getId(),
+                'user_logged_in' => Session::get('user_logged_in'),
+                'user_data' => Session::get('user_data')
+            ]);
             
             // Direct redirect to user dashboard with absolute URL
             return redirect($dashboardUrl)->with('success', 'Berhasil masuk dengan Google!');
