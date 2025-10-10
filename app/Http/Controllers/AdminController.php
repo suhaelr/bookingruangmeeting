@@ -432,10 +432,26 @@ class AdminController extends Controller
             \Log::info('updateRoom called', [
                 'room_id' => $id,
                 'payload' => $request->all(),
-                'headers' => $request->headers->all()
+                'headers' => $request->headers->all(),
+                'method' => $request->method(),
+                'url' => $request->url(),
+                'timestamp' => now()
             ]);
 
             $room = MeetingRoom::findOrFail($id);
+            
+            // Debug: Log individual field values
+            \Log::info('Field values received', [
+                'name' => $request->input('name'),
+                'capacity' => $request->input('capacity'),
+                'description' => $request->input('description'),
+                'location' => $request->input('location'),
+                'is_active' => $request->input('is_active'),
+                'amenities' => $request->input('amenities'),
+                'name_type' => gettype($request->input('name')),
+                'capacity_type' => gettype($request->input('capacity')),
+                'location_type' => gettype($request->input('location'))
+            ]);
             
             // More flexible validation rules
             $request->validate([
