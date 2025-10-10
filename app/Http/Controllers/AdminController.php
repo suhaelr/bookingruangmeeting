@@ -8,6 +8,7 @@ use App\Models\MeetingRoom;
 use App\Models\Booking;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AdminController extends Controller
 {
@@ -419,6 +420,11 @@ class AdminController extends Controller
     public function updateRoom(Request $request, $id)
     {
         try {
+            \Log::info('updateRoom called', [
+                'room_id' => $id,
+                'payload' => $request->all()
+            ]);
+
             $room = MeetingRoom::findOrFail($id);
             
             $request->validate([
@@ -432,6 +438,7 @@ class AdminController extends Controller
 
             $amenities = $request->amenities ? 
                 array_map('trim', explode(',', $request->amenities)) : [];
+            $amenities = array_values(array_filter($amenities, fn($item) => $item !== ''));
 
             $room->update([
                 'name' => $request->name,
@@ -446,6 +453,15 @@ class AdminController extends Controller
                 'success' => true,
                 'message' => 'Room berhasil diupdate!'
             ]);
+        } catch (ModelNotFoundException $e) {
+            \Log::warning('Room not found in updateRoom', [
+                'room_id' => $id,
+                'input' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Room tidak ditemukan'
+            ], 404);
         } catch (ValidationException $e) {
             \Log::warning('Validation error in updateRoom', [
                 'errors' => $e->errors(),
