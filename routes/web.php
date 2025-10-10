@@ -45,6 +45,9 @@ Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('a
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->withoutMiddleware(['web']);
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
+// Alternative OAuth callback route to bypass Cloudflare completely
+Route::get('/oauth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('oauth.google.callback');
+
 // Debug route for session checking
 Route::get('/debug/session', function() {
     return response()->json([
@@ -55,6 +58,15 @@ Route::get('/debug/session', function() {
         'csrf_token' => csrf_token()
     ]);
 })->name('debug.session');
+
+// Test OAuth callback route
+Route::get('/test/oauth', function() {
+    return response()->json([
+        'message' => 'OAuth test endpoint working',
+        'timestamp' => now(),
+        'session_id' => session()->getId()
+    ]);
+})->name('test.oauth');
 
 // User Management Routes (Admin only)
 Route::middleware('admin.auth')->group(function () {

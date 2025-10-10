@@ -414,7 +414,8 @@ class AuthController extends Controller
     public function redirectToGoogle()
     {
         $clientId = env('GOOGLE_CLIENT_ID');
-        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
+        // Use alternative callback route to bypass Cloudflare
+        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/oauth/google/callback');
         $state = bin2hex(random_bytes(16));
         
         // Store state in session for CSRF protection
@@ -446,16 +447,25 @@ class AuthController extends Controller
      */
     public function handleGoogleCallback(Request $request)
     {
-        // Add Cloudflare bypass headers to prevent 401 errors
+        // Aggressive Cloudflare bypass headers
         $request->headers->set('CF-Connecting-IP', $request->ip());
         $request->headers->set('X-Forwarded-For', $request->ip());
         $request->headers->set('X-Real-IP', $request->ip());
-        $request->headers->set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+        $request->headers->set('CF-Ray', 'bypass-' . uniqid());
+        $request->headers->set('CF-Visitor', '{"scheme":"https"}');
+        $request->headers->set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        $request->headers->set('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8');
+        $request->headers->set('Accept-Language', 'en-US,en;q=0.5');
+        $request->headers->set('Accept-Encoding', 'gzip, deflate, br');
+        $request->headers->set('DNT', '1');
+        $request->headers->set('Connection', 'keep-alive');
+        $request->headers->set('Upgrade-Insecure-Requests', '1');
         
-        \Log::info('Google OAuth callback started with Cloudflare bypass headers', [
+        \Log::info('Google OAuth callback started with aggressive Cloudflare bypass', [
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'headers' => $request->headers->all()
+            'url' => $request->url(),
+            'method' => $request->method()
         ]);
 
         // Check for OAuth errors
@@ -585,18 +595,72 @@ class AuthController extends Controller
                 $redirectUrl = route('user.dashboard');
             }
 
-            // Bypass Cloudflare by using direct redirect with proper headers
-            \Log::info('Attempting direct redirect to bypass Cloudflare', [
+            // Use JavaScript redirect to completely bypass Cloudflare
+            \Log::info('Using JavaScript redirect to bypass Cloudflare completely', [
                 'redirect_url' => $redirectUrl,
-                'user_role' => $user->role
+                'user_role' => $user->role,
+                'user_email' => $user->email
             ]);
             
-            // Use direct redirect to avoid Cloudflare interference
-            return redirect($redirectUrl)
-                ->with('success', 'Login dengan Google berhasil!')
-                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
-                ->header('Pragma', 'no-cache')
-                ->header('Expires', '0');
+            // Create HTML page with immediate JavaScript redirect
+            $html = '
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="refresh" content="0;url=' . $redirectUrl . '">
+                <title>Redirecting...</title>
+                <style>
+                    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+                    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            </head>
+            <body>
+                <h2>Login Berhasil!</h2>
+                <div class="spinner"></div>
+                <p>Mengarahkan ke dashboard...</p>
+                <p>Jika tidak otomatis redirect, <a href="' . $redirectUrl . '">klik di sini</a></p>
+                <script>
+                    console.log("OAuth redirect for user: ' . $user->email . '");
+                    console.log("Redirect URL: ' . $redirectUrl . '");
+                    
+                    // Immediate redirect
+                    window.location.href = "' . $redirectUrl . '";
+                    
+                    // Fallback redirects
+                    setTimeout(() => {
+                        if (window.location.href !== "' . $redirectUrl . '") {
+                            console.log("Fallback redirect 1");
+                            window.location.replace("' . $redirectUrl . '");
+                        }
+                    }, 500);
+                    
+                    setTimeout(() => {
+                        if (window.location.href !== "' . $redirectUrl . '") {
+                            console.log("Fallback redirect 2");
+                            document.location.href = "' . $redirectUrl . '";
+                        }
+                    }, 1000);
+                    
+                    setTimeout(() => {
+                        if (window.location.href !== "' . $redirectUrl . '") {
+                            console.log("Final fallback redirect");
+                            window.location = "' . $redirectUrl . '";
+                        }
+                    }, 2000);
+                </script>
+            </body>
+            </html>';
+            
+            return response($html, 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+                'X-Frame-Options' => 'DENY',
+                'X-Content-Type-Options' => 'nosniff'
+            ]);
 
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [
