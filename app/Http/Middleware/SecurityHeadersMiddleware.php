@@ -24,18 +24,32 @@ class SecurityHeadersMiddleware
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
         
-        // Content Security Policy to prevent XSS and injection attacks
+        // More permissive CSP for development and external resources
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-               "img-src 'self' data: https:; " .
-               "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
-               "connect-src 'self'; " .
+               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://apis.google.com https://challenges.cloudflare.com https://accounts.google.com; " .
+               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://fonts.googleapis.com; " .
+               "img-src 'self' data: https: https://developers.google.com https://www.gstatic.com; " .
+               "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; " .
+               "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; " .
+               "frame-src 'self' https://accounts.google.com; " .
                "frame-ancestors 'none'; " .
                "base-uri 'self'; " .
                "form-action 'self';";
         
-        $response->headers->set('Content-Security-Policy', $csp);
+        // Only apply CSP in production, disable for development
+        if (app()->environment('production')) {
+            $response->headers->set('Content-Security-Policy', $csp);
+        } else {
+            // More permissive CSP for development
+            $devCsp = "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; " .
+                     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; " .
+                     "style-src 'self' 'unsafe-inline' https:; " .
+                     "img-src 'self' data: https:; " .
+                     "font-src 'self' https:; " .
+                     "connect-src 'self' https:; " .
+                     "frame-src 'self' https:;";
+            $response->headers->set('Content-Security-Policy', $devCsp);
+        }
         
         // HSTS header for HTTPS
         if ($request->secure()) {
