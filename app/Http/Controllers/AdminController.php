@@ -79,7 +79,7 @@ class AdminController extends Controller
     {
         try {
             $request->validate([
-                'username' => 'required|string|max:255|unique:users',
+                'username' => 'required|string|max:255',
                 'full_name' => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:users',
                 'password' => 'required|string|min:8',

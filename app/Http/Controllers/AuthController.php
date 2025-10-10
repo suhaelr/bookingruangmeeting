@@ -115,7 +115,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|max:255|unique:users',
+            'username' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
@@ -231,9 +231,12 @@ class AuthController extends Controller
                 return back()->with('error', 'Token reset password sudah kadaluarsa. Silakan request ulang.');
             }
 
-            // Update password
+            // Update password and ensure email is verified (no need to send verification email)
             $user = User::where('email', $request->email)->first();
-            $user->update(['password' => Hash::make($request->password)]);
+            $user->update([
+                'password' => Hash::make($request->password),
+                'email_verified_at' => now() // Mark as verified after password reset
+            ]);
 
             // Delete token
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
@@ -243,7 +246,7 @@ class AuthController extends Controller
                 'email' => $request->email
             ]);
 
-            return redirect()->route('login')->with('success', 'Password berhasil direset! Silakan login dengan password baru.');
+            return redirect()->route('login')->with('success', 'Password berhasil direset! Silakan login dengan username/email dan password baru.');
         } catch (\Exception $e) {
             \Log::error('Password reset error', [
                 'message' => $e->getMessage(),
