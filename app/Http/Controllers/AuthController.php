@@ -34,15 +34,17 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
-            'cf-turnstile-response' => 'required|string',
+            'cf-turnstile-response' => 'nullable|string',
         ]);
 
         $credentials = $request->only(['username', 'password']);
 
-        // Verify Cloudflare Turnstile
+        // Verify Cloudflare Turnstile (only if site key is configured and response is provided)
         $turnstileResponse = $request->input('cf-turnstile-response');
-        if (!$this->verifyTurnstile($turnstileResponse, $request->ip())) {
-            return back()->withErrors(['cf-turnstile-response' => 'Verifikasi keamanan gagal. Silakan coba lagi.'])->withInput();
+        if (env('CLOUDFLARE_SITE_KEY') && $turnstileResponse && $turnstileResponse !== 'turnstile-disabled') {
+            if (!$this->verifyTurnstile($turnstileResponse, $request->ip())) {
+                return back()->withErrors(['cf-turnstile-response' => 'Verifikasi keamanan gagal. Silakan coba lagi.'])->withInput();
+            }
         }
 
         // Check hardcoded credentials first

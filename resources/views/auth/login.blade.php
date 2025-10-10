@@ -164,6 +164,7 @@
                 </div>
 
                 <!-- Cloudflare Turnstile -->
+                @if(env('CLOUDFLARE_SITE_KEY'))
                 <div class="flex justify-center">
                     <div class="cf-turnstile" 
                          data-sitekey="{{ env('CLOUDFLARE_SITE_KEY') }}" 
@@ -172,9 +173,10 @@
                          data-theme="light">
                     </div>
                 </div>
+                @endif
                 
                 <!-- Hidden input for Turnstile response -->
-                <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response">
+                <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response" value="">
 
                 <!-- Login Button -->
                 <button 
@@ -256,6 +258,16 @@
             console.error('Turnstile error:', error);
             document.getElementById('cf-turnstile-response').value = '';
         }
+        
+        // Initialize Turnstile only if site key is available
+        document.addEventListener('DOMContentLoaded', function() {
+            const siteKey = '{{ env("CLOUDFLARE_SITE_KEY") }}';
+            if (!siteKey) {
+                console.log('Cloudflare Turnstile site key not configured, skipping Turnstile');
+                // Set a dummy value to pass validation
+                document.getElementById('cf-turnstile-response').value = 'turnstile-disabled';
+            }
+        });
         
         // Password toggle function
         function togglePassword() {
