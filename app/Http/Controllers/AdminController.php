@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\MeetingRoom;
 use App\Models\Booking;
 use Carbon\Carbon;
+use Illuminate\Validation\ValidationException;
 
 class AdminController extends Controller
 {
@@ -106,7 +107,7 @@ class AdminController extends Controller
             ]);
 
             return redirect()->route('admin.users')->with('success', 'User berhasil ditambahkan!');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             \Log::error('Validation error in storeUser', [
                 'errors' => $e->errors(),
                 'input' => $request->all()
@@ -167,11 +168,20 @@ class AdminController extends Controller
                 'description' => $request->description,
                 'capacity' => $request->capacity,
                 'location' => $request->location,
-                'is_active' => $request->is_active,
+                'is_active' => $request->boolean('is_active'),
                 'amenities' => $amenities
             ]);
 
             return redirect()->route('admin.rooms')->with('success', 'Room berhasil ditambahkan!');
+        } catch (ValidationException $e) {
+            \Log::warning('Validation error in storeRoom', [
+                'errors' => $e->errors(),
+                'input' => $request->all()
+            ]);
+            return back()
+                ->withErrors($e->errors())
+                ->withInput()
+                ->with('error', 'Validasi gagal, periksa kembali data yang dimasukkan.');
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal menambahkan room: ' . $e->getMessage())->withInput();
         }
@@ -218,6 +228,18 @@ class AdminController extends Controller
                 'success' => true,
                 'message' => 'Status booking berhasil diupdate!'
             ]);
+        } catch (ValidationException $e) {
+            \Log::warning('Validation error in updateBookingStatus', [
+                'errors' => $e->errors(),
+                'booking_id' => $id,
+                'input' => $request->all()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             \Log::error('Error in updateBookingStatus: ' . $e->getMessage(), [
                 'booking_id' => $id,
@@ -369,7 +391,7 @@ class AdminController extends Controller
                 'success' => true,
                 'message' => 'User berhasil diupdate!'
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             \Log::error('Validation error in updateUser', [
                 'errors' => $e->errors(),
                 'user_id' => $id,
@@ -404,7 +426,7 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'required|in:0,1',
+                'is_active' => 'required|boolean',
                 'amenities' => 'nullable|string'
             ]);
 
@@ -416,7 +438,7 @@ class AdminController extends Controller
                 'description' => $request->description,
                 'capacity' => $request->capacity,
                 'location' => $request->location,
-                'is_active' => $request->is_active,
+                'is_active' => $request->boolean('is_active'),
                 'amenities' => $amenities
             ]);
 
@@ -424,7 +446,24 @@ class AdminController extends Controller
                 'success' => true,
                 'message' => 'Room berhasil diupdate!'
             ]);
+        } catch (ValidationException $e) {
+            \Log::warning('Validation error in updateRoom', [
+                'errors' => $e->errors(),
+                'room_id' => $id,
+                'input' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
+            \Log::error('Error in updateRoom', [
+                'message' => $e->getMessage(),
+                'room_id' => $id,
+                'input' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengupdate room: ' . $e->getMessage()

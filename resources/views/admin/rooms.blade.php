@@ -443,15 +443,28 @@
                     method: 'PUT',
                     body: formData,
                     headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error('Network response was not ok');
+                .then(async response => {
+                    let data = null;
+                    try {
+                        data = await response.json();
+                    } catch (jsonError) {
+                        // Ignore JSON parsing errors so we can surface generic message below
                     }
+
+                    if (response.ok && data) {
+                        return data;
+                    }
+
+                    const errorMessage = data?.message
+                        ?? (data?.errors ? Object.values(data.errors).flat().join(', ') : null)
+                        ?? `Permintaan gagal dengan status ${response.status}`;
+
+                    throw new Error(errorMessage);
                 })
                 .then(data => {
                     if (data.success) {

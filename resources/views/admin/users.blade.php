@@ -462,22 +462,34 @@
                     fetch(`/admin/users/${userId}`, {
                         method: 'PUT',
                         body: formData,
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.json();
-                        } else {
-                            throw new Error('Network response was not ok');
-                        }
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            alert(data.message);
-                            closeModal('userEditModal');
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(async response => {
+                    let data = null;
+                    try {
+                        data = await response.json();
+                    } catch (jsonError) {
+                        // ignore parse errors; will handle below
+                    }
+
+                    if (response.ok && data) {
+                        return data;
+                    }
+
+                    const errorMessage = data?.message
+                        ?? (data?.errors ? Object.values(data.errors).flat().join(', ') : null)
+                        ?? `Permintaan gagal dengan status ${response.status}`;
+
+                    throw new Error(errorMessage);
+                })
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);
+                        closeModal('userEditModal');
                             location.reload();
                         } else {
                             alert(data.message || 'Error updating user');
