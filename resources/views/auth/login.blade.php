@@ -180,8 +180,7 @@
                 <button 
                     type="submit" 
                     id="loginButton"
-                    disabled
-                    class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     Masuk
@@ -251,15 +250,11 @@
         function onTurnstileSuccess(token) {
             console.log('Turnstile success:', token);
             document.getElementById('cf-turnstile-response').value = token;
-            document.getElementById('loginButton').disabled = false;
-            document.getElementById('loginButton').classList.remove('opacity-50', 'cursor-not-allowed');
         }
         
         function onTurnstileError(error) {
             console.error('Turnstile error:', error);
             document.getElementById('cf-turnstile-response').value = '';
-            document.getElementById('loginButton').disabled = true;
-            document.getElementById('loginButton').classList.add('opacity-50', 'cursor-not-allowed');
         }
         
         // Password toggle function
