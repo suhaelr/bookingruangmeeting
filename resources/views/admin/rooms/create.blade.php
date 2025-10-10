@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Room - Admin Panel</title>
+    <title>Tambah Ruang - Admin Panel</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -60,8 +61,7 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">Admin Panel</h1>
-                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Administrator' }}</p>
+                        <h1 class="text-xl font-bold text-white">{{ session('user_data.full_name') ?? 'Administrator' }}</h1>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -101,11 +101,11 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Baru Meeting Room</h2>
-                    <p class="text-white/80">Buat a new meeting room</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Ruang Meeting Baru</h2>
+                    <p class="text-white/80">Buat ruang meeting baru</p>
                 </div>
                 <a href="{{ route('admin.rooms') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Kembali to Ruang
+                    <i class="fas fa-arrow-left mr-2"></i>Kembali ke Ruang
                 </a>
             </div>
         </div>
@@ -128,10 +128,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Room Nama -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-white mb-2">Room Nama *</label>
+                        <label for="name" class="block text-sm font-medium text-white mb-2">Nama Ruang *</label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter room name" required>
+                               placeholder="Masukkan nama ruang" required>
                     </div>
 
                     <!-- Kapasitas -->
@@ -139,7 +139,7 @@
                         <label for="capacity" class="block text-sm font-medium text-white mb-2">Kapasitas *</label>
                         <input type="number" id="capacity" name="capacity" value="{{ old('capacity') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter capacity" min="1" required>
+                               placeholder="Masukkan kapasitas" min="1" required>
                     </div>
 
                     <!-- Lokasi -->
@@ -147,16 +147,9 @@
                         <label for="location" class="block text-sm font-medium text-white mb-2">Lokasi *</label>
                         <input type="text" id="location" name="location" value="{{ old('location') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter location" required>
+                               placeholder="Masukkan lokasi" required>
                     </div>
 
-                    <!-- Hourly Tarif -->
-                    <div>
-                        <label for="hourly_rate" class="block text-sm font-medium text-white mb-2">Hourly Tarif *</label>
-                        <input type="number" id="hourly_rate" name="hourly_rate" value="{{ old('hourly_rate') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter hourly rate" min="0" step="0.01" required>
-                    </div>
                 </div>
 
                 <!-- Deskripsi -->
@@ -164,16 +157,16 @@
                     <label for="description" class="block text-sm font-medium text-white mb-2">Deskripsi</label>
                     <textarea id="description" name="description" rows="3" 
                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                              placeholder="Enter room description">{{ old('description') }}</textarea>
+                              placeholder="Masukkan deskripsi ruang">{{ old('description') }}</textarea>
                 </div>
 
                 <!-- Amenities -->
                 <div class="mt-6">
-                    <label for="amenities" class="block text-sm font-medium text-white mb-2">Amenities</label>
+                    <label for="amenities" class="block text-sm font-medium text-white mb-2">Fasilitas</label>
                     <input type="text" id="amenities" name="amenities" value="{{ old('amenities') }}" 
                            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="projector, whiteboard, wifi, ac, sound_system">
-                    <p class="text-white/60 text-sm mt-1">Separate amenities with commas</p>
+                    <p class="text-white/60 text-sm mt-1">Pisahkan fasilitas dengan koma</p>
                 </div>
 
                 <!-- Status -->
@@ -183,7 +176,7 @@
                             class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         <option value="">Pilih status</option>
                         <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Aktif</option>
-                        <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Inactive</option>
+                        <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Tidak Aktif</option>
                     </select>
                 </div>
 
@@ -194,7 +187,7 @@
                     </a>
                     <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-save mr-2"></i>
-                        Buat Room
+                        Buat Ruang
                     </button>
                 </div>
             </form>

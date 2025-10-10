@@ -412,7 +412,7 @@ class AdminController extends Controller
                 'description' => 'nullable|string',
                 'capacity' => 'required|integer|min:1',
                 'location' => 'required|string|max:255',
-                'is_active' => 'required|boolean',
+                'is_active' => 'required|in:0,1',
                 'amenities' => 'nullable|string'
             ]);
 

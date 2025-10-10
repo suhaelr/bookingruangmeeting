@@ -69,8 +69,7 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">User Panel</h1>
-                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Pengguna' }}</p>
+                        <h1 class="text-xl font-bold text-white">{{ session('user_data.full_name') ?? 'Pengguna' }}</h1>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">

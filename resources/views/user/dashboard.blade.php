@@ -8,6 +8,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        /* Mobile navbar text size adjustments */
+        @media (max-width: 768px) {
+            .navbar-title {
+                font-size: 1rem !important; /* text-lg -> text-base */
+            }
+            .navbar-subtitle {
+                font-size: 0.75rem !important; /* text-sm -> text-xs */
+            }
+            .navbar-menu {
+                font-size: 0.875rem !important; /* text-base -> text-sm */
+            }
+        }
+    </style>
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Desktop Navigation -->
@@ -19,22 +33,21 @@
                         <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                     <div class="ml-4">
-                        <h1 class="text-xl font-bold text-white">User Panel</h1>
-                        <p class="text-white/80 text-sm">{{ session('user_data.full_name') ?? 'Pengguna' }}</p>
+                        <h1 class="text-xl font-bold text-white navbar-title">{{ session('user_data.full_name') ?? 'Pengguna' }}</h1>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex space-x-6">
-                        <a href="{{ route('user.dashboard') }}" class="text-white hover:text-white/80 transition-colors">
+                        <a href="{{ route('user.dashboard') }}" class="text-white hover:text-white/80 transition-colors navbar-menu">
                             <i class="fas fa-tachometer-alt mr-1"></i>Beranda
                         </a>
-                        <a href="{{ route('user.bookings') }}" class="text-white/80 hover:text-white transition-colors">
+                        <a href="{{ route('user.bookings') }}" class="text-white/80 hover:text-white transition-colors navbar-menu">
                             <i class="fas fa-calendar-check mr-1"></i>Pemesanan Saya
                         </a>
-                        <a href="{{ route('user.bookings.create') }}" class="text-white/80 hover:text-white transition-colors">
+                        <a href="{{ route('user.bookings.create') }}" class="text-white/80 hover:text-white transition-colors navbar-menu">
                             <i class="fas fa-plus mr-1"></i>Pemesanan Baru
                         </a>
-                        <a href="{{ route('user.profile') }}" class="text-white/80 hover:text-white transition-colors">
+                        <a href="{{ route('user.profile') }}" class="text-white/80 hover:text-white transition-colors navbar-menu">
                             <i class="fas fa-user mr-1"></i>Profil
                         </a>
                     </div>
