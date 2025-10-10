@@ -205,7 +205,7 @@
                                 <h4 class="text-white font-medium">Change Kata Sandi</h4>
                                 <p class="text-white/60 text-sm">Perbarui your account password</p>
                             </div>
-                            <button onclick="openChangeKata SandiModal()" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-300">
+                            <button onclick="openChangePasswordModal()" class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-300">
                                 Change
                             </button>
                         </div>
@@ -215,7 +215,7 @@
                                 <h4 class="text-white font-medium">Notifikasi Pengaturan</h4>
                                 <p class="text-white/60 text-sm">Manage your notification preferences</p>
                             </div>
-                            <button onclick="openNotifikasiModal()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300">
+                            <button onclick="openNotificationModal()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300">
                                 Pengaturan
                             </button>
                         </div>
@@ -235,17 +235,17 @@
         </div>
     </div>
 
-    <!-- Change Kata Sandi Modal -->
-    <div id="changeKata SandiModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-gray-800">Change Kata Sandi</h3>
-                    <button onclick="closeModal('changeKata SandiModal')" class="text-gray-500 hover:text-gray-700">
+                    <button onclick="closeModal('changePasswordModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-                <form id="changeKata SandiForm">
+                <form id="changePasswordForm">
                     @csrf
                     <div class="space-y-4">
                         <div>
@@ -265,7 +265,7 @@
                         </div>
                     </div>
                     <div class="flex justify-end space-x-4 mt-6">
-                        <button type="button" onclick="closeModal('changeKata SandiModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        <button type="button" onclick="closeModal('changePasswordModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                             Batal
                         </button>
                         <button type="submit" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">
@@ -383,24 +383,32 @@
             window.URL.revokeObjectURL(url);
         }
 
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+        }
+
+        function openNotificationModal() {
+            document.getElementById('notificationModal').classList.remove('hidden');
+        }
+
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             // Change password form
-            const changeKata SandiForm = document.getElementById('changeKata SandiForm');
-            if (changeKata SandiForm) {
-                changeKata SandiForm.addEventListener('submit', function(e) {
+            const changePasswordForm = document.getElementById('changePasswordForm');
+            if (changePasswordForm) {
+                changePasswordForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
                     const formData = new FormData(this);
-                    const newKata Sandi = formData.get('new_password');
-                    const confirmKata Sandi = formData.get('new_password_confirmation');
+                    const newPassword = formData.get('new_password');
+                    const confirmPassword = formData.get('new_password_confirmation');
                     
-                    if (newKata Sandi !== confirmKata Sandi) {
+                    if (newPassword !== confirmPassword) {
                         alert('New passwords do not match!');
                         return;
                     }
                     
-                    if (newKata Sandi.length < 6) {
+                    if (newPassword.length < 6) {
                         alert('Kata Sandi must be at least 6 characters long!');
                         return;
                     }
@@ -417,7 +425,7 @@
                     .then(data => {
                         if (data.success) {
                             alert('Kata Sandi changed successfully!');
-                            closeModal('changeKata SandiModal');
+                            closeModal('changePasswordModal');
                             this.reset();
                         } else {
                             alert(data.message || 'Error changing password');
@@ -464,7 +472,7 @@
             // Close modal on outside click
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('fixed')) {
-                    const modals = ['changeKata SandiModal', 'notificationModal'];
+                    const modals = ['changePasswordModal', 'notificationModal'];
                     modals.forEach(modalId => {
                         if (!document.getElementById(modalId).classList.contains('hidden')) {
                             closeModal(modalId);
