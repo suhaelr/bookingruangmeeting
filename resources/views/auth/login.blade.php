@@ -199,6 +199,15 @@
             <p class="text-white/40 text-xs mt-2">
                 Dibuat dengan ❤️ oleh eL PUSDATIN
             </p>
+            <p class="text-white/50 text-xs mt-3">
+                <a href="{{ route('privacy.policy') }}" class="hover:text-white underline transition-colors duration-300">
+                    Kebijakan Privasi
+                </a>
+                <span class="mx-2">•</span>
+                <a href="{{ route('terms.service') }}" class="hover:text-white underline transition-colors duration-300">
+                    Syarat dan Ketentuan
+                </a>
+            </p>
         </div>
     </div>
 

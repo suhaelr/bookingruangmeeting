@@ -44,6 +44,16 @@ Route::post('/resend-verification', [AuthController::class, 'resendVerification'
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
+// Privacy Policy Route
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy.policy');
+
+// Terms of Service Route
+Route::get('/terms-of-service', function () {
+    return view('terms-of-service');
+})->name('terms.service');
+
 // Admin Routes
 Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
