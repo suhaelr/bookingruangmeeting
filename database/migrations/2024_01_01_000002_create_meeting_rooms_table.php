@@ -18,7 +18,6 @@ return new class extends Migration
             $table->integer('capacity');
             $table->json('amenities')->nullable(); // ['projector', 'whiteboard', 'wifi', 'ac']
             $table->string('location');
-            $table->decimal('hourly_rate', 8, 2)->default(0);
             $table->json('images')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
