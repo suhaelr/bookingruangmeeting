@@ -95,11 +95,6 @@
                             <i class="fas fa-user-shield mr-1"></i>
                             {{ session('user_data.full_name') }}
                         </span>
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
                     </div>
                 </div>
             </div>
@@ -123,9 +118,6 @@
                         <option value="cancelled">Dibatalkan</option>
                         <option value="completed">Selesai</option>
                     </select>
-                    <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-download mr-2"></i>Ekspor
-                    </button>
                 </div>
             </div>
         </div>
@@ -220,7 +212,11 @@
                     <div class="text-white/80 text-sm">
                         Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
                     </div>
-                    <div class="flex space-x-2">
+                    <div class="flex items-center space-x-4">
+                        <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                            <i class="fas fa-download mr-2"></i>Ekspor
+                        </button>
+                        <div class="flex space-x-2">
                         @if($bookings->previousPageUrl())
                         <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
                             <i class="fas fa-chevron-left"></i>
@@ -239,6 +235,7 @@
                             <i class="fas fa-chevron-right"></i>
                         </a>
                         @endif
+                        </div>
                     </div>
                 </div>
             @else
