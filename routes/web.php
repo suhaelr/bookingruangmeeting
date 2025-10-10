@@ -23,7 +23,7 @@ Route::fallback(function () {
 });
 
 // Authentication Routes with rate limiting
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('login.csp');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware(['login.csp', 'dev.csp']);
 Route::post('/login', [AuthController::class, 'login'])->middleware(RateLimitMiddleware::class);
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -42,8 +42,8 @@ Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->nam
 Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
 
 // Google OAuth Routes with Cloudflare bypass and relaxed CSP
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google')->middleware('login.csp');
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware(['cloudflare.bypass', 'login.csp']);
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google')->middleware(['login.csp', 'dev.csp']);
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware(['cloudflare.bypass', 'login.csp', 'dev.csp']);
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
 // Debug route for session checking
@@ -98,7 +98,7 @@ Route::get('/terms-of-service', function () {
 })->name('terms.service');
 
 // Admin Routes
-Route::prefix('admin')->middleware('admin.auth')->group(function () {
+Route::prefix('admin')->middleware(['admin.auth', 'dev.csp'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     
     // User Management
@@ -124,7 +124,7 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
 });
 
 // User Routes
-Route::prefix('user')->middleware('user.auth')->group(function () {
+Route::prefix('user')->middleware(['user.auth', 'dev.csp'])->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::post('/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
