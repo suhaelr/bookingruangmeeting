@@ -408,4 +408,176 @@ class AuthController extends Controller
         return true;
     }
 
+    /**
+     * Redirect to Google OAuth
+     */
+    public function redirectToGoogle()
+    {
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $redirectUri = urlencode(env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback'));
+        $scope = urlencode('openid email profile');
+        $state = bin2hex(random_bytes(16));
+        
+        // Store state in session for CSRF protection
+        session(['google_oauth_state' => $state]);
+        
+        $authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query([
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'scope' => $scope,
+            'response_type' => 'code',
+            'state' => $state,
+            'access_type' => 'offline',
+            'prompt' => 'consent'
+        ]);
+        
+        return redirect($authUrl);
+    }
+
+    /**
+     * Handle Google OAuth callback
+     */
+    public function handleGoogleCallback(Request $request)
+    {
+        // Verify state parameter for CSRF protection
+        $state = $request->get('state');
+        if (!$state || $state !== session('google_oauth_state')) {
+            return redirect()->route('login')->with('error', 'Invalid OAuth state parameter.');
+        }
+
+        $code = $request->get('code');
+        if (!$code) {
+            return redirect()->route('login')->with('error', 'Authorization code not received from Google.');
+        }
+
+        try {
+            // Exchange authorization code for access token
+            $tokenResponse = $this->getGoogleAccessToken($code);
+            
+            if (!$tokenResponse || !isset($tokenResponse['access_token'])) {
+                return redirect()->route('login')->with('error', 'Failed to obtain access token from Google.');
+            }
+
+            // Get user information from Google
+            $userInfo = $this->getGoogleUserInfo($tokenResponse['access_token']);
+            
+            if (!$userInfo || !isset($userInfo['email'])) {
+                return redirect()->route('login')->with('error', 'Failed to retrieve user information from Google.');
+            }
+
+            // Check if user exists in database
+            $user = User::where('email', $userInfo['email'])->first();
+            
+            if (!$user) {
+                // Create new user
+                $user = User::create([
+                    'username' => $userInfo['email'], // Use email as username
+                    'name' => $userInfo['name'] ?? $userInfo['given_name'] . ' ' . $userInfo['family_name'],
+                    'full_name' => $userInfo['name'] ?? $userInfo['given_name'] . ' ' . $userInfo['family_name'],
+                    'email' => $userInfo['email'],
+                    'password' => Hash::make(Str::random(32)), // Random password for OAuth users
+                    'role' => 'user',
+                    'email_verified_at' => now(), // Google users are pre-verified
+                    'google_id' => $userInfo['id'] ?? null,
+                ]);
+            } else {
+                // Update existing user with Google ID if not set
+                if (!$user->google_id) {
+                    $user->update(['google_id' => $userInfo['id'] ?? null]);
+                }
+            }
+
+            // Log user in
+            Session::put('user_logged_in', true);
+            Session::put('user_data', [
+                'id' => $user->id,
+                'username' => $user->username,
+                'full_name' => $user->full_name ?? $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'department' => $user->department
+            ]);
+
+            // Update last login
+            $user->update(['last_login_at' => now()]);
+
+            \Log::info('Google OAuth login successful', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'google_id' => $userInfo['id'] ?? null
+            ]);
+
+            return $user->role === 'admin' 
+                ? redirect()->route('admin.dashboard')->with('success', 'Login dengan Google berhasil!')
+                : redirect()->route('user.dashboard')->with('success', 'Login dengan Google berhasil!');
+
+        } catch (\Exception $e) {
+            \Log::error('Google OAuth error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->route('login')->with('error', 'Gagal login dengan Google: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Exchange authorization code for access token
+     */
+    private function getGoogleAccessToken($code)
+    {
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $clientSecret = env('GOOGLE_CLIENT_SECRET');
+        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'code' => $code,
+            'grant_type' => 'authorization_code',
+            'redirect_uri' => $redirectUri,
+        ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/x-www-form-urlencoded'
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$response) {
+            throw new \Exception('Failed to obtain access token from Google');
+        }
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Get user information from Google
+     */
+    private function getGoogleUserInfo($accessToken)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v2/userinfo?access_token=' . $accessToken);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$response) {
+            throw new \Exception('Failed to retrieve user information from Google');
+        }
+
+        return json_decode($response, true);
+    }
+
 }
