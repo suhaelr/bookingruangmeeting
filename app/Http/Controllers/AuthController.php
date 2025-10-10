@@ -414,8 +414,8 @@ class AuthController extends Controller
     public function redirectToGoogle()
     {
         $clientId = env('GOOGLE_CLIENT_ID');
-        // Use alternative callback route to bypass Cloudflare
-        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/oauth/google/callback');
+        // Use original callback route that matches Google Cloud Console
+        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
         $state = bin2hex(random_bytes(16));
         
         // Store state in session for CSRF protection

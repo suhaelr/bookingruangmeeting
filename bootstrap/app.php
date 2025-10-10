@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'rate.limit' => \App\Http\Middleware\RateLimitMiddleware::class,
             'security.headers' => \App\Http\Middleware\SecurityHeadersMiddleware::class,
             'input.validation' => \App\Http\Middleware\InputValidationMiddleware::class,
+            'cloudflare.bypass' => \App\Http\Middleware\CloudflareBypass::class,
         ]);
         
         // Apply security middleware globally
