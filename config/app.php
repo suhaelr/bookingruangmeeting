@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://jadixpert.com'),
+    'url' => env('APP_URL', 'https://pusdatinbgn.web.id'),
 
     /*
     |--------------------------------------------------------------------------
