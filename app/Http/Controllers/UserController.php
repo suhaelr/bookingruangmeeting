@@ -253,10 +253,8 @@ class UserController extends Controller
                 ], 422);
             }
 
-            // Recalculate total cost
-            $duration = $startTime->diffInHours($endTime) + ($startTime->diffInMinutes($endTime) % 60) / 60;
-            $totalCost = $duration * $booking->meetingRoom->hourly_rate;
-            $totalCost = round($totalCost, 2);
+            // Recalculate total cost (hourly_rate removed, set to 0)
+            $totalCost = 0.00;
 
             // Update booking
             $booking->update([

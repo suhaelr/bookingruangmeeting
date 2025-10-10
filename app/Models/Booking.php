@@ -108,30 +108,9 @@ class Booking extends Model
 
     public function calculateTotalCost()
     {
-        // Calculate duration in hours with decimal precision
-        $start = Carbon::parse($this->start_time);
-        $end = Carbon::parse($this->end_time);
-        $duration = $end->diffInHours($start) + ($end->diffInMinutes($start) % 60) / 60;
-        
-        // Calculate total cost with proper rounding
-        $totalCost = $duration * $this->meetingRoom->hourly_rate;
-        
-        // Round to 2 decimal places and ensure it doesn't exceed database limits
-        $totalCost = round($totalCost, 2);
-        
-        // Check if total cost exceeds maximum allowed value
-        $maxValue = 9999999999.99; // Maximum for decimal(12,2)
-        if ($totalCost > $maxValue) {
-            \Log::warning('Total cost exceeds maximum allowed value', [
-                'calculated_cost' => $totalCost,
-                'max_allowed' => $maxValue,
-                'duration_hours' => $duration,
-                'hourly_rate' => $this->meetingRoom->hourly_rate
-            ]);
-            $totalCost = $maxValue;
-        }
-        
-        return $totalCost;
+        // Since hourly_rate has been removed, return 0 for now
+        // This can be updated later if pricing is needed
+        return 0.00;
     }
 
     public function updateStatus($status, $reason = null)

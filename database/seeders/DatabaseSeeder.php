@@ -71,7 +71,6 @@ class DatabaseSeeder extends Seeder
                 'capacity' => 20,
                 'amenities' => ['projector', 'whiteboard', 'wifi', 'ac', 'sound_system'],
                 'location' => 'Floor 1, Building A',
-                'hourly_rate' => 150000,
                 'images' => ['room1.jpg', 'room1_2.jpg'],
                 'is_active' => true,
             ],
@@ -81,7 +80,6 @@ class DatabaseSeeder extends Seeder
                 'capacity' => 8,
                 'amenities' => ['whiteboard', 'wifi', 'ac'],
                 'location' => 'Floor 2, Building A',
-                'hourly_rate' => 100000,
                 'images' => ['room2.jpg'],
                 'is_active' => true,
             ],
@@ -91,7 +89,6 @@ class DatabaseSeeder extends Seeder
                 'capacity' => 12,
                 'amenities' => ['projector', 'whiteboard', 'wifi', 'ac', 'video_conference', 'catering'],
                 'location' => 'Floor 3, Building A',
-                'hourly_rate' => 250000,
                 'images' => ['room3.jpg', 'room3_2.jpg'],
                 'is_active' => true,
             ],
@@ -101,7 +98,6 @@ class DatabaseSeeder extends Seeder
                 'capacity' => 30,
                 'amenities' => ['projector', 'whiteboard', 'wifi', 'ac', 'sound_system', 'microphone'],
                 'location' => 'Floor 1, Building B',
-                'hourly_rate' => 200000,
                 'images' => ['room4.jpg'],
                 'is_active' => true,
             ],
@@ -111,7 +107,6 @@ class DatabaseSeeder extends Seeder
                 'capacity' => 4,
                 'amenities' => ['wifi', 'ac'],
                 'location' => 'Floor 2, Building B',
-                'hourly_rate' => 75000,
                 'images' => ['room5.jpg'],
                 'is_active' => true,
             ],
@@ -146,7 +141,7 @@ class DatabaseSeeder extends Seeder
                 'attendees_count' => rand(2, 10),
                 'attendees' => ['user1@example.com', 'user2@example.com'],
                 'special_requirements' => $i % 3 === 0 ? 'Need projector and whiteboard' : null,
-                'total_cost' => $room->hourly_rate * $startTime->diffInHours($endTime),
+                'total_cost' => 0.00, // hourly_rate removed
                 'cancelled_at' => $status === 'cancelled' ? now() : null,
                 'cancellation_reason' => $status === 'cancelled' ? 'Meeting cancelled due to schedule conflict' : null,
             ]);
@@ -173,7 +168,7 @@ class DatabaseSeeder extends Seeder
                 'attendees_count' => rand(2, 15),
                 'attendees' => ['future1@example.com', 'future2@example.com'],
                 'special_requirements' => $i % 4 === 0 ? 'Need video conference setup' : null,
-                'total_cost' => $room->hourly_rate * $startTime->diffInHours($endTime),
+                'total_cost' => 0.00, // hourly_rate removed
             ]);
         }
     }
