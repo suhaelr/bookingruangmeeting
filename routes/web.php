@@ -20,14 +20,14 @@ Route::fallback(function () {
     return redirect()->route('login');
 });
 
-// Authentication Routes
+// Authentication Routes with rate limiting
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('rate.limit');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Registration Routes
+// Registration Routes with rate limiting
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('rate.limit');
 
 // Password Reset Routes
 Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
