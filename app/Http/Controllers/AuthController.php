@@ -532,14 +532,15 @@ class AuthController extends Controller
 
             // Log user in
             Session::put('user_logged_in', true);
-            Session::put('user_data', [
+            $userData = [
                 'id' => $user->id,
                 'username' => $user->username,
                 'full_name' => $user->full_name ?? $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
                 'department' => $user->department
-            ]);
+            ];
+            Session::put('user_data', $userData);
 
             // Update last login
             $user->update(['last_login_at' => now()]);
@@ -548,18 +549,35 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'google_id' => $userInfo['id'] ?? null,
-                'role' => $user->role
+                'role' => $user->role,
+                'user_data' => $userData,
+                'session_id' => session()->getId()
             ]);
 
             // Force session to be saved before redirect
             Session::save();
 
+            // Verify session data after save
+            \Log::info('Session verification after save', [
+                'user_logged_in' => Session::get('user_logged_in'),
+                'user_data' => Session::get('user_data'),
+                'session_id' => session()->getId()
+            ]);
+
             // Redirect based on user role
             if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard')->with('success', 'Login dengan Google berhasil!');
+                \Log::info('Redirecting to admin dashboard');
+                $redirectUrl = route('admin.dashboard');
             } else {
-                return redirect()->route('user.dashboard')->with('success', 'Login dengan Google berhasil!');
+                \Log::info('Redirecting to user dashboard');
+                $redirectUrl = route('user.dashboard');
             }
+
+            // Use intermediate redirect page to ensure session is properly set
+            return view('auth.oauth-redirect', [
+                'redirectUrl' => $redirectUrl,
+                'userRole' => $user->role
+            ])->with('success', 'Login dengan Google berhasil!');
 
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [

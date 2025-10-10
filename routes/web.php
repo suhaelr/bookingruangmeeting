@@ -45,6 +45,17 @@ Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('a
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
+// Debug route for session checking
+Route::get('/debug/session', function() {
+    return response()->json([
+        'session_id' => session()->getId(),
+        'user_logged_in' => session('user_logged_in'),
+        'user_data' => session('user_data'),
+        'all_session' => session()->all(),
+        'csrf_token' => csrf_token()
+    ]);
+})->name('debug.session');
+
 // User Management Routes (Admin only)
 Route::middleware('admin.auth')->group(function () {
     Route::get('/admin/users/api', [AuthController::class, 'getAllUsers'])->name('admin.users.api');
