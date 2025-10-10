@@ -7,6 +7,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
     <style>
@@ -39,6 +40,11 @@
         .glass-effect p,
         .glass-effect label {
             color: white !important;
+        }
+        
+        /* Cloudflare Turnstile styling */
+        .cf-turnstile {
+            border-radius: 8px !important;
         }
         
         /* Google Sign-In button styling */
@@ -157,11 +163,25 @@
                     </div>
                 </div>
 
+                <!-- Cloudflare Turnstile -->
+                <div class="flex justify-center">
+                    <div class="cf-turnstile" 
+                         data-sitekey="{{ env('CLOUDFLARE_SITE_KEY') }}" 
+                         data-callback="onTurnstileSuccess"
+                         data-error-callback="onTurnstileError"
+                         data-theme="light">
+                    </div>
+                </div>
+                
+                <!-- Hidden input for Turnstile response -->
+                <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response">
+
                 <!-- Login Button -->
                 <button 
                     type="submit" 
                     id="loginButton"
-                    class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    disabled
+                    class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     Masuk
@@ -227,6 +247,21 @@
     @include('components.whatsapp-float')
 
     <script>
+        // Cloudflare Turnstile callbacks
+        function onTurnstileSuccess(token) {
+            console.log('Turnstile success:', token);
+            document.getElementById('cf-turnstile-response').value = token;
+            document.getElementById('loginButton').disabled = false;
+            document.getElementById('loginButton').classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        
+        function onTurnstileError(error) {
+            console.error('Turnstile error:', error);
+            document.getElementById('cf-turnstile-response').value = '';
+            document.getElementById('loginButton').disabled = true;
+            document.getElementById('loginButton').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+        
         // Password toggle function
         function togglePassword() {
             const passwordInput = document.getElementById('password');

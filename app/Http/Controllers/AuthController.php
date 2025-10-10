@@ -31,10 +31,19 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
+            'cf-turnstile-response' => 'required|string',
         ]);
+
+        $credentials = $request->only(['username', 'password']);
+
+        // Verify Cloudflare Turnstile
+        $turnstileResponse = $request->input('cf-turnstile-response');
+        if (!$this->verifyTurnstile($turnstileResponse, $request->ip())) {
+            return back()->withErrors(['cf-turnstile-response' => 'Verifikasi keamanan gagal. Silakan coba lagi.'])->withInput();
+        }
 
         // Check hardcoded credentials first
         if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin') {
@@ -925,6 +934,321 @@ class AuthController extends Controller
 
             return response()->json(['error' => 'Failed to get users list'], 500);
         }
+    }
+
+    /**
+     * Verify Cloudflare Turnstile token
+     */
+    private function verifyTurnstile($token, $remoteIp = null)
+    {
+        $secretKey = env('CLOUDFLARE_SECRET_KEY');
+        
+        if (!$secretKey) {
+            \Log::error('Cloudflare secret key not configured');
+            return false;
+        }
+
+        $data = [
+            'secret' => $secretKey,
+            'response' => $token,
+            'remoteip' => $remoteIp
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            \Log::error('Turnstile verification failed', [
+                'http_code' => $httpCode,
+                'response' => $response
+            ]);
+            return false;
+        }
+
+        $result = json_decode($response, true);
+        
+        \Log::info('Turnstile verification result', [
+            'success' => $result['success'] ?? false,
+            'error_codes' => $result['error-codes'] ?? []
+        ]);
+
+        return $result['success'] ?? false;
+    }
+
+    /**
+     * Redirect to Google OAuth
+     */
+    public function redirectToGoogle()
+    {
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
+        
+        if (!$clientId) {
+            return redirect()->route('login')->with('error', 'Google OAuth tidak dikonfigurasi dengan benar.');
+        }
+
+        $state = Str::random(40);
+        session(['google_oauth_state' => $state]);
+
+        $params = [
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'response_type' => 'code',
+            'scope' => 'openid email profile',
+            'access_type' => 'offline',
+            'prompt' => 'consent',
+            'include_granted_scopes' => 'true',
+            'state' => $state
+        ];
+
+        $authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' . http_build_query($params);
+        
+        return redirect($authUrl);
+    }
+
+    /**
+     * Handle Google OAuth callback
+     */
+    public function handleGoogleCallback(Request $request)
+    {
+        try {
+            // Check for OAuth errors
+            if ($request->has('error')) {
+                \Log::error('Google OAuth error', [
+                    'error' => $request->get('error'),
+                    'error_description' => $request->get('error_description')
+                ]);
+                return redirect()->route('login')->with('error', 'Gagal masuk dengan Google: ' . $request->get('error_description', 'Unknown error'));
+            }
+
+            // Validate state parameter
+            $state = $request->get('state');
+            $sessionState = session('google_oauth_state');
+            
+            if (!$state || !$sessionState || $state !== $sessionState) {
+                \Log::error('Invalid OAuth state', [
+                    'received_state' => $state,
+                    'session_state' => $sessionState
+                ]);
+                return redirect()->route('login')->with('error', 'Sesi tidak valid. Silakan coba lagi.');
+            }
+
+            // Clear state from session
+            session()->forget('google_oauth_state');
+
+            // Get authorization code
+            $code = $request->get('code');
+            if (!$code) {
+                return redirect()->route('login')->with('error', 'Kode otorisasi tidak ditemukan.');
+            }
+
+            // Exchange code for access token
+            $tokenData = $this->getGoogleAccessToken($code);
+            if (!$tokenData) {
+                return redirect()->route('login')->with('error', 'Gagal mendapatkan token akses dari Google.');
+            }
+
+            // Get user info from Google
+            $userInfo = $this->getGoogleUserInfo($tokenData['access_token']);
+            if (!$userInfo) {
+                return redirect()->route('login')->with('error', 'Gagal mendapatkan informasi pengguna dari Google.');
+            }
+
+            // Validate required scopes
+            $requiredScopes = ['openid', 'email', 'profile'];
+            $grantedScopes = explode(' ', $tokenData['scope'] ?? '');
+            $missingScopes = array_diff($requiredScopes, $grantedScopes);
+            
+            if (!empty($missingScopes)) {
+                \Log::warning('Missing required scopes', [
+                    'required' => $requiredScopes,
+                    'granted' => $grantedScopes,
+                    'missing' => $missingScopes
+                ]);
+            }
+
+            // Store refresh token in session if available
+            if (isset($tokenData['refresh_token'])) {
+                session(['google_refresh_token' => $tokenData['refresh_token']]);
+            }
+
+            // Find or create user
+            $user = User::where('email', $userInfo['email'])->first();
+            
+            if (!$user) {
+                // Create new user with default 'user' role
+                $user = User::create([
+                    'name' => $userInfo['name'],
+                    'email' => $userInfo['email'],
+                    'google_id' => $userInfo['id'],
+                    'password' => Hash::make(Str::random(32)), // Random password for Google users
+                    'email_verified_at' => now(),
+                    'role' => 'user' // Default role for Google users
+                ]);
+                
+                \Log::info('New Google user created', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->name
+                ]);
+            } else {
+                // Update existing user with Google ID if not set
+                if (!$user->google_id) {
+                    $user->update(['google_id' => $userInfo['id']]);
+                }
+                
+                // Update last login
+                $user->update(['last_login_at' => now()]);
+            }
+
+            // Log user in
+            session(['user_logged_in' => true]);
+            session(['user_data' => [
+                'id' => $user->id,
+                'username' => $user->username ?? $user->email,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'google_id' => $user->google_id,
+                'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : 'Never'
+            ]]);
+
+            \Log::info('Google OAuth login successful', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role
+            ]);
+
+            // Redirect based on user role
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Berhasil masuk dengan Google!');
+            } else {
+                return redirect()->route('user.dashboard')->with('success', 'Berhasil masuk dengan Google!');
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Google OAuth callback error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->route('login')->with('error', 'Terjadi kesalahan saat masuk dengan Google. Silakan coba lagi.');
+        }
+    }
+
+    /**
+     * Get Google access token
+     */
+    private function getGoogleAccessToken($code)
+    {
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $clientSecret = env('GOOGLE_CLIENT_SECRET');
+        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
+
+        $data = [
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'code' => $code,
+            'grant_type' => 'authorization_code',
+            'redirect_uri' => $redirectUri
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            \Log::error('Google token exchange failed', [
+                'http_code' => $httpCode,
+                'response' => $response
+            ]);
+            return null;
+        }
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Get Google user info
+     */
+    private function getGoogleUserInfo($accessToken)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v2/userinfo?access_token=' . $accessToken);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            \Log::error('Google user info failed', [
+                'http_code' => $httpCode,
+                'response' => $response
+            ]);
+            return null;
+        }
+
+        return json_decode($response, true);
+    }
+
+    /**
+     * Revoke Google token
+     */
+    public function revokeGoogleToken()
+    {
+        $refreshToken = session('google_refresh_token');
+        
+        if (!$refreshToken) {
+            return response()->json(['error' => 'No refresh token found'], 400);
+        }
+
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $clientSecret = env('GOOGLE_CLIENT_SECRET');
+
+        $data = [
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'token' => $refreshToken
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/revoke');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200) {
+            session()->forget('google_refresh_token');
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['error' => 'Failed to revoke token'], 500);
     }
 
 }
