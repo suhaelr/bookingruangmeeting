@@ -51,6 +51,13 @@ class SecurityHeadersMiddleware
             $response->headers->set('Content-Security-Policy', $devCsp);
         }
         
+        // Force correct MIME types for CSS and JS files
+        if (str_contains($request->path(), '.css')) {
+            $response->headers->set('Content-Type', 'text/css; charset=utf-8');
+        } elseif (str_contains($request->path(), '.js')) {
+            $response->headers->set('Content-Type', 'application/javascript; charset=utf-8');
+        }
+        
         // HSTS header for HTTPS
         if ($request->secure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');

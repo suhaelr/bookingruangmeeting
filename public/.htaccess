@@ -3,6 +3,28 @@
   AddHandler application/x-httpd-ea-php84 .php
 </IfModule>
 
+# MIME Types Configuration
+<IfModule mod_mime.c>
+    # CSS
+    AddType text/css .css
+    # JavaScript
+    AddType application/javascript .js
+    # Images
+    AddType image/png .png
+    AddType image/jpeg .jpg .jpeg
+    AddType image/gif .gif
+    AddType image/svg+xml .svg
+    AddType image/webp .webp
+    # Fonts
+    AddType font/woff .woff
+    AddType font/woff2 .woff2
+    AddType application/font-woff .woff
+    AddType application/font-woff2 .woff2
+    # Other
+    AddType application/json .json
+    AddType text/plain .txt
+</IfModule>
+
 # Alternative LiteSpeed Handler (uncomment if needed)
 # <IfModule lsapi_module>
 #   SetHandler application/x-lsphp84
@@ -15,6 +37,14 @@
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    
+    # Force correct MIME types
+    <FilesMatch "\.css$">
+        Header set Content-Type "text/css"
+    </FilesMatch>
+    <FilesMatch "\.js$">
+        Header set Content-Type "application/javascript"
+    </FilesMatch>
 </IfModule>
 
 # Hide sensitive files

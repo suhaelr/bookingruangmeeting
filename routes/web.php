@@ -17,6 +17,24 @@ Route::get('/test', function () {
     return response()->json(['status' => 'ok', 'message' => 'Laravel is working']);
 });
 
+// CSS and JS asset routes
+Route::get('/build/assets/{file}', function ($file) {
+    $path = public_path("build/assets/{$file}");
+    
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    
+    $mimeType = pathinfo($file, PATHINFO_EXTENSION) === 'css' 
+        ? 'text/css' 
+        : 'application/javascript';
+    
+    return response()->file($path, [
+        'Content-Type' => $mimeType,
+        'Cache-Control' => 'public, max-age=31536000',
+    ]);
+})->where('file', '.*');
+
 // Fallback route
 Route::fallback(function () {
     return redirect()->route('login');
