@@ -414,21 +414,28 @@ class AuthController extends Controller
     public function redirectToGoogle()
     {
         $clientId = env('GOOGLE_CLIENT_ID');
-        $redirectUri = urlencode(env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback'));
-        $scope = urlencode('openid email profile');
+        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
         $state = bin2hex(random_bytes(16));
         
         // Store state in session for CSRF protection
         session(['google_oauth_state' => $state]);
         
+        // Define scopes with proper justification
+        $scopes = [
+            'openid',
+            'email',
+            'profile'
+        ];
+        
         $authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query([
             'client_id' => $clientId,
             'redirect_uri' => $redirectUri,
-            'scope' => $scope,
+            'scope' => implode(' ', $scopes),
             'response_type' => 'code',
             'state' => $state,
-            'access_type' => 'online',
-            'prompt' => 'select_account'
+            'access_type' => 'offline', // Request refresh token
+            'prompt' => 'consent', // Force consent screen for new scopes
+            'include_granted_scopes' => 'true' // Include previously granted scopes
         ]);
         
         return redirect($authUrl);
@@ -471,6 +478,19 @@ class AuthController extends Controller
                 return redirect()->route('login')->with('error', 'Failed to obtain access token from Google.');
             }
 
+            // Check if required scopes were granted
+            $grantedScopes = explode(' ', $tokenResponse['scope'] ?? '');
+            $requiredScopes = ['openid', 'email', 'profile'];
+            $missingScopes = array_diff($requiredScopes, $grantedScopes);
+            
+            if (!empty($missingScopes)) {
+                \Log::warning('Missing required scopes', [
+                    'missing_scopes' => $missingScopes,
+                    'granted_scopes' => $grantedScopes
+                ]);
+                return redirect()->route('login')->with('error', 'Required permissions were not granted. Please try again and grant all requested permissions.');
+            }
+
             // Get user information from Google
             $userInfo = $this->getGoogleUserInfo($tokenResponse['access_token']);
             
@@ -498,6 +518,16 @@ class AuthController extends Controller
                 if (!$user->google_id) {
                     $user->update(['google_id' => $userInfo['id'] ?? null]);
                 }
+            }
+
+            // Store refresh token for future use (if provided)
+            if (isset($tokenResponse['refresh_token'])) {
+                // Store refresh token securely (you might want to encrypt this)
+                session(['google_refresh_token' => $tokenResponse['refresh_token']]);
+                \Log::info('Refresh token stored for user', [
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
             }
 
             // Log user in
@@ -591,6 +621,100 @@ class AuthController extends Controller
         }
 
         return json_decode($response, true);
+    }
+
+    /**
+     * Handle refresh token revocation
+     */
+    public function revokeGoogleToken()
+    {
+        $refreshToken = session('google_refresh_token');
+        
+        if (!$refreshToken) {
+            return response()->json(['error' => 'No refresh token found'], 400);
+        }
+
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $clientSecret = env('GOOGLE_CLIENT_SECRET');
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/revoke');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+            'token' => $refreshToken,
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+        ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200) {
+            session()->forget('google_refresh_token');
+            \Log::info('Google refresh token revoked successfully');
+            return response()->json(['success' => true]);
+        }
+
+        \Log::error('Failed to revoke Google refresh token', [
+            'http_code' => $httpCode,
+            'response' => $response
+        ]);
+
+        return response()->json(['error' => 'Failed to revoke token'], 500);
+    }
+
+    /**
+     * Refresh Google access token using refresh token
+     */
+    private function refreshGoogleToken($refreshToken)
+    {
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $clientSecret = env('GOOGLE_CLIENT_SECRET');
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'refresh_token' => $refreshToken,
+            'grant_type' => 'refresh_token',
+        ]));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$response) {
+            \Log::error('Failed to refresh Google token', [
+                'http_code' => $httpCode,
+                'response' => $response
+            ]);
+            return false;
+        }
+
+        $result = json_decode($response, true);
+        
+        if (!$result || !isset($result['access_token'])) {
+            \Log::error('Invalid refresh token response', [
+                'response' => $response
+            ]);
+            return false;
+        }
+
+        // Update refresh token if provided
+        if (isset($result['refresh_token'])) {
+            session(['google_refresh_token' => $result['refresh_token']]);
+        }
+
+        return $result;
     }
 
 }

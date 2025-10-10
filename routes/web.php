@@ -43,6 +43,7 @@ Route::post('/resend-verification', [AuthController::class, 'resendVerification'
 // Google OAuth Routes
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
 // Privacy Policy Route
 Route::get('/privacy-policy', function () {
