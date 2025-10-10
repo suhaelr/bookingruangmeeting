@@ -60,11 +60,36 @@
         /* Fix booking card interactions */
         .booking-item {
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
         
         .booking-item:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Mobile status badge fix */
+        @media (max-width: 768px) {
+            .booking-item {
+                margin-bottom: 1rem;
+            }
+            
+            .booking-item .flex.items-start.justify-between {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .booking-item .flex-shrink-0 {
+                margin-left: 0;
+                margin-top: 0.5rem;
+                align-self: flex-start;
+            }
+            
+            .booking-item .flex.items-center.space-x-4 {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -122,25 +147,27 @@
                          data-status="{{ $booking->status }}">
                         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                             <div class="flex-1">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div>
-                                        <h3 class="text-lg font-bold text-white mb-1">{{ $booking->title }}</h3>
-                                        <p class="text-white/80 text-sm mb-2">{{ $booking->meetingRoom->name }} • {{ $booking->meetingRoom->location }}</p>
-                                        <div class="flex items-center space-x-4 text-sm text-white/60">
-                                            <span><i class="fas fa-calendar mr-1"></i>{{ $booking->formatted_start_time }}</span>
-                                            <span><i class="fas fa-clock mr-1"></i>{{ $booking->duration }} jam</span>
-                                            <span><i class="fas fa-users mr-1"></i>{{ $booking->attendees_count }} peserta</span>
+                                <div class="mb-4">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex-1">
+                                            <h3 class="text-lg font-bold text-white mb-1">{{ $booking->title }}</h3>
+                                            <p class="text-white/80 text-sm mb-2">{{ $booking->meetingRoom->name }} • {{ $booking->meetingRoom->location }}</p>
+                                        </div>
+                                        <div class="ml-4 flex-shrink-0">
+                                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                                @if($booking->status === 'pending') bg-yellow-500 text-white
+                                                @elseif($booking->status === 'confirmed') bg-green-500 text-white
+                                                @elseif($booking->status === 'cancelled') bg-red-500 text-white
+                                                @elseif($booking->status === 'completed') bg-blue-500 text-white
+                                                @else bg-gray-500 text-white @endif">
+                                                {{ $booking->status_text }}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        <span class="px-3 py-1 rounded-full text-sm font-medium
-                                            @if($booking->status === 'pending') bg-yellow-500 text-white
-                                            @elseif($booking->status === 'confirmed') bg-green-500 text-white
-                                            @elseif($booking->status === 'cancelled') bg-red-500 text-white
-                                            @elseif($booking->status === 'completed') bg-blue-500 text-white
-                                            @else bg-gray-500 text-white @endif">
-                                            {{ $booking->status_text }}
-                                        </span>
+                                    <div class="flex items-center space-x-4 text-sm text-white/60">
+                                        <span><i class="fas fa-calendar mr-1"></i>{{ $booking->formatted_start_time }}</span>
+                                        <span><i class="fas fa-clock mr-1"></i>{{ $booking->duration }} jam</span>
+                                        <span><i class="fas fa-users mr-1"></i>{{ $booking->attendees_count }} peserta</span>
                                     </div>
                                 </div>
                                 
