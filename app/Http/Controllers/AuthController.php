@@ -43,7 +43,7 @@ class AuthController extends Controller
                 'id' => 1,
                 'username' => 'admin',
                 'full_name' => 'Super Administrator',
-                'email' => 'admin@jadixpert.com',
+                'email' => 'admin@pusdatinbgn.web.id',
                 'role' => 'admin',
                 'department' => 'IT'
             ]);
@@ -57,7 +57,7 @@ class AuthController extends Controller
                 'id' => 2,
                 'username' => 'user',
                 'full_name' => 'Regular User',
-                'email' => 'user@jadixpert.com',
+                'email' => 'user@pusdatinbgn.web.id',
                 'role' => 'user',
                 'department' => 'General'
             ]);
@@ -65,8 +65,10 @@ class AuthController extends Controller
             return redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
         }
 
-        // Check database users
-        $user = User::where('username', $credentials['username'])->first();
+        // Check database users - support both username and email
+        $user = User::where('username', $credentials['username'])
+                   ->orWhere('email', $credentials['username'])
+                   ->first();
         
         if ($user && Hash::check($credentials['password'], $user->password)) {
             // Check if email is verified
@@ -80,7 +82,7 @@ class AuthController extends Controller
             Session::put('user_data', [
                 'id' => $user->id,
                 'username' => $user->username,
-                'full_name' => $user->full_name,
+                'full_name' => $user->full_name ?? $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
                 'department' => $user->department
@@ -95,7 +97,7 @@ class AuthController extends Controller
         }
 
         return back()->withErrors([
-            'username' => 'Username atau password salah.',
+            'username' => 'Username/email atau password salah.',
         ])->withInput($request->only('username'));
     }
 

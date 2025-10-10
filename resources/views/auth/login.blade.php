@@ -48,10 +48,10 @@
             <form method="POST" action="{{ route('login') }}" class="space-y-6">
                 @csrf
                 
-                <!-- Username Field -->
+                <!-- Username/Email Field -->
                 <div>
                     <label for="username" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-user mr-2"></i>Nama Pengguna
+                        <i class="fas fa-user mr-2"></i>Nama Pengguna atau Email
                     </label>
                     <input 
                         type="text" 
@@ -59,7 +59,7 @@
                         name="username" 
                         value="{{ old('username') }}"
                         class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                        placeholder="Masukkan nama pengguna"
+                        placeholder="Masukkan nama pengguna atau email"
                         required
                         autofocus
                     >
