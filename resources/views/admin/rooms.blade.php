@@ -472,7 +472,13 @@
                         closeModal('roomEditModal');
                         location.reload();
                     } else {
-                        alert(data.message || 'Gagal mengupdate ruang');
+                        const validationDetails = data.errors
+                            ? Object.values(data.errors).flat().join('\n')
+                            : '';
+                        const message = [data.message || 'Gagal mengupdate ruang', validationDetails]
+                            .filter(Boolean)
+                            .join('\n');
+                        alert(message);
                     }
                 })
                 .catch(error => {
