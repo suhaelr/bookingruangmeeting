@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', 'smtp'),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,21 +39,21 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME'),
+            'scheme' => env('MAIL_SCHEME', 'ssl'),
             'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
+            'host' => env('MAIL_HOST', 'mail.pusdatinbgn.web.id'),
+            'port' => env('MAIL_PORT', 465),
+            'username' => env('MAIL_USERNAME', 'admin@pusdatinbgn.web.id'),
+            'password' => env('MAIL_PASSWORD', 'superadmin123'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
-            'encryption' => env('MAIL_ENCRYPTION', null),
-            'verify_peer' => false,
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'https://pusdatinbgn.web.id'), PHP_URL_HOST)),
+            'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
+            'verify_peer' => env('MAIL_VERIFY_PEER', false),
             'stream' => [
                 'ssl' => [
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                    'allow_self_signed' => true,
+                    'verify_peer' => env('MAIL_VERIFY_PEER', false),
+                    'verify_peer_name' => env('MAIL_VERIFY_PEER_NAME', false),
+                    'allow_self_signed' => env('MAIL_ALLOW_SELF_SIGNED', true),
                 ],
             ],
         ],
@@ -118,8 +118,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'admin@pusdatinbgn.web.id'),
+        'name' => env('MAIL_FROM_NAME', 'Meeting Room Booking System'),
     ],
 
 ];
