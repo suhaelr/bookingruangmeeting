@@ -80,7 +80,7 @@
                         <i class="fas fa-users text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Total Users</p>
+                        <p class="text-white/80 text-sm">Total Pengguna</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['total_users'] }}</p>
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                         <i class="fas fa-door-open text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Meeting Rooms</p>
+                        <p class="text-white/80 text-sm">Ruang Meeting</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['total_rooms'] }}</p>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                         <i class="fas fa-calendar-check text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Total Bookings</p>
+                        <p class="text-white/80 text-sm">Total Pemesanan</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['total_bookings'] }}</p>
                     </div>
                 </div>
@@ -116,7 +116,7 @@
                         <i class="fas fa-check-circle text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Confirmed Bookings</p>
+                        <p class="text-white/80 text-sm">Pemesanan Dikonfirmasi</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['confirmed_bookings'] ?? 0 }}</p>
                     </div>
                 </div>
@@ -127,13 +127,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <!-- Monthly Stats Chart -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <h3 class="text-xl font-bold text-white mb-4">Booking Trends (6 Months)</h3>
+                <h3 class="text-xl font-bold text-white mb-4">Tren Pemesanan (6 Bulan)</h3>
                 <canvas id="monthlyChart" width="400" height="200"></canvas>
             </div>
 
             <!-- Booking Status Chart -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <h3 class="text-xl font-bold text-white mb-4">Booking Status</h3>
+                <h3 class="text-xl font-bold text-white mb-4">Status Pemesanan</h3>
                 <canvas id="statusChart" width="400" height="200"></canvas>
             </div>
         </div>
@@ -143,9 +143,9 @@
             <!-- Recent Bookings -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Recent Bookings</h3>
+                    <h3 class="text-xl font-bold text-white">Pemesanan Terbaru</h3>
                     <a href="{{ route('admin.bookings') }}" class="text-blue-400 hover:text-blue-300 text-sm">
-                        View All <i class="fas fa-arrow-right ml-1"></i>
+                        Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
                 <div class="space-y-4">
@@ -172,7 +172,7 @@
                         </div>
                     </div>
                     @empty
-                    <p class="text-white/60 text-center py-4">No recent bookings</p>
+                    <p class="text-white/60 text-center py-4">Tidak ada pemesanan terbaru</p>
                     @endforelse
                 </div>
             </div>
@@ -180,7 +180,7 @@
             <!-- Today's Bookings -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Today's Bookings</h3>
+                    <h3 class="text-xl font-bold text-white">Pemesanan Hari Ini</h3>
                     <span class="text-white/60 text-sm">{{ now()->format('M d, Y') }}</span>
                 </div>
                 <div class="space-y-4">
@@ -201,7 +201,7 @@
                         </div>
                     </div>
                     @empty
-                    <p class="text-white/60 text-center py-4">No bookings today</p>
+                    <p class="text-white/60 text-center py-4">Tidak ada pemesanan hari ini</p>
                     @endforelse
                 </div>
             </div>
@@ -247,7 +247,7 @@
             data: {
                 labels: {!! json_encode(array_column($monthlyStats, 'month')) !!},
                 datasets: [{
-                    label: 'Bookings',
+                    label: 'Pemesanan',
                     data: {!! json_encode(array_column($monthlyStats, 'bookings')) !!},
                     borderWarna: 'rgb(59, 130, 246)',
                     backgroundWarna: 'rgba(59, 130, 246, 0.1)',
@@ -290,7 +290,7 @@
         new Chart(statusCtx, {
             type: 'doughnut',
             data: {
-                labels: ['Pending', 'Confirmed', 'Cancelled'],
+                labels: ['Menunggu', 'Dikonfirmasi', 'Dibatalkan'],
                 datasets: [{
                     data: [
                         {{ $stats['pending_bookings'] }},

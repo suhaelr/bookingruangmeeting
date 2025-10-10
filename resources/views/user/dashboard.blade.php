@@ -89,14 +89,14 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Selamat Datang back, {{ session('user_data.full_name') }}!</h2>
-                    <p class="text-white/80">Manage your meeting room bookings and stay organized</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Selamat Datang, {{ session('user_data.full_name') }}!</h2>
+                    <p class="text-white/80">Kelola pemesanan ruang meeting Anda dan tetap terorganisir</p>
                 </div>
                 <div class="hidden md:block">
                     <a href="{{ route('user.bookings.create') }}" 
                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-plus mr-2"></i>
-                        Book Meeting Room
+                        Pesan Ruang Meeting
                     </a>
                 </div>
             </div>
@@ -110,7 +110,7 @@
                         <i class="fas fa-calendar-check text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Total Bookings</p>
+                        <p class="text-white/80 text-sm">Total Pemesanan</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['total_bookings'] }}</p>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
                         <i class="fas fa-clock text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Pending</p>
+                        <p class="text-white/80 text-sm">Menunggu</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['pending_bookings'] }}</p>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
                         <i class="fas fa-check-circle text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Confirmed</p>
+                        <p class="text-white/80 text-sm">Dikonfirmasi</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['confirmed_bookings'] }}</p>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
                         <i class="fas fa-calendar text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">This Month</p>
+                        <p class="text-white/80 text-sm">Bulan Ini</p>
                         <p class="text-2xl font-bold text-white">{{ $stats['this_month'] }}</p>
                     </div>
                 </div>
@@ -158,9 +158,9 @@
             <!-- Active Bookings -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Active Bookings</h3>
+                    <h3 class="text-xl font-bold text-white">Pemesanan Aktif</h3>
                     <a href="{{ route('user.bookings') }}" class="text-blue-400 hover:text-blue-300 text-sm">
-                        View All <i class="fas fa-arrow-right ml-1"></i>
+                        Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
                 <div class="space-y-4">
@@ -188,7 +188,7 @@
                             <form method="POST" action="{{ route('user.bookings.cancel', $booking->id) }}" class="mt-2">
                                 @csrf
                                 <button type="submit" class="text-red-400 hover:text-red-300 text-xs">
-                                    <i class="fas fa-times mr-1"></i>Cancel
+                                    <i class="fas fa-times mr-1"></i>Batal
                                 </button>
                             </form>
                             @endif
@@ -197,10 +197,10 @@
                     @empty
                     <div class="text-center py-8">
                         <i class="fas fa-calendar-times text-white/40 text-4xl mb-4"></i>
-                        <p class="text-white/60">No active bookings</p>
+                        <p class="text-white/60">Tidak ada pemesanan aktif</p>
                         <a href="{{ route('user.bookings.create') }}" 
                            class="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block">
-                            Book a meeting room
+                            Pesan ruang meeting
                         </a>
                     </div>
                     @endforelse
@@ -210,7 +210,7 @@
             <!-- Today's Bookings -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Today's Schedule</h3>
+                    <h3 class="text-xl font-bold text-white">Jadwal Hari Ini</h3>
                     <span class="text-white/60 text-sm">{{ now()->format('M d, Y') }}</span>
                 </div>
                 <div class="space-y-4">
@@ -239,7 +239,7 @@
                     @empty
                     <div class="text-center py-8">
                         <i class="fas fa-calendar-day text-white/40 text-4xl mb-4"></i>
-                        <p class="text-white/60">No meetings today</p>
+                        <p class="text-white/60">Tidak ada meeting hari ini</p>
                     </div>
                     @endforelse
                 </div>
@@ -250,9 +250,9 @@
         <div class="mt-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Available Meeting Rooms</h3>
+                    <h3 class="text-xl font-bold text-white">Ruang Meeting Tersedia</h3>
                     <a href="{{ route('user.bookings.create') }}" class="text-blue-400 hover:text-blue-300 text-sm">
-                        Book Now <i class="fas fa-arrow-right ml-1"></i>
+                        Pesan Sekarang <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -260,7 +260,7 @@
                     <div class="bg-white/10 rounded-lg p-4 hover:bg-white/20 transition-colors">
                         <div class="flex items-center justify-between mb-2">
                             <h4 class="text-white font-medium">{{ $room->name }}</h4>
-                            <span class="text-white/60 text-sm">{{ $room->capacity }} seats</span>
+                            <span class="text-white/60 text-sm">{{ $room->capacity }} kursi</span>
                         </div>
                         <p class="text-white/60 text-sm mb-2">{{ $room->location }}</p>
                         <div class="flex flex-wrap gap-1 mb-3">
@@ -271,17 +271,16 @@
                             @endforeach
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-white font-medium">Rp {{ number_format($room->hourly_rate, 0, ',', '.') }}/hour</span>
                             <a href="{{ route('user.bookings.create', ['room' => $room->id]) }}" 
                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors">
-                                Book
+                                Pesan
                             </a>
                         </div>
                     </div>
                     @empty
                     <div class="col-span-full text-center py-8">
                         <i class="fas fa-door-open text-white/40 text-4xl mb-4"></i>
-                        <p class="text-white/60">No meeting rooms available</p>
+                        <p class="text-white/60">Tidak ada ruang meeting tersedia</p>
                     </div>
                     @endforelse
                 </div>
