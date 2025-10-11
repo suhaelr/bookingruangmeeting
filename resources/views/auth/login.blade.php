@@ -138,33 +138,33 @@
             
             .login-container {
                 min-height: 100vh;
-                padding: 1rem;
-                align-items: flex-start;
-                justify-content: flex-start;
-                padding-top: 3rem;
+                padding: 0.5rem;
+                align-items: center;
+                justify-content: center;
+                padding-top: 0;
             }
             
             .content-overlay {
-                padding: 1rem;
+                padding: 0.5rem;
                 max-width: 100%;
                 width: 100%;
                 margin: 0;
                 box-sizing: border-box;
             }
             
-            /* Fix logo positioning on mobile */
+            /* Fix logo positioning on mobile - smaller */
             .logo-wrapper {
-                margin: 0 auto 2rem auto;
+                margin: 0 auto 0.5rem auto;
                 display: flex !important;
                 justify-content: center;
                 align-items: center;
-                width: 5rem;
-                height: 5rem;
+                width: 3rem;
+                height: 3rem;
             }
             
             .logo-wrapper img {
-                width: 4rem;
-                height: 4rem;
+                width: 2.5rem;
+                height: 2.5rem;
             }
             
             /* Center the form container */
@@ -173,17 +173,72 @@
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
+                padding: 1rem;
             }
             
-            /* Fix header text alignment */
-            .text-center {
-                text-align: center !important;
-                width: 100%;
+            /* Fix header text alignment - smaller */
+            .text-center h1 {
+                font-size: 1.25rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 0.25rem !important;
             }
             
-            /* Ensure proper spacing */
+            .text-center p {
+                font-size: 0.75rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Ensure proper spacing - reduced */
             .mb-8 {
-                margin-bottom: 2rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Form elements smaller */
+            .glass-effect .mb-6 {
+                margin-bottom: 0.75rem !important;
+            }
+            
+            .glass-effect .mb-4 {
+                margin-bottom: 0.5rem !important;
+            }
+            
+            /* Input fields smaller */
+            .glass-effect input {
+                padding: 0.5rem !important;
+                font-size: 0.875rem !important;
+            }
+            
+            .glass-effect label {
+                font-size: 0.75rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+            
+            /* Buttons smaller */
+            .glass-effect button {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.875rem !important;
+            }
+            
+            /* Links smaller */
+            .glass-effect a {
+                font-size: 0.75rem !important;
+            }
+            
+            /* Ensure footer is visible and compact */
+            .glass-effect .text-center {
+                margin-top: 0.75rem !important;
+            }
+            
+            .glass-effect .text-center p {
+                font-size: 0.625rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 0.25rem !important;
+            }
+            
+            /* Make sure all content fits in one screen */
+            .glass-effect {
+                max-height: 100vh;
+                overflow-y: auto;
             }
         }
         
@@ -200,33 +255,33 @@
             
             .login-container {
                 min-height: 100vh;
-                padding: 0.5rem;
-                align-items: flex-start;
-                justify-content: flex-start;
-                padding-top: 2rem;
+                padding: 0.25rem;
+                align-items: center;
+                justify-content: center;
+                padding-top: 0;
             }
             
             .content-overlay {
-                padding: 0.5rem;
+                padding: 0.25rem;
                 max-width: 100%;
                 width: 100%;
                 margin: 0;
                 box-sizing: border-box;
             }
             
-            /* Fix logo positioning on small mobile */
+            /* Fix logo positioning on small mobile - very small */
             .logo-wrapper {
-                margin: 0 auto 1.5rem auto;
+                margin: 0 auto 0.25rem auto;
                 display: flex !important;
                 justify-content: center;
                 align-items: center;
-                width: 4rem;
-                height: 4rem;
+                width: 2.5rem;
+                height: 2.5rem;
             }
             
             .logo-wrapper img {
-                width: 3rem;
-                height: 3rem;
+                width: 2rem;
+                height: 2rem;
             }
             
             /* Center the form container */
@@ -235,29 +290,77 @@
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
+                padding: 0.75rem;
             }
             
-            /* Fix header text alignment */
-            .text-center {
-                text-align: center !important;
-                width: 100%;
+            /* Fix header text alignment - very small */
+            .text-center h1 {
+                font-size: 1rem !important;
+                line-height: 1.1 !important;
+                margin-bottom: 0.125rem !important;
             }
             
-            /* Adjust text sizes for small mobile */
-            h1 {
-                font-size: 1.5rem !important;
-                line-height: 1.2 !important;
+            .text-center p {
+                font-size: 0.625rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+            
+            /* Ensure proper spacing - minimal */
+            .mb-8 {
+                margin-bottom: 0.25rem !important;
+            }
+            
+            /* Form elements very small */
+            .glass-effect .mb-6 {
                 margin-bottom: 0.5rem !important;
             }
             
-            p {
-                font-size: 0.875rem !important;
-                margin-bottom: 1rem !important;
+            .glass-effect .mb-4 {
+                margin-bottom: 0.25rem !important;
             }
             
-            /* Ensure proper spacing */
-            .mb-8 {
-                margin-bottom: 1.5rem !important;
+            /* Input fields very small */
+            .glass-effect input {
+                padding: 0.375rem !important;
+                font-size: 0.75rem !important;
+            }
+            
+            .glass-effect label {
+                font-size: 0.625rem !important;
+                margin-bottom: 0.125rem !important;
+            }
+            
+            /* Buttons very small */
+            .glass-effect button {
+                padding: 0.375rem 0.75rem !important;
+                font-size: 0.75rem !important;
+            }
+            
+            /* Links very small */
+            .glass-effect a {
+                font-size: 0.625rem !important;
+            }
+            
+            /* Footer links very small */
+            .glass-effect .text-center a {
+                font-size: 0.5rem !important;
+            }
+            
+            /* Ensure footer is visible and compact */
+            .glass-effect .text-center {
+                margin-top: 0.5rem !important;
+            }
+            
+            .glass-effect .text-center p {
+                font-size: 0.5rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 0.125rem !important;
+            }
+            
+            /* Make sure all content fits in one screen */
+            .glass-effect {
+                max-height: 100vh;
+                overflow-y: auto;
             }
         }
         
