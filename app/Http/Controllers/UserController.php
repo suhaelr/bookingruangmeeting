@@ -529,11 +529,21 @@ class UserController extends Controller
                     ->with('user')
                     ->first();
 
+                // Check if room was used before (completed bookings)
+                $previousBooking = Booking::where('meeting_room_id', $room->id)
+                    ->where('status', 'completed')
+                    ->where('start_time', '<', $endTime)
+                    ->where('end_time', '>', $timeSlot)
+                    ->with('user')
+                    ->first();
+
                 $slotData = [
                     'time' => $timeSlot->format('H:i'),
                     'datetime' => $timeSlot->format('Y-m-d H:i:s'),
                     'isAvailable' => !$conflictingBooking,
-                    'booking' => null
+                    'wasUsed' => !$conflictingBooking && $previousBooking,
+                    'booking' => null,
+                    'previousBooking' => null
                 ];
 
                 if ($conflictingBooking) {
@@ -545,6 +555,18 @@ class UserController extends Controller
                         'start_time' => $conflictingBooking->start_time->format('H:i'),
                         'end_time' => $conflictingBooking->end_time->format('H:i'),
                         'status' => $conflictingBooking->status
+                    ];
+                }
+
+                if ($previousBooking) {
+                    $slotData['previousBooking'] = [
+                        'id' => $previousBooking->id,
+                        'title' => $previousBooking->title,
+                        'user_name' => $previousBooking->user->full_name,
+                        'unit_kerja' => $previousBooking->unit_kerja,
+                        'start_time' => $previousBooking->start_time->format('H:i'),
+                        'end_time' => $previousBooking->end_time->format('H:i'),
+                        'status' => $previousBooking->status
                     ];
                 }
 

@@ -220,7 +220,10 @@
         <div class="mt-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
+                        <p class="text-white/60 text-sm mt-1">{{ now()->format('l, d F Y') }}</p>
+                    </div>
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2">
                             <div class="w-3 h-3 bg-green-500 rounded"></div>
@@ -229,6 +232,10 @@
                         <div class="flex items-center space-x-2">
                             <div class="w-3 h-3 bg-red-500 rounded"></div>
                             <span class="text-white/80 text-sm">Dibooking</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-orange-500 rounded"></div>
+                            <span class="text-white/80 text-sm">Pernah Digunakan</span>
                         </div>
                     </div>
                 </div>
@@ -268,23 +275,31 @@
                             <div class="flex space-x-1 flex-1">
                                 @foreach($room['timeSlots'] as $slot)
                                 <div class="w-12 h-12 rounded-lg flex items-center justify-center text-xs font-medium transition-all duration-200 hover:scale-105 cursor-pointer
-                                    @if($slot['isAvailable'])
+                                    @if($slot['isAvailable'] && !$slot['wasUsed'])
                                         bg-green-500/20 border-2 border-green-500/30 text-green-300 hover:bg-green-500/30
+                                    @elseif($slot['isAvailable'] && $slot['wasUsed'])
+                                        bg-orange-500/20 border-2 border-orange-500/30 text-orange-300 hover:bg-orange-500/30
                                     @else
                                         bg-red-500/20 border-2 border-red-500/30 text-red-300 hover:bg-red-500/30
                                     @endif"
                                     @if(!$slot['isAvailable'] && $slot['booking'])
                                     title="Dibooking oleh {{ $slot['booking']['user_name'] }} ({{ $slot['booking']['unit_kerja'] }}) - {{ $slot['booking']['start_time'] }} - {{ $slot['booking']['end_time'] }}"
+                                    @elseif($slot['isAvailable'] && $slot['wasUsed'] && $slot['previousBooking'])
+                                    title="Pernah digunakan oleh {{ $slot['previousBooking']['user_name'] }} ({{ $slot['previousBooking']['unit_kerja'] }}) - {{ $slot['previousBooking']['start_time'] }} - {{ $slot['previousBooking']['end_time'] }}"
                                     @endif
                                     onclick="
                                         @if($slot['isAvailable'])
                                             openBookingModal('{{ $room['id'] }}', '{{ $slot['datetime'] }}', '{{ $room['name'] }}')
-                                        @else
+                                        @elseif($slot['booking'])
                                             showBookingDetails('{{ json_encode($slot['booking']) }}')
+                                        @elseif($slot['previousBooking'])
+                                            showPreviousBookingDetails('{{ json_encode($slot['previousBooking']) }}')
                                         @endif
                                     ">
-                                    @if($slot['isAvailable'])
+                                    @if($slot['isAvailable'] && !$slot['wasUsed'])
                                         <i class="fas fa-check text-green-300"></i>
+                                    @elseif($slot['isAvailable'] && $slot['wasUsed'])
+                                        <i class="fas fa-history text-orange-300"></i>
                                     @else
                                         <i class="fas fa-times text-red-300"></i>
                                     @endif
@@ -299,7 +314,7 @@
                 <!-- Legend -->
                 <div class="mt-6 p-4 bg-white/5 rounded-lg">
                     <h4 class="text-white font-medium mb-3">Keterangan:</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div class="flex items-center space-x-2">
                             <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
                             <span class="text-white/80">Ruang tersedia untuk dipesan</span>
@@ -307,6 +322,10 @@
                         <div class="flex items-center space-x-2">
                             <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
                             <span class="text-white/80">Ruang sudah dibooking</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-orange-500/20 border border-orange-500/30 rounded"></div>
+                            <span class="text-white/80">Ruang pernah digunakan (tersedia)</span>
                         </div>
                     </div>
                 </div>
@@ -607,6 +626,76 @@
             if (modal) {
                 modal.remove();
             }
+        }
+
+        function showPreviousBookingDetails(bookingData) {
+            const booking = JSON.parse(bookingData);
+            
+            // Create modal content
+            const modalContent = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Riwayat Penggunaan Ruang</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-history text-orange-500"></i>
+                                    <span class="text-orange-800 font-medium">Ruang pernah digunakan</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Judul Meeting</label>
+                                <p class="text-gray-800 font-medium">${booking.title}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Digunakan Oleh</label>
+                                <p class="text-gray-800">${booking.user_name}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Unit Kerja</label>
+                                <p class="text-gray-800">${booking.unit_kerja}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Waktu Penggunaan</label>
+                                <p class="text-gray-800">${booking.start_time} - ${booking.end_time}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Status</label>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-500 text-white">
+                                    Selesai
+                                </span>
+                            </div>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span class="text-blue-800 text-sm">Ruang ini sekarang tersedia untuk dipesan</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end mt-6">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalContent);
         }
 
         // Auto-refresh grid every 5 minutes
