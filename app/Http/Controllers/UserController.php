@@ -15,16 +15,26 @@ class UserController extends Controller
     {
         $user = session('user_data');
         
+        // Validate user exists in database
+        $userModel = User::find($user['id']);
+        if (!$userModel) {
+            \Log::error('User not found in database for dashboard', [
+                'session_user_id' => $user['id'],
+                'session_user_data' => $user
+            ]);
+            return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
+        }
+        
         // Statistik booking user
         $stats = [
-            'total_bookings' => Booking::where('user_id', $user['id'])->count(),
-            'pending_bookings' => Booking::where('user_id', $user['id'])
+            'total_bookings' => Booking::where('user_id', $userModel->id)->count(),
+            'pending_bookings' => Booking::where('user_id', $userModel->id)
                 ->where('status', 'pending')->count(),
-            'confirmed_bookings' => Booking::where('user_id', $user['id'])
+            'confirmed_bookings' => Booking::where('user_id', $userModel->id)
                 ->where('status', 'confirmed')->count(),
-            'cancelled_bookings' => Booking::where('user_id', $user['id'])
+            'cancelled_bookings' => Booking::where('user_id', $userModel->id)
                 ->where('status', 'cancelled')->count(),
-            'this_month' => Booking::where('user_id', $user['id'])
+            'this_month' => Booking::where('user_id', $userModel->id)
                 ->whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),
@@ -32,7 +42,7 @@ class UserController extends Controller
 
         // Booking aktif user
         $activeBookings = Booking::with('meetingRoom')
-            ->where('user_id', $user['id'])
+            ->where('user_id', $userModel->id)
             ->whereIn('status', ['pending', 'confirmed'])
             ->where('start_time', '>=', now())
             ->orderBy('start_time')
@@ -41,7 +51,7 @@ class UserController extends Controller
 
         // Booking hari ini
         $todayBookings = Booking::with('meetingRoom')
-            ->where('user_id', $user['id'])
+            ->where('user_id', $userModel->id)
             ->whereDate('start_time', today())
             ->orderBy('start_time')
             ->get();
@@ -105,10 +115,25 @@ class UserController extends Controller
     {
         $user = session('user_data');
         
+        // Validate user exists in database
+        $userModel = User::find($user['id']);
+        if (!$userModel) {
+            \Log::error('User not found in database for bookings', [
+                'session_user_id' => $user['id'],
+                'session_user_data' => $user
+            ]);
+            return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
+        }
+        
         $bookings = Booking::with('meetingRoom')
-            ->where('user_id', $user['id'])
+            ->where('user_id', $userModel->id)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+        
+        \Log::info('User bookings retrieved', [
+            'user_id' => $userModel->id,
+            'bookings_count' => $bookings->count()
+        ]);
         
         return view('user.bookings', compact('bookings'));
     }
@@ -226,6 +251,13 @@ class UserController extends Controller
             return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
         }
 
+        // Log user validation for debugging
+        \Log::info('User validation successful', [
+            'user_id' => $userModel->id,
+            'username' => $userModel->username,
+            'email' => $userModel->email
+        ]);
+
         try {
             $booking = Booking::create([
                 'user_id' => $userModel->id, // Use the actual user model ID
@@ -262,7 +294,7 @@ class UserController extends Controller
             'unit_kerja' => $booking->unit_kerja
         ]);
 
-        return redirect()->route('user.bookings')
+        return redirect()->route('user.dashboard')
             ->with('success', 'Booking berhasil dibuat! Menunggu konfirmasi admin.');
     }
 
