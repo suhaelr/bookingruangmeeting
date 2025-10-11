@@ -53,10 +53,14 @@ class UserController extends Controller
 
         // Get user notifications
         $userModel = User::find($user['id']);
-        $notifications = $userModel->notifications()
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+        $notifications = collect([]);
+        
+        if ($userModel) {
+            $notifications = $userModel->notifications()
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+        }
 
         // Get room availability grid data
         $roomAvailabilityGrid = $this->getRoomAvailabilityGrid();
