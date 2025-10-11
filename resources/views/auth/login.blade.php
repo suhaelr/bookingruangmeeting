@@ -93,6 +93,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         /* GIF Background Overlay */
@@ -136,31 +138,52 @@
             
             .login-container {
                 min-height: 100vh;
-                padding: 0.5rem;
+                padding: 1rem;
                 align-items: flex-start;
-                padding-top: 2rem;
+                justify-content: flex-start;
+                padding-top: 3rem;
             }
             
             .content-overlay {
-                padding: 0.5rem;
+                padding: 1rem;
                 max-width: 100%;
                 width: 100%;
-                margin: 0 auto;
+                margin: 0;
+                box-sizing: border-box;
             }
             
             /* Fix logo positioning on mobile */
             .logo-wrapper {
-                margin: 0 auto;
+                margin: 0 auto 2rem auto;
                 display: flex !important;
                 justify-content: center;
                 align-items: center;
+                width: 5rem;
+                height: 5rem;
+            }
+            
+            .logo-wrapper img {
+                width: 4rem;
+                height: 4rem;
             }
             
             /* Center the form container */
             .glass-effect {
-                margin: 0 auto;
+                margin: 0;
                 width: 100%;
                 max-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* Fix header text alignment */
+            .text-center {
+                text-align: center !important;
+                width: 100%;
+            }
+            
+            /* Ensure proper spacing */
+            .mb-8 {
+                margin-bottom: 2rem !important;
             }
         }
         
@@ -177,21 +200,23 @@
             
             .login-container {
                 min-height: 100vh;
-                padding: 0.25rem;
+                padding: 0.5rem;
                 align-items: flex-start;
-                padding-top: 1rem;
+                justify-content: flex-start;
+                padding-top: 2rem;
             }
             
             .content-overlay {
-                padding: 0.25rem;
+                padding: 0.5rem;
                 max-width: 100%;
                 width: 100%;
-                margin: 0 auto;
+                margin: 0;
+                box-sizing: border-box;
             }
             
             /* Fix logo positioning on small mobile */
             .logo-wrapper {
-                margin: 0 auto;
+                margin: 0 auto 1.5rem auto;
                 display: flex !important;
                 justify-content: center;
                 align-items: center;
@@ -206,19 +231,33 @@
             
             /* Center the form container */
             .glass-effect {
-                margin: 0 auto;
+                margin: 0;
                 width: 100%;
                 max-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* Fix header text alignment */
+            .text-center {
+                text-align: center !important;
+                width: 100%;
             }
             
             /* Adjust text sizes for small mobile */
             h1 {
                 font-size: 1.5rem !important;
                 line-height: 1.2 !important;
+                margin-bottom: 0.5rem !important;
             }
             
             p {
                 font-size: 0.875rem !important;
+                margin-bottom: 1rem !important;
+            }
+            
+            /* Ensure proper spacing */
+            .mb-8 {
+                margin-bottom: 1.5rem !important;
             }
         }
         
@@ -295,12 +334,24 @@
             overflow-x: hidden;
             overflow-y: auto;
             height: 100%;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         html {
             height: 100%;
             overflow-x: hidden;
             overflow-y: auto;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        * {
+            box-sizing: border-box;
         }
         
         /* Ensure text is white */
