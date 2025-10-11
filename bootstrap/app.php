@@ -19,11 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'input.validation' => \App\Http\Middleware\InputValidationMiddleware::class,
             'cloudflare.bypass' => \App\Http\Middleware\CloudflareBypass::class,
             'seo' => \App\Http\Middleware\SeoMiddleware::class,
+            'session.management' => \App\Http\Middleware\SessionManagementMiddleware::class,
         ]);
         
         // Apply security middleware globally
         $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
         $middleware->append(\App\Http\Middleware\InputValidationMiddleware::class);
+        $middleware->append(\App\Http\Middleware\SessionManagementMiddleware::class);
         $middleware->append(\App\Http\Middleware\SeoMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {

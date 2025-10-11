@@ -19,11 +19,19 @@ class AuthController extends Controller
     public function showLogin()
     {
         // Jika sudah login, redirect ke dashboard sesuai role
-        if (Session::has('user_logged_in')) {
+        if (Session::has('user_logged_in') && Session::has('user_data')) {
             $user = Session::get('user_data');
-            return $user['role'] === 'admin' 
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('user.dashboard');
+            if (is_array($user) && isset($user['role'])) {
+                return $user['role'] === 'admin' 
+                    ? redirect()->route('admin.dashboard')
+                    : redirect()->route('user.dashboard');
+            }
+        }
+        
+        // Clear any invalid session data
+        if (Session::has('user_logged_in') && !Session::has('user_data')) {
+            Session::flush();
+            Session::regenerate();
         }
         
         return view('auth.login');
@@ -49,6 +57,12 @@ class AuthController extends Controller
 
         // Check hardcoded credentials first
         if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin') {
+            // Clear any existing session data first
+            Session::flush();
+            
+            // Regenerate session ID for security
+            Session::regenerate();
+            
             Session::put('user_logged_in', true);
             Session::put('user_data', [
                 'id' => 1,
@@ -59,10 +73,19 @@ class AuthController extends Controller
                 'department' => 'IT'
             ]);
             
+            // Force session save
+            Session::save();
+            
             return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
         }
 
         if ($credentials['username'] === 'user' && $credentials['password'] === 'user') {
+            // Clear any existing session data first
+            Session::flush();
+            
+            // Regenerate session ID for security
+            Session::regenerate();
+            
             Session::put('user_logged_in', true);
             Session::put('user_data', [
                 'id' => 2,
@@ -72,6 +95,9 @@ class AuthController extends Controller
                 'role' => 'user',
                 'department' => 'General'
             ]);
+            
+            // Force session save
+            Session::save();
             
             return redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
         }
@@ -89,6 +115,12 @@ class AuthController extends Controller
                 ])->withInput($request->only('username'));
             }
 
+            // Clear any existing session data first
+            Session::flush();
+            
+            // Regenerate session ID for security
+            Session::regenerate();
+
             Session::put('user_logged_in', true);
             Session::put('user_data', [
                 'id' => $user->id,
@@ -98,6 +130,9 @@ class AuthController extends Controller
                 'role' => $user->role,
                 'department' => $user->department
             ]);
+
+            // Force session save
+            Session::save();
 
             // Update last login
             $user->update(['last_login_at' => now()]);
@@ -114,7 +149,17 @@ class AuthController extends Controller
 
     public function logout()
     {
+        // Clear all session data
         Session::flush();
+        
+        // Regenerate session ID to prevent session fixation
+        Session::regenerate();
+        
+        // Clear any cached data
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
+        }
+        
         return redirect()->route('login')->with('success', 'Logout berhasil!');
     }
 
