@@ -32,6 +32,40 @@
     </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
+    
+    <script>
+        // BGN Logo Animation Control
+        document.addEventListener('DOMContentLoaded', function() {
+            const logo = document.querySelector('.logo-glow');
+            const logoWrapper = document.querySelector('.logo-wrapper');
+            
+            if (logo && logoWrapper) {
+                // Add hover effects
+                logoWrapper.addEventListener('mouseenter', function() {
+                    logo.style.animationDuration = '0.5s';
+                    logoWrapper.style.transform = 'scale(1.1)';
+                });
+                
+                logoWrapper.addEventListener('mouseleave', function() {
+                    logo.style.animationDuration = '2s';
+                    logoWrapper.style.transform = 'scale(1)';
+                });
+                
+                // Add click effect
+                logoWrapper.addEventListener('click', function() {
+                    logo.style.animation = 'none';
+                    logo.offsetHeight; // Trigger reflow
+                    logo.style.animation = 'logoGlow 0.3s ease-in-out, logoBlink 1.5s ease-in-out infinite';
+                });
+                
+                // Random glow intensity
+                setInterval(function() {
+                    const randomIntensity = Math.random() * 0.5 + 0.5; // 0.5 to 1.0
+                    logo.style.filter = `drop-shadow(0 0 ${20 * randomIntensity}px rgba(255, 215, 0, ${0.6 + randomIntensity * 0.4}))`;
+                }, 2000);
+            }
+        });
+    </script>
     <style>
         /* Background gradient */
         .gradient-bg {
@@ -62,6 +96,81 @@
         .glass-effect p,
         .glass-effect label {
             color: white !important;
+        }
+        
+        /* BGN Logo Animation */
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .logo-glow {
+            animation: logoGlow 2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+        }
+        
+        .logo-blink {
+            animation: logoBlink 1.5s ease-in-out infinite;
+        }
+        
+        .logo-pulse {
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoGlow {
+            0% {
+                filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+                transform: scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 1));
+                transform: scale(1.05);
+            }
+            100% {
+                filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes logoBlink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 20px rgba(255, 215, 0, 0);
+            }
+        }
+        
+        /* Enhanced logo container */
+        .logo-wrapper {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        
+        .logo-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
+            border-radius: 50%;
+            z-index: -1;
+            animation: logoGlow 2s ease-in-out infinite alternate;
         }
         
         /* Cloudflare Turnstile styling */
@@ -114,8 +223,8 @@
     <div class="w-full max-w-md">
         <!-- Logo/Header -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
-                <img src="{{ asset('logo-bgn.png') }}" alt="BGN Logo" class="w-12 h-12 object-contain">
+            <div class="logo-wrapper inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
+                <img src="{{ asset('logo-bgn.png') }}" alt="BGN Logo" class="w-12 h-12 object-contain logo-glow logo-blink">
             </div>
             <h1 class="text-3xl font-bold text-white mb-2">Sistem Pemesanan Ruang Meeting</h1>
             <p class="text-white/80">Silakan masuk untuk melanjutkan</p>
