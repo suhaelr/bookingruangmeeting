@@ -1014,6 +1014,22 @@ class AuthController extends Controller
                 'admin_email' => $currentUser['email']
             ]);
 
+            // Get all users without any filters first
+            $allUsers = User::all();
+            \Log::info('All users in database (raw)', [
+                'total_count' => $allUsers->count(),
+                'user_ids' => $allUsers->pluck('id')->toArray(),
+                'users' => $allUsers->map(function($u) {
+                    return [
+                        'id' => $u->id,
+                        'username' => $u->username,
+                        'name' => $u->name,
+                        'email' => $u->email,
+                        'role' => $u->role
+                    ];
+                })->toArray()
+            ]);
+
             $users = User::select('id', 'username', 'name', 'full_name', 'email', 'role', 'google_id', 'created_at', 'last_login_at')
                 ->orderBy('created_at', 'desc')
                 ->get()
