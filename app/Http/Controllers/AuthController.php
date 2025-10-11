@@ -942,6 +942,14 @@ class AuthController extends Controller
                 'new_role' => $user->role,
                 'updated_successfully' => $user->role === $request->role
             ]);
+            
+            // Double-check database after update
+            $userFromDB = User::find($user->id);
+            \Log::info('Database verification after update', [
+                'user_id' => $userFromDB->id,
+                'role_in_db' => $userFromDB->role,
+                'role_in_model' => $user->role
+            ]);
 
             // If the user being updated is the current logged-in user, update their session
             if ($user->id == $currentUser['id']) {
@@ -1026,6 +1034,16 @@ class AuthController extends Controller
                 'user_count' => $users->count(),
                 'users' => $users->toArray()
             ]);
+            
+            // Log each user individually for debugging
+            foreach ($users as $user) {
+                \Log::info('User data', [
+                    'id' => $user['id'],
+                    'name' => $user['name'],
+                    'email' => $user['email'],
+                    'role' => $user['role']
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
