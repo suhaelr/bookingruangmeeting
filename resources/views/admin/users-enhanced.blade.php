@@ -308,7 +308,16 @@
                 if (data.success) {
                     showMessage(data.message, 'success');
                     closeModal('roleChangeModal');
-                    loadUsers(); // Reload users
+                    
+                    // Check if redirect is required (current user role changed to admin)
+                    if (data.redirect_required) {
+                        showMessage('Role Anda telah diubah ke Admin. Anda akan diarahkan ke dashboard admin.', 'info');
+                        setTimeout(() => {
+                            window.location.href = '/admin/dashboard';
+                        }, 2000);
+                    } else {
+                        loadUsers(); // Reload users
+                    }
                 } else {
                     showMessage(data.error || 'Gagal mengubah role pengguna', 'error');
                 }

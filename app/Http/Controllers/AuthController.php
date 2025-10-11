@@ -1008,6 +1008,13 @@ class AuthController extends Controller
                 $updatedUserData['role'] = $request->role;
                 Session::put('user_data', $updatedUserData);
                 Session::save();
+                
+                \Log::info('Session updated for current user', [
+                    'user_id' => $user->id,
+                    'old_role' => $oldRole,
+                    'new_role' => $request->role,
+                    'session_data' => Session::get('user_data')
+                ]);
             }
 
             \Log::info('User role updated by admin', [
@@ -1020,7 +1027,7 @@ class AuthController extends Controller
                 'session_updated' => $user->id == $currentUser['id']
             ]);
 
-            return response()->json([
+            $response = response()->json([
                 'success' => true,
                 'message' => 'User role updated successfully',
                 'user' => [
@@ -1029,8 +1036,11 @@ class AuthController extends Controller
                     'email' => $user->email,
                     'role' => $user->role,
                     'google_id' => $user->google_id
-                ]
+                ],
+                'redirect_required' => $user->id == $currentUser['id'] && $request->role === 'admin'
             ]);
+            
+            return $this->addNoCacheHeaders($response);
 
         } catch (\Exception $e) {
             \Log::error('Failed to update user role', [
