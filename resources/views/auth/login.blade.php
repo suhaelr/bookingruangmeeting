@@ -73,22 +73,73 @@
             min-height: 100vh !important;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         /* GIF Background Overlay */
         .gif-background {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
             opacity: 0.4;
             mix-blend-mode: screen;
             z-index: 0;
             pointer-events: none;
             filter: hue-rotate(20deg) saturate(1.2) brightness(0.8);
             animation: gifFade 8s ease-in-out infinite alternate;
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .gif-background {
+                width: 100vw;
+                height: 100vh;
+                min-width: 100%;
+                min-height: 100%;
+                object-fit: cover;
+                object-position: center center;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gif-background {
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover;
+                object-position: center center;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        /* Ensure GIF is always centered and visible */
+        @media (orientation: landscape) {
+            .gif-background {
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover;
+                object-position: center center;
+            }
+        }
+        
+        @media (orientation: portrait) {
+            .gif-background {
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover;
+                object-position: center center;
+            }
         }
         
         @keyframes gifFade {
