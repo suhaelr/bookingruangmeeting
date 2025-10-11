@@ -23,6 +23,7 @@ class SessionManagementMiddleware
             if ($request->routeIs('login') && $request->isMethod('GET')) {
                 // Clear any invalid session data on login page load
                 if (Session::has('user_logged_in') && !Session::has('user_data')) {
+                    \Log::info('SessionManagementMiddleware: Clearing invalid session data');
                     Session::forget('user_logged_in');
                     Session::forget('user_data');
                     Session::regenerate();
@@ -32,6 +33,7 @@ class SessionManagementMiddleware
                 if (Session::has('user_data')) {
                     $userData = Session::get('user_data');
                     if (!is_array($userData) || !isset($userData['id']) || !isset($userData['role'])) {
+                        \Log::info('SessionManagementMiddleware: Clearing corrupted session data');
                         Session::forget('user_logged_in');
                         Session::forget('user_data');
                         Session::regenerate();
@@ -48,10 +50,16 @@ class SessionManagementMiddleware
             }
         }
         
+        // Skip OAuth callback routes to avoid interference
+        if ($request->routeIs('auth.google.callback')) {
+            \Log::info('SessionManagementMiddleware: Skipping OAuth callback route');
+            return $next($request);
+        }
+        
         $response = $next($request);
         
-        // Force session save after login
-        if ($request->isMethod('POST') && $request->routeIs('login')) {
+        // Force session save after login (but not for OAuth callback)
+        if ($request->isMethod('POST') && $request->routeIs('login') && !$request->routeIs('auth.google.callback')) {
             try {
                 Session::save();
             } catch (\Exception $e) {

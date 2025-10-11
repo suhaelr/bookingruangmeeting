@@ -28,11 +28,17 @@ class UserAuth
             'user_logged_in' => Session::get('user_logged_in'),
             'user_data' => Session::get('user_data'),
             'ip' => $request->ip(),
-            'user_agent' => $request->userAgent()
+            'user_agent' => $request->userAgent(),
+            'session_all' => Session::all()
         ]);
 
         if (!Session::has('user_logged_in') || !Session::get('user_logged_in')) {
-            \Log::warning('UserAuth: User not logged in, redirecting to login');
+            \Log::warning('UserAuth: User not logged in, redirecting to login', [
+                'session_has_user_logged_in' => Session::has('user_logged_in'),
+                'user_logged_in_value' => Session::get('user_logged_in'),
+                'session_id' => session()->getId(),
+                'session_all' => Session::all()
+            ]);
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu!');
         }
 

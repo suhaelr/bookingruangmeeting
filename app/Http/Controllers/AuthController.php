@@ -660,8 +660,7 @@ class AuthController extends Controller
                 ]);
             }
 
-            // Log user in
-            Session::put('user_logged_in', true);
+            // Prepare user data
             $userData = [
                 'id' => $user->id,
                 'username' => $user->username,
@@ -670,64 +669,33 @@ class AuthController extends Controller
                 'role' => $user->role,
                 'department' => $user->department
             ];
+            
+            // Clear any existing session data first
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
+            
+            // Regenerate session ID for security
+            Session::regenerate(true);
+            
+            // Set new session data
+            Session::put('user_logged_in', true);
             Session::put('user_data', $userData);
             
-            // Force session save immediately
-            Session::save();
-            
-            // Verify session data is saved
-            \Log::info('Session data verification after login', [
-                'session_id' => session()->getId(),
-                'user_logged_in' => Session::get('user_logged_in'),
-                'user_data' => Session::get('user_data'),
-                'session_all' => Session::all()
-            ]);
-            
-            // Log session data for debugging
-            \Log::info('Session data after save', [
-                'session_id' => session()->getId(),
-                'user_logged_in' => Session::get('user_logged_in'),
-                'user_data' => Session::get('user_data'),
-                'session_all' => Session::all()
-            ]);
-
             // Update last login
             $user->update(['last_login_at' => now()]);
-
-            \Log::info('Google OAuth login successful', [
+            
+            // Force session save and wait for completion
+            Session::save();
+            
+            // Add delay to ensure session is properly saved
+            usleep(500000); // 500ms delay
+            
+            // Verify session data is properly saved
+            \Log::info('Google OAuth login successful - Final verification', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'google_id' => $userInfo['id'] ?? null,
                 'role' => $user->role,
-                'user_data' => $userData,
-                'session_id' => session()->getId()
-            ]);
-
-            // Force session to be saved before redirect
-            Session::save();
-
-            // Verify session data after save
-            \Log::info('Session verification after save', [
-                'user_logged_in' => Session::get('user_logged_in'),
-                'user_data' => Session::get('user_data'),
-                'session_id' => session()->getId()
-            ]);
-
-            // Redirect based on user role (admin or user)
-            \Log::info('Google OAuth user redirecting based on role', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'role' => $user->role,
-                'session_id' => session()->getId(),
-                'user_logged_in' => Session::get('user_logged_in'),
-                'user_data' => Session::get('user_data')
-            ]);
-
-            // Force session save before redirect
-            Session::save();
-            
-            // Verify session is saved
-            \Log::info('Session verification before redirect', [
                 'session_id' => session()->getId(),
                 'user_logged_in' => Session::get('user_logged_in'),
                 'user_data' => Session::get('user_data')
