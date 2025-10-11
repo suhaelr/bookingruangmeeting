@@ -679,7 +679,7 @@
                 
                 <!-- Username/Email Field -->
                 <div>
-                    <label for="username" class="block text-sm font-medium text-white mb-2">
+                    <label for="username" class="block text-base font-medium text-white mb-2 text-right">
                         <i class="fas fa-user mr-2"></i>Nama Pengguna atau Email
                     </label>
                     <input 
@@ -696,7 +696,7 @@
 
                 <!-- Password Field -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-white mb-2">
+                    <label for="password" class="block text-base font-medium text-white mb-2 text-right">
                         <i class="fas fa-lock mr-2"></i>Kata Sandi
                     </label>
                     <div class="relative">

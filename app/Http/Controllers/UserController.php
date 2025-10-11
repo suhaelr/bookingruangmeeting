@@ -216,20 +216,41 @@ class UserController extends Controller
             $attendees = array_filter(array_map('trim', explode(',', $request->attendees)));
         }
 
-        $booking = Booking::create([
-            'user_id' => $user['id'],
-            'meeting_room_id' => $request->meeting_room_id,
-            'title' => $request->title,
-            'description' => $request->description,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'attendees_count' => $request->attendees_count,
-            'attendees' => $attendees,
-            'special_requirements' => $request->special_requirements,
-            'unit_kerja' => $request->unit_kerja,
-            'dokumen_perizinan' => $dokumenPerizinanPath,
-            'total_cost' => 0, // Set to 0 since we removed pricing
-        ]);
+        // Validate user exists in database
+        $userModel = User::find($user['id']);
+        if (!$userModel) {
+            \Log::error('User not found in database', [
+                'session_user_id' => $user['id'],
+                'session_user_data' => $user
+            ]);
+            return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
+        }
+
+        try {
+            $booking = Booking::create([
+                'user_id' => $userModel->id, // Use the actual user model ID
+                'meeting_room_id' => $request->meeting_room_id,
+                'title' => $request->title,
+                'description' => $request->description,
+                'start_time' => $request->start_time,
+                'end_time' => $request->end_time,
+                'attendees_count' => $request->attendees_count,
+                'attendees' => $attendees,
+                'special_requirements' => $request->special_requirements,
+                'unit_kerja' => $request->unit_kerja,
+                'dokumen_perizinan' => $dokumenPerizinanPath,
+                'total_cost' => 0, // Set to 0 since we removed pricing
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Booking creation failed', [
+                'error' => $e->getMessage(),
+                'user_id' => $userModel->id,
+                'request_data' => $request->all()
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan saat membuat booking. Silakan coba lagi.')
+                ->withInput();
+        }
 
         // Send notification to admin
         $this->notifyAdmin('New Booking Request', "User {$user['full_name']} has requested a new booking: {$booking->title}");
