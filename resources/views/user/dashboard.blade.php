@@ -282,18 +282,16 @@
                                     @else
                                         bg-red-500/20 border-2 border-red-500/30 text-red-300 hover:bg-red-500/30
                                     @endif"
-                                    data-slot-info='@json([
-                                        "room_id" => $room["id"],
-                                        "room_name" => $room["name"],
-                                        "room_location" => $room["location"],
-                                        "room_capacity" => $room["capacity"],
-                                        "time" => $slot["time"],
-                                        "datetime" => $slot["datetime"],
-                                        "isAvailable" => $slot["isAvailable"],
-                                        "wasUsed" => $slot["wasUsed"],
-                                        "booking" => $slot["booking"],
-                                        "previousBooking" => $slot["previousBooking"]
-                                    ])'
+                                    data-room-id="{{ $room['id'] }}"
+                                    data-room-name="{{ $room['name'] }}"
+                                    data-room-location="{{ $room['location'] }}"
+                                    data-room-capacity="{{ $room['capacity'] }}"
+                                    data-time="{{ $slot['time'] }}"
+                                    data-datetime="{{ $slot['datetime'] }}"
+                                    data-is-available="{{ $slot['isAvailable'] ? 'true' : 'false' }}"
+                                    data-was-used="{{ $slot['wasUsed'] ? 'true' : 'false' }}"
+                                    data-booking='@json($slot["booking"])'
+                                    data-previous-booking='@json($slot["previousBooking"])'
                                     onmousedown="startHoldTimer(this)"
                                     onmouseup="clearHoldTimer()"
                                     onmouseleave="clearHoldTimer()"
@@ -734,21 +732,37 @@
         function handleSlotClick(element) {
             if (!isHolding) {
                 // Quick click - normal behavior
-                const slotInfo = JSON.parse(element.getAttribute('data-slot-info'));
+                const isAvailable = element.getAttribute('data-is-available') === 'true';
+                const roomId = element.getAttribute('data-room-id');
+                const datetime = element.getAttribute('data-datetime');
+                const roomName = element.getAttribute('data-room-name');
+                const booking = element.getAttribute('data-booking');
+                const previousBooking = element.getAttribute('data-previous-booking');
                 
-                if (slotInfo.isAvailable) {
-                    openBookingModal(slotInfo.room_id, slotInfo.datetime, slotInfo.room_name);
-                } else if (slotInfo.booking) {
-                    showBookingDetails(JSON.stringify(slotInfo.booking));
-                } else if (slotInfo.previousBooking) {
-                    showPreviousBookingDetails(JSON.stringify(slotInfo.previousBooking));
+                if (isAvailable) {
+                    openBookingModal(roomId, datetime, roomName);
+                } else if (booking && booking !== 'null') {
+                    showBookingDetails(booking);
+                } else if (previousBooking && previousBooking !== 'null') {
+                    showPreviousBookingDetails(previousBooking);
                 }
             }
             isHolding = false;
         }
 
         function showSlotDetails(element) {
-            const slotInfo = JSON.parse(element.getAttribute('data-slot-info'));
+            const slotInfo = {
+                room_id: element.getAttribute('data-room-id'),
+                room_name: element.getAttribute('data-room-name'),
+                room_location: element.getAttribute('data-room-location'),
+                room_capacity: element.getAttribute('data-room-capacity'),
+                time: element.getAttribute('data-time'),
+                datetime: element.getAttribute('data-datetime'),
+                isAvailable: element.getAttribute('data-is-available') === 'true',
+                wasUsed: element.getAttribute('data-was-used') === 'true',
+                booking: element.getAttribute('data-booking') !== 'null' ? JSON.parse(element.getAttribute('data-booking')) : null,
+                previousBooking: element.getAttribute('data-previous-booking') !== 'null' ? JSON.parse(element.getAttribute('data-previous-booking')) : null
+            };
             
             let modalContent = `
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeSlotDetails()">
