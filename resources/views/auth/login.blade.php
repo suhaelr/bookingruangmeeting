@@ -21,8 +21,13 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
     
-    <!-- Cloudflare Turnstile -->
+    <!-- Cloudflare Turnstile - Load after Google OAuth to avoid conflicts -->
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+    
+    <!-- Prevent caching of login page -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <script>
         // BGN Logo Animation Control
@@ -808,7 +813,7 @@
 
             <!-- Google Sign-In Button -->
             <div class="mb-6 flex justify-center">
-                <a href="{{ route('auth.google') }}" class="google-signin-button" title="Masuk dengan Google">
+                <a href="{{ route('auth.google') }}" class="google-signin-button" title="Masuk dengan Google" onclick="bypassTurnstileForGoogle()">
                     <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
                 </a>
             </div>
@@ -925,9 +930,19 @@
 
         // Initialize Turnstile when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
-            // Wait a bit for Turnstile script to load
-            setTimeout(renderTurnstile, 100);
+            // Wait for Google OAuth to load first, then Turnstile
+            setTimeout(renderTurnstile, 500);
         });
+
+        // Bypass Turnstile for Google OAuth
+        function bypassTurnstileForGoogle() {
+            // Disable Turnstile for Google OAuth to prevent interference
+            const turnstileResponse = document.querySelector('textarea[name="cf-turnstile-response"]');
+            if (turnstileResponse) {
+                turnstileResponse.value = 'turnstile-disabled';
+            }
+            return true;
+        }
 
         // Form submission handler
         document.addEventListener('DOMContentLoaded', function() {
@@ -936,7 +951,7 @@
             
             if (form && submitButton) {
                 form.addEventListener('submit', function(e) {
-                    // Check if Turnstile token exists
+                    // Check if Turnstile token exists (only for regular login, not Google OAuth)
                     const turnstileResponse = document.querySelector('textarea[name="cf-turnstile-response"]');
                     if (!turnstileResponse || !turnstileResponse.value) {
                         e.preventDefault();

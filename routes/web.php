@@ -60,7 +60,7 @@ Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->nam
 Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
 
 // Google OAuth Routes with Cloudflare bypass
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google')->middleware('cloudflare.bypass');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware('cloudflare.bypass');
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
