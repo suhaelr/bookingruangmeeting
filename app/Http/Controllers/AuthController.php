@@ -1018,14 +1018,17 @@ class AuthController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($user) {
+                    // Handle users with NULL name field
+                    $displayName = $user->full_name ?? $user->name ?? $user->username ?? 'Unknown User';
+                    
                     return [
                         'id' => $user->id,
                         'username' => $user->username,
-                        'name' => $user->full_name ?? $user->name,
+                        'name' => $displayName,
                         'email' => $user->email,
-                        'role' => $user->role,
+                        'role' => $user->role ?? 'user', // Default role if NULL
                         'google_id' => $user->google_id ? 'Yes' : 'No',
-                        'created_at' => $user->created_at->format('d/m/Y H:i'),
+                        'created_at' => $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'Unknown',
                         'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : 'Never'
                     ];
                 });
@@ -1044,6 +1047,12 @@ class AuthController extends Controller
                     'role' => $user['role']
                 ]);
             }
+            
+            // Log total count for verification
+            \Log::info('Total users returned by API', [
+                'count' => $users->count(),
+                'expected_count' => User::count()
+            ]);
 
             return response()->json([
                 'success' => true,
