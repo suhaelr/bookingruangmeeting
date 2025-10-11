@@ -597,67 +597,119 @@
             animation: logoGlow 2s ease-in-out infinite alternate;
         }
         
-        /* Cloudflare Turnstile styling */
+        /* Cloudflare Turnstile styling - Centered and clean */
         .cf-turnstile {
             border-radius: 8px !important;
             transform: scale(0.8) !important;
             transform-origin: center !important;
             margin: 0 auto !important;
             display: block !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            position: relative !important;
+            z-index: 10 !important;
         }
         
-        /* Mobile Turnstile scaling */
+        /* Remove any background or border from Turnstile */
+        .cf-turnstile iframe {
+            max-width: 100% !important;
+            height: auto !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 8px !important;
+        }
+        
+        /* Turnstile container - Perfect centering */
+        .turnstile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0.75rem 0;
+            padding: 0;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Ensure Turnstile is smaller than login button and centered */
+        .cf-turnstile {
+            width: 80% !important;
+            max-width: 180px !important;
+            margin: 0 auto !important;
+            background: transparent !important;
+        }
+        
+        /* Mobile Turnstile scaling - Maintain centering */
         @media (max-width: 768px) {
             .cf-turnstile {
                 transform: scale(0.7) !important;
-                margin: 0.5rem auto !important;
+                width: 70% !important;
+                max-width: 150px !important;
+                margin: 0 auto !important;
+            }
+            
+            .turnstile-container {
+                margin: 0.5rem 0;
             }
         }
         
         @media (max-width: 480px) {
             .cf-turnstile {
                 transform: scale(0.6) !important;
-                margin: 0.25rem auto !important;
+                width: 60% !important;
+                max-width: 120px !important;
+                margin: 0 auto !important;
+            }
+            
+            .turnstile-container {
+                margin: 0.25rem 0;
             }
         }
         
-        /* Turnstile container styling */
+        /* Remove any unwanted backgrounds or borders */
+        .cf-turnstile * {
+            background: transparent !important;
+            border: none !important;
+        }
+        
+        /* Ensure no background interference */
+        .cf-turnstile::before,
+        .cf-turnstile::after {
+            display: none !important;
+        }
+        
+        /* Remove any spacing issues */
         .turnstile-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0.5rem 0;
+            width: 100%;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
         
-        /* Ensure Turnstile doesn't break layout */
-        .cf-turnstile iframe {
-            max-width: 100% !important;
-            height: auto !important;
-        }
-        
-        /* Turnstile responsive adjustments */
+        /* Ensure Turnstile matches form styling */
         .cf-turnstile {
-            max-width: 200px !important;
-            width: auto !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
         }
         
-        /* Ensure Turnstile is smaller than login button */
-        .cf-turnstile {
-            width: 80% !important;
-            max-width: 180px !important;
-        }
-        
+        /* Mobile responsive adjustments for spacing */
         @media (max-width: 768px) {
-            .cf-turnstile {
-                width: 70% !important;
-                max-width: 150px !important;
+            .turnstile-container {
+                margin: 0.5rem 0 !important;
+                padding: 0 !important;
             }
         }
         
         @media (max-width: 480px) {
-            .cf-turnstile {
-                width: 60% !important;
-                max-width: 120px !important;
+            .turnstile-container {
+                margin: 0.25rem 0 !important;
+                padding: 0 !important;
             }
         }
         
@@ -782,20 +834,20 @@
                     </div>
                 </div>
 
-                <!-- Cloudflare Turnstile -->
-                <div class="flex justify-center mb-4">
+                <!-- Cloudflare Turnstile - Perfect Centering -->
+                <div class="turnstile-container">
                     <div class="cf-turnstile" 
                          data-sitekey="0x4AAAAAAB56ltjhELoBWYew" 
                          data-callback="onTurnstileSuccess"
                          data-error-callback="onTurnstileError"
                          data-theme="light"
-                         style="min-height: 65px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9;">
+                         data-size="normal">
                     </div>
                 </div>
                 
                 <!-- Fallback message if Turnstile doesn't load -->
-                <div id="turnstile-fallback" style="display: none; text-align: center; padding: 10px; background: #f0f0f0; border-radius: 8px; margin-bottom: 10px;">
-                    <p style="color: #666; font-size: 14px;">Security verification loading...</p>
+                <div id="turnstile-fallback" style="display: none; text-align: center; padding: 10px; background: transparent; border: none; margin-bottom: 10px;">
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px;">Security verification loading...</p>
                 </div>
                 
                 <!-- Hidden input for Turnstile response -->
