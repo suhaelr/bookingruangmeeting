@@ -634,12 +634,16 @@
             color: transparent !important;
         }
 
-        /* Turnstile Widget Styling */
+        /* Turnstile Widget Styling - Flexible Responsive Design */
         #turnstile-widget {
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 0 auto;
+            width: 100% !important;
+            min-width: 300px !important;
+            max-width: 400px !important;
+            height: 65px !important;
         }
 
         /* Ensure Turnstile widget is properly sized and centered */
@@ -651,19 +655,40 @@
             margin: 0.5rem 0;
         }
 
-        /* Mobile responsive adjustments for Turnstile */
+        /* Enhanced mobile responsive adjustments for Turnstile */
         @media (max-width: 768px) {
             #turnstile-widget {
-                width: 180px !important;
-                height: 60px !important;
+                width: 100% !important;
+                min-width: 280px !important;
+                max-width: 350px !important;
+                height: 65px !important;
             }
         }
 
         @media (max-width: 480px) {
             #turnstile-widget {
-                width: 160px !important;
-                height: 55px !important;
+                width: 100% !important;
+                min-width: 260px !important;
+                max-width: 320px !important;
+                height: 65px !important;
             }
+        }
+
+        @media (max-width: 360px) {
+            #turnstile-widget {
+                width: 100% !important;
+                min-width: 240px !important;
+                max-width: 300px !important;
+                height: 65px !important;
+            }
+        }
+
+        /* Turnstile widget iframe styling */
+        #turnstile-widget iframe {
+            width: 100% !important;
+            height: 65px !important;
+            border-radius: 8px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
         }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -755,7 +780,7 @@
 
                 <!-- Turnstile Widget Container -->
                 <div class="flex justify-center mb-4">
-                    <div id="turnstile-widget" style="width: 200px; height: 65px;"></div>
+                    <div id="turnstile-widget" style="width: 100%; min-width: 300px; max-width: 400px; height: 65px;"></div>
                 </div>
 
                 <!-- Login Button -->
@@ -763,6 +788,8 @@
                     type="submit" 
                     id="loginButton"
                     class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    disabled
+                    style="opacity: 0.5;"
                 >
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     Masuk
@@ -847,22 +874,50 @@
 
         function renderTurnstile() {
             if (window.turnstile && document.getElementById('turnstile-widget')) {
+                // Check if we have a proper site key (not testing key)
+                const siteKey = '{{ env("TURNSTILE_SITE_KEY") }}';
+                if (!siteKey || siteKey.includes('1x00000000000000000000AA') || siteKey.includes('0x4AAAAAA')) {
+                    console.warn('Turnstile: Please configure a valid site key in .env file');
+                    document.getElementById('turnstile-widget').innerHTML = '<div style="padding: 20px; text-align: center; color: #ff6b6b; background: rgba(255,255,255,0.1); border-radius: 8px; border: 1px dashed #ff6b6b;"><i class="fas fa-exclamation-triangle"></i><br>Please configure TURNSTILE_SITE_KEY in .env file</div>';
+                    return;
+                }
+
                 turnstileWidgetId = window.turnstile.render('#turnstile-widget', {
-                    sitekey: '{{ env("TURNSTILE_SITE_KEY", "1x00000000000000000000AA") }}', // Replace with your actual site key
+                    sitekey: siteKey,
                     theme: 'dark',
-                    size: 'compact',
+                    size: 'normal', // Changed from 'compact' to 'normal' for better visibility
                     callback: function(token) {
-                        console.log('Turnstile token:', token);
-                        // Token is automatically submitted with the form
+                        console.log('Turnstile token received');
+                        // Enable login button or show success state
+                        const loginButton = document.getElementById('loginButton');
+                        if (loginButton) {
+                            loginButton.disabled = false;
+                            loginButton.style.opacity = '1';
+                        }
                     },
                     'error-callback': function(error) {
                         console.error('Turnstile error:', error);
+                        const loginButton = document.getElementById('loginButton');
+                        if (loginButton) {
+                            loginButton.disabled = true;
+                            loginButton.style.opacity = '0.5';
+                        }
                     },
                     'expired-callback': function() {
                         console.log('Turnstile token expired');
+                        const loginButton = document.getElementById('loginButton');
+                        if (loginButton) {
+                            loginButton.disabled = true;
+                            loginButton.style.opacity = '0.5';
+                        }
                     },
                     'timeout-callback': function() {
                         console.log('Turnstile challenge timed out');
+                        const loginButton = document.getElementById('loginButton');
+                        if (loginButton) {
+                            loginButton.disabled = true;
+                            loginButton.style.opacity = '0.5';
+                        }
                     }
                 });
             }
