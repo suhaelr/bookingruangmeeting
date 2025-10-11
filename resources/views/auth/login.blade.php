@@ -222,6 +222,11 @@
             /* Links smaller */
             .glass-effect a {
                 font-size: 0.75rem !important;
+                color: rgba(255, 255, 255, 0.7) !important;
+            }
+            
+            .glass-effect a:hover {
+                color: rgba(255, 255, 255, 0.9) !important;
             }
             
             /* Ensure footer is visible and compact */
@@ -344,6 +349,11 @@
             /* Footer links very small */
             .glass-effect .text-center a {
                 font-size: 0.5rem !important;
+                color: rgba(255, 255, 255, 0.7) !important;
+            }
+            
+            .glass-effect .text-center a:hover {
+                color: rgba(255, 255, 255, 0.9) !important;
             }
             
             /* Ensure footer is visible and compact */
@@ -455,6 +465,46 @@
         
         * {
             box-sizing: border-box;
+        }
+        
+        /* Footer links color fix */
+        .text-center a {
+            color: rgba(255, 255, 255, 0.7) !important;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        
+        .text-center a:hover {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        /* Override any blue link colors */
+        a:not(.btn):not(.button) {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        a:not(.btn):not(.button):hover {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        /* Specific footer links styling */
+        .text-center p a {
+            color: rgba(255, 255, 255, 0.7) !important;
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+        
+        .text-center p a:hover {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        /* Override Tailwind link colors */
+        .underline {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        .hover\:text-white:hover {
+            color: rgba(255, 255, 255, 0.9) !important;
         }
         
         /* Ensure text is white */
