@@ -597,10 +597,10 @@
             animation: logoGlow 2s ease-in-out infinite alternate;
         }
         
-        /* Cloudflare Turnstile styling - Centered and clean */
+        /* Cloudflare Turnstile styling - Auto-size and centered */
         .cf-turnstile {
             border-radius: 8px !important;
-            transform: scale(0.8) !important;
+            transform: scale(0.6) !important;
             transform-origin: center !important;
             margin: 0 auto !important;
             display: block !important;
@@ -609,6 +609,9 @@
             box-shadow: none !important;
             position: relative !important;
             z-index: 10 !important;
+            width: auto !important;
+            max-width: 200px !important;
+            height: auto !important;
         }
         
         /* Remove any background or border from Turnstile */
@@ -622,12 +625,12 @@
             margin: 0 auto !important;
         }
         
-        /* Turnstile container - Perfect centering */
+        /* Turnstile container - Perfect centering with auto-sizing */
         .turnstile-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0.75rem auto;
+            margin: 0.5rem auto;
             padding: 0;
             background: transparent;
             border: none;
@@ -636,12 +639,13 @@
             z-index: 10;
             width: 100%;
             text-align: center;
+            min-height: 60px;
         }
         
         /* Ensure Turnstile is smaller than login button and centered */
         .cf-turnstile {
-            width: 80% !important;
-            max-width: 180px !important;
+            width: auto !important;
+            max-width: 160px !important;
             margin: 0 auto !important;
             background: transparent !important;
             display: block !important;
@@ -650,30 +654,32 @@
             transform: translateX(-50%) !important;
         }
         
-        /* Mobile Turnstile scaling - Maintain centering */
+        /* Mobile Turnstile scaling - Auto-size and centered */
         @media (max-width: 768px) {
             .cf-turnstile {
-                transform: scale(0.7) translateX(-50%) !important;
-                width: 70% !important;
-                max-width: 150px !important;
+                transform: scale(0.5) translateX(-50%) !important;
+                width: auto !important;
+                max-width: 140px !important;
                 margin: 0 auto !important;
             }
             
             .turnstile-container {
-                margin: 0.5rem 0;
+                margin: 0.4rem 0;
+                min-height: 50px;
             }
         }
         
         @media (max-width: 480px) {
             .cf-turnstile {
-                transform: scale(0.6) translateX(-50%) !important;
-                width: 60% !important;
+                transform: scale(0.4) translateX(-50%) !important;
+                width: auto !important;
                 max-width: 120px !important;
                 margin: 0 auto !important;
             }
             
             .turnstile-container {
-                margin: 0.25rem 0;
+                margin: 0.3rem 0;
+                min-height: 40px;
             }
         }
         
@@ -698,26 +704,30 @@
             padding-right: 0 !important;
         }
         
-        /* Ensure Turnstile matches form styling */
+        /* Ensure Turnstile matches form styling with auto-sizing */
         .cf-turnstile {
             background: rgba(255, 255, 255, 0.1) !important;
             backdrop-filter: blur(10px) !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+            width: fit-content !important;
+            height: auto !important;
         }
         
-        /* Mobile responsive adjustments for spacing */
+        /* Mobile responsive adjustments for auto-sizing */
         @media (max-width: 768px) {
             .turnstile-container {
-                margin: 0.5rem 0 !important;
+                margin: 0.4rem 0 !important;
                 padding: 0 !important;
+                min-height: 50px;
             }
         }
         
         @media (max-width: 480px) {
             .turnstile-container {
-                margin: 0.25rem 0 !important;
+                margin: 0.3rem 0 !important;
                 padding: 0 !important;
+                min-height: 40px;
             }
         }
         
