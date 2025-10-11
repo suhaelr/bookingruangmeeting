@@ -16,19 +16,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script>
-        // Alternative loading method for Turnstile
-        window.addEventListener('load', function() {
-            if (typeof window.turnstile === 'undefined') {
-                console.log('Loading Turnstile script manually...');
-                const script = document.createElement('script');
-                script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-                script.async = true;
-                script.defer = true;
-                document.head.appendChild(script);
-            }
-        });
     </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
@@ -173,7 +161,7 @@
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
-                padding: 1rem;
+                padding: 0.5rem;
             }
             
             /* Fix header text alignment - smaller */
@@ -295,7 +283,7 @@
                 width: 100%;
                 max-width: 100%;
                 box-sizing: border-box;
-                padding: 0.75rem;
+                padding: 0.5rem;
             }
             
             /* Fix header text alignment - very small */
@@ -597,139 +585,6 @@
             animation: logoGlow 2s ease-in-out infinite alternate;
         }
         
-        /* Cloudflare Turnstile styling - Auto-size and centered */
-        .cf-turnstile {
-            border-radius: 8px !important;
-            transform: scale(0.6) !important;
-            transform-origin: center !important;
-            margin: 0 auto !important;
-            display: block !important;
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            position: relative !important;
-            z-index: 10 !important;
-            width: auto !important;
-            max-width: 200px !important;
-            height: auto !important;
-        }
-        
-        /* Remove any background or border from Turnstile */
-        .cf-turnstile iframe {
-            max-width: 100% !important;
-            height: auto !important;
-            background: transparent !important;
-            border: none !important;
-            border-radius: 8px !important;
-            display: block !important;
-            margin: 0 auto !important;
-        }
-        
-        /* Turnstile container - Perfect centering with auto-sizing */
-        .turnstile-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0.5rem auto;
-            padding: 0;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            text-align: center;
-            min-height: 60px;
-        }
-        
-        /* Ensure Turnstile is smaller than login button and centered */
-        .cf-turnstile {
-            width: auto !important;
-            max-width: 160px !important;
-            margin: 0 auto !important;
-            background: transparent !important;
-            display: block !important;
-            position: relative !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-        }
-        
-        /* Mobile Turnstile scaling - Auto-size and centered */
-        @media (max-width: 768px) {
-            .cf-turnstile {
-                transform: scale(0.5) translateX(-50%) !important;
-                width: auto !important;
-                max-width: 140px !important;
-                margin: 0 auto !important;
-            }
-            
-            .turnstile-container {
-                margin: 0.4rem 0;
-                min-height: 50px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .cf-turnstile {
-                transform: scale(0.4) translateX(-50%) !important;
-                width: auto !important;
-                max-width: 120px !important;
-                margin: 0 auto !important;
-            }
-            
-            .turnstile-container {
-                margin: 0.3rem 0;
-                min-height: 40px;
-            }
-        }
-        
-        /* Remove any unwanted backgrounds or borders */
-        .cf-turnstile * {
-            background: transparent !important;
-            border: none !important;
-        }
-        
-        /* Ensure no background interference */
-        .cf-turnstile::before,
-        .cf-turnstile::after {
-            display: none !important;
-        }
-        
-        /* Remove any spacing issues */
-        .turnstile-container {
-            width: 100%;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-        
-        /* Ensure Turnstile matches form styling with auto-sizing */
-        .cf-turnstile {
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-            width: fit-content !important;
-            height: auto !important;
-        }
-        
-        /* Mobile responsive adjustments for auto-sizing */
-        @media (max-width: 768px) {
-            .turnstile-container {
-                margin: 0.4rem 0 !important;
-                padding: 0 !important;
-                min-height: 50px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .turnstile-container {
-                margin: 0.3rem 0 !important;
-                padding: 0 !important;
-                min-height: 40px;
-            }
-        }
         
         /* Google Sign-In button styling */
         .google-signin-button {
@@ -789,7 +644,7 @@
         </div>
 
         <!-- Login Form -->
-        <div class="glass-effect rounded-2xl p-8 shadow-2xl">
+        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
             @if ($errors->any())
                 <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
                     <div class="flex items-center">
@@ -852,24 +707,6 @@
                     </div>
                 </div>
 
-                <!-- Cloudflare Turnstile - Perfect Centering -->
-                <div class="turnstile-container">
-                    <div class="cf-turnstile" 
-                         data-sitekey="0x4AAAAAAB56ltjhELoBWYew" 
-                         data-callback="onTurnstileSuccess"
-                         data-error-callback="onTurnstileError"
-                         data-theme="light"
-                         data-size="normal">
-                    </div>
-                </div>
-                
-                <!-- Fallback message if Turnstile doesn't load -->
-                <div id="turnstile-fallback" style="display: none; text-align: center; padding: 10px; background: transparent; border: none; margin-bottom: 10px;">
-                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px;">Security verification loading...</p>
-                </div>
-                
-                <!-- Hidden input for Turnstile response -->
-                <input type="hidden" name="cf-turnstile-response" id="cf-turnstile-response" value="">
 
                 <!-- Login Button -->
                 <button 
@@ -941,40 +778,6 @@
     @include('components.whatsapp-float')
 
     <script>
-        // Cloudflare Turnstile callbacks
-        function onTurnstileSuccess(token) {
-            console.log('Turnstile success:', token);
-            document.getElementById('cf-turnstile-response').value = token;
-            document.getElementById('turnstile-fallback').style.display = 'none';
-        }
-        
-        function onTurnstileError(error) {
-            console.error('Turnstile error:', error);
-            document.getElementById('cf-turnstile-response').value = '';
-            document.getElementById('turnstile-fallback').style.display = 'block';
-        }
-        
-        // Initialize Turnstile with real site key
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Cloudflare Turnstile initialized with site key: 0x4AAAAAAB56ltjhELoBWYew');
-            
-            // Check if Turnstile script loaded
-            if (typeof window.turnstile === 'undefined') {
-                console.error('Turnstile script not loaded');
-                document.getElementById('turnstile-fallback').style.display = 'block';
-            } else {
-                console.log('Turnstile script loaded successfully');
-            }
-            
-            // Show fallback after 3 seconds if Turnstile doesn't load
-            setTimeout(function() {
-                const turnstileElement = document.querySelector('.cf-turnstile');
-                if (turnstileElement && turnstileElement.children.length === 0) {
-                    console.warn('Turnstile widget not rendered, showing fallback');
-                    document.getElementById('turnstile-fallback').style.display = 'block';
-                }
-            }, 3000);
-        });
         
         // Password toggle function
         function togglePassword() {
