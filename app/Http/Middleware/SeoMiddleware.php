@@ -299,9 +299,17 @@ class SeoMiddleware
     private function addSeoHeaders($response, $seoData = [])
     {
         try {
-            // Add cache headers for better performance
-            $response->headers->set('Cache-Control', 'public, max-age=3600');
-            $response->headers->set('Vary', 'Accept-Encoding, User-Agent');
+            // Don't cache auth pages to prevent session issues
+            $request = request();
+            if ($request->routeIs('login') || $request->routeIs('logout') || $request->routeIs('register')) {
+                $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+                $response->headers->set('Pragma', 'no-cache');
+                $response->headers->set('Expires', '0');
+            } else {
+                // Add cache headers for better performance for other pages
+                $response->headers->set('Cache-Control', 'public, max-age=3600');
+                $response->headers->set('Vary', 'Accept-Encoding, User-Agent');
+            }
             
             // Add security headers
             $response->headers->set('X-Content-Type-Options', 'nosniff');

@@ -35,7 +35,14 @@ class AuthController extends Controller
             Session::regenerate();
         }
         
-        return view('auth.login');
+        $response = response()->view('auth.login');
+        
+        // Add no-cache headers to prevent browser caching
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        
+        return $response;
     }
 
     public function login(Request $request)
@@ -78,7 +85,14 @@ class AuthController extends Controller
             // Force session save
             Session::save();
             
-            return redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
+            $response = redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
+            
+            // Add no-cache headers to prevent browser caching
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+            
+            return $response;
         }
 
         if ($credentials['username'] === 'user' && $credentials['password'] === 'user') {
@@ -102,7 +116,14 @@ class AuthController extends Controller
             // Force session save
             Session::save();
             
-            return redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
+            $response = redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
+            
+            // Add no-cache headers to prevent browser caching
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+            
+            return $response;
         }
 
         // Check database users - support both username and email
@@ -141,9 +162,16 @@ class AuthController extends Controller
             // Update last login
             $user->update(['last_login_at' => now()]);
 
-            return $user->role === 'admin' 
+            $response = $user->role === 'admin' 
                 ? redirect()->route('admin.dashboard')->with('success', 'Login berhasil!')
                 : redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
+            
+            // Add no-cache headers to prevent browser caching
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+            
+            return $response;
         }
 
         return back()->withErrors([
@@ -160,7 +188,14 @@ class AuthController extends Controller
         // Regenerate session ID to prevent session fixation
         Session::regenerate();
         
-        return redirect()->route('login')->with('success', 'Logout berhasil!');
+        $response = redirect()->route('login')->with('success', 'Logout berhasil!');
+        
+        // Add no-cache headers to prevent browser caching
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        
+        return $response;
     }
 
     public function showRegister()
