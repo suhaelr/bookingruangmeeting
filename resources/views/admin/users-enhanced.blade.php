@@ -111,6 +111,7 @@
 
         // Load users from API
         async function loadUsers() {
+            console.log('Loading users...');
             try {
                 const response = await fetch('/admin/users/api', {
                     method: 'GET',
@@ -120,10 +121,15 @@
                     }
                 });
 
+                console.log('Load users response status:', response.status);
+                console.log('Load users response OK:', response.ok);
+
                 const data = await response.json();
+                console.log('Load users response data:', data);
 
                 if (data.success) {
                     users = data.users;
+                    console.log('Users loaded:', users);
                     renderUsersTable();
                 } else {
                     showMessage('Gagal memuat data pengguna: ' + data.error, 'error');

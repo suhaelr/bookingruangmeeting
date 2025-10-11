@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="test-token-123">
+    <title>Test JavaScript Debug</title>
+</head>
+<body>
+    <h1>Test JavaScript Debug</h1>
+    
+    <button onclick="testFetch()">Test Fetch</button>
+    <button onclick="testCSRF()">Test CSRF</button>
+    <div id="result"></div>
+    
+    <script>
+        function testFetch() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing fetch...';
+            
+            fetch('/admin/users/api', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                resultDiv.innerHTML = `
+                    <h3>Response Status: ${response.status}</h3>
+                    <p>Response OK: ${response.ok}</p>
+                `;
+                return response.text();
+            })
+            .then(data => {
+                resultDiv.innerHTML += `
+                    <h3>Response Data:</h3>
+                    <pre>${data}</pre>
+                `;
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            });
+        }
+        
+        function testCSRF() {
+            const resultDiv = document.getElementById('result');
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            resultDiv.innerHTML = `
+                <h3>CSRF Token:</h3>
+                <p>${token}</p>
+            `;
+        }
+    </script>
+</body>
+</html>

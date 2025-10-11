@@ -993,10 +993,19 @@ class AuthController extends Controller
         // Check if current user is admin
         $currentUser = session('user_data');
         if (!$currentUser || $currentUser['role'] !== 'admin') {
+            \Log::warning('Unauthorized access to getAllUsers', [
+                'current_user' => $currentUser,
+                'session_id' => session()->getId()
+            ]);
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         try {
+            \Log::info('Getting all users for admin', [
+                'admin_id' => $currentUser['id'],
+                'admin_email' => $currentUser['email']
+            ]);
+
             $users = User::select('id', 'username', 'name', 'full_name', 'email', 'role', 'google_id', 'created_at', 'last_login_at')
                 ->orderBy('created_at', 'desc')
                 ->get()
@@ -1013,6 +1022,11 @@ class AuthController extends Controller
                     ];
                 });
 
+            \Log::info('Users retrieved successfully', [
+                'user_count' => $users->count(),
+                'users' => $users->toArray()
+            ]);
+
             return response()->json([
                 'success' => true,
                 'users' => $users
@@ -1021,7 +1035,8 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             \Log::error('Failed to get users list', [
                 'admin_id' => $currentUser['id'],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json(['error' => 'Failed to get users list'], 500);
