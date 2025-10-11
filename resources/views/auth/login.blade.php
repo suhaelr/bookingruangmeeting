@@ -137,10 +137,29 @@
             .login-container {
                 min-height: 100vh;
                 padding: 0.5rem;
+                align-items: flex-start;
+                padding-top: 2rem;
             }
             
             .content-overlay {
                 padding: 0.5rem;
+                max-width: 100%;
+                width: 100%;
+                margin: 0 auto;
+            }
+            
+            /* Fix logo positioning on mobile */
+            .logo-wrapper {
+                margin: 0 auto;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            /* Center the form container */
+            .glass-effect {
+                margin: 0 auto;
+                width: 100%;
                 max-width: 100%;
             }
         }
@@ -159,11 +178,47 @@
             .login-container {
                 min-height: 100vh;
                 padding: 0.25rem;
+                align-items: flex-start;
+                padding-top: 1rem;
             }
             
             .content-overlay {
                 padding: 0.25rem;
                 max-width: 100%;
+                width: 100%;
+                margin: 0 auto;
+            }
+            
+            /* Fix logo positioning on small mobile */
+            .logo-wrapper {
+                margin: 0 auto;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                width: 4rem;
+                height: 4rem;
+            }
+            
+            .logo-wrapper img {
+                width: 3rem;
+                height: 3rem;
+            }
+            
+            /* Center the form container */
+            .glass-effect {
+                margin: 0 auto;
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            /* Adjust text sizes for small mobile */
+            h1 {
+                font-size: 1.5rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            p {
+                font-size: 0.875rem !important;
             }
         }
         
@@ -209,6 +264,10 @@
             max-width: 28rem;
             margin: 0 auto;
             padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
         
         /* Ensure form is scrollable */
@@ -218,6 +277,8 @@
             align-items: center;
             justify-content: center;
             padding: 1rem;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         /* Glass effect */
@@ -315,6 +376,8 @@
             padding: 4px;
             background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700);
             animation: logoPulse 3s ease-in-out infinite;
+            margin: 0 auto;
+            text-align: center;
         }
         
         .logo-wrapper::before {
