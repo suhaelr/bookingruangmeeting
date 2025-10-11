@@ -230,6 +230,9 @@ class AdminController extends Controller
 
             \Log::info('Booking status updated successfully');
 
+            // Create user notification
+            $this->createUserNotification($booking, $request->status, $request->reason);
+
             // Send notification to admin about status change
             $this->notifyAdmin('Booking Status Updated', "Booking '{$booking->title}' status changed to {$request->status}");
 
@@ -557,19 +560,71 @@ class AdminController extends Controller
         try {
             $room = MeetingRoom::findOrFail($id);
             
-            // Check if room has bookings
-            if ($room->bookings()->count() > 0) {
+            // Get all bookings for this room
+            $allBookings = $room->bookings;
+            $activeBookings = $room->bookings()
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->get();
+            $completedBookings = $room->bookings()
+                ->where('status', 'completed')
+                ->get();
+            
+            // Check if room can be deleted based on new logic
+            $canDelete = false;
+            $reason = '';
+            
+            if ($allBookings->count() === 0) {
+                // No bookings at all
+                $canDelete = true;
+            } elseif (!$room->is_active) {
+                // Room is inactive - can delete but need to cancel all active bookings
+                $canDelete = true;
+                $reason = 'Room dinonaktifkan - semua booking aktif akan dibatalkan';
+            } elseif ($activeBookings->count() === 0 && $completedBookings->count() > 0) {
+                // All bookings are completed
+                $canDelete = true;
+            } else {
+                // Has active bookings and room is active
+                $canDelete = false;
+                $reason = 'Tidak dapat menghapus room yang aktif dan memiliki booking aktif. Nonaktifkan room terlebih dahulu atau tunggu semua booking selesai.';
+            }
+            
+            if (!$canDelete) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Tidak dapat menghapus room yang memiliki bookings. Hapus bookings terlebih dahulu.'
+                    'message' => $reason
                 ], 400);
+            }
+
+            // If room is inactive or has active bookings, cancel all active bookings
+            if (!$room->is_active || $activeBookings->count() > 0) {
+                foreach ($activeBookings as $booking) {
+                    $booking->updateStatus('cancelled', 'Meeting dibatalkan sistem karena sedang ada maintenance ruangan');
+                    
+                    // Create notification for user about room maintenance
+                    \App\Models\UserNotification::createNotification(
+                        $booking->user_id,
+                        'room_maintenance',
+                        'Ruang Meeting Dinonaktifkan',
+                        "Meeting '{$booking->title}' dibatalkan karena ruang meeting sedang dalam maintenance. Silakan buat booking baru untuk ruang lain.",
+                        $booking->id
+                    );
+                    
+                    // Log the cancellation
+                    \Log::info('Booking cancelled due to room deletion', [
+                        'booking_id' => $booking->id,
+                        'user_id' => $booking->user_id,
+                        'room_id' => $room->id,
+                        'reason' => 'Room maintenance'
+                    ]);
+                }
             }
 
             $room->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Room berhasil dihapus!'
+                'message' => 'Room berhasil dihapus!' . ($reason ? ' ' . $reason : '')
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -611,6 +666,67 @@ class AdminController extends Controller
                 'success' => false,
                 'message' => 'Gagal mengunduh dokumen: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    private function createUserNotification($booking, $status, $reason = null)
+    {
+        try {
+            $user = $booking->user;
+            $notificationData = $this->getNotificationData($booking, $status, $reason);
+            
+            \App\Models\UserNotification::createNotification(
+                $user->id,
+                $notificationData['type'],
+                $notificationData['title'],
+                $notificationData['message'],
+                $booking->id
+            );
+
+            \Log::info('User notification created', [
+                'user_id' => $user->id,
+                'booking_id' => $booking->id,
+                'type' => $notificationData['type']
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create user notification', [
+                'booking_id' => $booking->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    private function getNotificationData($booking, $status, $reason = null)
+    {
+        switch ($status) {
+            case 'confirmed':
+                return [
+                    'type' => 'booking_confirmed',
+                    'title' => 'Booking Dikonfirmasi',
+                    'message' => "Meeting '{$booking->title}' telah dikonfirmasi. Anda akan menerima email pengingat 30 menit sebelum meeting dimulai."
+                ];
+            case 'cancelled':
+                $message = "Meeting '{$booking->title}' telah dibatalkan.";
+                if ($reason) {
+                    $message .= " Alasan: {$reason}";
+                }
+                return [
+                    'type' => 'booking_cancelled',
+                    'title' => 'Booking Dibatalkan',
+                    'message' => $message
+                ];
+            case 'completed':
+                return [
+                    'type' => 'booking_completed',
+                    'title' => 'Meeting Selesai',
+                    'message' => "Meeting '{$booking->title}' telah selesai. Terima kasih telah menggunakan layanan kami."
+                ];
+            default:
+                return [
+                    'type' => 'booking_updated',
+                    'title' => 'Status Booking Diupdate',
+                    'message' => "Status booking '{$booking->title}' telah diupdate menjadi {$status}."
+                ];
         }
     }
 }

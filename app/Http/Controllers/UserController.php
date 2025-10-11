@@ -51,11 +51,19 @@ class UserController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Get user notifications
+        $userModel = User::find($user['id']);
+        $notifications = $userModel->notifications()
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('user.dashboard', compact(
             'stats',
             'activeBookings',
             'todayBookings',
-            'availableRooms'
+            'availableRooms',
+            'notifications'
         ));
     }
 
@@ -102,6 +110,12 @@ class UserController extends Controller
         $rooms = MeetingRoom::where('is_active', true)
             ->orderBy('name')
             ->get();
+        
+        // Check if no rooms are available
+        if ($rooms->count() === 0) {
+            return view('user.create-booking', compact('rooms'))
+                ->with('warning', 'Saat ini tidak ada ruang meeting yang tersedia. Silakan hubungi administrator untuk informasi lebih lanjut.');
+        }
         
         return view('user.create-booking', compact('rooms'));
     }
@@ -541,5 +555,64 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Notification settings saved successfully!'
         ]);
+    }
+
+    public function notifications()
+    {
+        $user = session('user_data');
+        $userModel = User::find($user['id']);
+        
+        $notifications = $userModel->notifications()
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        
+        return view('user.notifications', compact('notifications'));
+    }
+
+    public function markNotificationRead(Request $request, $id)
+    {
+        try {
+            $user = session('user_data');
+            $notification = \App\Models\UserNotification::where('id', $id)
+                ->where('user_id', $user['id'])
+                ->firstOrFail();
+            
+            $notification->markAsRead();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Notification marked as read'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark notification as read'
+            ], 500);
+        }
+    }
+
+    public function markAllNotificationsRead(Request $request)
+    {
+        try {
+            $user = session('user_data');
+            $userModel = User::find($user['id']);
+            
+            $userModel->notifications()
+                ->where('is_read', false)
+                ->update([
+                    'is_read' => true,
+                    'read_at' => now()
+                ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'All notifications marked as read'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark all notifications as read'
+            ], 500);
+        }
     }
 }

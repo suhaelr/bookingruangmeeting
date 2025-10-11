@@ -178,6 +178,11 @@ Route::prefix('user')->middleware('user.auth')->group(function () {
     Route::put('/bookings/{id}', [UserController::class, 'updateBooking'])->name('user.bookings.update');
     Route::post('/bookings/{id}/cancel', [UserController::class, 'cancelBooking'])->name('user.bookings.cancel');
     Route::post('/check-availability', [UserController::class, 'checkAvailability'])->name('user.check-availability');
+    
+    // Notification routes
+    Route::get('/notifications', [UserController::class, 'notifications'])->name('user.notifications');
+    Route::post('/notifications/{id}/mark-read', [UserController::class, 'markNotificationRead'])->name('user.notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.mark-all-read');
 });
 
 // Legacy route for backward compatibility

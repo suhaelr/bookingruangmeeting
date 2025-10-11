@@ -48,6 +48,16 @@ class User extends Authenticatable
         return $this->hasMany(Booking::class);
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(UserNotification::class);
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->notifications()->where('is_read', false);
+    }
+
     public function isAdmin()
     {
         return $this->role === 'admin';
