@@ -125,17 +125,22 @@ class AdminController extends Controller
 
     public function rooms()
     {
-        $rooms = MeetingRoom::withCount('bookings')
+        $rooms = MeetingRoom::withCount([
+            'bookings' => function($query) {
+                $query->whereIn('status', ['pending', 'confirmed'])
+                      ->where('start_time', '>=', now());
+            }
+        ])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         
         // Debug: Log booking counts
-        \Log::info('Admin rooms - booking counts:', [
+        \Log::info('Admin rooms - active booking counts:', [
             'rooms' => $rooms->map(function($room) {
                 return [
                     'id' => $room->id,
                     'name' => $room->name,
-                    'bookings_count' => $room->bookings_count
+                    'active_bookings_count' => $room->bookings_count
                 ];
             })
         ]);

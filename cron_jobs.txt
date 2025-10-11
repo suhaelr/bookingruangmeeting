@@ -1,0 +1,13 @@
+# =====================================================
+# Cron Jobs untuk Meeting Room Booking System v2.0
+# Copy baris-baris ini ke crontab dengan: crontab -e
+# =====================================================
+
+# Update booking status setiap 5 menit
+*/5 * * * * cd /home/dsvbpgpt/public_html && php artisan bookings:update-status >> /dev/null 2>&1
+
+# Kirim email reminder setiap 15 menit
+*/15 * * * * cd /home/dsvbpgpt/public_html && php artisan bookings:send-reminders >> /dev/null 2>&1
+
+# Cleanup log lama setiap hari jam 2 pagi (opsional)
+0 2 * * * cd /home/dsvbpgpt/public_html && find storage/logs -name "*.log" -mtime +7 -delete >> /dev/null 2>&1

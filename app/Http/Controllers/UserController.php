@@ -380,7 +380,8 @@ class UserController extends Controller
     {
         $query = Booking::with('user')
             ->where('meeting_room_id', $roomId)
-            ->where('status', '!=', 'cancelled')
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->where('start_time', '>=', now()) // Only check future bookings
             ->where(function ($query) use ($startTime, $endTime) {
                 $query->whereBetween('start_time', [$startTime, $endTime->subSecond()])
                       ->orWhereBetween('end_time', [$startTime->addSecond(), $endTime])
@@ -468,7 +469,8 @@ class UserController extends Controller
     {
         foreach ($existingBookings as $booking) {
             if ($booking->meeting_room_id == $roomId && 
-                $booking->status != 'cancelled' &&
+                in_array($booking->status, ['pending', 'confirmed']) &&
+                $booking->start_time >= now() && // Only check future bookings
                 $this->timesOverlap($startTime, $endTime, $booking->start_time, $booking->end_time)) {
                 return false;
             }

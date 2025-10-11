@@ -43,6 +43,7 @@ class MeetingRoom extends Model
     {
         $query = $this->bookings()
             ->whereIn('status', ['pending', 'confirmed'])
+            ->where('start_time', '>=', now()) // Only check future bookings
             ->where(function ($q) use ($startTime, $endTime) {
                 $q->whereBetween('start_time', [$startTime, $endTime])
                   ->orWhereBetween('end_time', [$startTime, $endTime])
