@@ -219,25 +219,9 @@
         <!-- Room Availability Grid -->
         <div class="mt-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <div class="flex justify-between items-center mb-6">
-                    <div>
-                        <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
-                        <p class="text-white/60 text-sm mt-1">{{ now()->format('l, d F Y') }}</p>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-green-500 rounded"></div>
-                            <span class="text-white/80 text-sm">Tersedia</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-red-500 rounded"></div>
-                            <span class="text-white/80 text-sm">Dibooking</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <div class="w-3 h-3 bg-orange-500 rounded"></div>
-                            <span class="text-white/80 text-sm">Pernah Digunakan</span>
-                        </div>
-                    </div>
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
+                    <p class="text-white/60 text-sm mt-1">{{ now()->format('l, d F Y') }}</p>
                 </div>
                 
                 <!-- Grid Container -->
@@ -314,24 +298,18 @@
                 <!-- Legend -->
                 <div class="mt-6 p-4 bg-white/5 rounded-lg">
                     <h4 class="text-white font-medium mb-3">Keterangan:</h4>
-                    <div class="space-y-3">
-                        <!-- First row: Green and Red -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
-                                <span class="text-white/80">Ruang tersedia untuk dipesan</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
-                                <span class="text-white/80">Ruang sudah dibooking</span>
-                            </div>
+                    <div class="space-y-2">
+                        <div class="flex items-center space-x-2 text-sm">
+                            <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
+                            <span class="text-white/80">Ruang tersedia untuk dipesan</span>
                         </div>
-                        <!-- Second row: Orange (centered) -->
-                        <div class="flex justify-center">
-                            <div class="flex items-center space-x-2 text-sm">
-                                <div class="w-4 h-4 bg-orange-500/20 border border-orange-500/30 rounded"></div>
-                                <span class="text-white/80">Ruang pernah digunakan (tersedia)</span>
-                            </div>
+                        <div class="flex items-center space-x-2 text-sm">
+                            <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
+                            <span class="text-white/80">Ruang sudah dibooking</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm">
+                            <div class="w-4 h-4 bg-orange-500/20 border border-orange-500/30 rounded"></div>
+                            <span class="text-white/80">Ruang pernah digunakan (tersedia)</span>
                         </div>
                     </div>
                 </div>
