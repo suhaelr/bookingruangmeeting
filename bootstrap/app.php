@@ -20,12 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'cloudflare.bypass' => \App\Http\Middleware\CloudflareBypass::class,
             'seo' => \App\Http\Middleware\SeoMiddleware::class,
             'session.management' => \App\Http\Middleware\SessionManagementMiddleware::class,
+            'disable.cache' => \App\Http\Middleware\DisableCache::class,
         ]);
         
         // Apply security middleware globally
         $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
         $middleware->append(\App\Http\Middleware\InputValidationMiddleware::class);
         $middleware->append(\App\Http\Middleware\SessionManagementMiddleware::class);
+        // Disable all caching globally
+        $middleware->append(\App\Http\Middleware\DisableCache::class);
         // SEO middleware should run after session management
         $middleware->append(\App\Http\Middleware\SeoMiddleware::class);
     })

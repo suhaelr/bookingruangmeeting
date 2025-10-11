@@ -17,6 +17,22 @@ use App\Mail\EmailVerificationMail;
 
 class AuthController extends Controller
 {
+    /**
+     * Add no-cache headers to response
+     */
+    private function addNoCacheHeaders($response)
+    {
+        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+        $response->headers->set('ETag', '');
+        $response->headers->set('Vary', '*');
+        $response->headers->set('X-Accel-Expires', '0');
+        $response->headers->set('X-Cache', 'DISABLED');
+        $response->headers->set('X-Cache-Lookup', 'DISABLED');
+        return $response;
+    }
     public function showLogin()
     {
         // Jika sudah login, redirect ke dashboard sesuai role
@@ -37,13 +53,7 @@ class AuthController extends Controller
         }
         
         $response = response()->view('auth.login');
-        
-        // Add no-cache headers to prevent browser caching
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-        
-        return $response;
+        return $this->addNoCacheHeaders($response);
     }
 
     public function login(Request $request)
@@ -112,12 +122,7 @@ class AuthController extends Controller
             
             $response = $redirectRoute->with('success', 'Login berhasil!');
             
-            // Add no-cache headers to prevent browser caching
-            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-            $response->headers->set('Pragma', 'no-cache');
-            $response->headers->set('Expires', '0');
-            
-            return $response;
+            return $this->addNoCacheHeaders($response);
         }
 
         if ($credentials['username'] === 'user' && $credentials['password'] === 'user') {
@@ -167,12 +172,7 @@ class AuthController extends Controller
             
             $response = $redirectRoute->with('success', 'Login berhasil!');
             
-            // Add no-cache headers to prevent browser caching
-            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-            $response->headers->set('Pragma', 'no-cache');
-            $response->headers->set('Expires', '0');
-            
-            return $response;
+            return $this->addNoCacheHeaders($response);
         }
 
         // Check database users - support both username and email
@@ -238,12 +238,7 @@ class AuthController extends Controller
                 ? redirect()->route('admin.dashboard')->with('success', 'Login berhasil!')
                 : redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
             
-            // Add no-cache headers to prevent browser caching
-            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-            $response->headers->set('Pragma', 'no-cache');
-            $response->headers->set('Expires', '0');
-            
-            return $response;
+            return $this->addNoCacheHeaders($response);
         }
 
         return back()->withErrors([
@@ -1168,13 +1163,7 @@ class AuthController extends Controller
                 'users' => $users
             ]);
             
-            // Add no-cache headers to prevent caching
-            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-            $response->headers->set('Pragma', 'no-cache');
-            $response->headers->set('Expires', '0');
-            $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
-            
-            return $response;
+            return $this->addNoCacheHeaders($response);
 
         } catch (\Exception $e) {
             \Log::error('Failed to get users list', [
