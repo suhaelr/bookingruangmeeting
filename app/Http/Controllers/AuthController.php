@@ -654,10 +654,14 @@ class AuthController extends Controller
                 if (!$user->google_id) {
                     $user->update(['google_id' => $userInfo['id'] ?? null]);
                 }
-                // Ensure Google users have role 'user' (override any existing role)
-                if ($user->role !== 'user') {
-                    $user->update(['role' => 'user']);
-                }
+                // DO NOT override role - respect admin's role assignment
+                // Admin can change user's role and it should persist
+                \Log::info('Existing Google user logged in', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'current_role' => $user->role,
+                    'role_preserved' => true
+                ]);
             }
 
             // Store refresh token for future use (if provided)
@@ -723,8 +727,8 @@ class AuthController extends Controller
                 'session_id' => session()->getId()
             ]);
 
-            // Google OAuth users always go to user dashboard
-            \Log::info('Google OAuth user redirecting to user dashboard', [
+            // Redirect based on user role (admin or user)
+            \Log::info('Google OAuth user redirecting based on role', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'role' => $user->role,
@@ -743,19 +747,24 @@ class AuthController extends Controller
                 'user_data' => Session::get('user_data')
             ]);
 
-            // Use absolute URL redirect to ensure proper redirect
-            $dashboardUrl = url('/user/dashboard');
-            \Log::info('Redirecting to absolute URL', [
+            // Redirect based on role (admin goes to admin dashboard, user goes to user dashboard)
+            $dashboardUrl = $user->role === 'admin' 
+                ? url('/admin/dashboard') 
+                : url('/user/dashboard');
+            
+            \Log::info('Redirecting to dashboard based on role', [
                 'url' => $dashboardUrl,
                 'user_id' => $user->id,
                 'user_email' => $user->email,
+                'role' => $user->role,
                 'session_id' => session()->getId(),
                 'user_logged_in' => Session::get('user_logged_in'),
                 'user_data' => Session::get('user_data')
             ]);
             
-            // Direct redirect to user dashboard with absolute URL
-            return redirect($dashboardUrl)->with('success', 'Berhasil masuk dengan Google!');
+            // Direct redirect based on role with absolute URL
+            $response = redirect($dashboardUrl)->with('success', 'Berhasil masuk dengan Google!');
+            return $this->addNoCacheHeaders($response);
 
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [
