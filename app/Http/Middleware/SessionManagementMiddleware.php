@@ -52,7 +52,14 @@ class SessionManagementMiddleware
         
         // Force session save after login
         if ($request->isMethod('POST') && $request->routeIs('login')) {
-            Session::save();
+            try {
+                Session::save();
+                Session::commit();
+            } catch (\Exception $e) {
+                \Log::error('SessionManagementMiddleware: Error saving session', [
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
         
         return $response;

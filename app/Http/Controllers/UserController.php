@@ -16,13 +16,22 @@ class UserController extends Controller
         $user = session('user_data');
         
         // Validate user exists in database
-        $userModel = User::find($user['id']);
-        if (!$userModel) {
-            \Log::error('User not found in database for dashboard', [
+        try {
+            $userModel = User::find($user['id']);
+            if (!$userModel) {
+                \Log::error('User not found in database for dashboard', [
+                    'session_user_id' => $user['id'],
+                    'session_user_data' => $user
+                ]);
+                return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Database error during user validation in dashboard', [
+                'error' => $e->getMessage(),
                 'session_user_id' => $user['id'],
                 'session_user_data' => $user
             ]);
-            return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
+            return redirect()->route('login')->with('error', 'Database error. Please login again.');
         }
         
         // Statistik booking user
