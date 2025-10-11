@@ -586,9 +586,9 @@
         }
         
         
-        /* Google Sign-In button styling */
+        /* Google Sign-In button styling - Small square with logo only */
         .google-signin-button {
-            width: 100%;
+            width: 48px;
             height: 48px;
             background: #fff;
             border: 1px solid #dadce0;
@@ -598,50 +598,37 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: 'Roboto', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: #3c4043;
             text-decoration: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            margin: 0 auto;
         }
         
         .google-signin-button:hover {
             background: #f8f9fa;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
         }
         
         .google-signin-button:active {
             background: #f1f3f4;
+            transform: translateY(0);
         }
         
         .google-signin-button img {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+            margin: 0;
         }
         
+        /* Hide text, show only logo */
         .google-signin-button {
-            color: #3c4043 !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-            text-decoration: none !important;
+            color: transparent !important;
+            font-size: 0 !important;
+            line-height: 0 !important;
         }
         
         .google-signin-button:hover {
-            color: #3c4043 !important;
-            text-decoration: none !important;
-        }
-        
-        /* Ensure Google button text is visible */
-        .google-signin-button span,
-        .google-signin-button {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            color: #3c4043 !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-            line-height: 1.4 !important;
+            color: transparent !important;
         }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -754,10 +741,9 @@
             </div>
 
             <!-- Google Sign-In Button -->
-            <div class="mb-6">
-                <a href="{{ route('auth.google') }}" class="google-signin-button">
+            <div class="mb-6 flex justify-center">
+                <a href="{{ route('auth.google') }}" class="google-signin-button" title="Masuk dengan Google">
                     <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
-                    Masuk dengan Google
                 </a>
             </div>
 
