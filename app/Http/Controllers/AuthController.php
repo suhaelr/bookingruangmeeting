@@ -111,12 +111,13 @@ class AuthController extends Controller
                 ]);
             }
             
-            // Force session save and commit
+            // Force session regeneration and save
+            Session::regenerate(true);
             Session::save();
             Session::commit();
             
             // Add delay to ensure session is saved
-            usleep(100000); // 100ms delay
+            usleep(200000); // 200ms delay
             
             // Redirect based on current role
             $userData = Session::get('user_data');
@@ -127,9 +128,11 @@ class AuthController extends Controller
             $response = $redirectRoute->with('success', 'Login berhasil!');
             
             // Add no-cache headers
-            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private, max-age=0');
             $response->headers->set('Pragma', 'no-cache');
             $response->headers->set('Expires', '0');
+            $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+            $response->headers->set('ETag', '');
             
             return $response;
         }
@@ -184,12 +187,13 @@ class AuthController extends Controller
                 'department' => $freshUser->department
             ]);
 
-            // Force session save and commit
+            // Force session regeneration and save
+            Session::regenerate(true);
             Session::save();
             Session::commit();
             
             // Add delay to ensure session is saved
-            usleep(100000); // 100ms delay
+            usleep(200000); // 200ms delay
 
             // Update last login
             $freshUser->update(['last_login_at' => now()]);
@@ -204,9 +208,11 @@ class AuthController extends Controller
                 : redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
             
             // Add no-cache headers
-            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private, max-age=0');
             $response->headers->set('Pragma', 'no-cache');
             $response->headers->set('Expires', '0');
+            $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+            $response->headers->set('ETag', '');
             
             return $response;
         }

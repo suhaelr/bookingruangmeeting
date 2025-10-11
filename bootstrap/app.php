@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'seo' => \App\Http\Middleware\SeoMiddleware::class,
             'session.management' => \App\Http\Middleware\SessionManagementMiddleware::class,
             'disable.cache' => \App\Http\Middleware\DisableCache::class,
+            'disable.all.cache' => \App\Http\Middleware\DisableAllCache::class,
         ]);
         
         // Apply security middleware globally
@@ -29,6 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SessionManagementMiddleware::class);
         // Disable all caching globally
         $middleware->append(\App\Http\Middleware\DisableCache::class);
+        // Disable all cache and force session regeneration
+        $middleware->append(\App\Http\Middleware\DisableAllCache::class);
         // SEO middleware should run after session management
         $middleware->append(\App\Http\Middleware\SeoMiddleware::class);
     })
