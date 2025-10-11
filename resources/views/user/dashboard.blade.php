@@ -282,7 +282,7 @@
                                     @else
                                         bg-red-500/20 border-2 border-red-500/30 text-red-300 hover:bg-red-500/30
                                     @endif"
-                                    data-slot-info='@json([
+                                    data-slot-info='@json(
                                         "room_id" => $room["id"],
                                         "room_name" => $room["name"],
                                         "room_location" => $room["location"],
@@ -293,7 +293,7 @@
                                         "wasUsed" => $slot["wasUsed"],
                                         "booking" => $slot["booking"],
                                         "previousBooking" => $slot["previousBooking"]
-                                    ])'
+                                    )'
                                     onmousedown="startHoldTimer(this)"
                                     onmouseup="clearHoldTimer()"
                                     onmouseleave="clearHoldTimer()"
