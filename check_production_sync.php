@@ -8,27 +8,21 @@ use App\Models\User;
 $app = require_once 'bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
-echo "Checking production database sync...\n";
+echo "Checking production database synchronization...\n";
 
-// Check all users with detailed info
+// Check all users in database
 $users = User::all();
-echo "Total users: " . $users->count() . "\n\n";
+echo "Total users in database: " . $users->count() . "\n\n";
 
+echo "Database users:\n";
 foreach ($users as $user) {
-    echo "ID: {$user->id}\n";
-    echo "Name: {$user->name}\n";
-    echo "Email: {$user->email}\n";
-    echo "Role: {$user->role}\n";
-    echo "Google ID: " . ($user->google_id ?: 'None') . "\n";
-    echo "Created: {$user->created_at}\n";
-    echo "Updated: {$user->updated_at}\n";
-    echo "Last Login: " . ($user->last_login_at ?: 'Never') . "\n";
-    echo "---\n";
+    echo "ID: {$user->id}, Name: " . ($user->name ?: 'NULL') . ", Email: {$user->email}, Role: {$user->role}\n";
 }
 
-// Check for users with specific emails from the frontend
-echo "\nChecking for specific emails from frontend...\n";
-$frontendEmails = [
+// Check for specific users that should exist based on frontend
+echo "\nChecking for specific users from frontend...\n";
+$frontendUsers = [
+    'mohammadluthfi5@gmail.com',
     'rizqullahsuhael@gmail.com',
     'syifawsl3007@gmail.com', 
     'nonameemail991@gmail.com',
@@ -36,11 +30,22 @@ $frontendEmails = [
     'admin@pusdatinbgn.web.id'
 ];
 
-foreach ($frontendEmails as $email) {
+foreach ($frontendUsers as $email) {
     $user = User::where('email', $email)->first();
     if ($user) {
-        echo "Found: {$email} -> ID: {$user->id}, Role: {$user->role}\n";
+        echo "Found: {$email} -> ID: {$user->id}, Name: " . ($user->name ?: 'NULL') . ", Role: {$user->role}\n";
     } else {
         echo "Not found: {$email}\n";
+    }
+}
+
+// Check if there are users with ID 6-10
+echo "\nChecking for users with ID 6-10...\n";
+for ($i = 6; $i <= 10; $i++) {
+    $user = User::find($i);
+    if ($user) {
+        echo "User ID {$i}: {$user->name} - {$user->email} - Role: {$user->role}\n";
+    } else {
+        echo "User ID {$i}: Not found\n";
     }
 }

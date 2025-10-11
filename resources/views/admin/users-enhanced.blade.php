@@ -135,6 +135,7 @@
                         console.log(`User ${index}: ID=${user.id}, Name=${user.name}, Role=${user.role}`);
                     });
                     renderUsersTable();
+                    showMessage(`Data berhasil dimuat: ${users.length} pengguna ditemukan`, 'success');
                 } else {
                     showMessage('Gagal memuat data pengguna: ' + data.error, 'error');
                 }
@@ -309,7 +310,21 @@
 
         // Refresh users
         function refreshUsers() {
-            loadUsers();
+            console.log('Refreshing users...');
+            
+            // Disable refresh button and show loading
+            const refreshBtn = document.querySelector('button[onclick="refreshUsers()"]');
+            const originalText = refreshBtn.innerHTML;
+            refreshBtn.disabled = true;
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memuat...';
+            
+            showMessage('Memuat data terbaru dari database...', 'info');
+            
+            // Call loadUsers with callback to re-enable button
+            loadUsers().finally(() => {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = originalText;
+            });
         }
 
         // Export users to CSV
