@@ -600,6 +600,65 @@
         /* Cloudflare Turnstile styling */
         .cf-turnstile {
             border-radius: 8px !important;
+            transform: scale(0.8) !important;
+            transform-origin: center !important;
+            margin: 0 auto !important;
+            display: block !important;
+        }
+        
+        /* Mobile Turnstile scaling */
+        @media (max-width: 768px) {
+            .cf-turnstile {
+                transform: scale(0.7) !important;
+                margin: 0.5rem auto !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cf-turnstile {
+                transform: scale(0.6) !important;
+                margin: 0.25rem auto !important;
+            }
+        }
+        
+        /* Turnstile container styling */
+        .turnstile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+        
+        /* Ensure Turnstile doesn't break layout */
+        .cf-turnstile iframe {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+        
+        /* Turnstile responsive adjustments */
+        .cf-turnstile {
+            max-width: 200px !important;
+            width: auto !important;
+        }
+        
+        /* Ensure Turnstile is smaller than login button */
+        .cf-turnstile {
+            width: 80% !important;
+            max-width: 180px !important;
+        }
+        
+        @media (max-width: 768px) {
+            .cf-turnstile {
+                width: 70% !important;
+                max-width: 150px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .cf-turnstile {
+                width: 60% !important;
+                max-width: 120px !important;
+            }
         }
         
         /* Google Sign-In button styling */
