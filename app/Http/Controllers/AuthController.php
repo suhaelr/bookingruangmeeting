@@ -907,9 +907,22 @@ class AuthController extends Controller
      */
     public function updateUserRole(Request $request, $userId)
     {
+        \Log::info('updateUserRole method called', [
+            'timestamp' => now(),
+            'session_id' => session()->getId(),
+            'user_id' => $userId,
+            'request_data' => $request->all(),
+            'csrf_token' => $request->input('_token'),
+            'session_token' => session()->token()
+        ]);
+
         // Check if current user is admin
         $currentUser = session('user_data');
         if (!$currentUser || $currentUser['role'] !== 'admin') {
+            \Log::warning('Unauthorized access to updateUserRole', [
+                'current_user' => $currentUser,
+                'session_id' => session()->getId()
+            ]);
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 

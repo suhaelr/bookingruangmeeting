@@ -114,7 +114,7 @@ Route::get('/oauth/debug', function(Request $request) {
 })->name('oauth.debug');
 
 // User Management Routes (Admin only)
-Route::middleware('admin.auth')->group(function () {
+Route::middleware(['admin.auth', 'web'])->group(function () {
     Route::get('/admin/users/api', function() {
         \Log::info('Route /admin/users/api called', [
             'timestamp' => now(),
