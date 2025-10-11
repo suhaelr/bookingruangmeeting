@@ -475,8 +475,27 @@ class AuthController extends Controller
     public function redirectToGoogle()
     {
         $clientId = env('GOOGLE_CLIENT_ID');
-        // Use original callback route that matches Google Cloud Console
+        $clientSecret = env('GOOGLE_CLIENT_SECRET');
         $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
+        
+        // Validate required environment variables
+        if (!$clientId) {
+            \Log::error('Google OAuth: GOOGLE_CLIENT_ID is not configured');
+            return redirect()->route('login')->with('error', 'Google OAuth configuration error. Please contact administrator.');
+        }
+        
+        if (!$clientSecret) {
+            \Log::error('Google OAuth: GOOGLE_CLIENT_SECRET is not configured');
+            return redirect()->route('login')->with('error', 'Google OAuth configuration error. Please contact administrator.');
+        }
+        
+        // Log configuration for debugging (without exposing secrets)
+        \Log::info('Google OAuth configuration', [
+            'client_id' => substr($clientId, 0, 20) . '...',
+            'redirect_uri' => $redirectUri,
+            'has_secret' => !empty($clientSecret)
+        ]);
+        
         $state = bin2hex(random_bytes(16));
         
         // Store state in session for CSRF protection
@@ -489,7 +508,7 @@ class AuthController extends Controller
             'profile'
         ];
         
-        $authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query([
+        $params = [
             'client_id' => $clientId,
             'redirect_uri' => $redirectUri,
             'scope' => implode(' ', $scopes),
@@ -498,6 +517,18 @@ class AuthController extends Controller
             'access_type' => 'offline', // Request refresh token
             'prompt' => 'consent', // Force consent screen for new scopes
             'include_granted_scopes' => 'true' // Include previously granted scopes
+        ];
+        
+        // Log the OAuth URL for debugging (without client_id)
+        $debugParams = $params;
+        $debugParams['client_id'] = substr($clientId, 0, 20) . '...';
+        \Log::info('Google OAuth URL parameters', $debugParams);
+        
+        $authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query($params);
+        
+        \Log::info('Redirecting to Google OAuth', [
+            'auth_url' => substr($authUrl, 0, 100) . '...',
+            'session_id' => session()->getId()
         ]);
         
         return redirect($authUrl);

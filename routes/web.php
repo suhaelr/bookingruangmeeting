@@ -89,6 +89,19 @@ Route::get('/debug/oauth', function() {
     ]);
 })->name('debug.oauth');
 
+// Debug route for Google OAuth configuration
+Route::get('/debug/google-config', function() {
+    return response()->json([
+        'google_client_id' => env('GOOGLE_CLIENT_ID') ? substr(env('GOOGLE_CLIENT_ID'), 0, 20) . '...' : 'NOT_SET',
+        'google_client_secret' => env('GOOGLE_CLIENT_SECRET') ? 'SET' : 'NOT_SET',
+        'google_redirect_uri' => env('GOOGLE_REDIRECT_URI'),
+        'cloudflare_site_key' => env('CLOUDFLARE_SITE_KEY') ? substr(env('CLOUDFLARE_SITE_KEY'), 0, 20) . '...' : 'NOT_SET',
+        'cloudflare_secret_key' => env('CLOUDFLARE_SECRET_KEY') ? 'SET' : 'NOT_SET',
+        'app_env' => env('APP_ENV'),
+        'app_debug' => env('APP_DEBUG')
+    ]);
+})->name('debug.google-config');
+
 // Test OAuth callback route
 Route::get('/test/oauth', function() {
     return response()->json([

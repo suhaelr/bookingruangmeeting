@@ -19,10 +19,14 @@
     <script>
     </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
+    @if(env('GOOGLE_CLIENT_ID'))
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
+    @else
+    <!-- Google Client ID not configured -->
+    @endif
     
-    <!-- Cloudflare Turnstile - Load after Google OAuth to avoid conflicts -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+    <!-- Cloudflare Turnstile - Implicit rendering for production reliability -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     
     <!-- Prevent caching of login page -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -785,7 +789,16 @@
 
                 <!-- Turnstile Widget Container -->
                 <div class="flex justify-center mb-4">
-                    <div id="turnstile-widget" style="width: 100%; min-width: 300px; max-width: 400px; height: 65px;"></div>
+                    <div 
+                        class="cf-turnstile" 
+                        data-sitekey="{{ env('CLOUDFLARE_SITE_KEY') }}"
+                        data-theme="dark"
+                        data-size="normal"
+                        data-callback="onTurnstileSuccess"
+                        data-error-callback="onTurnstileError"
+                        data-expired-callback="onTurnstileExpired"
+                        style="width: 100%; min-width: 300px; max-width: 400px;"
+                    ></div>
                 </div>
 
                 <!-- Login Button -->
@@ -874,65 +887,36 @@
             }
         }
 
-        // Turnstile Widget Configuration
-        let turnstileWidgetId = null;
-
-        function renderTurnstile() {
-            if (window.turnstile && document.getElementById('turnstile-widget')) {
-                // Check if we have a proper site key (not testing key)
-                const siteKey = '{{ env("CLOUDFLARE_SITE_KEY") }}';
-                if (!siteKey || siteKey.includes('1x00000000000000000000AA') || siteKey.includes('0x4AAAAAA')) {
-                    console.warn('Turnstile: Please configure a valid site key in .env file');
-                    document.getElementById('turnstile-widget').innerHTML = '<div style="padding: 20px; text-align: center; color: #ff6b6b; background: rgba(255,255,255,0.1); border-radius: 8px; border: 1px dashed #ff6b6b;"><i class="fas fa-exclamation-triangle"></i><br>Please configure CLOUDFLARE_SITE_KEY in .env file</div>';
-                    return;
-                }
-
-                turnstileWidgetId = window.turnstile.render('#turnstile-widget', {
-                    sitekey: siteKey,
-                    theme: 'dark',
-                    size: 'normal', // Changed from 'compact' to 'normal' for better visibility
-                    callback: function(token) {
-                        console.log('Turnstile token received');
-                        // Enable login button or show success state
-                        const loginButton = document.getElementById('loginButton');
-                        if (loginButton) {
-                            loginButton.disabled = false;
-                            loginButton.style.opacity = '1';
-                        }
-                    },
-                    'error-callback': function(error) {
-                        console.error('Turnstile error:', error);
-                        const loginButton = document.getElementById('loginButton');
-                        if (loginButton) {
-                            loginButton.disabled = true;
-                            loginButton.style.opacity = '0.5';
-                        }
-                    },
-                    'expired-callback': function() {
-                        console.log('Turnstile token expired');
-                        const loginButton = document.getElementById('loginButton');
-                        if (loginButton) {
-                            loginButton.disabled = true;
-                            loginButton.style.opacity = '0.5';
-                        }
-                    },
-                    'timeout-callback': function() {
-                        console.log('Turnstile challenge timed out');
-                        const loginButton = document.getElementById('loginButton');
-                        if (loginButton) {
-                            loginButton.disabled = true;
-                            loginButton.style.opacity = '0.5';
-                        }
-                    }
-                });
+        // Turnstile Callback Functions for Implicit Rendering
+        function onTurnstileSuccess(token) {
+            console.log('Turnstile token received:', token);
+            // Enable login button
+            const loginButton = document.getElementById('loginButton');
+            if (loginButton) {
+                loginButton.disabled = false;
+                loginButton.style.opacity = '1';
             }
         }
 
-        // Initialize Turnstile when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wait for Google OAuth to load first, then Turnstile
-            setTimeout(renderTurnstile, 500);
-        });
+        function onTurnstileError(error) {
+            console.error('Turnstile error:', error);
+            // Disable login button on error
+            const loginButton = document.getElementById('loginButton');
+            if (loginButton) {
+                loginButton.disabled = true;
+                loginButton.style.opacity = '0.5';
+            }
+        }
+
+        function onTurnstileExpired() {
+            console.log('Turnstile token expired');
+            // Disable login button when expired
+            const loginButton = document.getElementById('loginButton');
+            if (loginButton) {
+                loginButton.disabled = true;
+                loginButton.style.opacity = '0.5';
+            }
+        }
 
         // Bypass Turnstile for Google OAuth
         function bypassTurnstileForGoogle() {
