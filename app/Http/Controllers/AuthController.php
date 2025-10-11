@@ -111,8 +111,12 @@ class AuthController extends Controller
                 ]);
             }
             
-            // Force session save
+            // Force session save and commit
             Session::save();
+            Session::commit();
+            
+            // Add delay to ensure session is saved
+            usleep(100000); // 100ms delay
             
             // Redirect based on current role
             $userData = Session::get('user_data');
@@ -122,7 +126,12 @@ class AuthController extends Controller
             
             $response = $redirectRoute->with('success', 'Login berhasil!');
             
-            return $this->addNoCacheHeaders($response);
+            // Add no-cache headers
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+            
+            return $response;
         }
 
         // Remove hardcoded user credentials for security
@@ -175,8 +184,12 @@ class AuthController extends Controller
                 'department' => $freshUser->department
             ]);
 
-            // Force session save
+            // Force session save and commit
             Session::save();
+            Session::commit();
+            
+            // Add delay to ensure session is saved
+            usleep(100000); // 100ms delay
 
             // Update last login
             $freshUser->update(['last_login_at' => now()]);
@@ -190,7 +203,12 @@ class AuthController extends Controller
                 ? redirect()->route('admin.dashboard')->with('success', 'Login berhasil!')
                 : redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
             
-            return $this->addNoCacheHeaders($response);
+            // Add no-cache headers
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+            
+            return $response;
         }
 
         return back()->withErrors([
