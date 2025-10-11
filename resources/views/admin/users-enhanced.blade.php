@@ -245,25 +245,42 @@
 
         // Confirm role change
         async function confirmRoleChange() {
-            if (!currentUserId) return;
+            if (!currentUserId) {
+                console.error('No user ID selected');
+                showMessage('Tidak ada pengguna yang dipilih', 'error');
+                return;
+            }
             
             const newRole = currentUserRole === 'admin' ? 'user' : 'admin';
             
+            console.log('Attempting to change role:', {
+                userId: currentUserId,
+                currentRole: currentUserRole,
+                newRole: newRole
+            });
+            
             try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                console.log('CSRF Token:', csrfToken);
+                
                 const response = await fetch(`/admin/users/${currentUserId}/role`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify({
                         role: newRole
                     })
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response OK:', response.ok);
+
                 const data = await response.json();
+                console.log('Response data:', data);
 
                 if (data.success) {
                     showMessage(data.message, 'success');
@@ -274,7 +291,7 @@
                 }
             } catch (error) {
                 console.error('Error changing user role:', error);
-                showMessage('Terjadi kesalahan saat mengubah role pengguna', 'error');
+                showMessage('Terjadi kesalahan saat mengubah role pengguna: ' + error.message, 'error');
             }
         }
 
