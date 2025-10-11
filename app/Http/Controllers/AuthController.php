@@ -968,8 +968,17 @@ class AuthController extends Controller
             // Allow admin to change their own role (with session update)
             $oldRole = $user->role;
             
+            // Clear any cached data for this user
+            \Cache::forget("user_{$userId}");
+            \Cache::forget("user_role_{$userId}");
+            
             // Use direct database update to ensure persistence
-            $updateResult = User::where('id', $userId)->update(['role' => $request->role]);
+            $updateResult = DB::table('users')
+                ->where('id', $userId)
+                ->update([
+                    'role' => $request->role,
+                    'updated_at' => now()
+                ]);
             
             \Log::info('Direct database update result', [
                 'user_id' => $userId,
@@ -977,8 +986,11 @@ class AuthController extends Controller
                 'new_role' => $request->role
             ]);
             
+            // Clear all cache to ensure fresh data
+            \Cache::flush();
+            
             // Refresh user data to ensure update
-            $user->refresh();
+            $user = User::find($userId);
             
             \Log::info('Role update completed', [
                 'user_id' => $user->id,

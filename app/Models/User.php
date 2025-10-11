@@ -10,6 +10,12 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+    /**
+     * Disable model caching
+     */
+    public $timestamps = true;
+    protected $rememberTokenName = false;
+
     protected $fillable = [
         'name',
         'username',
