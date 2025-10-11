@@ -21,6 +21,9 @@
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
     
+    <!-- Cloudflare Turnstile -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+    
     <script>
         // BGN Logo Animation Control
         document.addEventListener('DOMContentLoaded', function() {
@@ -630,6 +633,38 @@
         .google-signin-button:hover {
             color: transparent !important;
         }
+
+        /* Turnstile Widget Styling */
+        #turnstile-widget {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        /* Ensure Turnstile widget is properly sized and centered */
+        .turnstile-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        /* Mobile responsive adjustments for Turnstile */
+        @media (max-width: 768px) {
+            #turnstile-widget {
+                width: 180px !important;
+                height: 60px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #turnstile-widget {
+                width: 160px !important;
+                height: 55px !important;
+            }
+        }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -718,6 +753,10 @@
                     </div>
                 </div>
 
+                <!-- Turnstile Widget Container -->
+                <div class="flex justify-center mb-4">
+                    <div id="turnstile-widget" style="width: 200px; height: 65px;"></div>
+                </div>
 
                 <!-- Login Button -->
                 <button 
@@ -802,6 +841,56 @@
                 passwordIcon.className = 'fas fa-eye';
             }
         }
+
+        // Turnstile Widget Configuration
+        let turnstileWidgetId = null;
+
+        function renderTurnstile() {
+            if (window.turnstile && document.getElementById('turnstile-widget')) {
+                turnstileWidgetId = window.turnstile.render('#turnstile-widget', {
+                    sitekey: '{{ env("TURNSTILE_SITE_KEY", "1x00000000000000000000AA") }}', // Replace with your actual site key
+                    theme: 'dark',
+                    size: 'compact',
+                    callback: function(token) {
+                        console.log('Turnstile token:', token);
+                        // Token is automatically submitted with the form
+                    },
+                    'error-callback': function(error) {
+                        console.error('Turnstile error:', error);
+                    },
+                    'expired-callback': function() {
+                        console.log('Turnstile token expired');
+                    },
+                    'timeout-callback': function() {
+                        console.log('Turnstile challenge timed out');
+                    }
+                });
+            }
+        }
+
+        // Initialize Turnstile when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit for Turnstile script to load
+            setTimeout(renderTurnstile, 100);
+        });
+
+        // Form submission handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="{{ route("login") }}"]');
+            const submitButton = document.getElementById('loginButton');
+            
+            if (form && submitButton) {
+                form.addEventListener('submit', function(e) {
+                    // Check if Turnstile token exists
+                    const turnstileResponse = document.querySelector('textarea[name="cf-turnstile-response"]');
+                    if (!turnstileResponse || !turnstileResponse.value) {
+                        e.preventDefault();
+                        alert('Please complete the security verification.');
+                        return false;
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
