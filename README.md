@@ -12,7 +12,7 @@ Sistem pemesanan ruang meeting yang modern dan responsif dengan fitur lengkap un
 - **Sistem Notifikasi** real-time dengan berbagai jenis notifikasi
 - **Validasi Konflik** booking otomatis
 - **Saran Waktu Kosong** cerdas
-- **Email Reminder** 30 menit sebelum meeting
+- **Email Reminder** 1 jam sebelum meeting
 - **Notifikasi Maintenance** ruang meeting
 
 ### 👨‍💼 Fitur Admin
@@ -178,7 +178,7 @@ php artisan serve --host=0.0.0.0 --port=8000
 - **Informasi Detail**: Menampilkan siapa yang sudah booking dan kapan
 - **Kapasitas Ruang**: Validasi jumlah peserta dengan kapasitas ruang
 - **Auto Completion**: Booking otomatis selesai saat waktu habis
-- **Email Reminder**: Notifikasi 30 menit sebelum meeting
+- **Email Reminder**: Notifikasi 1 jam sebelum meeting
 
 ### Manajemen User (Admin)
 - Lihat detail user
@@ -219,7 +219,7 @@ php artisan serve --host=0.0.0.0 --port=8000
 
 ### 📧 Sistem Email Reminder
 - **Template HTML Indah**: Email reminder dengan design modern
-- **Timing Otomatis**: Kirim 30 menit sebelum meeting
+- **Timing Otomatis**: Kirim 1 jam sebelum meeting
 - **Informasi Lengkap**: Detail meeting, ruang, waktu, dan peserta
 - **Tips Meeting**: Saran untuk persiapan meeting
 
@@ -250,7 +250,7 @@ php artisan serve --host=0.0.0.0 --port=8000
 ### 📱 Enhanced User Experience
 - **No Rooms Warning**: Peringatan saat tidak ada ruang tersedia
 - **Maintenance Notice**: Notifikasi jelas saat ruang dalam maintenance
-- **Email Integration**: Konfirmasi booking dengan info email reminder
+- **Email Integration**: Konfirmasi booking dengan info email reminder 1 jam
 
 ## 🎨 Tampilan
 
@@ -306,7 +306,7 @@ php artisan bookings:send-reminders
 
 ### Command Descriptions
 - **`bookings:update-status`**: Mengupdate status booking yang sudah selesai menjadi "completed"
-- **`bookings:send-reminders`**: Mengirim email reminder 30 menit sebelum meeting dimulai
+- **`bookings:send-reminders`**: Mengirim email reminder 1 jam sebelum meeting dimulai
 
 ### Manual Testing
 ```bash

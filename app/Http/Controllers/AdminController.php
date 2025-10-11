@@ -703,7 +703,7 @@ class AdminController extends Controller
                 return [
                     'type' => 'booking_confirmed',
                     'title' => 'Booking Dikonfirmasi',
-                    'message' => "Meeting '{$booking->title}' telah dikonfirmasi. Anda akan menerima email pengingat 30 menit sebelum meeting dimulai."
+                    'message' => "Meeting '{$booking->title}' telah dikonfirmasi. Anda akan menerima email pengingat 1 jam sebelum meeting dimulai."
                 ];
             case 'cancelled':
                 $message = "Meeting '{$booking->title}' telah dibatalkan.";

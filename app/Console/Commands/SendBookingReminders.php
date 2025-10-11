@@ -22,7 +22,7 @@ class SendBookingReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Send 30-minute reminder emails for confirmed bookings';
+    protected $description = 'Send 1-hour reminder emails for confirmed bookings';
 
     /**
      * Execute the console command.
@@ -31,14 +31,14 @@ class SendBookingReminders extends Command
     {
         $this->info('Starting booking reminder process...');
         
-        // Find bookings that start in 30 minutes and are confirmed
-        $reminderTime = now()->addMinutes(30);
-        $startOfHour = $reminderTime->copy()->startOfHour();
-        $endOfHour = $reminderTime->copy()->endOfHour();
+        // Find bookings that start in 1 hour and are confirmed
+        $reminderTime = now()->addHour();
+        $startTime = $reminderTime->copy()->subMinutes(30);
+        $endTime = $reminderTime->copy()->addMinutes(30);
         
         $bookingsToRemind = Booking::with(['user', 'meetingRoom'])
             ->where('status', 'confirmed')
-            ->whereBetween('start_time', [$startOfHour, $endOfHour])
+            ->whereBetween('start_time', [$startTime, $endTime])
             ->get();
         
         $sentCount = 0;

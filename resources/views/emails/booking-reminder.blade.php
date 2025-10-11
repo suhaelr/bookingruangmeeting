@@ -106,7 +106,7 @@
 
         <div class="reminder-notice">
             <h2>⏰ Pengingat Meeting</h2>
-            <p><strong>Meeting Anda akan dimulai dalam 30 menit!</strong></p>
+            <p><strong>Meeting Anda akan dimulai dalam 1 jam!</strong></p>
         </div>
 
         <div class="booking-details">
@@ -159,9 +159,10 @@
         <div style="text-align: center; margin: 20px 0;">
             <p><strong>💡 Tips:</strong></p>
             <ul style="text-align: left; display: inline-block;">
-                <li>Pastikan Anda sudah berada di ruang meeting 5-10 menit sebelum waktu dimulai</li>
+                <li>Pastikan Anda sudah berada di ruang meeting 10-15 menit sebelum waktu dimulai</li>
                 <li>Periksa peralatan yang dibutuhkan (proyektor, whiteboard, dll.)</li>
                 <li>Hubungi admin jika ada masalah dengan ruang meeting</li>
+                <li>Persiapkan materi presentasi dan dokumen yang diperlukan</li>
             </ul>
         </div>
 

@@ -12,7 +12,7 @@ This application includes several automated tasks that need to be scheduled:
 ### 2. Booking Reminders
 - **Command**: `php artisan bookings:send-reminders`
 - **Frequency**: Every 15 minutes
-- **Purpose**: Send 30-minute reminder emails to users with confirmed bookings
+- **Purpose**: Send 1-hour reminder emails to users with confirmed bookings
 
 ## Setup Instructions
 
