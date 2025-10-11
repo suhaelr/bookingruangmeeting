@@ -72,20 +72,44 @@ class AuthController extends Controller
             // Regenerate session ID for security
             Session::regenerate();
             
-            Session::put('user_logged_in', true);
-            Session::put('user_data', [
-                'id' => 1,
-                'username' => 'admin',
-                'full_name' => 'Super Administrator',
-                'email' => 'admin@pusdatinbgn.web.id',
-                'role' => 'admin',
-                'department' => 'IT'
-            ]);
+            // Get fresh user data from database to ensure latest role
+            $user = User::where('username', 'admin')->first();
+            if ($user) {
+                // Update last login
+                $user->update(['last_login_at' => now()]);
+                
+                Session::put('user_logged_in', true);
+                Session::put('user_data', [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'full_name' => $user->full_name ?? $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role, // Get latest role from database
+                    'department' => $user->department ?? 'IT'
+                ]);
+            } else {
+                // Fallback for hardcoded admin
+                Session::put('user_logged_in', true);
+                Session::put('user_data', [
+                    'id' => 1,
+                    'username' => 'admin',
+                    'full_name' => 'Super Administrator',
+                    'email' => 'admin@pusdatinbgn.web.id',
+                    'role' => 'admin',
+                    'department' => 'IT'
+                ]);
+            }
             
             // Force session save
             Session::save();
             
-            $response = redirect()->route('admin.dashboard')->with('success', 'Login berhasil!');
+            // Redirect based on current role
+            $userData = Session::get('user_data');
+            $redirectRoute = $userData['role'] === 'admin' 
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('user.dashboard');
+            
+            $response = $redirectRoute->with('success', 'Login berhasil!');
             
             // Add no-cache headers to prevent browser caching
             $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -103,20 +127,44 @@ class AuthController extends Controller
             // Regenerate session ID for security
             Session::regenerate();
             
-            Session::put('user_logged_in', true);
-            Session::put('user_data', [
-                'id' => 2,
-                'username' => 'user',
-                'full_name' => 'Regular User',
-                'email' => 'user@pusdatinbgn.web.id',
-                'role' => 'user',
-                'department' => 'General'
-            ]);
+            // Get fresh user data from database to ensure latest role
+            $user = User::where('username', 'user')->first();
+            if ($user) {
+                // Update last login
+                $user->update(['last_login_at' => now()]);
+                
+                Session::put('user_logged_in', true);
+                Session::put('user_data', [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'full_name' => $user->full_name ?? $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role, // Get latest role from database
+                    'department' => $user->department ?? 'General'
+                ]);
+            } else {
+                // Fallback for hardcoded user
+                Session::put('user_logged_in', true);
+                Session::put('user_data', [
+                    'id' => 2,
+                    'username' => 'user',
+                    'full_name' => 'Regular User',
+                    'email' => 'user@pusdatinbgn.web.id',
+                    'role' => 'user',
+                    'department' => 'General'
+                ]);
+            }
             
             // Force session save
             Session::save();
             
-            $response = redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
+            // Redirect based on current role
+            $userData = Session::get('user_data');
+            $redirectRoute = $userData['role'] === 'admin' 
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('user.dashboard');
+            
+            $response = $redirectRoute->with('success', 'Login berhasil!');
             
             // Add no-cache headers to prevent browser caching
             $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -871,13 +919,18 @@ class AuthController extends Controller
         try {
             $user = User::findOrFail($userId);
             
-            // Prevent admin from changing their own role
-            if ($user->id == $currentUser['id']) {
-                return response()->json(['error' => 'Cannot change your own role'], 400);
-            }
+            // Allow admin to change their own role (with session update)
 
             $oldRole = $user->role;
             $user->update(['role' => $request->role]);
+
+            // If the user being updated is the current logged-in user, update their session
+            if ($user->id == $currentUser['id']) {
+                $updatedUserData = $currentUser;
+                $updatedUserData['role'] = $request->role;
+                Session::put('user_data', $updatedUserData);
+                Session::save();
+            }
 
             \Log::info('User role updated by admin', [
                 'admin_id' => $currentUser['id'],
@@ -885,7 +938,8 @@ class AuthController extends Controller
                 'target_user_id' => $user->id,
                 'target_user_email' => $user->email,
                 'old_role' => $oldRole,
-                'new_role' => $request->role
+                'new_role' => $request->role,
+                'session_updated' => $user->id == $currentUser['id']
             ]);
 
             return response()->json([
