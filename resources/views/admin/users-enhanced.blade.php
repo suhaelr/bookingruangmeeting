@@ -130,6 +130,10 @@
                 if (data.success) {
                     users = data.users;
                     console.log('Users loaded:', users);
+                    console.log('Users count:', users.length);
+                    users.forEach((user, index) => {
+                        console.log(`User ${index}: ID=${user.id}, Name=${user.name}, Role=${user.role}`);
+                    });
                     renderUsersTable();
                 } else {
                     showMessage('Gagal memuat data pengguna: ' + data.error, 'error');
@@ -205,10 +209,12 @@
 
         // Change user role
         function changeUserRole(userId, currentRole, userName) {
+            console.log('changeUserRole called with:', {userId, currentRole, userName});
             currentUserId = userId;
             currentUserRole = currentRole;
             
             const newRole = currentRole === 'admin' ? 'user' : 'admin';
+            console.log('New role will be:', newRole);
             
             document.getElementById('roleChangeContent').innerHTML = `
                 <div class="mb-4">
