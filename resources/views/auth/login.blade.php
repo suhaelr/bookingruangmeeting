@@ -875,10 +875,10 @@
         function renderTurnstile() {
             if (window.turnstile && document.getElementById('turnstile-widget')) {
                 // Check if we have a proper site key (not testing key)
-                const siteKey = '{{ env("TURNSTILE_SITE_KEY") }}';
+                const siteKey = '{{ env("CLOUDFLARE_SITE_KEY") }}';
                 if (!siteKey || siteKey.includes('1x00000000000000000000AA') || siteKey.includes('0x4AAAAAA')) {
                     console.warn('Turnstile: Please configure a valid site key in .env file');
-                    document.getElementById('turnstile-widget').innerHTML = '<div style="padding: 20px; text-align: center; color: #ff6b6b; background: rgba(255,255,255,0.1); border-radius: 8px; border: 1px dashed #ff6b6b;"><i class="fas fa-exclamation-triangle"></i><br>Please configure TURNSTILE_SITE_KEY in .env file</div>';
+                    document.getElementById('turnstile-widget').innerHTML = '<div style="padding: 20px; text-align: center; color: #ff6b6b; background: rgba(255,255,255,0.1); border-radius: 8px; border: 1px dashed #ff6b6b;"><i class="fas fa-exclamation-triangle"></i><br>Please configure CLOUDFLARE_SITE_KEY in .env file</div>';
                     return;
                 }
 
