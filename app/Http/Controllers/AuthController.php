@@ -465,10 +465,27 @@ class AuthController extends Controller
      */
     public function redirectToGoogle()
     {
-        $clientId = env('GOOGLE_CLIENT_ID');
-        $clientSecret = env('GOOGLE_CLIENT_SECRET');
-        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
+        $clientId = config('services.google.client_id');
+        $clientSecret = config('services.google.client_secret');
+        $redirectUri = config('services.google.redirect');
         
+        // Debug: Check if configuration is loaded
+        \Log::info('Google OAuth Configuration Check', [
+            'client_id' => $clientId ? substr($clientId, 0, 20) . '...' : 'NULL',
+            'client_secret' => $clientSecret ? 'SET' : 'NULL',
+            'redirect_uri' => $redirectUri ?: 'NULL',
+            'env_client_id' => env('GOOGLE_CLIENT_ID') ? substr(env('GOOGLE_CLIENT_ID'), 0, 20) . '...' : 'NULL'
+        ]);
+        
+        // Validate configuration
+        if (!$clientId || !$clientSecret || !$redirectUri) {
+            \Log::error('Google OAuth configuration missing', [
+                'client_id_set' => !empty($clientId),
+                'client_secret_set' => !empty($clientSecret),
+                'redirect_uri_set' => !empty($redirectUri)
+            ]);
+            return redirect()->route('login')->with('error', 'Google OAuth configuration error. Please contact administrator.');
+        }
         
         $state = bin2hex(random_bytes(16));
         
@@ -750,9 +767,9 @@ class AuthController extends Controller
      */
     private function getGoogleAccessToken($code)
     {
-        $clientId = env('GOOGLE_CLIENT_ID');
-        $clientSecret = env('GOOGLE_CLIENT_SECRET');
-        $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
+        $clientId = config('services.google.client_id');
+        $clientSecret = config('services.google.client_secret');
+        $redirectUri = config('services.google.redirect');
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
