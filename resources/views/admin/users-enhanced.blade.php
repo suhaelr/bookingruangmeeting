@@ -112,6 +112,12 @@
         // Load users from API
         async function loadUsers() {
             console.log('Loading users...');
+            console.log('Request URL:', '/admin/users/api');
+            console.log('Request method:', 'GET');
+            console.log('Request headers:', {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            });
             try {
                 const response = await fetch('/admin/users/api', {
                     method: 'GET',
