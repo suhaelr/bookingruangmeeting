@@ -618,6 +618,8 @@
             background: transparent !important;
             border: none !important;
             border-radius: 8px !important;
+            display: block !important;
+            margin: 0 auto !important;
         }
         
         /* Turnstile container - Perfect centering */
@@ -625,13 +627,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0.75rem 0;
+            margin: 0.75rem auto;
             padding: 0;
             background: transparent;
             border: none;
             box-shadow: none;
             position: relative;
             z-index: 10;
+            width: 100%;
+            text-align: center;
         }
         
         /* Ensure Turnstile is smaller than login button and centered */
@@ -640,12 +644,16 @@
             max-width: 180px !important;
             margin: 0 auto !important;
             background: transparent !important;
+            display: block !important;
+            position: relative !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
         }
         
         /* Mobile Turnstile scaling - Maintain centering */
         @media (max-width: 768px) {
             .cf-turnstile {
-                transform: scale(0.7) !important;
+                transform: scale(0.7) translateX(-50%) !important;
                 width: 70% !important;
                 max-width: 150px !important;
                 margin: 0 auto !important;
@@ -658,7 +666,7 @@
         
         @media (max-width: 480px) {
             .cf-turnstile {
-                transform: scale(0.6) !important;
+                transform: scale(0.6) translateX(-50%) !important;
                 width: 60% !important;
                 max-width: 120px !important;
                 margin: 0 auto !important;
