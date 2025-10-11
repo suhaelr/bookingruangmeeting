@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Mail\WelcomeEmail;
@@ -919,10 +920,28 @@ class AuthController extends Controller
         try {
             $user = User::findOrFail($userId);
             
+            \Log::info('Role update attempt', [
+                'admin_id' => $currentUser['id'],
+                'target_user_id' => $userId,
+                'target_user_email' => $user->email,
+                'current_role' => $user->role,
+                'new_role' => $request->role,
+                'request_data' => $request->all()
+            ]);
+            
             // Allow admin to change their own role (with session update)
-
             $oldRole = $user->role;
             $user->update(['role' => $request->role]);
+            
+            // Refresh user data to ensure update
+            $user->refresh();
+            
+            \Log::info('Role update completed', [
+                'user_id' => $user->id,
+                'old_role' => $oldRole,
+                'new_role' => $user->role,
+                'updated_successfully' => $user->role === $request->role
+            ]);
 
             // If the user being updated is the current logged-in user, update their session
             if ($user->id == $currentUser['id']) {
@@ -962,6 +981,202 @@ class AuthController extends Controller
             ]);
 
             return response()->json(['error' => 'Failed to update user role'], 500);
+        }
+    }
+
+    /**
+     * Redirect to Google OAuth
+     */
+    public function redirectToGoogle()
+    {
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $redirectUri = route('auth.google.callback');
+        $scope = 'openid email profile';
+        $state = Str::random(32);
+        
+        // Store state in session for verification
+        session(['google_oauth_state' => $state]);
+        
+        $authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query([
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'scope' => $scope,
+            'response_type' => 'code',
+            'state' => $state,
+            'access_type' => 'offline',
+            'prompt' => 'consent'
+        ]);
+        
+        return redirect($authUrl);
+    }
+    
+    /**
+     * Handle Google OAuth callback
+     */
+    public function handleGoogleCallback(Request $request)
+    {
+        try {
+            // Verify state parameter
+            $state = $request->get('state');
+            if (!$state || $state !== session('google_oauth_state')) {
+                return redirect()->route('login')->with('error', 'Invalid OAuth state');
+            }
+            
+            $code = $request->get('code');
+            if (!$code) {
+                return redirect()->route('login')->with('error', 'Authorization code not received');
+            }
+            
+            // Exchange code for tokens
+            $tokens = $this->exchangeCodeForTokens($code);
+            if (!$tokens) {
+                return redirect()->route('login')->with('error', 'Failed to exchange code for tokens');
+            }
+            
+            // Get user info from Google
+            $userInfo = $this->getGoogleUserInfo($tokens['access_token']);
+            if (!$userInfo) {
+                return redirect()->route('login')->with('error', 'Failed to get user info from Google');
+            }
+            
+            // Find or create user
+            $user = User::where('google_id', $userInfo['id'])
+                      ->orWhere('email', $userInfo['email'])
+                      ->first();
+            
+            if (!$user) {
+                // Create new user
+                $user = User::create([
+                    'name' => $userInfo['name'],
+                    'full_name' => $userInfo['name'],
+                    'email' => $userInfo['email'],
+                    'google_id' => $userInfo['id'],
+                    'role' => 'user', // Default role
+                    'email_verified_at' => now(),
+                    'password' => Hash::make(Str::random(32)), // Random password
+                ]);
+                
+                \Log::info('New user created via Google OAuth', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'google_id' => $user->google_id
+                ]);
+            } else {
+                // Update existing user with Google ID if not set
+                if (!$user->google_id) {
+                    $user->update(['google_id' => $userInfo['id']]);
+                }
+            }
+            
+            // Update last login
+            $user->update(['last_login_at' => now()]);
+            
+            // Clear session and login user
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
+            Session::regenerate();
+            
+            Session::put('user_logged_in', true);
+            Session::put('user_data', [
+                'id' => $user->id,
+                'username' => $user->username ?? $user->email,
+                'full_name' => $user->full_name ?? $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'department' => $user->department ?? 'General'
+            ]);
+            
+            // Store refresh token
+            if (isset($tokens['refresh_token'])) {
+                session(['google_refresh_token' => $tokens['refresh_token']]);
+            }
+            
+            Session::save();
+            
+            // Redirect based on role
+            $redirectRoute = $user->role === 'admin' 
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('user.dashboard');
+            
+            return $redirectRoute->with('success', 'Login dengan Google berhasil!');
+            
+        } catch (\Exception $e) {
+            \Log::error('Google OAuth callback error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->route('login')->with('error', 'Login dengan Google gagal: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Exchange authorization code for tokens
+     */
+    private function exchangeCodeForTokens($code)
+    {
+        $clientId = env('GOOGLE_CLIENT_ID');
+        $clientSecret = env('GOOGLE_CLIENT_SECRET');
+        $redirectUri = route('auth.google.callback');
+        
+        $response = Http::post('https://oauth2.googleapis.com/token', [
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'code' => $code,
+            'grant_type' => 'authorization_code',
+            'redirect_uri' => $redirectUri,
+        ]);
+        
+        if ($response->successful()) {
+            return $response->json();
+        }
+        
+        \Log::error('Failed to exchange code for tokens', [
+            'response' => $response->body()
+        ]);
+        
+        return null;
+    }
+    
+    /**
+     * Get user info from Google
+     */
+    private function getGoogleUserInfo($accessToken)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $accessToken
+        ])->get('https://www.googleapis.com/oauth2/v2/userinfo');
+        
+        if ($response->successful()) {
+            return $response->json();
+        }
+        
+        \Log::error('Failed to get user info from Google', [
+            'response' => $response->body()
+        ]);
+        
+        return null;
+    }
+    
+    /**
+     * Revoke Google token
+     */
+    public function revokeGoogleToken()
+    {
+        try {
+            $refreshToken = session('google_refresh_token');
+            if ($refreshToken) {
+                Http::post('https://oauth2.googleapis.com/revoke', [
+                    'token' => $refreshToken
+                ]);
+            }
+            
+            session()->forget('google_refresh_token');
+            session()->forget('google_oauth_state');
+            
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
