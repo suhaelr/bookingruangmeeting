@@ -1030,24 +1030,47 @@ class AuthController extends Controller
                 })->toArray()
             ]);
 
-            // Try without select() to get all users
-            $users = User::orderBy('created_at', 'desc')
-                ->get()
-                ->map(function ($user) {
-                    // Handle users with NULL name field
-                    $displayName = $user->full_name ?? $user->name ?? $user->username ?? 'Unknown User';
-                    
+            // Try without orderBy to get all users
+            $users = User::all();
+                
+            // Also try without orderBy to see if that's the issue
+            $usersNoOrder = User::all();
+            \Log::info('Users without orderBy', [
+                'count' => $usersNoOrder->count(),
+                'user_ids' => $usersNoOrder->pluck('id')->toArray()
+            ]);
+                
+            \Log::info('Users before mapping', [
+                'count' => $users->count(),
+                'user_ids' => $users->pluck('id')->toArray(),
+                'users_raw' => $users->map(function($u) {
                     return [
-                        'id' => $user->id,
-                        'username' => $user->username,
-                        'name' => $displayName,
-                        'email' => $user->email,
-                        'role' => $user->role ?? 'user', // Default role if NULL
-                        'google_id' => $user->google_id ? 'Yes' : 'No',
-                        'created_at' => $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'Unknown',
-                        'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : 'Never'
+                        'id' => $u->id,
+                        'username' => $u->username,
+                        'name' => $u->name,
+                        'email' => $u->email,
+                        'role' => $u->role,
+                        'created_at' => $u->created_at,
+                        'last_login_at' => $u->last_login_at
                     ];
-                });
+                })->toArray()
+            ]);
+            
+            $users = $users->map(function ($user) {
+                // Handle users with NULL name field
+                $displayName = $user->full_name ?? $user->name ?? $user->username ?? 'Unknown User';
+                
+                return [
+                    'id' => $user->id,
+                    'username' => $user->username,
+                    'name' => $displayName,
+                    'email' => $user->email,
+                    'role' => $user->role ?? 'user', // Default role if NULL
+                    'google_id' => $user->google_id ? 'Yes' : 'No',
+                    'created_at' => $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'Unknown',
+                    'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : 'Never'
+                ];
+            });
 
             \Log::info('Users retrieved successfully', [
                 'user_count' => $users->count(),
