@@ -21,7 +21,10 @@ class AdminAuth
             'url' => $request->url(),
             'method' => $request->method(),
             'session_id' => session()->getId(),
-            'user_logged_in' => Session::has('user_logged_in') ? Session::get('user_logged_in') : false
+            'user_logged_in' => Session::has('user_logged_in') ? Session::get('user_logged_in') : false,
+            'is_api_request' => $request->is('admin/users/api'),
+            'is_ajax' => $request->ajax(),
+            'wants_json' => $request->wantsJson()
         ]);
 
         if (!Session::has('user_logged_in') || !Session::get('user_logged_in')) {
