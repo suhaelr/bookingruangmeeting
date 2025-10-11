@@ -58,12 +58,16 @@ class UserController extends Controller
             ->limit(5)
             ->get();
 
+        // Get room availability grid data
+        $roomAvailabilityGrid = $this->getRoomAvailabilityGrid();
+
         return view('user.dashboard', compact(
             'stats',
             'activeBookings',
             'todayBookings',
             'availableRooms',
-            'notifications'
+            'notifications',
+            'roomAvailabilityGrid'
         ));
     }
 
@@ -481,6 +485,72 @@ class UserController extends Controller
     private function timesOverlap($start1, $end1, $start2, $end2)
     {
         return $start1->lt($end2) && $end1->gt($start2);
+    }
+
+    private function getRoomAvailabilityGrid()
+    {
+        $rooms = MeetingRoom::where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        $timeSlots = [];
+        $currentTime = now()->startOfDay();
+        
+        // Generate time slots for today (every 30 minutes from 8:00 to 18:00)
+        for ($hour = 8; $hour <= 18; $hour++) {
+            for ($minute = 0; $minute < 60; $minute += 30) {
+                $timeSlots[] = $currentTime->copy()->setTime($hour, $minute);
+            }
+        }
+
+        $grid = [];
+        
+        foreach ($rooms as $room) {
+            $roomData = [
+                'id' => $room->id,
+                'name' => $room->name,
+                'location' => $room->location,
+                'capacity' => $room->capacity,
+                'timeSlots' => []
+            ];
+
+            foreach ($timeSlots as $timeSlot) {
+                $endTime = $timeSlot->copy()->addMinutes(30);
+                
+                // Check if room is available for this time slot
+                $conflictingBooking = Booking::where('meeting_room_id', $room->id)
+                    ->whereIn('status', ['pending', 'confirmed'])
+                    ->where('start_time', '<', $endTime)
+                    ->where('end_time', '>', $timeSlot)
+                    ->with('user')
+                    ->first();
+
+                $slotData = [
+                    'time' => $timeSlot->format('H:i'),
+                    'datetime' => $timeSlot->format('Y-m-d H:i:s'),
+                    'isAvailable' => !$conflictingBooking,
+                    'booking' => null
+                ];
+
+                if ($conflictingBooking) {
+                    $slotData['booking'] = [
+                        'id' => $conflictingBooking->id,
+                        'title' => $conflictingBooking->title,
+                        'user_name' => $conflictingBooking->user->full_name,
+                        'unit_kerja' => $conflictingBooking->unit_kerja,
+                        'start_time' => $conflictingBooking->start_time->format('H:i'),
+                        'end_time' => $conflictingBooking->end_time->format('H:i'),
+                        'status' => $conflictingBooking->status
+                    ];
+                }
+
+                $roomData['timeSlots'][] = $slotData;
+            }
+
+            $grid[] = $roomData;
+        }
+
+        return $grid;
     }
 
 

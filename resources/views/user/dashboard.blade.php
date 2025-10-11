@@ -97,17 +97,6 @@
                 </div>
             </div>
 
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <div class="flex items-center">
-                    <div class="p-3 bg-yellow-500 rounded-lg">
-                        <i class="fas fa-clock text-white text-xl"></i>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-white/80 text-sm">Menunggu</p>
-                        <p class="text-2xl font-bold text-white">{{ $stats['pending_bookings'] }}</p>
-                    </div>
-                </div>
-            </div>
 
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex items-center">
@@ -223,6 +212,103 @@
                         <p class="text-white/60">Tidak ada meeting hari ini</p>
                     </div>
                     @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Availability Grid -->
+        <div class="mt-8">
+            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded"></div>
+                            <span class="text-white/80 text-sm">Tersedia</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-red-500 rounded"></div>
+                            <span class="text-white/80 text-sm">Dibooking</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grid Container -->
+                <div class="overflow-x-auto">
+                    <div class="min-w-full">
+                        <!-- Time Header -->
+                        <div class="flex mb-2">
+                            <div class="w-48 flex-shrink-0"></div>
+                            <div class="flex space-x-1">
+                                @for($hour = 8; $hour <= 18; $hour++)
+                                    @for($minute = 0; $minute < 60; $minute += 30)
+                                        <div class="w-12 text-center text-white/60 text-xs py-2">
+                                            {{ sprintf('%02d:%02d', $hour, $minute) }}
+                                        </div>
+                                    @endfor
+                                @endfor
+                            </div>
+                        </div>
+                        
+                        <!-- Room Rows -->
+                        @foreach($roomAvailabilityGrid as $room)
+                        <div class="flex mb-1">
+                            <!-- Room Info -->
+                            <div class="w-48 flex-shrink-0 bg-white/5 rounded-l-lg p-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="text-white font-medium text-sm">{{ $room['name'] }}</h4>
+                                        <p class="text-white/60 text-xs">{{ $room['location'] }}</p>
+                                    </div>
+                                    <span class="text-white/60 text-xs">{{ $room['capacity'] }} kursi</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Time Slots -->
+                            <div class="flex space-x-1 flex-1">
+                                @foreach($room['timeSlots'] as $slot)
+                                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-xs font-medium transition-all duration-200 hover:scale-105 cursor-pointer
+                                    @if($slot['isAvailable'])
+                                        bg-green-500/20 border-2 border-green-500/30 text-green-300 hover:bg-green-500/30
+                                    @else
+                                        bg-red-500/20 border-2 border-red-500/30 text-red-300 hover:bg-red-500/30
+                                    @endif"
+                                    @if(!$slot['isAvailable'] && $slot['booking'])
+                                    title="Dibooking oleh {{ $slot['booking']['user_name'] }} ({{ $slot['booking']['unit_kerja'] }}) - {{ $slot['booking']['start_time'] }} - {{ $slot['booking']['end_time'] }}"
+                                    @endif
+                                    onclick="
+                                        @if($slot['isAvailable'])
+                                            openBookingModal('{{ $room['id'] }}', '{{ $slot['datetime'] }}', '{{ $room['name'] }}')
+                                        @else
+                                            showBookingDetails('{{ json_encode($slot['booking']) }}')
+                                        @endif
+                                    ">
+                                    @if($slot['isAvailable'])
+                                        <i class="fas fa-check text-green-300"></i>
+                                    @else
+                                        <i class="fas fa-times text-red-300"></i>
+                                    @endif
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                
+                <!-- Legend -->
+                <div class="mt-6 p-4 bg-white/5 rounded-lg">
+                    <h4 class="text-white font-medium mb-3">Keterangan:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
+                            <span class="text-white/80">Ruang tersedia untuk dipesan</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
+                            <span class="text-white/80">Ruang sudah dibooking</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -447,6 +533,87 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadNotifikasis();
         });
+
+        // Grid functionality
+        function openBookingModal(roomId, startTime, roomName) {
+            // Redirect to booking creation with pre-filled data
+            const url = new URL('{{ route("user.bookings.create") }}', window.location.origin);
+            url.searchParams.set('room_id', roomId);
+            url.searchParams.set('start_time', startTime);
+            window.location.href = url.toString();
+        }
+
+        function showBookingDetails(bookingData) {
+            const booking = JSON.parse(bookingData);
+            
+            // Create modal content
+            const modalContent = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Detail Booking</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Judul Meeting</label>
+                                <p class="text-gray-800 font-medium">${booking.title}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Dibooking Oleh</label>
+                                <p class="text-gray-800">${booking.user_name}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Unit Kerja</label>
+                                <p class="text-gray-800">${booking.unit_kerja}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Waktu</label>
+                                <p class="text-gray-800">${booking.start_time} - ${booking.end_time}</p>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-medium text-gray-600">Status</label>
+                                <span class="px-2 py-1 rounded-full text-xs font-medium
+                                    ${booking.status === 'pending' ? 'bg-yellow-500 text-white' : 
+                                      booking.status === 'confirmed' ? 'bg-green-500 text-white' : 
+                                      'bg-gray-500 text-white'}">
+                                    ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end mt-6">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+        }
+
+        function closeBookingModal() {
+            const modal = document.querySelector('.fixed.inset-0.bg-black.bg-opacity-50');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Auto-refresh grid every 5 minutes
+        setInterval(function() {
+            // In a real app, you might want to refresh the grid data
+            console.log('Grid auto-refresh - checking for updates...');
+        }, 300000); // 5 minutes
     </script>
 </body>
 </html>
