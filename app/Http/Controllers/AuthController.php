@@ -967,7 +967,15 @@ class AuthController extends Controller
             
             // Allow admin to change their own role (with session update)
             $oldRole = $user->role;
-            $user->update(['role' => $request->role]);
+            
+            // Use direct database update to ensure persistence
+            $updateResult = User::where('id', $userId)->update(['role' => $request->role]);
+            
+            \Log::info('Direct database update result', [
+                'user_id' => $userId,
+                'update_result' => $updateResult,
+                'new_role' => $request->role
+            ]);
             
             // Refresh user data to ensure update
             $user->refresh();
