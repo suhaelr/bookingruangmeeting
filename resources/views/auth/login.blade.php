@@ -19,14 +19,8 @@
     <script>
     </script>
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    @if(env('GOOGLE_CLIENT_ID'))
     <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
-    @else
-    <!-- Google Client ID not configured -->
-    @endif
     
-    <!-- Cloudflare Turnstile - Implicit rendering for production reliability -->
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     
     <!-- Prevent caching of login page -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -643,62 +637,6 @@
             color: transparent !important;
         }
 
-        /* Turnstile Widget Styling - Flexible Responsive Design */
-        #turnstile-widget {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto;
-            width: 100% !important;
-            min-width: 300px !important;
-            max-width: 400px !important;
-            height: 65px !important;
-        }
-
-        /* Ensure Turnstile widget is properly sized and centered */
-        .turnstile-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            margin: 0.5rem 0;
-        }
-
-        /* Enhanced mobile responsive adjustments for Turnstile */
-        @media (max-width: 768px) {
-            #turnstile-widget {
-                width: 100% !important;
-                min-width: 280px !important;
-                max-width: 350px !important;
-                height: 65px !important;
-            }
-        }
-
-        @media (max-width: 480px) {
-            #turnstile-widget {
-                width: 100% !important;
-                min-width: 260px !important;
-                max-width: 320px !important;
-                height: 65px !important;
-            }
-        }
-
-        @media (max-width: 360px) {
-            #turnstile-widget {
-                width: 100% !important;
-                min-width: 240px !important;
-                max-width: 300px !important;
-                height: 65px !important;
-            }
-        }
-
-        /* Turnstile widget iframe styling */
-        #turnstile-widget iframe {
-            width: 100% !important;
-            height: 65px !important;
-            border-radius: 8px !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -787,27 +725,12 @@
                     </div>
                 </div>
 
-                <!-- Turnstile Widget Container -->
-                <div class="flex justify-center mb-4">
-                    <div 
-                        class="cf-turnstile" 
-                        data-sitekey="{{ env('CLOUDFLARE_SITE_KEY') }}"
-                        data-theme="dark"
-                        data-size="normal"
-                        data-callback="onTurnstileSuccess"
-                        data-error-callback="onTurnstileError"
-                        data-expired-callback="onTurnstileExpired"
-                        style="width: 100%; min-width: 300px; max-width: 400px;"
-                    ></div>
-                </div>
 
                 <!-- Login Button -->
                 <button 
                     type="submit" 
                     id="loginButton"
                     class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg"
-                    disabled
-                    style="opacity: 0.5;"
                 >
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     Masuk
@@ -826,7 +749,7 @@
 
             <!-- Google Sign-In Button -->
             <div class="mb-6 flex justify-center">
-                <a href="{{ route('auth.google') }}" class="google-signin-button" title="Masuk dengan Google" onclick="bypassTurnstileForGoogle()">
+                <a href="{{ route('auth.google') }}" class="google-signin-button" title="Masuk dengan Google">
                     <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
                 </a>
             </div>
@@ -887,64 +810,6 @@
             }
         }
 
-        // Turnstile Callback Functions for Implicit Rendering
-        function onTurnstileSuccess(token) {
-            console.log('Turnstile token received:', token);
-            // Enable login button
-            const loginButton = document.getElementById('loginButton');
-            if (loginButton) {
-                loginButton.disabled = false;
-                loginButton.style.opacity = '1';
-            }
-        }
-
-        function onTurnstileError(error) {
-            console.error('Turnstile error:', error);
-            // Disable login button on error
-            const loginButton = document.getElementById('loginButton');
-            if (loginButton) {
-                loginButton.disabled = true;
-                loginButton.style.opacity = '0.5';
-            }
-        }
-
-        function onTurnstileExpired() {
-            console.log('Turnstile token expired');
-            // Disable login button when expired
-            const loginButton = document.getElementById('loginButton');
-            if (loginButton) {
-                loginButton.disabled = true;
-                loginButton.style.opacity = '0.5';
-            }
-        }
-
-        // Bypass Turnstile for Google OAuth
-        function bypassTurnstileForGoogle() {
-            // Disable Turnstile for Google OAuth to prevent interference
-            const turnstileResponse = document.querySelector('textarea[name="cf-turnstile-response"]');
-            if (turnstileResponse) {
-                turnstileResponse.value = 'turnstile-disabled';
-            }
-            return true;
-        }
-
-        // Form submission handler
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form[action="{{ route("login") }}"]');
-            const submitButton = document.getElementById('loginButton');
-            
-            if (form && submitButton) {
-                form.addEventListener('submit', function(e) {
-                    // Check if Turnstile token exists (only for regular login, not Google OAuth)
-                    const turnstileResponse = document.querySelector('textarea[name="cf-turnstile-response"]');
-                    if (!turnstileResponse || !turnstileResponse.value) {
-                        e.preventDefault();
-                        alert('Please complete the security verification.');
-                        return false;
-                    }
-                });
-            }
-        });
     </script>
 </body>
 </html>

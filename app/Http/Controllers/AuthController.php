@@ -61,18 +61,9 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
-            'cf-turnstile-response' => 'nullable|string',
         ]);
 
         $credentials = $request->only(['username', 'password']);
-
-        // Verify Cloudflare Turnstile
-        $turnstileResponse = $request->input('cf-turnstile-response');
-        if ($turnstileResponse && $turnstileResponse !== 'turnstile-disabled') {
-            if (!$this->verifyTurnstile($turnstileResponse, $request->ip())) {
-                return back()->withErrors(['cf-turnstile-response' => 'Verifikasi keamanan gagal. Silakan coba lagi.'])->withInput();
-            }
-        }
 
         // Check hardcoded credentials first
         if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin') {
@@ -478,23 +469,6 @@ class AuthController extends Controller
         $clientSecret = env('GOOGLE_CLIENT_SECRET');
         $redirectUri = env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
         
-        // Validate required environment variables
-        if (!$clientId) {
-            \Log::error('Google OAuth: GOOGLE_CLIENT_ID is not configured');
-            return redirect()->route('login')->with('error', 'Google OAuth configuration error. Please contact administrator.');
-        }
-        
-        if (!$clientSecret) {
-            \Log::error('Google OAuth: GOOGLE_CLIENT_SECRET is not configured');
-            return redirect()->route('login')->with('error', 'Google OAuth configuration error. Please contact administrator.');
-        }
-        
-        // Log configuration for debugging (without exposing secrets)
-        \Log::info('Google OAuth configuration', [
-            'client_id' => substr($clientId, 0, 20) . '...',
-            'redirect_uri' => $redirectUri,
-            'has_secret' => !empty($clientSecret)
-        ]);
         
         $state = bin2hex(random_bytes(16));
         
@@ -519,17 +493,7 @@ class AuthController extends Controller
             'include_granted_scopes' => 'true' // Include previously granted scopes
         ];
         
-        // Log the OAuth URL for debugging (without client_id)
-        $debugParams = $params;
-        $debugParams['client_id'] = substr($clientId, 0, 20) . '...';
-        \Log::info('Google OAuth URL parameters', $debugParams);
-        
         $authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query($params);
-        
-        \Log::info('Redirecting to Google OAuth', [
-            'auth_url' => substr($authUrl, 0, 100) . '...',
-            'session_id' => session()->getId()
-        ]);
         
         return redirect($authUrl);
     }
@@ -1200,53 +1164,6 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * Verify Cloudflare Turnstile token
-     */
-    private function verifyTurnstile($token, $remoteIp = null)
-    {
-        $secretKey = env('CLOUDFLARE_SECRET_KEY', '0x4AAAAAAB56ljRNTob9cGtXsqh8c-ZuxxE');
-        
-        if (!$secretKey) {
-            \Log::error('Cloudflare secret key not configured');
-            return false;
-        }
-
-        $data = [
-            'secret' => $secretKey,
-            'response' => $token,
-            'remoteip' => $remoteIp
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode !== 200) {
-            \Log::error('Turnstile verification failed', [
-                'http_code' => $httpCode,
-                'response' => $response
-            ]);
-            return false;
-        }
-
-        $result = json_decode($response, true);
-        
-        \Log::info('Turnstile verification result', [
-            'success' => $result['success'] ?? false,
-            'error_codes' => $result['error-codes'] ?? []
-        ]);
-
-        return $result['success'] ?? false;
-    }
 
 
 
