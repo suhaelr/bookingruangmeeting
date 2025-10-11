@@ -18,25 +18,37 @@ class SeoMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        // Skip SEO processing for POST requests to avoid CSRF issues
+        if ($request->isMethod('POST')) {
+            return $next($request);
+        }
+        
         // Get current route name
         $routeName = $request->route()?->getName();
         
         // Determine page type based on route
         $pageType = $this->determinePageType($routeName, $request);
         
-        // Generate SEO data
-        $seoController = new SeoController();
-        $seoData = $seoController->generateSeoData($pageType, $this->getPageData($request));
-        
-        // Share SEO data with all views
-        View::share('seoData', $seoData);
-        View::share('pageType', $pageType);
+        // Generate SEO data only for GET requests
+        try {
+            $seoController = new SeoController();
+            $seoData = $seoController->generateSeoData($pageType, $this->getPageData($request));
+            
+            // Share SEO data with all views
+            View::share('seoData', $seoData);
+            View::share('pageType', $pageType);
+        } catch (\Exception $e) {
+            // If SEO data generation fails, continue without it
+            \Log::warning('SEO data generation failed: ' . $e->getMessage());
+        }
         
         // Add performance headers
         $response = $next($request);
         
-        // Add SEO-related headers
-        $this->addSeoHeaders($response, $seoData);
+        // Add SEO-related headers only for successful responses
+        if ($response->getStatusCode() === 200) {
+            $this->addSeoHeaders($response, $seoData ?? []);
+        }
         
         return $response;
     }
@@ -75,14 +87,20 @@ class SeoMiddleware
     {
         $data = [];
         
+        // Skip database queries for auth pages to avoid CSRF issues
+        $routeName = $request->route()?->getName();
+        $authRoutes = ['login', 'register', 'password.request', 'password.reset', 'email.verify'];
+        
+        if (in_array($routeName, $authRoutes)) {
+            return $data;
+        }
+        
         // Get user data if logged in
         if (session('user_logged_in')) {
             $data['user'] = session('user_data');
         }
         
-        // Add route-specific data
-        $routeName = $request->route()?->getName();
-        
+        // Add route-specific data only for non-auth routes
         switch ($routeName) {
             case 'user.dashboard':
                 $data = array_merge($data, $this->getUserDashboardData());
@@ -121,7 +139,7 @@ class SeoMiddleware
                 return [];
             }
             
-            // Get user's bookings count
+            // Get user's bookings count with error handling
             $totalBookings = \App\Models\Booking::where('user_id', $user['id'])->count();
             $pendingBookings = \App\Models\Booking::where('user_id', $user['id'])
                 ->where('status', 'pending')->count();
@@ -134,6 +152,7 @@ class SeoMiddleware
                 'confirmed_bookings' => $confirmedBookings,
             ];
         } catch (\Exception $e) {
+            \Log::warning('Failed to get user dashboard data: ' . $e->getMessage());
             return [];
         }
     }
@@ -156,6 +175,7 @@ class SeoMiddleware
                 'confirmed_bookings' => $confirmedBookings,
             ];
         } catch (\Exception $e) {
+            \Log::warning('Failed to get admin dashboard data: ' . $e->getMessage());
             return [];
         }
     }
@@ -182,6 +202,7 @@ class SeoMiddleware
                 'bookings' => $bookings,
             ];
         } catch (\Exception $e) {
+            \Log::warning('Failed to get user bookings data: ' . $e->getMessage());
             return [];
         }
     }
@@ -198,6 +219,7 @@ class SeoMiddleware
                 'available_rooms' => $rooms,
             ];
         } catch (\Exception $e) {
+            \Log::warning('Failed to get create booking data: ' . $e->getMessage());
             return [];
         }
     }
@@ -218,6 +240,7 @@ class SeoMiddleware
                 'users' => $users,
             ];
         } catch (\Exception $e) {
+            \Log::warning('Failed to get admin users data: ' . $e->getMessage());
             return [];
         }
     }
@@ -238,6 +261,7 @@ class SeoMiddleware
                 'rooms' => $rooms,
             ];
         } catch (\Exception $e) {
+            \Log::warning('Failed to get admin rooms data: ' . $e->getMessage());
             return [];
         }
     }
@@ -264,6 +288,7 @@ class SeoMiddleware
                 'bookings' => $bookings,
             ];
         } catch (\Exception $e) {
+            \Log::warning('Failed to get admin bookings data: ' . $e->getMessage());
             return [];
         }
     }
@@ -271,20 +296,24 @@ class SeoMiddleware
     /**
      * Add SEO-related headers to response
      */
-    private function addSeoHeaders($response, $seoData)
+    private function addSeoHeaders($response, $seoData = [])
     {
-        // Add cache headers for better performance
-        $response->headers->set('Cache-Control', 'public, max-age=3600');
-        $response->headers->set('Vary', 'Accept-Encoding, User-Agent');
-        
-        // Add security headers
-        $response->headers->set('X-Content-Type-Options', 'nosniff');
-        $response->headers->set('X-Frame-Options', 'DENY');
-        $response->headers->set('X-XSS-Protection', '1; mode=block');
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        
-        // Add performance headers
-        $response->headers->set('X-DNS-Prefetch-Control', 'on');
+        try {
+            // Add cache headers for better performance
+            $response->headers->set('Cache-Control', 'public, max-age=3600');
+            $response->headers->set('Vary', 'Accept-Encoding, User-Agent');
+            
+            // Add security headers
+            $response->headers->set('X-Content-Type-Options', 'nosniff');
+            $response->headers->set('X-Frame-Options', 'DENY');
+            $response->headers->set('X-XSS-Protection', '1; mode=block');
+            $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+            
+            // Add performance headers
+            $response->headers->set('X-DNS-Prefetch-Control', 'on');
+        } catch (\Exception $e) {
+            \Log::warning('Failed to add SEO headers: ' . $e->getMessage());
+        }
         
         return $response;
     }
