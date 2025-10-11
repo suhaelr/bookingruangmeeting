@@ -115,7 +115,13 @@ Route::get('/oauth/debug', function(Request $request) {
 
 // User Management Routes (Admin only)
 Route::middleware('admin.auth')->group(function () {
-    Route::get('/admin/users/api', [AuthController::class, 'getAllUsers'])->name('admin.users.api');
+    Route::get('/admin/users/api', function() {
+        \Log::info('Route /admin/users/api called', [
+            'timestamp' => now(),
+            'session_id' => session()->getId()
+        ]);
+        return app(AuthController::class)->getAllUsers();
+    })->name('admin.users.api');
     Route::put('/admin/users/{userId}/role', [AuthController::class, 'updateUserRole'])->name('admin.users.role.update');
 });
 
