@@ -1107,10 +1107,18 @@ class AuthController extends Controller
                 ]
             ]);
 
-            return response()->json([
+            $response = response()->json([
                 'success' => true,
                 'users' => $users
             ]);
+            
+            // Add no-cache headers to prevent caching
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            $response->headers->set('Pragma', 'no-cache');
+            $response->headers->set('Expires', '0');
+            $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT');
+            
+            return $response;
 
         } catch (\Exception $e) {
             \Log::error('Failed to get users list', [

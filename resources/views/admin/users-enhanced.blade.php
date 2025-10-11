@@ -119,11 +119,15 @@
                 'X-Requested-With': 'XMLHttpRequest'
             });
             try {
-                const response = await fetch('/admin/users/api', {
+                // Add cache-busting parameter
+                const timestamp = new Date().getTime();
+                const response = await fetch(`/admin/users/api?t=${timestamp}`, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
                     }
                 });
 
