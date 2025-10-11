@@ -282,20 +282,22 @@
                                     @else
                                         bg-red-500/20 border-2 border-red-500/30 text-red-300 hover:bg-red-500/30
                                     @endif"
-                                    @if(!$slot['isAvailable'] && $slot['booking'])
-                                    title="Dibooking oleh {{ $slot['booking']['user_name'] }} ({{ $slot['booking']['unit_kerja'] }}) - {{ $slot['booking']['start_time'] }} - {{ $slot['booking']['end_time'] }}"
-                                    @elseif($slot['isAvailable'] && $slot['wasUsed'] && $slot['previousBooking'])
-                                    title="Pernah digunakan oleh {{ $slot['previousBooking']['user_name'] }} ({{ $slot['previousBooking']['unit_kerja'] }}) - {{ $slot['previousBooking']['start_time'] }} - {{ $slot['previousBooking']['end_time'] }}"
-                                    @endif
-                                    onclick="
-                                        @if($slot['isAvailable'])
-                                            openBookingModal('{{ $room['id'] }}', '{{ $slot['datetime'] }}', '{{ $room['name'] }}')
-                                        @elseif($slot['booking'])
-                                            showBookingDetails('{{ json_encode($slot['booking']) }}')
-                                        @elseif($slot['previousBooking'])
-                                            showPreviousBookingDetails('{{ json_encode($slot['previousBooking']) }}')
-                                        @endif
-                                    ">
+                                    data-slot-info='@json([
+                                        "room_id" => $room["id"],
+                                        "room_name" => $room["name"],
+                                        "room_location" => $room["location"],
+                                        "room_capacity" => $room["capacity"],
+                                        "time" => $slot["time"],
+                                        "datetime" => $slot["datetime"],
+                                        "isAvailable" => $slot["isAvailable"],
+                                        "wasUsed" => $slot["wasUsed"],
+                                        "booking" => $slot["booking"],
+                                        "previousBooking" => $slot["previousBooking"]
+                                    ])'
+                                    onmousedown="startHoldTimer(this)"
+                                    onmouseup="clearHoldTimer()"
+                                    onmouseleave="clearHoldTimer()"
+                                    onclick="handleSlotClick(this)">
                                     @if($slot['isAvailable'] && !$slot['wasUsed'])
                                         <i class="fas fa-check text-green-300"></i>
                                     @elseif($slot['isAvailable'] && $slot['wasUsed'])
@@ -703,6 +705,155 @@
             // In a real app, you might want to refresh the grid data
             console.log('Grid auto-refresh - checking for updates...');
         }, 300000); // 5 minutes
+
+        // Click and hold functionality
+        let holdTimer = null;
+        let isHolding = false;
+
+        function startHoldTimer(element) {
+            isHolding = false;
+            holdTimer = setTimeout(() => {
+                isHolding = true;
+                showSlotDetails(element);
+            }, 500); // 500ms hold time
+        }
+
+        function clearHoldTimer() {
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+            }
+        }
+
+        function handleSlotClick(element) {
+            if (!isHolding) {
+                // Quick click - normal behavior
+                const slotInfo = JSON.parse(element.getAttribute('data-slot-info'));
+                
+                if (slotInfo.isAvailable) {
+                    openBookingModal(slotInfo.room_id, slotInfo.datetime, slotInfo.room_name);
+                } else if (slotInfo.booking) {
+                    showBookingDetails(JSON.stringify(slotInfo.booking));
+                } else if (slotInfo.previousBooking) {
+                    showPreviousBookingDetails(JSON.stringify(slotInfo.previousBooking));
+                }
+            }
+            isHolding = false;
+        }
+
+        function showSlotDetails(element) {
+            const slotInfo = JSON.parse(element.getAttribute('data-slot-info'));
+            
+            let modalContent = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeSlotDetails()">
+                    <div class="bg-white rounded-2xl max-w-lg w-full p-6" onclick="event.stopPropagation()">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Detail Slot Waktu</h3>
+                            <button onclick="closeSlotDetails()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Room Info -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h4 class="font-medium text-blue-800 mb-2">Informasi Ruang</h4>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <div>
+                                        <span class="text-blue-600 font-medium">Nama:</span>
+                                        <span class="text-blue-800">${slotInfo.room_name}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-blue-600 font-medium">Lokasi:</span>
+                                        <span class="text-blue-800">${slotInfo.room_location}</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-blue-600 font-medium">Kapasitas:</span>
+                                        <span class="text-blue-800">${slotInfo.room_capacity} kursi</span>
+                                    </div>
+                                    <div>
+                                        <span class="text-blue-600 font-medium">Waktu:</span>
+                                        <span class="text-blue-800">${slotInfo.time}</span>
+                                    </div>
+                                </div>
+                            </div>
+            `;
+
+            // Status specific content
+            if (slotInfo.isAvailable && !slotInfo.wasUsed) {
+                modalContent += `
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <span class="font-medium text-green-800">Status: Tersedia</span>
+                        </div>
+                        <p class="text-green-700 text-sm">Ruang ini tersedia untuk dipesan pada jam ${slotInfo.time}</p>
+                    </div>
+                `;
+            } else if (slotInfo.isAvailable && slotInfo.wasUsed) {
+                modalContent += `
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-history text-orange-500"></i>
+                            <span class="font-medium text-orange-800">Status: Pernah Digunakan</span>
+                        </div>
+                        <p class="text-orange-700 text-sm">Ruang ini pernah digunakan dan sekarang tersedia untuk dipesan</p>
+                    </div>
+                `;
+            } else if (slotInfo.booking) {
+                modalContent += `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <span class="font-medium text-red-800">Status: Sedang Dibooking</span>
+                        </div>
+                        <div class="mt-2 space-y-1 text-sm">
+                            <div><span class="text-red-600 font-medium">Judul:</span> <span class="text-red-800">${slotInfo.booking.title}</span></div>
+                            <div><span class="text-red-600 font-medium">Oleh:</span> <span class="text-red-800">${slotInfo.booking.user_name}</span></div>
+                            <div><span class="text-red-600 font-medium">Unit:</span> <span class="text-red-800">${slotInfo.booking.unit_kerja}</span></div>
+                            <div><span class="text-red-600 font-medium">Waktu:</span> <span class="text-red-800">${slotInfo.booking.start_time} - ${slotInfo.booking.end_time}</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Previous booking info if available
+            if (slotInfo.previousBooking) {
+                modalContent += `
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-800 mb-2">Riwayat Penggunaan</h4>
+                        <div class="space-y-1 text-sm">
+                            <div><span class="text-gray-600 font-medium">Judul:</span> <span class="text-gray-800">${slotInfo.previousBooking.title}</span></div>
+                            <div><span class="text-gray-600 font-medium">Oleh:</span> <span class="text-gray-800">${slotInfo.previousBooking.user_name}</span></div>
+                            <div><span class="text-gray-600 font-medium">Unit:</span> <span class="text-gray-800">${slotInfo.previousBooking.unit_kerja}</span></div>
+                            <div><span class="text-gray-600 font-medium">Waktu:</span> <span class="text-gray-800">${slotInfo.previousBooking.start_time} - ${slotInfo.previousBooking.end_time}</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            modalContent += `
+                        </div>
+                        
+                        <div class="flex justify-end mt-6">
+                            <button onclick="closeSlotDetails()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+        }
+
+        function closeSlotDetails() {
+            const modal = document.querySelector('.fixed.inset-0.bg-black.bg-opacity-50');
+            if (modal) {
+                modal.remove();
+            }
+        }
     </script>
 </body>
 </html>
