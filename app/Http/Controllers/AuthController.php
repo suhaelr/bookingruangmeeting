@@ -188,6 +188,14 @@ class AuthController extends Controller
                 ])->withInput($request->only('username'));
             }
 
+            \Log::info('User login attempt', [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'current_role' => $user->role,
+                'session_id' => session()->getId()
+            ]);
+
             // Clear only user-related session data, not all session
             Session::forget('user_logged_in');
             Session::forget('user_data');
@@ -195,23 +203,38 @@ class AuthController extends Controller
             // Regenerate session ID for security
             Session::regenerate();
 
+            // Get fresh user data from database to ensure latest role
+            $freshUser = User::find($user->id);
+            \Log::info('Fresh user data from database', [
+                'user_id' => $freshUser->id,
+                'username' => $freshUser->username,
+                'email' => $freshUser->email,
+                'role' => $freshUser->role,
+                'last_login_at' => $freshUser->last_login_at
+            ]);
+
             Session::put('user_logged_in', true);
             Session::put('user_data', [
-                'id' => $user->id,
-                'username' => $user->username,
-                'full_name' => $user->full_name ?? $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-                'department' => $user->department
+                'id' => $freshUser->id,
+                'username' => $freshUser->username,
+                'full_name' => $freshUser->full_name ?? $freshUser->name,
+                'email' => $freshUser->email,
+                'role' => $freshUser->role, // Use fresh role from database
+                'department' => $freshUser->department
             ]);
 
             // Force session save
             Session::save();
 
             // Update last login
-            $user->update(['last_login_at' => now()]);
+            $freshUser->update(['last_login_at' => now()]);
 
-            $response = $user->role === 'admin' 
+            \Log::info('Session data set', [
+                'session_user_data' => Session::get('user_data'),
+                'session_id' => session()->getId()
+            ]);
+
+            $response = $freshUser->role === 'admin' 
                 ? redirect()->route('admin.dashboard')->with('success', 'Login berhasil!')
                 : redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
             
