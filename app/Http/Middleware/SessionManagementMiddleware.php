@@ -54,7 +54,6 @@ class SessionManagementMiddleware
         if ($request->isMethod('POST') && $request->routeIs('login')) {
             try {
                 Session::save();
-                Session::commit();
             } catch (\Exception $e) {
                 \Log::error('SessionManagementMiddleware: Error saving session', [
                     'error' => $e->getMessage()

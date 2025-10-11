@@ -114,7 +114,6 @@ class AuthController extends Controller
             // Force session regeneration and save
             Session::regenerate(true);
             Session::save();
-            Session::commit();
             
             // Add delay to ensure session is saved
             usleep(200000); // 200ms delay
@@ -190,7 +189,6 @@ class AuthController extends Controller
             // Force session regeneration and save
             Session::regenerate(true);
             Session::save();
-            Session::commit();
             
             // Add delay to ensure session is saved
             usleep(200000); // 200ms delay
