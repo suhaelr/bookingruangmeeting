@@ -316,18 +316,24 @@
                 <!-- Legend -->
                 <div class="mt-6 p-4 bg-white/5 rounded-lg">
                     <h4 class="text-white font-medium mb-3">Keterangan:</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang tersedia untuk dipesan</span>
+                    <div class="space-y-3">
+                        <!-- First row: Green and Red -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
+                                <span class="text-white/80">Ruang tersedia untuk dipesan</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
+                                <span class="text-white/80">Ruang sudah dibooking</span>
+                            </div>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang sudah dibooking</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <div class="w-4 h-4 bg-orange-500/20 border border-orange-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang pernah digunakan (tersedia)</span>
+                        <!-- Second row: Orange (centered) -->
+                        <div class="flex justify-center">
+                            <div class="flex items-center space-x-2 text-sm">
+                                <div class="w-4 h-4 bg-orange-500/20 border border-orange-500/30 rounded"></div>
+                                <span class="text-white/80">Ruang pernah digunakan (tersedia)</span>
+                            </div>
                         </div>
                     </div>
                 </div>
