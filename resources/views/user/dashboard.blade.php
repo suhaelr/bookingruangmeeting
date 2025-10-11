@@ -301,15 +301,15 @@
                     <div class="space-y-2">
                         <div class="flex items-center space-x-2 text-sm">
                             <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang tersedia untuk dipesan</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm">
-                            <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang sudah dibooking</span>
+                            <span class="text-white/80">Ruang baru (belum pernah dibooking)</span>
                         </div>
                         <div class="flex items-center space-x-2 text-sm">
                             <div class="w-4 h-4 bg-orange-500/20 border border-orange-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang pernah digunakan (tersedia)</span>
+                            <span class="text-white/80">Ruang pernah digunakan (tersedia untuk booking)</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm">
+                            <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
+                            <span class="text-white/80">Ruang sedang dibooking (akan berubah ke orange setelah selesai)</span>
                         </div>
                     </div>
                 </div>
@@ -720,6 +720,114 @@
             document.body.insertAdjacentHTML('beforeend', modalContent);
         }
 
+        function showPreviousBookingDetailsWithBooking(bookingData, roomId, roomName, roomLocation, roomCapacity, time, datetime) {
+            const booking = JSON.parse(bookingData);
+            
+            // Create modal content
+            const modalContent = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Riwayat Penggunaan</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Status Alert -->
+                            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <i class="fas fa-history text-orange-500"></i>
+                                    <span class="font-medium text-orange-800">Status: Pernah Digunakan</span>
+                                </div>
+                                <p class="text-orange-700 text-sm">Ruang ini pernah digunakan dan sekarang tersedia</p>
+                            </div>
+                            
+                            <!-- Previous Meeting Details -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h4 class="font-medium text-blue-800 mb-3">Informasi Meeting Sebelumnya</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Judul:</span>
+                                        <span class="text-blue-800 font-medium">${booking.title}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Waktu:</span>
+                                        <span class="text-blue-800">${booking.start_time} - ${booking.end_time}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Status:</span>
+                                        <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-500 text-white">
+                                            Selesai
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Previous Organizer Details -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-800 mb-3">Penyelenggara Sebelumnya</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 font-medium">Nama:</span>
+                                        <span class="text-gray-800">${booking.user_name}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 font-medium">Unit Kerja:</span>
+                                        <span class="text-gray-800">${booking.unit_kerja}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Current Room Info -->
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h4 class="font-medium text-blue-800 mb-3">Informasi Ruang Saat Ini</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Nama:</span>
+                                        <span class="text-blue-800">${roomName}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Lokasi:</span>
+                                        <span class="text-blue-800">${roomLocation}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Kapasitas:</span>
+                                        <span class="text-blue-800">${roomCapacity} kursi</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Waktu:</span>
+                                        <span class="text-blue-800">${time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Current Availability -->
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-check-circle text-green-500"></i>
+                                    <span class="text-green-800 text-sm">Ruang sekarang tersedia untuk dipesan</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                                Tutup
+                            </button>
+                            <button onclick="proceedToBooking('${roomId}', '${datetime}', '${roomName}')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                                <i class="fas fa-calendar-plus mr-2"></i>Booking Sekarang
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+        }
+
         // Auto-refresh grid every 5 minutes
         setInterval(function() {
             // In a real app, you might want to refresh the grid data
@@ -763,9 +871,9 @@
                     // Green slot - show room details with booking button
                     showRoomDetailsModal(roomId, roomName, roomLocation, roomCapacity, time, datetime);
                 } else if (isAvailable && wasUsed) {
-                    // Orange slot - show booking history
+                    // Orange slot - show booking history with booking button
                     if (previousBooking && previousBooking !== 'null') {
-                        showPreviousBookingDetails(previousBooking);
+                        showPreviousBookingDetailsWithBooking(previousBooking, roomId, roomName, roomLocation, roomCapacity, time, datetime);
                     }
                 } else if (!isAvailable) {
                     // Red slot - show current booking details
