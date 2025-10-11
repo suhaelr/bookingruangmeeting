@@ -619,6 +619,30 @@
             height: 20px;
             margin-right: 12px;
         }
+        
+        .google-signin-button {
+            color: #3c4043 !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            text-decoration: none !important;
+        }
+        
+        .google-signin-button:hover {
+            color: #3c4043 !important;
+            text-decoration: none !important;
+        }
+        
+        /* Ensure Google button text is visible */
+        .google-signin-button span,
+        .google-signin-button {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #3c4043 !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            line-height: 1.4 !important;
+        }
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
