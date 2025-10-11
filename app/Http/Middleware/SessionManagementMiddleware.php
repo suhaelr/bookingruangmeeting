@@ -17,31 +17,40 @@ class SessionManagementMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Check if session is valid
-        if (Session::has('user_logged_in') && !Session::has('user_data')) {
-            // Clear invalid session
-            Session::flush();
-            Session::regenerate();
-        }
-        
-        // Check if user_data is corrupted
-        if (Session::has('user_data')) {
-            $userData = Session::get('user_data');
-            if (!is_array($userData) || !isset($userData['id']) || !isset($userData['role'])) {
-                // Clear corrupted session data
-                Session::flush();
-                Session::regenerate();
+        // Only process for login-related routes
+        if ($request->routeIs('login') || $request->routeIs('logout')) {
+            // Check if session is valid for login page
+            if ($request->routeIs('login') && $request->isMethod('GET')) {
+                // Clear any invalid session data on login page load
+                if (Session::has('user_logged_in') && !Session::has('user_data')) {
+                    Session::forget('user_logged_in');
+                    Session::forget('user_data');
+                    Session::regenerate();
+                }
+                
+                // Check if user_data is corrupted
+                if (Session::has('user_data')) {
+                    $userData = Session::get('user_data');
+                    if (!is_array($userData) || !isset($userData['id']) || !isset($userData['role'])) {
+                        Session::forget('user_logged_in');
+                        Session::forget('user_data');
+                        Session::regenerate();
+                    }
+                }
             }
-        }
-        
-        // Ensure session is started
-        if (!Session::isStarted()) {
-            Session::start();
+            
+            // For POST requests, ensure clean session state
+            if ($request->isMethod('POST') && $request->routeIs('login')) {
+                // Don't interfere with login process, just ensure session is ready
+                if (!Session::isStarted()) {
+                    Session::start();
+                }
+            }
         }
         
         $response = $next($request);
         
-        // Force session save for important operations
+        // Force session save after login
         if ($request->isMethod('POST') && $request->routeIs('login')) {
             Session::save();
         }

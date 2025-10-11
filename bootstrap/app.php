@@ -26,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
         $middleware->append(\App\Http\Middleware\InputValidationMiddleware::class);
         $middleware->append(\App\Http\Middleware\SessionManagementMiddleware::class);
+        // SEO middleware should run after session management
         $middleware->append(\App\Http\Middleware\SeoMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {

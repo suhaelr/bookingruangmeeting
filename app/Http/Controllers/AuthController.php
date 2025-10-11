@@ -30,7 +30,8 @@ class AuthController extends Controller
         
         // Clear any invalid session data
         if (Session::has('user_logged_in') && !Session::has('user_data')) {
-            Session::flush();
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
             Session::regenerate();
         }
         
@@ -57,8 +58,9 @@ class AuthController extends Controller
 
         // Check hardcoded credentials first
         if ($credentials['username'] === 'admin' && $credentials['password'] === 'admin') {
-            // Clear any existing session data first
-            Session::flush();
+            // Clear only user-related session data, not all session
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
             
             // Regenerate session ID for security
             Session::regenerate();
@@ -80,8 +82,9 @@ class AuthController extends Controller
         }
 
         if ($credentials['username'] === 'user' && $credentials['password'] === 'user') {
-            // Clear any existing session data first
-            Session::flush();
+            // Clear only user-related session data, not all session
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
             
             // Regenerate session ID for security
             Session::regenerate();
@@ -115,8 +118,9 @@ class AuthController extends Controller
                 ])->withInput($request->only('username'));
             }
 
-            // Clear any existing session data first
-            Session::flush();
+            // Clear only user-related session data, not all session
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
             
             // Regenerate session ID for security
             Session::regenerate();
@@ -149,16 +153,12 @@ class AuthController extends Controller
 
     public function logout()
     {
-        // Clear all session data
-        Session::flush();
+        // Clear only user-related session data, preserve other session data
+        Session::forget('user_logged_in');
+        Session::forget('user_data');
         
         // Regenerate session ID to prevent session fixation
         Session::regenerate();
-        
-        // Clear any cached data
-        if (function_exists('opcache_reset')) {
-            opcache_reset();
-        }
         
         return redirect()->route('login')->with('success', 'Logout berhasil!');
     }
