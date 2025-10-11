@@ -71,13 +71,53 @@
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             min-height: 100vh !important;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* GIF Background Overlay */
+        .gif-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            mix-blend-mode: screen;
+            z-index: 0;
+            pointer-events: none;
+            filter: hue-rotate(20deg) saturate(1.2) brightness(0.8);
+            animation: gifFade 8s ease-in-out infinite alternate;
+        }
+        
+        @keyframes gifFade {
+            0% {
+                opacity: 0.3;
+                filter: hue-rotate(20deg) saturate(1.2) brightness(0.8);
+            }
+            50% {
+                opacity: 0.5;
+                filter: hue-rotate(30deg) saturate(1.4) brightness(0.9);
+            }
+            100% {
+                opacity: 0.4;
+                filter: hue-rotate(25deg) saturate(1.3) brightness(0.85);
+            }
+        }
+        
+        /* Content overlay */
+        .content-overlay {
+            position: relative;
+            z-index: 1;
         }
         
         /* Glass effect */
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(15px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
         }
         
         /* Override any conflicting styles */
@@ -215,12 +255,15 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <!-- GIF Background -->
+    <img src="{{ asset('3708555zcov227jtb.gif') }}" alt="Background Animation" class="gif-background">
+    
     <!-- Mobile Sidebar -->
     @include('components.mobile-sidebar', [
         'userRole' => 'guest',
         'pageTitle' => 'Login'
     ])
-    <div class="w-full max-w-md">
+    <div class="w-full max-w-md content-overlay">
         <!-- Logo/Header -->
         <div class="text-center mb-8">
             <div class="logo-wrapper inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
