@@ -1030,8 +1030,8 @@ class AuthController extends Controller
                 })->toArray()
             ]);
 
-            $users = User::select('id', 'username', 'name', 'full_name', 'email', 'role', 'google_id', 'created_at', 'last_login_at')
-                ->orderBy('created_at', 'desc')
+            // Try without select() to get all users
+            $users = User::orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($user) {
                     // Handle users with NULL name field
