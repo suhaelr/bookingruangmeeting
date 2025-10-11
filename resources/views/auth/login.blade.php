@@ -88,7 +88,8 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
             min-height: 100vh !important;
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -132,6 +133,16 @@
                 left: 50%;
                 transform: translate(-50%, -50%);
             }
+            
+            .login-container {
+                min-height: 100vh;
+                padding: 0.5rem;
+            }
+            
+            .content-overlay {
+                padding: 0.5rem;
+                max-width: 100%;
+            }
         }
         
         @media (max-width: 480px) {
@@ -143,6 +154,16 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
+            }
+            
+            .login-container {
+                min-height: 100vh;
+                padding: 0.25rem;
+            }
+            
+            .content-overlay {
+                padding: 0.25rem;
+                max-width: 100%;
             }
         }
         
@@ -184,6 +205,19 @@
         .content-overlay {
             position: relative;
             z-index: 1;
+            width: 100%;
+            max-width: 28rem;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        /* Ensure form is scrollable */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
         
         /* Glass effect */
@@ -197,6 +231,15 @@
         /* Override any conflicting styles */
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: 100%;
+        }
+        
+        html {
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
         
         /* Ensure text is white */
@@ -328,7 +371,7 @@
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+<body class="gradient-bg">
     <!-- GIF Background -->
     <img src="{{ asset('3708555zcov227jtb.gif') }}" alt="Background Animation" class="gif-background" onerror="console.log('GIF failed to load'); this.style.display='none';">
     
@@ -337,7 +380,9 @@
         'userRole' => 'guest',
         'pageTitle' => 'Login'
     ])
-    <div class="w-full max-w-md content-overlay">
+    
+    <div class="login-container">
+        <div class="content-overlay">
         <!-- Logo/Header -->
         <div class="text-center mb-8">
             <div class="logo-wrapper inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
