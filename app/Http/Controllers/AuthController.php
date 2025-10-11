@@ -998,6 +998,11 @@ class AuthController extends Controller
      */
     public function getAllUsers()
     {
+        \Log::info('getAllUsers method called', [
+            'timestamp' => now(),
+            'session_id' => session()->getId()
+        ]);
+        
         // Check if current user is admin
         $currentUser = session('user_data');
         if (!$currentUser || $currentUser['role'] !== 'admin') {
@@ -1091,6 +1096,15 @@ class AuthController extends Controller
             \Log::info('Total users returned by API', [
                 'count' => $users->count(),
                 'expected_count' => User::count()
+            ]);
+
+            \Log::info('Returning users to frontend', [
+                'user_count' => $users->count(),
+                'user_ids' => $users->pluck('id')->toArray(),
+                'response_data' => [
+                    'success' => true,
+                    'users_count' => $users->count()
+                ]
             ]);
 
             return response()->json([
