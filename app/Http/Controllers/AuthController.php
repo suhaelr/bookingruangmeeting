@@ -125,55 +125,7 @@ class AuthController extends Controller
             return $this->addNoCacheHeaders($response);
         }
 
-        if ($credentials['username'] === 'user' && $credentials['password'] === 'user') {
-            // Clear only user-related session data, not all session
-            Session::forget('user_logged_in');
-            Session::forget('user_data');
-            
-            // Regenerate session ID for security
-            Session::regenerate();
-            
-            // Get fresh user data from database to ensure latest role
-            $user = User::where('username', 'user')->first();
-            if ($user) {
-                // Update last login
-                $user->update(['last_login_at' => now()]);
-                
-                Session::put('user_logged_in', true);
-                Session::put('user_data', [
-                    'id' => $user->id,
-                    'username' => $user->username,
-                    'full_name' => $user->full_name ?? $user->name,
-                    'email' => $user->email,
-                    'role' => $user->role, // Get latest role from database
-                    'department' => $user->department ?? 'General'
-                ]);
-            } else {
-                // Fallback for hardcoded user
-                Session::put('user_logged_in', true);
-                Session::put('user_data', [
-                    'id' => 2,
-                    'username' => 'user',
-                    'full_name' => 'Regular User',
-                    'email' => 'user@pusdatinbgn.web.id',
-                    'role' => 'user',
-                    'department' => 'General'
-                ]);
-            }
-            
-            // Force session save
-            Session::save();
-            
-            // Redirect based on current role
-            $userData = Session::get('user_data');
-            $redirectRoute = $userData['role'] === 'admin' 
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('user.dashboard');
-            
-            $response = $redirectRoute->with('success', 'Login berhasil!');
-            
-            return $this->addNoCacheHeaders($response);
-        }
+        // Remove hardcoded user credentials for security
 
         // Check database users - support both username and email
         $user = User::where('username', $credentials['username'])

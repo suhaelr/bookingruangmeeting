@@ -42,6 +42,18 @@ class AdminAuth
             'user_email' => $user['email'] ?? 'unknown'
         ]);
 
+        // Validate user exists in database
+        $userModel = \App\Models\User::find($user['id']);
+        if (!$userModel) {
+            \Log::warning('AdminAuth: User not found in database', [
+                'session_user_id' => $user['id'],
+                'session_user_data' => $user
+            ]);
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
+            return redirect()->route('login')->with('error', 'Session tidak valid. Silakan login kembali!');
+        }
+
         if ($user['role'] !== 'admin') {
             \Log::warning('AdminAuth: User is not admin', [
                 'user_role' => $user['role'],

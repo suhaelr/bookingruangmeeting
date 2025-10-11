@@ -44,6 +44,18 @@ class UserAuth
             return redirect()->route('login')->with('error', 'Data pengguna tidak ditemukan!');
         }
 
+        // Validate user exists in database
+        $userModel = \App\Models\User::find($user['id']);
+        if (!$userModel) {
+            \Log::warning('UserAuth: User not found in database', [
+                'session_user_id' => $user['id'],
+                'session_user_data' => $user
+            ]);
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
+            return redirect()->route('login')->with('error', 'Session tidak valid. Silakan login kembali!');
+        }
+
         if ($user['role'] !== 'user') {
             \Log::info('UserAuth: User role is not user, redirecting to admin dashboard', [
                 'user_role' => $user['role']
