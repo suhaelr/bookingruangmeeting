@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kebijakan Privasi - Sistem Pemesanan Ruang Meeting</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    
+    <!-- SEO Meta Tags -->
+    @include('components.seo-meta', [
+        'page' => 'privacy_policy',
+        'title' => 'Kebijakan Privasi - Sistem Pemesanan Ruang Meeting',
+        'description' => 'Kebijakan privasi sistem pemesanan ruang meeting. Informasi tentang pengumpulan, penggunaan, dan perlindungan data pribadi.',
+        'keywords' => 'kebijakan privasi, perlindungan data, privasi pengguna, sistem pemesanan',
+        'canonical' => '/privacy-policy',
+        'robots' => 'index, follow'
+    ])
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])

@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pengguna - Sistem Pemesanan Ruang Meeting</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    
+    <!-- SEO Meta Tags -->
+    @include('components.seo-meta', [
+        'page' => 'user_dashboard',
+        'title' => 'Dashboard Pengguna - Sistem Pemesanan Ruang Meeting',
+        'description' => 'Dashboard pengguna untuk mengelola pemesanan ruang meeting. Lihat jadwal, statistik, dan kelola booking Anda.',
+        'keywords' => 'dashboard pengguna, pemesanan ruang meeting, jadwal meeting, statistik booking',
+        'canonical' => '/user/dashboard',
+        'robots' => 'noindex, nofollow'
+    ])
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])

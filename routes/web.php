@@ -129,6 +129,10 @@ Route::get('/terms-of-service', function () {
     return view('terms-of-service');
 })->name('terms.service');
 
+// SEO Routes
+Route::get('/sitemap.xml', [App\Http\Controllers\SeoController::class, 'generateSitemap'])->name('sitemap');
+Route::get('/robots.txt', [App\Http\Controllers\SeoController::class, 'generateRobots'])->name('robots');
+
 // Admin Routes
 Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

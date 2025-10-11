@@ -3,7 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar - Meeting Room Booking</title>
+    
+    <!-- SEO Meta Tags -->
+    @include('components.seo-meta', [
+        'page' => 'register',
+        'title' => 'Daftar - Sistem Pemesanan Ruang Meeting',
+        'description' => 'Daftar akun baru untuk mengakses sistem pemesanan ruang meeting. Proses pendaftaran mudah dan cepat.',
+        'keywords' => 'daftar, registrasi, akun baru, sistem pemesanan, ruang meeting',
+        'canonical' => '/register',
+        'robots' => 'noindex, nofollow'
+    ])
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])

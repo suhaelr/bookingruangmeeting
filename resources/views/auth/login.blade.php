@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masuk - Sistem Pemesanan Ruang Meeting</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    
+    <!-- SEO Meta Tags -->
+    @include('components.seo-meta', [
+        'page' => 'login',
+        'title' => 'Masuk - Sistem Pemesanan Ruang Meeting',
+        'description' => 'Masuk ke sistem pemesanan ruang meeting untuk mengelola jadwal meeting Anda. Akses mudah dan aman dengan berbagai metode login.',
+        'keywords' => 'login, masuk, sistem pemesanan, ruang meeting, autentikasi',
+        'canonical' => '/login',
+        'robots' => 'noindex, nofollow'
+    ])
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

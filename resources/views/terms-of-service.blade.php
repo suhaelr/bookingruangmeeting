@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syarat dan Ketentuan - Sistem Pemesanan Ruang Meeting</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    
+    <!-- SEO Meta Tags -->
+    @include('components.seo-meta', [
+        'page' => 'terms_of_service',
+        'title' => 'Syarat dan Ketentuan - Sistem Pemesanan Ruang Meeting',
+        'description' => 'Syarat dan ketentuan penggunaan sistem pemesanan ruang meeting. Aturan dan ketentuan yang berlaku.',
+        'keywords' => 'syarat ketentuan, aturan penggunaan, terms of service, sistem pemesanan',
+        'canonical' => '/terms-of-service',
+        'robots' => 'index, follow'
+    ])
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
