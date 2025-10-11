@@ -38,6 +38,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             const logo = document.querySelector('.logo-glow');
             const logoWrapper = document.querySelector('.logo-wrapper');
+            const gifBackground = document.querySelector('.gif-background');
+            
+            // Debug GIF loading
+            if (gifBackground) {
+                gifBackground.addEventListener('load', function() {
+                    console.log('GIF loaded successfully');
+                    this.style.opacity = '0.4';
+                });
+                
+                gifBackground.addEventListener('error', function() {
+                    console.log('GIF failed to load, checking path...');
+                    console.log('Current src:', this.src);
+                    // Try alternative path
+                    this.src = '/3708555zcov227jtb.gif';
+                });
+            }
             
             if (logo && logoWrapper) {
                 // Add hover effects
@@ -94,6 +110,13 @@
             pointer-events: none;
             filter: hue-rotate(20deg) saturate(1.2) brightness(0.8);
             animation: gifFade 8s ease-in-out infinite alternate;
+            /* Fallback if GIF fails to load */
+            background: linear-gradient(45deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+        }
+        
+        /* Ensure GIF is visible when loaded */
+        .gif-background[src] {
+            background: none;
         }
         
         /* Mobile responsive adjustments */
@@ -307,7 +330,7 @@
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
     <!-- GIF Background -->
-    <img src="{{ asset('3708555zcov227jtb.gif') }}" alt="Background Animation" class="gif-background">
+    <img src="{{ asset('3708555zcov227jtb.gif') }}" alt="Background Animation" class="gif-background" onerror="console.log('GIF failed to load'); this.style.display='none';">
     
     <!-- Mobile Sidebar -->
     @include('components.mobile-sidebar', [
