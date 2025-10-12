@@ -673,9 +673,22 @@ class AuthController extends Controller
                 'department' => $user->department
             ];
             
+            // Check if this is a mobile device
+            $userAgent = $request->userAgent();
+            $isMobile = $this->isMobileDevice($userAgent);
+            
+            \Log::info('Google OAuth session setup', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'is_mobile' => $isMobile,
+                'user_agent' => $userAgent,
+                'session_id_before' => session()->getId()
+            ]);
+            
             // Clear any existing session data first
             Session::forget('user_logged_in');
             Session::forget('user_data');
+            Session::forget('google_oauth_state');
             
             // Regenerate session ID for security
             Session::regenerate(true);
@@ -690,8 +703,22 @@ class AuthController extends Controller
             // Force session save and wait for completion
             Session::save();
             
-            // Add delay to ensure session is properly saved
-            usleep(500000); // 500ms delay
+            // Add longer delay for mobile devices to ensure session persistence
+            $delay = $isMobile ? 1000000 : 500000; // 1 second for mobile, 500ms for desktop
+            usleep($delay);
+            
+            // Additional session verification for mobile
+            if ($isMobile) {
+                // Force another session save for mobile
+                Session::save();
+                usleep(200000); // Additional 200ms delay
+                
+                \Log::info('Mobile session double-save completed', [
+                    'session_id' => session()->getId(),
+                    'user_logged_in' => Session::get('user_logged_in'),
+                    'has_user_data' => Session::has('user_data')
+                ]);
+            }
             
             // Verify session data is properly saved
             \Log::info('Google OAuth login successful - Final verification', [
@@ -699,6 +726,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'google_id' => $userInfo['id'] ?? null,
                 'role' => $user->role,
+                'is_mobile' => $isMobile,
                 'session_id' => session()->getId(),
                 'user_logged_in' => Session::get('user_logged_in'),
                 'user_data' => Session::get('user_data')

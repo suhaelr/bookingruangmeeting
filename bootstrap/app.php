@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'cloudflare.bypass' => \App\Http\Middleware\CloudflareBypass::class,
             'seo' => \App\Http\Middleware\SeoMiddleware::class,
             'session.management' => \App\Http\Middleware\SessionManagementMiddleware::class,
+            'mobile.session.fix' => \App\Http\Middleware\MobileSessionFix::class,
             'disable.cache' => \App\Http\Middleware\DisableCache::class,
             'disable.all.cache' => \App\Http\Middleware\DisableAllCache::class,
         ]);
