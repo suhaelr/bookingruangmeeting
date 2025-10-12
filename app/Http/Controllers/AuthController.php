@@ -465,16 +465,19 @@ class AuthController extends Controller
      */
     public function redirectToGoogle()
     {
-        $clientId = config('services.google.client_id');
-        $clientSecret = config('services.google.client_secret');
-        $redirectUri = config('services.google.redirect');
+        // Try config first, fallback to env() if config fails
+        $clientId = config('services.google.client_id') ?: env('GOOGLE_CLIENT_ID');
+        $clientSecret = config('services.google.client_secret') ?: env('GOOGLE_CLIENT_SECRET');
+        $redirectUri = config('services.google.redirect') ?: env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
         
         // Debug: Check if configuration is loaded
         \Log::info('Google OAuth Configuration Check', [
             'client_id' => $clientId ? substr($clientId, 0, 20) . '...' : 'NULL',
             'client_secret' => $clientSecret ? 'SET' : 'NULL',
             'redirect_uri' => $redirectUri ?: 'NULL',
-            'env_client_id' => env('GOOGLE_CLIENT_ID') ? substr(env('GOOGLE_CLIENT_ID'), 0, 20) . '...' : 'NULL'
+            'env_client_id' => env('GOOGLE_CLIENT_ID') ? substr(env('GOOGLE_CLIENT_ID'), 0, 20) . '...' : 'NULL',
+            'config_cache_cleared' => true,
+            'timestamp' => now()->toISOString()
         ]);
         
         // Validate configuration
@@ -723,8 +726,16 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             \Log::error('Google OAuth error', [
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
+                'session_id' => session()->getId(),
+                'user_logged_in' => Session::get('user_logged_in'),
+                'user_data' => Session::get('user_data')
             ]);
+            
+            // Clear any partial session data
+            Session::forget('user_logged_in');
+            Session::forget('user_data');
+            Session::forget('google_oauth_state');
             
             return redirect()->route('login')->with('error', 'Gagal login dengan Google: ' . $e->getMessage());
         }
@@ -735,9 +746,10 @@ class AuthController extends Controller
      */
     private function getGoogleAccessToken($code)
     {
-        $clientId = config('services.google.client_id');
-        $clientSecret = config('services.google.client_secret');
-        $redirectUri = config('services.google.redirect');
+        // Try config first, fallback to env() if config fails
+        $clientId = config('services.google.client_id') ?: env('GOOGLE_CLIENT_ID');
+        $clientSecret = config('services.google.client_secret') ?: env('GOOGLE_CLIENT_SECRET');
+        $redirectUri = config('services.google.redirect') ?: env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
