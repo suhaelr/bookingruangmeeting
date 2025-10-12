@@ -675,7 +675,14 @@ class AuthController extends Controller
             
             // Check if this is a mobile device
             $userAgent = $request->userAgent();
-            $isMobile = $this->isMobileDevice($userAgent);
+            $mobileKeywords = ['Mobile', 'Android', 'iPhone', 'iPad', 'iPod', 'BlackBerry', 'Windows Phone', 'Opera Mini', 'IEMobile', 'Mobile Safari'];
+            $isMobile = false;
+            foreach ($mobileKeywords as $keyword) {
+                if (stripos($userAgent, $keyword) !== false) {
+                    $isMobile = true;
+                    break;
+                }
+            }
             
             \Log::info('Google OAuth session setup', [
                 'user_id' => $user->id,
