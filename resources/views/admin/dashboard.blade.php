@@ -456,11 +456,11 @@
         setTimeout(() => {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
-                successMessage.style.transition = 'opacity 0.5s';
+                successMessage.style.transition = 'opacity 0.3s';
                 successMessage.style.opacity = '0';
-                setTimeout(() => successMessage.remove(), 500);
+                setTimeout(() => successMessage.remove(), 300);
             }
-        }, 3000);
+        }, 1000);
     </script>
 </body>
 </html>

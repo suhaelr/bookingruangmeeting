@@ -400,12 +400,12 @@
             
             container.appendChild(messageDiv);
             
-            // Auto remove after 5 seconds
+            // Auto remove after 1 second
             setTimeout(() => {
                 if (messageDiv.parentNode) {
                     messageDiv.parentNode.removeChild(messageDiv);
                 }
-            }, 5000);
+            }, 1000);
         }
     </script>
 </body>
