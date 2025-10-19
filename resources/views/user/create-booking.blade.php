@@ -353,6 +353,7 @@
                 fetch('{{ route("captcha.generate") }}')
                     .then(response => response.json())
                     .then(data => {
+                        // Display only the number
                         document.getElementById('captcha-question').textContent = data.question;
                         captchaVerified = false;
                         document.getElementById('captcha_answer').value = '';

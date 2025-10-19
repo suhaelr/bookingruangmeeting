@@ -22,7 +22,7 @@ class CaptchaController extends Controller
         Session::put('captcha_question', $question);
         
         return response()->json([
-            'question' => $question,
+            'question' => $answer, // Return only the number
             'answer' => $answer // For debugging only, remove in production
         ]);
     }
