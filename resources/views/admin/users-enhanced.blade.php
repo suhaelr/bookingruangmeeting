@@ -346,17 +346,26 @@
                 // Get CSRF token
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 
+                console.log('Delete user request:', {
+                    userId: userId,
+                    userName: userName,
+                    csrfToken: csrfToken,
+                    url: `/admin/users/${userId}/delete`
+                });
+                
                 // Use fetch API instead of form submission
                 fetch(`/admin/users/${userId}/delete`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-CSRF-TOKEN': csrfToken,
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
                     },
                     body: `_token=${csrfToken}&_method=DELETE`
                 })
                 .then(response => {
+                    console.log('Delete response:', response.status, response.statusText);
                     if (response.ok) {
                         showMessage('Pengguna berhasil dihapus!', 'success');
                         // Reload users after successful deletion
@@ -365,6 +374,7 @@
                         }, 1000);
                     } else {
                         return response.text().then(text => {
+                            console.error('Delete error response:', text);
                             throw new Error(`HTTP ${response.status}: ${text}`);
                         });
                     }

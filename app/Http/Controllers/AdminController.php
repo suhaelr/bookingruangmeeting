@@ -279,7 +279,9 @@ class AdminController extends Controller
                 'request_method' => request()->method(),
                 'request_data' => request()->all(),
                 'csrf_token' => request()->input('_token'),
-                'session_id' => session()->getId()
+                'session_token' => session()->token(),
+                'session_id' => session()->getId(),
+                'headers' => request()->headers->all()
             ]);
 
             $user = User::findOrFail($id);
