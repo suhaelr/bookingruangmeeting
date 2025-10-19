@@ -391,8 +391,8 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal & Waktu</label>
-                                <p class="text-gray-900">${new Tanggal(booking.start_time).toLocaleTanggalString()}</p>
-                                <p class="text-gray-600 text-sm">${new Tanggal(booking.start_time).toLocaleWaktuString()} - ${new Tanggal(booking.end_time).toLocaleWaktuString()}</p>
+                                <p class="text-gray-900">${new Date(booking.start_time).toLocaleDateString()}</p>
+                                <p class="text-gray-600 text-sm">${new Date(booking.start_time).toLocaleTimeString()} - ${new Date(booking.end_time).toLocaleTimeString()}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
@@ -500,20 +500,20 @@
         }
 
         function calculateDuration(startWaktu, endWaktu) {
-            const start = new Tanggal(startWaktu);
-            const end = new Tanggal(endWaktu);
+            const start = new Date(startWaktu);
+            const end = new Date(endWaktu);
             const diffMs = end - start;
             const diffHours = diffMs / (1000 * 60 * 60);
             return diffHours.toFixed(1);
         }
 
         function formatTanggalWaktuLocal(dateWaktu) {
-            const date = new Tanggal(dateWaktu);
+            const date = new Date(dateWaktu);
             const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padMulai(2, '0');
-            const day = String(date.getTanggal()).padMulai(2, '0');
-            const hours = String(date.getHours()).padMulai(2, '0');
-            const minutes = String(date.getMinutes()).padMulai(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${year}-${month}-${day}T${hours}:${minutes}`;
         }
 
@@ -605,14 +605,14 @@
         });
 
         // Auto-hide success message
-        setWaktuout(() => {
+        setTimeout(() => {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
                 successMessage.style.transition = 'opacity 0.5s';
                 successMessage.style.opacity = '0';
-                setWaktuout(() => successMessage.remove(), 500);
+                setTimeout(() => successMessage.remove(), 500);
             }
-        }, 3000);
+        }, 1000);
     </script>
 
     <!-- Mobile Sidebar -->
