@@ -150,8 +150,8 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <div>
-                                        <p class="text-white font-medium">{{ $booking->formatted_start_time }}</p>
-                                        <p class="text-white/60 text-sm">{{ $booking->duration }} hours</p>
+                                        <p class="text-white font-medium">{{ $booking->start_time->format('d M Y') }}</p>
+                                        <p class="text-white/60 text-sm">{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">

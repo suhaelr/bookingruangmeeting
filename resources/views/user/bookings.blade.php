@@ -165,8 +165,8 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center space-x-4 text-sm text-white/60">
-                                        <span><i class="fas fa-calendar mr-1"></i>{{ $booking->formatted_start_time }}</span>
-                                        <span><i class="fas fa-clock mr-1"></i>{{ $booking->duration }} jam</span>
+                                        <span><i class="fas fa-calendar mr-1"></i>{{ $booking->start_time->format('d M Y') }}</span>
+                                        <span><i class="fas fa-clock mr-1"></i>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</span>
                                         <span><i class="fas fa-users mr-1"></i>{{ $booking->attendees_count }} peserta</span>
                                     </div>
                                 </div>

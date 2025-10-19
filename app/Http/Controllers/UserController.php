@@ -623,7 +623,6 @@ class UserController extends Controller
                     ->whereIn('status', ['pending', 'confirmed'])
                     ->where('start_time', '<', $endTime)
                     ->where('end_time', '>', $timeSlot)
-                    ->where('start_time', '>=', now()) // Only check future bookings
                     ->with('user')
                     ->first();
 
@@ -649,11 +648,14 @@ class UserController extends Controller
                         'room_id' => $room->id,
                         'room_name' => $room->name,
                         'slot_time' => $timeSlot->format('H:i'),
+                        'slot_datetime' => $timeSlot->format('Y-m-d H:i:s'),
                         'is_past_time' => $isPastTime,
                         'has_conflicting_booking' => $conflictingBooking ? true : false,
+                        'conflicting_booking_id' => $conflictingBooking ? $conflictingBooking->id : null,
                         'is_available' => $isAvailable,
                         'current_time' => now()->format('H:i'),
-                        'slot_is_today' => $timeSlot->isToday()
+                        'slot_is_today' => $timeSlot->isToday(),
+                        'is_showing_today' => $isShowingToday
                     ]);
                 }
                 
