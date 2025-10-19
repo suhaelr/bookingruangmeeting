@@ -274,12 +274,32 @@ class AdminController extends Controller
     public function deleteUser($id)
     {
         try {
+            \Log::info('Delete user request', [
+                'user_id' => $id,
+                'request_method' => request()->method(),
+                'request_data' => request()->all(),
+                'csrf_token' => request()->input('_token'),
+                'session_id' => session()->getId()
+            ]);
+
             $user = User::findOrFail($id);
             
-            // Prevent deleting admin users
-            if ($user->role === 'admin') {
-                return back()->with('error', 'Cannot delete admin users.');
+            // Only prevent deleting the default admin account (username: admin, email: admin@pusdatinbgn.web.id)
+            if ($user->username === 'admin' && $user->email === 'admin@pusdatinbgn.web.id') {
+                \Log::warning('Attempt to delete default admin account', [
+                    'user_id' => $id,
+                    'username' => $user->username,
+                    'email' => $user->email
+                ]);
+                return back()->with('error', 'Akun admin default tidak dapat dihapus.');
             }
+            
+            \Log::info('Proceeding with user deletion', [
+                'user_id' => $id,
+                'username' => $user->username,
+                'email' => $user->email,
+                'role' => $user->role
+            ]);
             
             // Delete user's bookings first
             $user->bookings()->delete();
@@ -290,8 +310,14 @@ class AdminController extends Controller
             // Delete the user
             $user->delete();
             
+            \Log::info('User deleted successfully', ['user_id' => $id]);
+            
             return back()->with('success', 'User berhasil dihapus.');
         } catch (\Exception $e) {
+            \Log::error('Error deleting user: ' . $e->getMessage(), [
+                'user_id' => $id,
+                'exception' => $e->getTraceAsString()
+            ]);
             return back()->with('error', 'Gagal menghapus user: ' . $e->getMessage());
         }
     }

@@ -216,7 +216,7 @@
                                     class="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-lg hover:bg-yellow-500/30 text-sm">
                                 <i class="fas fa-user-edit mr-1"></i>Role
                             </button>
-                            ${user.role !== 'admin' ? `
+                            ${!(user.username === 'admin' && user.email === 'admin@pusdatinbgn.web.id') ? `
                             <button onclick="deleteUser(${user.id}, '${user.name}')" 
                                     class="px-3 py-1 bg-red-500/20 text-red-300 rounded-lg hover:bg-red-500/30 text-sm">
                                 <i class="fas fa-trash mr-1"></i>Hapus
@@ -343,25 +343,36 @@
                 // Show loading message
                 showMessage('Menghapus pengguna...', 'info');
                 
-                // Create form and submit
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/users/${userId}/delete`;
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'DELETE';
-                
-                form.appendChild(csrfToken);
-                form.appendChild(methodInput);
-                document.body.appendChild(form);
-                form.submit();
+                // Use fetch API instead of form submission
+                fetch(`/admin/users/${userId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: `_token=${csrfToken}&_method=DELETE`
+                })
+                .then(response => {
+                    if (response.ok) {
+                        showMessage('Pengguna berhasil dihapus!', 'success');
+                        // Reload users after successful deletion
+                        setTimeout(() => {
+                            loadUsers();
+                        }, 1000);
+                    } else {
+                        return response.text().then(text => {
+                            throw new Error(`HTTP ${response.status}: ${text}`);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting user:', error);
+                    showMessage('Gagal menghapus pengguna: ' + error.message, 'error');
+                });
             }
         }
 
