@@ -219,22 +219,35 @@
         <!-- Room Availability Grid -->
         <div class="mt-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
-                    <p class="text-white/60 text-sm mt-1">
-                        @php
-                            $todayBookings = \App\Models\Booking::whereIn('status', ['pending', 'confirmed'])
-                                ->whereDate('start_time', today())
-                                ->count();
-                            $isShowingToday = $todayBookings > 0;
-                        @endphp
-                        @if($isShowingToday)
-                            {{ now()->format('l, d F Y') }} (Hari Ini)
-                        @else
-                            {{ now()->addDay()->format('l, d F Y') }} (Besok)
-                        @endif
-                    </p>
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
+                        <p class="text-white/60 text-sm mt-1">
+                            {{ $selectedDate->isToday() ? 'Hari Ini' : ($selectedDate->isTomorrow() ? 'Besok' : $selectedDate->format('l, d F Y')) }}
+                        </p>
+                    </div>
+                    <div class="relative">
+                        <select id="date-selector" class="bg-white/10 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 pr-8">
+                            <option value="{{ now()->format('Y-m-d') }}" {{ $selectedDate->isToday() ? 'selected' : '' }}>Hari Ini</option>
+                            <option value="{{ now()->addDay()->format('Y-m-d') }}" {{ $selectedDate->isTomorrow() ? 'selected' : '' }}>Besok</option>
+                            <option value="{{ now()->addDays(2)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(2)) ? 'selected' : '' }}>Lusa ({{ now()->addDays(2)->format('d M') }})</option>
+                            <option value="{{ now()->addDays(3)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(3)) ? 'selected' : '' }}>{{ now()->addDays(3)->format('l, d M') }}</option>
+                            <option value="{{ now()->addDays(4)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(4)) ? 'selected' : '' }}>{{ now()->addDays(4)->format('l, d M') }}</option>
+                            <option value="{{ now()->addDays(5)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(5)) ? 'selected' : '' }}>{{ now()->addDays(5)->format('l, d M') }}</option>
+                            <option value="{{ now()->addDays(6)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(6)) ? 'selected' : '' }}>{{ now()->addDays(6)->format('l, d M') }}</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/60">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
                 </div>
+
+                <script>
+                    document.getElementById('date-selector').addEventListener('change', function() {
+                        const selectedDate = this.value;
+                        window.location.href = `{{ url()->current() }}?date=${selectedDate}`;
+                    });
+                </script>
                 
                 <!-- Grid Container -->
                 <div class="overflow-x-auto">

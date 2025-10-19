@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $user = session('user_data');
         
@@ -81,8 +81,11 @@ class UserController extends Controller
                 ->get();
         }
 
+        // Get selected date from request, default to today
+        $selectedDate = $request->has('date') ? Carbon::parse($request->input('date')) : now();
+
         // Get room availability grid data
-        $roomAvailabilityGrid = $this->getRoomAvailabilityGrid();
+        $roomAvailabilityGrid = $this->getRoomAvailabilityGrid($selectedDate);
 
         return view('user.dashboard', compact(
             'stats',
@@ -90,7 +93,8 @@ class UserController extends Controller
             'todayBookings',
             'availableRooms',
             'notifications',
-            'roomAvailabilityGrid'
+            'roomAvailabilityGrid',
+            'selectedDate'
         ));
     }
 
@@ -553,45 +557,45 @@ class UserController extends Controller
         return $start1->lt($end2) && $end1->gt($start2);
     }
 
-    private function getRoomAvailabilityGrid()
+    private function getRoomAvailabilityGrid($selectedDate = null)
     {
+        // If no date is provided, default to today
+        if (is_null($selectedDate)) {
+            $selectedDate = now()->startOfDay();
+        }
+
         $rooms = MeetingRoom::where('is_active', true)
             ->orderBy('name')
             ->get();
 
         \Log::info('Room availability grid - rooms found', [
             'room_count' => $rooms->count(),
-            'rooms' => $rooms->pluck('name', 'id')->toArray()
+            'rooms' => $rooms->pluck('name', 'id')->toArray(),
+            'selected_date' => $selectedDate->format('Y-m-d')
         ]);
 
-        // Show today's slots if there are bookings, otherwise show tomorrow's slots
         $timeSlots = [];
-        $today = now()->startOfDay();
-        $tomorrow = now()->addDay()->startOfDay();
+        $startHour = 8;
+        $endHour = 18; // Up to 18:30
         
-        // Check if there are any bookings today
-        $todayBookings = Booking::whereIn('status', ['pending', 'confirmed'])
-            ->whereDate('start_time', today())
-            ->count();
-        
-        $targetDate = $todayBookings > 0 ? $today : $tomorrow;
-        $isShowingToday = $todayBookings > 0;
-        
-        // Generate time slots for the target date (every 30 minutes from 8:00 to 18:30)
-        for ($hour = 8; $hour <= 18; $hour++) {
+        // Generate all slots from 8 AM to 6:30 PM for the selected day
+        for ($hour = $startHour; $hour <= $endHour; $hour++) {
             for ($minute = 0; $minute < 60; $minute += 30) {
-                $timeSlots[] = $targetDate->copy()->setTime($hour, $minute);
+                $timeSlots[] = $selectedDate->copy()->setTime($hour, $minute);
             }
+        }
+        // Add 18:30 slot explicitly if not already added
+        $lastSlot = $selectedDate->copy()->setTime(18, 30);
+        if (!in_array($lastSlot, $timeSlots)) {
+            $timeSlots[] = $lastSlot;
         }
 
         \Log::info('Room availability grid - time slots generated', [
             'time_slot_count' => count($timeSlots),
-            'first_slot' => $timeSlots[0]->format('H:i'),
-            'last_slot' => end($timeSlots)->format('H:i'),
+            'first_slot' => count($timeSlots) > 0 ? $timeSlots[0]->format('H:i') : 'N/A',
+            'last_slot' => count($timeSlots) > 0 ? end($timeSlots)->format('H:i') : 'N/A',
             'current_time' => now()->format('H:i'),
-            'showing_today' => $isShowingToday,
-            'today_bookings_count' => $todayBookings,
-            'target_date' => $targetDate->format('Y-m-d')
+            'target_date' => $selectedDate->format('Y-m-d')
         ]);
 
         $grid = [];
@@ -612,15 +616,13 @@ class UserController extends Controller
                 $endTime = $timeSlot->copy()->addMinutes(30);
                 $totalSlots++;
                 
-                // Check if this time slot has already passed (only for today's slots)
-                $isPastTime = false;
-                if ($isShowingToday) {
-                    $isPastTime = $timeSlot->isPast();
-                }
+                // Check if this time slot has already passed (only for the selected date if it's today)
+                $isPastTime = $timeSlot->isPast() && $selectedDate->isSameDay(now());
                 
                 // Check if room is available for this time slot
                 $conflictingBooking = Booking::where('meeting_room_id', $room->id)
                     ->whereIn('status', ['pending', 'confirmed'])
+                    ->whereDate('start_time', $selectedDate) // Filter by selected date
                     ->where('start_time', '<', $endTime)
                     ->where('end_time', '>', $timeSlot)
                     ->with('user')
@@ -631,6 +633,7 @@ class UserController extends Controller
                 if ($isPastTime) {
                     $previousBooking = Booking::where('meeting_room_id', $room->id)
                         ->where('status', 'completed')
+                        ->whereDate('start_time', $selectedDate) // Filter by selected date
                         ->where('start_time', '<', $endTime)
                         ->where('end_time', '>', $timeSlot)
                         ->with('user')
@@ -642,8 +645,8 @@ class UserController extends Controller
                     $availableSlots++;
                 }
                 
-                // Debug logging for first few slots
-                if ($totalSlots <= 5) {
+                // Debug logging for first few slots or if there's a booking/previous booking
+                if ($totalSlots <= 5 || $conflictingBooking || $previousBooking) {
                     \Log::info('Room availability grid - slot debug', [
                         'room_id' => $room->id,
                         'room_name' => $room->name,
@@ -652,10 +655,12 @@ class UserController extends Controller
                         'is_past_time' => $isPastTime,
                         'has_conflicting_booking' => $conflictingBooking ? true : false,
                         'conflicting_booking_id' => $conflictingBooking ? $conflictingBooking->id : null,
+                        'has_previous_booking' => $previousBooking ? true : false,
+                        'previous_booking_id' => $previousBooking ? $previousBooking->id : null,
                         'is_available' => $isAvailable,
                         'current_time' => now()->format('H:i'),
                         'slot_is_today' => $timeSlot->isToday(),
-                        'is_showing_today' => $isShowingToday
+                        'selected_date_is_today' => $selectedDate->isSameDay(now())
                     ]);
                 }
                 
@@ -701,7 +706,7 @@ class UserController extends Controller
                 'room_name' => $room->name,
                 'total_slots' => $totalSlots,
                 'available_slots' => $availableSlots,
-                'past_slots' => $totalSlots - $availableSlots
+                'past_slots' => $selectedDate->isSameDay(now()) ? ($totalSlots - $availableSlots) : 0 // Only count past slots for today
             ]);
 
             $grid[] = $roomData;
@@ -709,7 +714,8 @@ class UserController extends Controller
 
         \Log::info('Room availability grid - completed', [
             'total_rooms' => count($grid),
-            'total_slots_per_room' => $totalSlots
+            'total_slots_per_room' => count($timeSlots),
+            'final_grid_data' => $grid // Log the final grid structure for verification
         ]);
 
         return $grid;
