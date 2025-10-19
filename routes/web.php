@@ -180,6 +180,10 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/bookings/{id}/download', [AdminController::class, 'downloadDokumenPerizinan'])->name('admin.bookings.download');
     Route::get('/notifications', [AdminController::class, 'getNotifications'])->name('admin.notifications');
     Route::delete('/notifications/clear', [AdminController::class, 'clearAllNotifications'])->name('admin.notifications.clear');
+    
+    // Export routes
+    Route::get('/export/bookings/excel', [App\Http\Controllers\ExportController::class, 'exportBookingsExcel'])->name('admin.export.bookings.excel');
+    Route::get('/export/bookings/pdf', [App\Http\Controllers\ExportController::class, 'exportBookingsPDF'])->name('admin.export.bookings.pdf');
 });
 
 // Captcha Routes

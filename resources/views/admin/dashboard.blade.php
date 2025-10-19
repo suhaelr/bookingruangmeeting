@@ -105,6 +105,28 @@
             </div>
         </div>
 
+        <!-- Export Section -->
+        <div class="glass-effect rounded-2xl p-6 shadow-2xl mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-2">Export Data</h3>
+                    <p class="text-white/70 text-sm">Export data riwayat booking dan status ketersediaan ruangan (24 jam terakhir)</p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="exportBookingData()" 
+                            class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        <i class="fas fa-file-excel mr-2"></i>
+                        Export Excel
+                    </button>
+                    <button onclick="exportBookingPDF()" 
+                            class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        <i class="fas fa-file-pdf mr-2"></i>
+                        Export PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Charts Row -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <!-- Monthly Stats Chart -->
@@ -461,6 +483,29 @@
                 setTimeout(() => successMessage.remove(), 300);
             }
         }, 1000);
+
+        // Export functions
+        function exportBookingData() {
+            const startDate = new Date();
+            startDate.setHours(startDate.getHours() - 24);
+            const endDate = new Date();
+            
+            const startDateStr = startDate.toISOString().split('T')[0];
+            const endDateStr = endDate.toISOString().split('T')[0];
+            
+            window.open(`/admin/export/bookings/excel?start_date=${startDateStr}&end_date=${endDateStr}`, '_blank');
+        }
+
+        function exportBookingPDF() {
+            const startDate = new Date();
+            startDate.setHours(startDate.getHours() - 24);
+            const endDate = new Date();
+            
+            const startDateStr = startDate.toISOString().split('T')[0];
+            const endDateStr = endDate.toISOString().split('T')[0];
+            
+            window.open(`/admin/export/bookings/pdf?start_date=${startDateStr}&end_date=${endDateStr}`, '_blank');
+        }
     </script>
 </body>
 </html>
