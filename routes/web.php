@@ -164,7 +164,7 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
     Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
-    Route::delete('/users/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+    Route::post('/users/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
     
     // Room Management
     Route::get('/rooms', [AdminController::class, 'rooms'])->name('admin.rooms');

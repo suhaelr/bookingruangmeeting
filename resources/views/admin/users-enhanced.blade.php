@@ -362,7 +362,7 @@
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
                     },
-                    body: `_token=${csrfToken}&_method=DELETE`
+                    body: `_token=${csrfToken}`
                 })
                 .then(response => {
                     console.log('Delete response:', response.status, response.statusText);
