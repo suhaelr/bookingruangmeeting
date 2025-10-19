@@ -353,16 +353,62 @@ class UserController extends Controller
                 ], 403);
             }
 
-            $request->validate([
-                'title' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'start_time' => 'required|date',
-                'end_time' => 'required|date|after:start_time',
-                'special_requirements' => 'nullable|string',
-            ]);
+            // Only validate fields that are actually being updated
+            $validationRules = [];
+            $updateData = [];
 
-            $startTime = Carbon::parse($request->start_time);
-            $endTime = Carbon::parse($request->end_time);
+            // Title validation - only if provided
+            if ($request->has('title') && $request->title !== null && $request->title !== '') {
+                $validationRules['title'] = 'required|string|max:255';
+                $updateData['title'] = $request->title;
+            }
+
+            // Description validation - only if provided
+            if ($request->has('description')) {
+                $validationRules['description'] = 'nullable|string';
+                $updateData['description'] = $request->description;
+            }
+
+            // Start time validation - only if provided
+            if ($request->has('start_time') && $request->start_time !== null && $request->start_time !== '') {
+                $validationRules['start_time'] = 'required|date';
+                $updateData['start_time'] = $request->start_time;
+            }
+
+            // End time validation - only if provided
+            if ($request->has('end_time') && $request->end_time !== null && $request->end_time !== '') {
+                $validationRules['end_time'] = 'required|date';
+                $updateData['end_time'] = $request->end_time;
+            }
+
+            // Special requirements validation - only if provided
+            if ($request->has('special_requirements')) {
+                $validationRules['special_requirements'] = 'nullable|string';
+                $updateData['special_requirements'] = $request->special_requirements;
+            }
+
+            // If no fields to update, return error
+            if (empty($updateData)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada field yang diupdate.'
+                ], 422);
+            }
+
+            // Validate only the fields being updated
+            $request->validate($validationRules);
+
+            // Time validation logic
+            $startTime = isset($updateData['start_time']) ? Carbon::parse($updateData['start_time']) : Carbon::parse($booking->start_time);
+            $endTime = isset($updateData['end_time']) ? Carbon::parse($updateData['end_time']) : Carbon::parse($booking->end_time);
+            
+            // Validate end time is after start time
+            if ($endTime <= $startTime) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Waktu selesai harus setelah waktu mulai.'
+                ], 422);
+            }
             
             // Only validate future time if the time has actually changed
             $originalStartTime = Carbon::parse($booking->start_time);
@@ -382,29 +428,24 @@ class UserController extends Controller
                 ], 422);
             }
             
-            // Check for conflicts excluding current booking
-            $conflictingBookings = $this->getConflictingBookings($booking->meeting_room_id, $startTime, $endTime, $id);
-            
-            if ($conflictingBookings->count() > 0) {
-                $conflictDetails = $this->formatConflictDetails($conflictingBookings, $booking->meetingRoom);
-                return response()->json([
-                    'success' => false,
-                    'message' => $conflictDetails
-                ], 422);
+            // Check for conflicts only if time is being changed
+            if (isset($updateData['start_time']) || isset($updateData['end_time'])) {
+                $conflictingBookings = $this->getConflictingBookings($booking->meeting_room_id, $startTime, $endTime, $id);
+                
+                if ($conflictingBookings->count() > 0) {
+                    $conflictDetails = $this->formatConflictDetails($conflictingBookings, $booking->meetingRoom);
+                    return response()->json([
+                        'success' => false,
+                        'message' => $conflictDetails
+                    ], 422);
+                }
             }
 
             // Recalculate total cost (hourly_rate removed, set to 0)
-            $totalCost = 0.00;
+            $updateData['total_cost'] = 0.00;
 
-            // Update booking
-            $booking->update([
-                'title' => $request->title,
-                'description' => $request->description,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'special_requirements' => $request->special_requirements,
-                'total_cost' => $totalCost,
-            ]);
+            // Update booking with only changed fields
+            $booking->update($updateData);
 
             // Send notification to admin
             $this->notifyAdmin('Booking Updated', "User {$user['full_name']} updated their booking: {$booking->title}");
@@ -412,7 +453,7 @@ class UserController extends Controller
             \Log::info('Booking updated successfully', [
                 'booking_id' => $booking->id,
                 'user_id' => $user['id'],
-                'updated_fields' => $request->only(['title', 'description', 'start_time', 'end_time', 'special_requirements'])
+                'updated_fields' => array_keys($updateData)
             ]);
 
             return response()->json([
@@ -502,27 +543,6 @@ class UserController extends Controller
         ]);
     }
 
-    private function getConflictingBookings($roomId, $startTime, $endTime, $excludeId = null)
-    {
-        $query = Booking::with('user')
-            ->where('meeting_room_id', $roomId)
-            ->whereIn('status', ['pending', 'confirmed'])
-            ->where('start_time', '>=', now()) // Only check future bookings
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->whereBetween('start_time', [$startTime, $endTime->subSecond()])
-                      ->orWhereBetween('end_time', [$startTime->addSecond(), $endTime])
-                      ->orWhere(function ($query) use ($startTime, $endTime) {
-                          $query->where('start_time', '<=', $startTime)
-                                ->where('end_time', '>=', $endTime);
-                      });
-            });
-
-        if ($excludeId) {
-            $query->where('id', '!=', $excludeId);
-        }
-
-        return $query->get();
-    }
 
     private function formatConflictDetails($conflictingBookings, $room)
     {
