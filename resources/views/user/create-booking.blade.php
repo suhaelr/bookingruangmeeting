@@ -484,9 +484,13 @@
             }
 
             // Set minimum date to 15 minutes from now (allows urgent bookings)
+            // Use server timezone to match PHP
             const now = new Date();
             const minTime = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes from now
             const minTimeString = minTime.toISOString().slice(0, 16);
+            
+            console.log('Current time:', now.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}));
+            console.log('Min time:', minTime.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}));
             
             if (startWaktuInput) {
                 startWaktuInput.min = minTimeString;

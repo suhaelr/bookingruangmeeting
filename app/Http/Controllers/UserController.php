@@ -208,6 +208,15 @@ class UserController extends Controller
     {
         $user = session('user_data');
         
+        // Debug timezone info
+        \Log::info('Booking validation timezone debug', [
+            'current_time' => now()->format('Y-m-d H:i:s'),
+            'timezone' => config('app.timezone'),
+            'start_time_request' => $request->start_time,
+            'end_time_request' => $request->end_time,
+            'min_allowed_time' => now()->addMinutes(15)->format('Y-m-d H:i:s')
+        ]);
+
         $request->validate([
             'meeting_room_id' => 'required|exists:meeting_rooms,id',
             'title' => 'required|string|max:255',
