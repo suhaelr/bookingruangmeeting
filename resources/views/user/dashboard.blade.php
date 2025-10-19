@@ -222,11 +222,7 @@
                 <div class="mb-6">
                     <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
                     <p class="text-white/60 text-sm mt-1">
-                        @if(now()->hour > 18 || (now()->hour == 18 && now()->minute > 30))
-                            {{ now()->addDay()->format('l, d F Y') }} (Besok)
-                        @else
-                            {{ now()->format('l, d F Y') }}
-                        @endif
+                        {{ now()->addDay()->format('l, d F Y') }} (Besok)
                     </p>
                 </div>
                 

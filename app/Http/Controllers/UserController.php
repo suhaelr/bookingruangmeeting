@@ -564,25 +564,14 @@ class UserController extends Controller
             'rooms' => $rooms->pluck('name', 'id')->toArray()
         ]);
 
+        // Always show tomorrow's slots for better availability display
         $timeSlots = [];
-        $currentTime = now()->startOfDay();
+        $tomorrow = now()->addDay()->startOfDay();
         
-        // Generate time slots for today (every 30 minutes from 8:00 to 18:30)
+        // Generate time slots for tomorrow (every 30 minutes from 8:00 to 18:30)
         for ($hour = 8; $hour <= 18; $hour++) {
             for ($minute = 0; $minute < 60; $minute += 30) {
-                $timeSlots[] = $currentTime->copy()->setTime($hour, $minute);
-            }
-        }
-        
-        // If current time is past 18:30, show tomorrow's slots instead
-        if (now()->hour > 18 || (now()->hour == 18 && now()->minute > 30)) {
-            $timeSlots = [];
-            $tomorrow = now()->addDay()->startOfDay();
-            
-            for ($hour = 8; $hour <= 18; $hour++) {
-                for ($minute = 0; $minute < 60; $minute += 30) {
-                    $timeSlots[] = $tomorrow->copy()->setTime($hour, $minute);
-                }
+                $timeSlots[] = $tomorrow->copy()->setTime($hour, $minute);
             }
         }
 
@@ -591,7 +580,7 @@ class UserController extends Controller
             'first_slot' => $timeSlots[0]->format('H:i'),
             'last_slot' => end($timeSlots)->format('H:i'),
             'current_time' => now()->format('H:i'),
-            'showing_tomorrow' => now()->hour > 18 || (now()->hour == 18 && now()->minute > 30)
+            'showing_tomorrow' => true
         ]);
 
         $grid = [];
@@ -612,11 +601,8 @@ class UserController extends Controller
                 $endTime = $timeSlot->copy()->addMinutes(30);
                 $totalSlots++;
                 
-                // Check if this time slot has already passed (only for today's slots)
+                // Since we're showing tomorrow's slots, they're never past time
                 $isPastTime = false;
-                if ($timeSlot->isToday()) {
-                    $isPastTime = $timeSlot->isPast();
-                }
                 
                 // Check if room is available for this time slot
                 $conflictingBooking = Booking::where('meeting_room_id', $room->id)
