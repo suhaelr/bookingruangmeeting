@@ -238,6 +238,41 @@
                     <p class="text-white/60 text-xs mt-1">Upload dokumen perizinan dalam format PDF (maksimal 2MB)</p>
                 </div>
 
+                <!-- Captcha Section -->
+                <div class="bg-white/10 rounded-lg p-6 border border-white/20">
+                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i class="fas fa-shield-alt mr-2 text-blue-400"></i>
+                        Verifikasi Keamanan
+                    </h3>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-1">
+                            <label for="captcha_answer" class="block text-sm font-medium text-white mb-2">
+                                <i class="fas fa-calculator mr-2"></i>Jawab pertanyaan berikut:
+                            </label>
+                            <div class="flex items-center space-x-3">
+                                <div id="captcha-question" class="text-xl font-bold text-white bg-white/20 px-4 py-3 rounded-lg border border-white/30 min-w-[120px] text-center">
+                                    Loading...
+                                </div>
+                                <button type="button" id="refresh-captcha" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <label for="captcha_answer" class="block text-sm font-medium text-white mb-2">
+                                Jawaban:
+                            </label>
+                            <input type="number" id="captcha_answer" name="captcha_answer" required
+                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                                   placeholder="Masukkan jawaban">
+                        </div>
+                    </div>
+                    <p class="text-white/60 text-xs mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Silakan jawab pertanyaan matematika sederhana di atas untuk melanjutkan pemesanan.
+                    </p>
+                </div>
 
                 <!-- Kirim Button -->
                 <div class="flex justify-end space-x-4">
@@ -258,6 +293,68 @@
     <script>
         // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // Captcha functionality
+            let captchaVerified = false;
+            
+            // Load captcha on page load
+            loadCaptcha();
+            
+            // Refresh captcha button
+            document.getElementById('refresh-captcha').addEventListener('click', function() {
+                loadCaptcha();
+            });
+            
+            // Captcha verification on input change
+            document.getElementById('captcha_answer').addEventListener('input', function() {
+                verifyCaptcha();
+            });
+            
+            function loadCaptcha() {
+                fetch('{{ route("captcha.generate") }}')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('captcha-question').textContent = data.question;
+                        captchaVerified = false;
+                        document.getElementById('captcha_answer').value = '';
+                    })
+                    .catch(error => {
+                        console.error('Error loading captcha:', error);
+                        document.getElementById('captcha-question').textContent = 'Error loading captcha';
+                    });
+            }
+            
+            function verifyCaptcha() {
+                const answer = document.getElementById('captcha_answer').value;
+                if (answer) {
+                    fetch('{{ route("captcha.verify") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            captcha_answer: answer
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            captchaVerified = true;
+                            document.getElementById('captcha_answer').classList.remove('border-red-500');
+                            document.getElementById('captcha_answer').classList.add('border-green-500');
+                        } else {
+                            captchaVerified = false;
+                            document.getElementById('captcha_answer').classList.remove('border-green-500');
+                            document.getElementById('captcha_answer').classList.add('border-red-500');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error verifying captcha:', error);
+                        captchaVerified = false;
+                    });
+                }
+            }
+
             // Room selection handler
             const meetingRoomSelect = document.getElementById('meeting_room_id');
             if (meetingRoomSelect) {
@@ -379,6 +476,14 @@
             const form = document.querySelector('form');
             if (form) {
                 form.addEventListener('submit', function(e) {
+                    // Check captcha verification
+                    if (!captchaVerified) {
+                        e.preventDefault();
+                        alert('Silakan jawab pertanyaan captcha dengan benar sebelum melanjutkan.');
+                        document.getElementById('captcha_answer').focus();
+                        return false;
+                    }
+                    
                     // Add loading state to submit button
                     const submitBtn = form.querySelector('button[type="submit"]');
                     if (submitBtn) {

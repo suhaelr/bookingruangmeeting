@@ -217,7 +217,21 @@ class UserController extends Controller
             'special_requirements' => 'nullable|string',
             'unit_kerja' => 'required|string|max:255',
             'dokumen_perizinan' => 'required|file|mimes:pdf|max:2048',
+            'captcha_answer' => 'required|integer',
         ]);
+
+        // Verify captcha
+        $userAnswer = $request->input('captcha_answer');
+        $correctAnswer = session('captcha_answer');
+        
+        if ($userAnswer != $correctAnswer) {
+            return back()->withErrors([
+                'captcha_answer' => 'Jawaban captcha salah. Silakan coba lagi.'
+            ])->withInput();
+        }
+        
+        // Clear captcha from session after successful verification
+        session()->forget(['captcha_answer', 'captcha_question', 'captcha_verified']);
 
         $room = MeetingRoom::findOrFail($request->meeting_room_id);
         $startTime = Carbon::parse($request->start_time);

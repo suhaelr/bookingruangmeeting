@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CaptchaController;
 use App\Http\Middleware\RateLimitMiddleware;
 
 // Redirect root to login
@@ -180,6 +181,10 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/notifications', [AdminController::class, 'getNotifications'])->name('admin.notifications');
     Route::delete('/notifications/clear', [AdminController::class, 'clearAllNotifications'])->name('admin.notifications.clear');
 });
+
+// Captcha Routes
+Route::get('/captcha/generate', [CaptchaController::class, 'generate'])->name('captcha.generate');
+Route::post('/captcha/verify', [CaptchaController::class, 'verify'])->name('captcha.verify');
 
 // User Routes
 Route::prefix('user')->middleware('user.auth')->group(function () {
