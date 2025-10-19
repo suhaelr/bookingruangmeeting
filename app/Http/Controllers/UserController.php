@@ -390,7 +390,7 @@ class UserController extends Controller
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Validation error: ' . implode(', ', array_flatten($e->errors())),
+                'message' => 'Validation error: ' . implode(', ', array_merge(...array_values($e->errors()))),
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {

@@ -398,10 +398,6 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
                                 <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} hours</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Biaya</label>
-                                <p class="text-gray-900 font-semibold">Rp ${new Intl.NumberFormat('id-ID').format(booking.total_cost)}</p>
-                            </div>
                         </div>
                         
                         ${booking.description ? `
