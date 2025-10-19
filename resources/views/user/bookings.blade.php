@@ -201,7 +201,7 @@
                                 <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
                                     <p class="text-red-300 text-sm">
                                         <i class="fas fa-times-circle mr-1"></i>
-                                        <strong>Batallation Reason:</strong> {{ $booking->cancellation_reason }}
+                                        <strong>Cancellation Reason:</strong> {{ $booking->cancellation_reason }}
                                     </p>
                                 </div>
                                 @endif

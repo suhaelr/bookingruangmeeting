@@ -95,7 +95,7 @@
                                 <th class="text-left py-3 px-4 font-semibold">ID</th>
                                 <th class="text-left py-3 px-4 font-semibold">User</th>
                                 <th class="text-left py-3 px-4 font-semibold">Email</th>
-                                <th class="text-left py-3 px-4 font-semibold">Departemen</th>
+                                <th class="text-left py-3 px-4 font-semibold">Unit Kerja</th>
                                 <th class="text-left py-3 px-4 font-semibold">Last Login</th>
                                 <th class="text-left py-3 px-4 font-semibold">Joined</th>
                                 <th class="text-left py-3 px-4 font-semibold">Aksis</th>
@@ -121,7 +121,7 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <div>
-                                        <span class="text-white">{{ $user->department ?? 'N/A' }}</span>
+                                        <span class="text-white">{{ $user->unit_kerja ?? 'N/A' }}</span>
                                         @if($user->role)
                                         <div class="mt-1">
                                             <span class="inline-block px-2 py-1 rounded-full text-xs font-medium {{ $user->role === 'admin' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white' }}">

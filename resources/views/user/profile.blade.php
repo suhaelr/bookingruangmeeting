@@ -70,7 +70,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-white mb-2">{{ $user['full_name'] }}</h3>
                         <p class="text-white/80 mb-1">{{ $user['email'] }}</p>
-                        <p class="text-white/60 text-sm">{{ $user['department'] }}</p>
+                        <p class="text-white/60 text-sm">{{ $user['unit_kerja'] ?? 'N/A' }}</p>
                         <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full mt-2">
                             {{ ucfirst($user['role']) }}
                         </span>
@@ -163,22 +163,14 @@
                                    placeholder="Enter your phone number">
                         </div>
 
-                        <!-- Departemen -->
+                        <!-- Unit Kerja -->
                         <div>
-                            <label for="department" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-building mr-2"></i>Departemen
+                            <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">
+                                <i class="fas fa-building mr-2"></i>Unit Kerja
                             </label>
-                            <select id="department" name="department"
-                                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
-                                <option value="">Select Departemen</option>
-                                <option value="IT" {{ old('department', $user['department'] ?? '') == 'IT' ? 'selected' : '' }}>IT</option>
-                                <option value="HR" {{ old('department', $user['department'] ?? '') == 'HR' ? 'selected' : '' }}>HR</option>
-                                <option value="Finance" {{ old('department', $user['department'] ?? '') == 'Finance' ? 'selected' : '' }}>Finance</option>
-                                <option value="Marketing" {{ old('department', $user['department'] ?? '') == 'Marketing' ? 'selected' : '' }}>Marketing</option>
-                                <option value="Sales" {{ old('department', $user['department'] ?? '') == 'Sales' ? 'selected' : '' }}>Sales</option>
-                                <option value="Operations" {{ old('department', $user['department'] ?? '') == 'Operations' ? 'selected' : '' }}>Operations</option>
-                                <option value="General" {{ old('department', $user['department'] ?? '') == 'General' ? 'selected' : '' }}>General</option>
-                            </select>
+                            <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja', $user['unit_kerja'] ?? '') }}"
+                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                                   placeholder="Masukkan unit kerja Anda">
                         </div>
 
                         <!-- Kirim Button -->

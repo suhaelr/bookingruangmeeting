@@ -284,6 +284,9 @@ class AdminController extends Controller
             // Delete user's bookings first
             $user->bookings()->delete();
             
+            // Delete user's notifications
+            $user->notifications()->delete();
+            
             // Delete the user
             $user->delete();
             

@@ -23,7 +23,7 @@ class User extends Authenticatable
         'password',
         'full_name',
         'phone',
-        'department',
+        'unit_kerja',
         'role',
         'avatar',
         'last_login_at',
