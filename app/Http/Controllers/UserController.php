@@ -559,6 +559,11 @@ class UserController extends Controller
             ->orderBy('name')
             ->get();
 
+        \Log::info('Room availability grid - rooms found', [
+            'room_count' => $rooms->count(),
+            'rooms' => $rooms->pluck('name', 'id')->toArray()
+        ]);
+
         $timeSlots = [];
         $currentTime = now()->startOfDay();
         
@@ -568,6 +573,12 @@ class UserController extends Controller
                 $timeSlots[] = $currentTime->copy()->setTime($hour, $minute);
             }
         }
+
+        \Log::info('Room availability grid - time slots generated', [
+            'time_slot_count' => count($timeSlots),
+            'first_slot' => $timeSlots[0]->format('H:i'),
+            'last_slot' => end($timeSlots)->format('H:i')
+        ]);
 
         $grid = [];
         
@@ -580,8 +591,12 @@ class UserController extends Controller
                 'timeSlots' => []
             ];
 
+            $availableSlots = 0;
+            $totalSlots = 0;
+            
             foreach ($timeSlots as $timeSlot) {
                 $endTime = $timeSlot->copy()->addMinutes(30);
+                $totalSlots++;
                 
                 // Check if this time slot has already passed
                 $isPastTime = $timeSlot->isPast();
@@ -591,23 +606,32 @@ class UserController extends Controller
                     ->whereIn('status', ['pending', 'confirmed'])
                     ->where('start_time', '<', $endTime)
                     ->where('end_time', '>', $timeSlot)
+                    ->where('start_time', '>=', now()) // Only check future bookings
                     ->with('user')
                     ->first();
 
-                // Check if room was used before (completed bookings)
-                $previousBooking = Booking::where('meeting_room_id', $room->id)
-                    ->where('status', 'completed')
-                    ->where('start_time', '<', $endTime)
-                    ->where('end_time', '>', $timeSlot)
-                    ->with('user')
-                    ->first();
+                // Check if room was used before (completed bookings) - only for past bookings
+                $previousBooking = null;
+                if ($isPastTime) {
+                    $previousBooking = Booking::where('meeting_room_id', $room->id)
+                        ->where('status', 'completed')
+                        ->where('start_time', '<', $endTime)
+                        ->where('end_time', '>', $timeSlot)
+                        ->with('user')
+                        ->first();
+                }
 
+                $isAvailable = !$conflictingBooking && !$isPastTime;
+                if ($isAvailable) {
+                    $availableSlots++;
+                }
+                
                 $slotData = [
                     'time' => $timeSlot->format('H:i'),
                     'datetime' => $timeSlot->format('Y-m-d H:i:s'),
-                    'isAvailable' => !$conflictingBooking && !$isPastTime,
+                    'isAvailable' => $isAvailable,
                     'isPastTime' => $isPastTime,
-                    'wasUsed' => !$conflictingBooking && $previousBooking,
+                    'wasUsed' => $previousBooking ? true : false,
                     'booking' => null,
                     'previousBooking' => null
                 ];
@@ -639,8 +663,21 @@ class UserController extends Controller
                 $roomData['timeSlots'][] = $slotData;
             }
 
+            \Log::info('Room availability grid - room processed', [
+                'room_id' => $room->id,
+                'room_name' => $room->name,
+                'total_slots' => $totalSlots,
+                'available_slots' => $availableSlots,
+                'past_slots' => $totalSlots - $availableSlots
+            ]);
+
             $grid[] = $roomData;
         }
+
+        \Log::info('Room availability grid - completed', [
+            'total_rooms' => count($grid),
+            'total_slots_per_room' => $totalSlots
+        ]);
 
         return $grid;
     }
