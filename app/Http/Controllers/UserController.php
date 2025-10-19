@@ -567,17 +567,31 @@ class UserController extends Controller
         $timeSlots = [];
         $currentTime = now()->startOfDay();
         
-        // Generate time slots for today (every 30 minutes from 8:00 to 18:00)
+        // Generate time slots for today (every 30 minutes from 8:00 to 18:30)
         for ($hour = 8; $hour <= 18; $hour++) {
             for ($minute = 0; $minute < 60; $minute += 30) {
                 $timeSlots[] = $currentTime->copy()->setTime($hour, $minute);
+            }
+        }
+        
+        // If current time is past 18:30, show tomorrow's slots instead
+        if (now()->hour > 18 || (now()->hour == 18 && now()->minute > 30)) {
+            $timeSlots = [];
+            $tomorrow = now()->addDay()->startOfDay();
+            
+            for ($hour = 8; $hour <= 18; $hour++) {
+                for ($minute = 0; $minute < 60; $minute += 30) {
+                    $timeSlots[] = $tomorrow->copy()->setTime($hour, $minute);
+                }
             }
         }
 
         \Log::info('Room availability grid - time slots generated', [
             'time_slot_count' => count($timeSlots),
             'first_slot' => $timeSlots[0]->format('H:i'),
-            'last_slot' => end($timeSlots)->format('H:i')
+            'last_slot' => end($timeSlots)->format('H:i'),
+            'current_time' => now()->format('H:i'),
+            'showing_tomorrow' => now()->hour > 18 || (now()->hour == 18 && now()->minute > 30)
         ]);
 
         $grid = [];
@@ -598,8 +612,11 @@ class UserController extends Controller
                 $endTime = $timeSlot->copy()->addMinutes(30);
                 $totalSlots++;
                 
-                // Check if this time slot has already passed
-                $isPastTime = $timeSlot->isPast();
+                // Check if this time slot has already passed (only for today's slots)
+                $isPastTime = false;
+                if ($timeSlot->isToday()) {
+                    $isPastTime = $timeSlot->isPast();
+                }
                 
                 // Check if room is available for this time slot
                 $conflictingBooking = Booking::where('meeting_room_id', $room->id)
@@ -624,6 +641,20 @@ class UserController extends Controller
                 $isAvailable = !$conflictingBooking && !$isPastTime;
                 if ($isAvailable) {
                     $availableSlots++;
+                }
+                
+                // Debug logging for first few slots
+                if ($totalSlots <= 5) {
+                    \Log::info('Room availability grid - slot debug', [
+                        'room_id' => $room->id,
+                        'room_name' => $room->name,
+                        'slot_time' => $timeSlot->format('H:i'),
+                        'is_past_time' => $isPastTime,
+                        'has_conflicting_booking' => $conflictingBooking ? true : false,
+                        'is_available' => $isAvailable,
+                        'current_time' => now()->format('H:i'),
+                        'slot_is_today' => $timeSlot->isToday()
+                    ]);
                 }
                 
                 $slotData = [
