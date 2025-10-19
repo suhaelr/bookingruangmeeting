@@ -274,10 +274,10 @@
                                 <i class="fas fa-key mr-2"></i>Masukkan angka berikut:
                             </label>
                             <div class="flex items-center justify-center space-x-3">
-                                <div id="captcha-question" class="text-3xl font-bold text-white bg-white/20 px-8 py-6 rounded-lg border border-white/30 text-center tracking-widest min-w-[120px]">
+                                <div id="captcha-question" class="text-xl font-bold text-white bg-white/20 px-4 py-4 rounded-lg border border-white/30 text-center tracking-widest min-w-[100px] max-w-[150px]">
                                     Loading...
                                 </div>
-                                <button type="button" id="refresh-captcha" class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
+                                <button type="button" id="refresh-captcha" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
                             </div>
@@ -289,8 +289,8 @@
                                 Jawaban:
                             </label>
                             <input type="text" id="captcha_answer" name="captcha_answer" required
-                                   class="w-full px-4 py-4 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 text-center text-2xl font-mono tracking-widest"
-                                   placeholder="Masukkan 4 digit angka" maxlength="4">
+                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 text-center text-lg font-mono tracking-widest"
+                                   placeholder="4 digit" maxlength="4">
                         </div>
                     </div>
                     
@@ -306,7 +306,7 @@
                        class="px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors duration-300">
                         Batal
                     </a>
-                    <button type="submit" 
+                    <button type="submit" id="submit-booking-btn"
                             class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-calendar-plus mr-2"></i>
                         Book Meeting Room
@@ -538,11 +538,29 @@
                 }, 100);
             }
 
-            // Real-time availability check
+            // Add event listeners for real-time availability checking
+            const meetingRoomSelect = document.getElementById('meeting_room_id');
+            if (meetingRoomSelect) {
+                meetingRoomSelect.addEventListener('change', checkAvailability);
+            }
+            if (startWaktuInput) {
+                startWaktuInput.addEventListener('change', checkAvailability);
+            }
+            if (endWaktuInput) {
+                endWaktuInput.addEventListener('change', checkAvailability);
+            }
+
+            // Initial availability check
+            setTimeout(() => {
+                checkAvailability();
+            }, 500);
+
+            // Real-time availability check and submit button control
             function checkAvailability() {
                 const roomId = document.getElementById('meeting_room_id').value;
                 const startWaktu = document.getElementById('start_time').value;
                 const endWaktu = document.getElementById('end_time').value;
+                const submitBtn = document.getElementById('submit-booking-btn');
                 
                 if (roomId && startWaktu && endWaktu) {
                     fetch('{{ route("user.check-availability") }}', {
@@ -577,6 +595,9 @@
                                     </div>
                                 </div>
                             `;
+                            // Enable submit button
+                            submitBtn.disabled = false;
+                            submitBtn.className = 'px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center';
                         } else {
                             statusDiv.innerHTML = `
                                 <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg">
@@ -588,6 +609,9 @@
                                     </div>
                                 </div>
                             `;
+                            // Disable submit button
+                            submitBtn.disabled = true;
+                            submitBtn.className = 'px-6 py-3 bg-gray-400 text-gray-200 rounded-lg cursor-not-allowed flex items-center';
                         }
                     })
                     .catch(error => {
