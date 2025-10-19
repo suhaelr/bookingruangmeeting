@@ -227,20 +227,50 @@
                         </p>
                     </div>
                     <div class="relative">
-                        <select id="date-selector" class="bg-white/10 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 pr-8">
-                            <option value="{{ now()->format('Y-m-d') }}" {{ $selectedDate->isToday() ? 'selected' : '' }}>Hari Ini</option>
-                            <option value="{{ now()->addDay()->format('Y-m-d') }}" {{ $selectedDate->isTomorrow() ? 'selected' : '' }}>Besok</option>
-                            <option value="{{ now()->addDays(2)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(2)) ? 'selected' : '' }}>Lusa ({{ now()->addDays(2)->format('d M') }})</option>
-                            <option value="{{ now()->addDays(3)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(3)) ? 'selected' : '' }}>{{ now()->addDays(3)->format('l, d M') }}</option>
-                            <option value="{{ now()->addDays(4)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(4)) ? 'selected' : '' }}>{{ now()->addDays(4)->format('l, d M') }}</option>
-                            <option value="{{ now()->addDays(5)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(5)) ? 'selected' : '' }}>{{ now()->addDays(5)->format('l, d M') }}</option>
-                            <option value="{{ now()->addDays(6)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(6)) ? 'selected' : '' }}>{{ now()->addDays(6)->format('l, d M') }}</option>
+                        <select id="date-selector" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 block p-3 pr-10 appearance-none cursor-pointer min-w-[150px]">
+                            <option value="{{ now()->format('Y-m-d') }}" {{ $selectedDate->isToday() ? 'selected' : '' }} style="background-color: #1a202c; color: white;">Hari Ini</option>
+                            <option value="{{ now()->addDay()->format('Y-m-d') }}" {{ $selectedDate->isTomorrow() ? 'selected' : '' }} style="background-color: #1a202c; color: white;">Besok</option>
+                            <option value="{{ now()->addDays(2)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(2)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">Lusa ({{ now()->addDays(2)->format('d M') }})</option>
+                            <option value="{{ now()->addDays(3)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(3)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(3)->format('l, d M') }}</option>
+                            <option value="{{ now()->addDays(4)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(4)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(4)->format('l, d M') }}</option>
+                            <option value="{{ now()->addDays(5)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(5)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(5)->format('l, d M') }}</option>
+                            <option value="{{ now()->addDays(6)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(6)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(6)->format('l, d M') }}</option>
                         </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white/60">
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white/80">
                             <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                         </div>
                     </div>
                 </div>
+
+                <style>
+                    #date-selector {
+                        background-color: rgba(255, 255, 255, 0.2) !important;
+                        color: white !important;
+                        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                    }
+                    
+                    #date-selector option {
+                        background-color: #1a202c !important;
+                        color: white !important;
+                        padding: 8px 12px !important;
+                    }
+                    
+                    #date-selector option:hover {
+                        background-color: #2d3748 !important;
+                        color: white !important;
+                    }
+                    
+                    #date-selector option:checked {
+                        background-color: #3182ce !important;
+                        color: white !important;
+                    }
+                    
+                    #date-selector:focus {
+                        outline: none !important;
+                        border-color: #3b82f6 !important;
+                        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+                    }
+                </style>
 
                 <script>
                     document.getElementById('date-selector').addEventListener('change', function() {
