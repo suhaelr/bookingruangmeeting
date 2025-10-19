@@ -213,15 +213,14 @@ class UserController extends Controller
             'current_time' => now()->format('Y-m-d H:i:s'),
             'timezone' => config('app.timezone'),
             'start_time_request' => $request->start_time,
-            'end_time_request' => $request->end_time,
-            'min_allowed_time' => now()->addMinutes(15)->format('Y-m-d H:i:s')
+            'end_time_request' => $request->end_time
         ]);
 
         $request->validate([
             'meeting_room_id' => 'required|exists:meeting_rooms,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'start_time' => 'required|date|after:+15 minutes',
+            'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'attendees_count' => 'required|integer|min:1',
             'attendees' => 'nullable|string',
@@ -232,19 +231,13 @@ class UserController extends Controller
             'captcha_answer' => 'required|integer',
         ]);
 
-        // Additional validation for logical time constraints
+        // Only validate logical time constraints (no time restrictions)
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
         
         if ($startTime->gte($endTime)) {
             return back()->withErrors([
                 'end_time' => 'Waktu selesai harus setelah waktu mulai.'
-            ])->withInput();
-        }
-        
-        if ($endTime->diffInMinutes($startTime) < 15) {
-            return back()->withErrors([
-                'end_time' => 'Durasi meeting minimal 15 menit.'
             ])->withInput();
         }
 

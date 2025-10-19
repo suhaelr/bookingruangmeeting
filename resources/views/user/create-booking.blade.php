@@ -483,20 +483,14 @@
                 });
             }
 
-            // Set minimum date to 15 minutes from now (allows urgent bookings)
-            // Use server timezone to match PHP
-            const now = new Date();
-            const minTime = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes from now
-            const minTimeString = minTime.toISOString().slice(0, 16);
-            
-            console.log('Current time:', now.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}));
-            console.log('Min time:', minTime.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}));
+        // No time restrictions - user can book anytime
+        const now = new Date();
+        const minTimeString = now.toISOString().slice(0, 16);
+        
+        console.log('Current time:', now.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}));
             
             if (startWaktuInput) {
-                startWaktuInput.min = minTimeString;
-                startWaktuInput.setCustomValidity('Waktu mulai harus minimal 15 menit dari sekarang');
-                
-                // Add real-time validation
+                // No minimum time restriction
                 startWaktuInput.addEventListener('change', function() {
                     // Use the centralized validation function
                     validateEndTime();
@@ -504,14 +498,11 @@
             }
             
             if (endWaktuInput) {
-                endWaktuInput.min = minTimeString;
-                endWaktuInput.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
-                
-                // Add real-time validation
+                // No minimum time restriction
                 endWaktuInput.addEventListener('change', validateEndTime);
             }
             
-            // Separate function for end time validation
+            // Separate function for time validation (only logical constraints)
             function validateEndTime() {
                 const endWaktuInput = document.getElementById('end_time');
                 const startWaktuInput = document.getElementById('start_time');
@@ -519,24 +510,18 @@
                 
                 const startTime = new Date(startWaktuInput.value);
                 const endTime = new Date(endWaktuInput.value);
-                const minTime = new Date(minTimeString);
                 
                 // Clear previous errors
                 endWaktuInput.setCustomValidity('');
                 startWaktuInput.setCustomValidity('');
                 
-                // Validate end time
-                if (endTime < minTime) {
-                    endWaktuInput.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
-                } else if (startTime && !isNaN(startTime.getTime()) && endTime <= startTime) {
-                    endWaktuInput.setCustomValidity('Waktu selesai harus setelah waktu mulai');
-                }
-                
-                // Validate start time
-                if (startTime < minTime) {
-                    startWaktuInput.setCustomValidity('Waktu mulai harus minimal 15 menit dari sekarang');
-                } else if (endTime && !isNaN(endTime.getTime()) && startTime >= endTime) {
-                    startWaktuInput.setCustomValidity('Waktu mulai harus sebelum waktu selesai');
+                // Only validate logical time constraints
+                if (startTime && endTime && !isNaN(startTime.getTime()) && !isNaN(endTime.getTime())) {
+                    if (endTime <= startTime) {
+                        endWaktuInput.setCustomValidity('Waktu selesai harus setelah waktu mulai');
+                    } else if (startTime >= endTime) {
+                        startWaktuInput.setCustomValidity('Waktu mulai harus sebelum waktu selesai');
+                    }
                 }
             }
             
