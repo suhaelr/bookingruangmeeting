@@ -483,10 +483,19 @@
                 });
             }
 
-            // Set minimum date to today
-            const today = new Date().toISOString().slice(0, 16);
-            if (startWaktuInput) startWaktuInput.min = today;
-            if (endWaktuInput) endWaktuInput.min = today;
+            // Set minimum date to 1 hour from now
+            const now = new Date();
+            const minTime = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+            const minTimeString = minTime.toISOString().slice(0, 16);
+            
+            if (startWaktuInput) {
+                startWaktuInput.min = minTimeString;
+                startWaktuInput.setCustomValidity('Waktu mulai harus minimal 1 jam dari sekarang');
+            }
+            if (endWaktuInput) {
+                endWaktuInput.min = minTimeString;
+                endWaktuInput.setCustomValidity('Waktu selesai harus minimal 1 jam dari sekarang');
+            }
 
             // Real-time availability check
             function checkAvailability() {
