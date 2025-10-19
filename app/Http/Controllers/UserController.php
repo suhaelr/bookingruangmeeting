@@ -357,38 +357,51 @@ class UserController extends Controller
             $validationRules = [];
             $updateData = [];
 
-            // Title validation - only if provided
-            if ($request->has('title') && $request->title !== null && $request->title !== '') {
+            // Title validation - only if provided and different from current
+            if ($request->has('title') && $request->title !== null && $request->title !== '' && $request->title !== $booking->title) {
                 $validationRules['title'] = 'required|string|max:255';
                 $updateData['title'] = $request->title;
             }
 
-            // Description validation - only if provided
-            if ($request->has('description')) {
+            // Description validation - only if provided and different from current
+            if ($request->has('description') && $request->description !== $booking->description) {
                 $validationRules['description'] = 'nullable|string';
                 $updateData['description'] = $request->description;
             }
 
-            // Start time validation - only if provided
-            if ($request->has('start_time') && $request->start_time !== null && $request->start_time !== '') {
+            // Start time validation - only if provided and different from current
+            if ($request->has('start_time') && $request->start_time !== null && $request->start_time !== '' && $request->start_time !== $booking->start_time->format('Y-m-d\TH:i')) {
                 $validationRules['start_time'] = 'required|date';
                 $updateData['start_time'] = $request->start_time;
             }
 
-            // End time validation - only if provided
-            if ($request->has('end_time') && $request->end_time !== null && $request->end_time !== '') {
+            // End time validation - only if provided and different from current
+            if ($request->has('end_time') && $request->end_time !== null && $request->end_time !== '' && $request->end_time !== $booking->end_time->format('Y-m-d\TH:i')) {
                 $validationRules['end_time'] = 'required|date';
                 $updateData['end_time'] = $request->end_time;
             }
 
-            // Special requirements validation - only if provided
-            if ($request->has('special_requirements')) {
+            // Special requirements validation - only if provided and different from current
+            if ($request->has('special_requirements') && $request->special_requirements !== $booking->special_requirements) {
                 $validationRules['special_requirements'] = 'nullable|string';
                 $updateData['special_requirements'] = $request->special_requirements;
             }
 
             // If no fields to update, return error
             if (empty($updateData)) {
+                \Log::info('No fields to update in edit booking', [
+                    'booking_id' => $id,
+                    'user_id' => $user['id'],
+                    'request_data' => $request->all(),
+                    'current_booking' => [
+                        'title' => $booking->title,
+                        'description' => $booking->description,
+                        'start_time' => $booking->start_time->format('Y-m-d\TH:i'),
+                        'end_time' => $booking->end_time->format('Y-m-d\TH:i'),
+                        'special_requirements' => $booking->special_requirements
+                    ]
+                ]);
+                
                 return response()->json([
                     'success' => false,
                     'message' => 'Tidak ada field yang diupdate.'
