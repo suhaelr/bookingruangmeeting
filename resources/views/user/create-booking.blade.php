@@ -540,7 +540,6 @@
             }
 
             // Add event listeners for real-time availability checking
-            const meetingRoomSelect = document.getElementById('meeting_room_id');
             if (meetingRoomSelect) {
                 meetingRoomSelect.addEventListener('change', checkAvailability);
             }
@@ -621,16 +620,6 @@
                 }
             }
 
-            // Add event listeners for real-time checking
-            if (meetingRoomSelect) {
-                meetingRoomSelect.addEventListener('change', checkAvailability);
-            }
-            if (startWaktuInput) {
-                startWaktuInput.addEventListener('change', checkAvailability);
-            }
-            if (endWaktuInput) {
-                endWaktuInput.addEventListener('change', checkAvailability);
-            }
 
             // Ensure form submission works
             const form = document.querySelector('form');
