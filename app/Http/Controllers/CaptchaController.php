@@ -9,27 +9,13 @@ use Illuminate\Support\Facades\Hash;
 class CaptchaController extends Controller
 {
     /**
-     * Generate a simple math captcha
+     * Generate a simple number captcha
      */
     public function generate()
     {
-        $num1 = rand(1, 9);
-        $num2 = rand(1, 9);
-        $operation = rand(0, 1) ? '+' : '-';
-        
-        if ($operation === '+') {
-            $answer = $num1 + $num2;
-            $question = "$num1 + $num2 = ?";
-        } else {
-            // Ensure result is positive
-            if ($num1 < $num2) {
-                $temp = $num1;
-                $num1 = $num2;
-                $num2 = $temp;
-            }
-            $answer = $num1 - $num2;
-            $question = "$num1 - $num2 = ?";
-        }
+        // Generate 4-digit number (1000-9999)
+        $answer = rand(1000, 9999);
+        $question = "Masukkan angka: " . $answer;
         
         // Store the answer in session
         Session::put('captcha_answer', $answer);

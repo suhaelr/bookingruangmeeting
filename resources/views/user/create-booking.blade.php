@@ -233,8 +233,29 @@
                     <label for="dokumen_perizinan" class="block text-sm font-medium text-white mb-2">
                         <i class="fas fa-file-pdf mr-2"></i>Dokumen Perizinan (PDF, Max 2MB) *
                     </label>
-                    <input type="file" id="dokumen_perizinan" name="dokumen_perizinan" accept=".pdf" required
-                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
+                    
+                    <!-- File Input -->
+                    <div class="relative">
+                        <input type="file" id="dokumen_perizinan" name="dokumen_perizinan" accept=".pdf" 
+                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                               onchange="handleFileSelect(this)">
+                        <input type="hidden" id="dokumen_perizinan_data" name="dokumen_perizinan_data" value="{{ old('dokumen_perizinan_data') }}">
+                    </div>
+                    
+                    <!-- File Preview -->
+                    <div id="file-preview" class="hidden mt-3 p-3 bg-white/10 rounded-lg border border-white/20">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <i class="fas fa-file-pdf text-red-400 mr-2"></i>
+                                <span id="file-name" class="text-white text-sm"></span>
+                                <span id="file-size" class="text-white/60 text-xs ml-2"></span>
+                            </div>
+                            <button type="button" onclick="removeFile()" class="text-red-400 hover:text-red-300 transition-colors">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
                     <p class="text-white/60 text-xs mt-1">Upload dokumen perizinan dalam format PDF (maksimal 2MB)</p>
                 </div>
 
@@ -248,10 +269,10 @@
                     <div class="flex items-center space-x-4">
                         <div class="flex-1">
                             <label for="captcha_answer" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-calculator mr-2"></i>Jawab pertanyaan berikut:
+                                <i class="fas fa-key mr-2"></i>Masukkan angka berikut:
                             </label>
                             <div class="flex items-center space-x-3">
-                                <div id="captcha-question" class="text-xl font-bold text-white bg-white/20 px-4 py-3 rounded-lg border border-white/30 min-w-[120px] text-center">
+                                <div id="captcha-question" class="text-2xl font-bold text-white bg-white/20 px-6 py-4 rounded-lg border border-white/30 min-w-[200px] text-center tracking-widest">
                                     Loading...
                                 </div>
                                 <button type="button" id="refresh-captcha" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
@@ -263,14 +284,14 @@
                             <label for="captcha_answer" class="block text-sm font-medium text-white mb-2">
                                 Jawaban:
                             </label>
-                            <input type="number" id="captcha_answer" name="captcha_answer" required
-                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                                   placeholder="Masukkan jawaban">
+                            <input type="text" id="captcha_answer" name="captcha_answer" required
+                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 text-center text-xl font-mono tracking-widest"
+                                   placeholder="Masukkan 4 digit angka" maxlength="4">
                         </div>
                     </div>
                     <p class="text-white/60 text-xs mt-2">
                         <i class="fas fa-info-circle mr-1"></i>
-                        Silakan jawab pertanyaan matematika sederhana di atas untuk melanjutkan pemesanan.
+                        Silakan masukkan 4 digit angka yang ditampilkan di atas untuk melanjutkan pemesanan.
                     </p>
                 </div>
 
@@ -293,6 +314,20 @@
     <script>
         // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // File handling
+            let selectedFile = null;
+            
+            // Check if there's a previously uploaded file
+            const existingFileData = document.getElementById('dokumen_perizinan_data').value;
+            if (existingFileData) {
+                try {
+                    const fileData = JSON.parse(existingFileData);
+                    showFilePreview(fileData.name, fileData.size);
+                } catch (e) {
+                    console.log('No existing file data');
+                }
+            }
+            
             // Captcha functionality
             let captchaVerified = false;
             
@@ -353,6 +388,58 @@
                         captchaVerified = false;
                     });
                 }
+            }
+            
+            // File handling functions
+            window.handleFileSelect = function(input) {
+                const file = input.files[0];
+                if (file) {
+                    // Validate file type
+                    if (file.type !== 'application/pdf') {
+                        alert('Hanya file PDF yang diizinkan!');
+                        input.value = '';
+                        return;
+                    }
+                    
+                    // Validate file size (2MB = 2 * 1024 * 1024 bytes)
+                    if (file.size > 2 * 1024 * 1024) {
+                        alert('Ukuran file terlalu besar! Maksimal 2MB.');
+                        input.value = '';
+                        return;
+                    }
+                    
+                    selectedFile = file;
+                    showFilePreview(file.name, file.size);
+                    
+                    // Store file data for form persistence
+                    const fileData = {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type
+                    };
+                    document.getElementById('dokumen_perizinan_data').value = JSON.stringify(fileData);
+                }
+            };
+            
+            window.removeFile = function() {
+                selectedFile = null;
+                document.getElementById('dokumen_perizinan').value = '';
+                document.getElementById('dokumen_perizinan_data').value = '';
+                document.getElementById('file-preview').classList.add('hidden');
+            };
+            
+            function showFilePreview(fileName, fileSize) {
+                document.getElementById('file-name').textContent = fileName;
+                document.getElementById('file-size').textContent = formatFileSize(fileSize);
+                document.getElementById('file-preview').classList.remove('hidden');
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
 
             // Room selection handler

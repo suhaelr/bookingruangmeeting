@@ -216,7 +216,8 @@ class UserController extends Controller
             'attendees' => 'nullable|string',
             'special_requirements' => 'nullable|string',
             'unit_kerja' => 'required|string|max:255',
-            'dokumen_perizinan' => 'required|file|mimes:pdf|max:2048',
+            'dokumen_perizinan' => 'nullable|file|mimes:pdf|max:2048',
+            'dokumen_perizinan_data' => 'nullable|string',
             'captcha_answer' => 'required|integer',
         ]);
 
@@ -260,6 +261,15 @@ class UserController extends Controller
             $file = $request->file('dokumen_perizinan');
             $filename = time() . '_' . $file->getClientOriginalName();
             $dokumenPerizinanPath = $file->storeAs('dokumen_perizinan', $filename, 'public');
+        } elseif ($request->has('dokumen_perizinan_data')) {
+            // If no new file uploaded but there's existing file data, return error
+            return back()->withErrors([
+                'dokumen_perizinan' => 'File dokumen perizinan harus diupload.'
+            ])->withInput();
+        } else {
+            return back()->withErrors([
+                'dokumen_perizinan' => 'File dokumen perizinan harus diupload.'
+            ])->withInput();
         }
 
         // Process attendees - convert string to array
