@@ -259,7 +259,9 @@
                             <div class="flex space-x-1 flex-1">
                                 @foreach($room['timeSlots'] as $slot)
                                 <div class="w-12 h-12 rounded-lg flex items-center justify-center text-xs font-medium transition-all duration-200 hover:scale-105 cursor-pointer
-                                    @if($slot['isAvailable'] && !$slot['wasUsed'])
+                                    @if($slot['isPastTime'])
+                                        bg-gray-500/20 border-2 border-gray-500/30 text-gray-400 cursor-not-allowed
+                                    @elseif($slot['isAvailable'] && !$slot['wasUsed'])
                                         bg-green-500/20 border-2 border-green-500/30 text-green-300 hover:bg-green-500/30
                                     @elseif($slot['isAvailable'] && $slot['wasUsed'])
                                         bg-orange-500/20 border-2 border-orange-500/30 text-orange-300 hover:bg-orange-500/30
@@ -273,6 +275,7 @@
                                     data-time="{{ $slot['time'] }}"
                                     data-datetime="{{ $slot['datetime'] }}"
                                     data-is-available="{{ $slot['isAvailable'] ? 'true' : 'false' }}"
+                                    data-is-past-time="{{ $slot['isPastTime'] ? 'true' : 'false' }}"
                                     data-was-used="{{ $slot['wasUsed'] ? 'true' : 'false' }}"
                                     data-booking='@json($slot["booking"])'
                                     data-previous-booking='@json($slot["previousBooking"])'
@@ -857,6 +860,7 @@
             if (!isHolding) {
                 // Quick click - show appropriate popup
                 const isAvailable = element.getAttribute('data-is-available') === 'true';
+                const isPastTime = element.getAttribute('data-is-past-time') === 'true';
                 const wasUsed = element.getAttribute('data-was-used') === 'true';
                 const roomId = element.getAttribute('data-room-id');
                 const datetime = element.getAttribute('data-datetime');
@@ -867,7 +871,10 @@
                 const booking = element.getAttribute('data-booking');
                 const previousBooking = element.getAttribute('data-previous-booking');
                 
-                if (isAvailable && !wasUsed) {
+                if (isPastTime) {
+                    // Gray slot - show past time message
+                    showPastTimeMessage(time);
+                } else if (isAvailable && !wasUsed) {
                     // Green slot - show room details with booking button
                     showRoomDetailsModal(roomId, roomName, roomLocation, roomCapacity, time, datetime);
                 } else if (isAvailable && wasUsed) {
@@ -1084,6 +1091,47 @@
             if (modal) {
                 modal.remove();
             }
+        }
+
+        function showPastTimeMessage(time) {
+            // Remove any existing modal
+            const existingModal = document.querySelector('.fixed.inset-0.bg-black.bg-opacity-50');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modalContent = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl max-w-md w-full">
+                        <div class="p-6">
+                            <div class="flex items-center justify-center mb-4">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-gray-500 text-2xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Waktu Sudah Lewat</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Slot waktu <strong>${time}</strong> sudah lewat dan tidak dapat dipesan lagi.
+                                </p>
+                                <p class="text-gray-500 text-sm mb-6">
+                                    Silakan pilih slot waktu yang tersedia untuk hari ini atau hari berikutnya.
+                                </p>
+                            </div>
+                            
+                            <div class="flex justify-center">
+                                <button onclick="closeBookingModal()" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                                    <i class="fas fa-times mr-2"></i>Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalContent);
         }
 
         function proceedToBooking(roomId, datetime, roomName) {

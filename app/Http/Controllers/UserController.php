@@ -583,6 +583,9 @@ class UserController extends Controller
             foreach ($timeSlots as $timeSlot) {
                 $endTime = $timeSlot->copy()->addMinutes(30);
                 
+                // Check if this time slot has already passed
+                $isPastTime = $timeSlot->isPast();
+                
                 // Check if room is available for this time slot
                 $conflictingBooking = Booking::where('meeting_room_id', $room->id)
                     ->whereIn('status', ['pending', 'confirmed'])
@@ -602,7 +605,8 @@ class UserController extends Controller
                 $slotData = [
                     'time' => $timeSlot->format('H:i'),
                     'datetime' => $timeSlot->format('Y-m-d H:i:s'),
-                    'isAvailable' => !$conflictingBooking,
+                    'isAvailable' => !$conflictingBooking && !$isPastTime,
+                    'isPastTime' => $isPastTime,
                     'wasUsed' => !$conflictingBooking && $previousBooking,
                     'booking' => null,
                     'previousBooking' => null

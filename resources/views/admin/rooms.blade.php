@@ -117,10 +117,53 @@
                 </div>
                 @endif
                 
+                <!-- Today's Bookings -->
+                @php
+                    $todayBookings = \App\Models\Booking::where('meeting_room_id', $room->id)
+                        ->whereDate('start_time', today())
+                        ->whereIn('status', ['pending', 'confirmed'])
+                        ->with('user')
+                        ->orderBy('start_time')
+                        ->get();
+                @endphp
+                
+                @if($todayBookings->count() > 0)
+                <div class="mb-4">
+                    <p class="text-white/60 text-sm mb-2">Pemesanan Hari Ini:</p>
+                    <div class="space-y-2">
+                        @foreach($todayBookings as $booking)
+                        <div class="bg-white/10 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <p class="text-white font-medium text-sm">{{ $booking->user->full_name }}</p>
+                                    <p class="text-white/60 text-xs">{{ $booking->title }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-white text-sm font-medium">
+                                        {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} - 
+                                        {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
+                                    </p>
+                                    <span class="px-2 py-1 text-xs rounded-full
+                                        @if($booking->status === 'confirmed') bg-green-500/20 text-green-300
+                                        @elseif($booking->status === 'pending') bg-yellow-500/20 text-yellow-300
+                                        @else bg-gray-500/20 text-gray-300 @endif">
+                                        {{ ucfirst($booking->status) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+                
                 <div class="flex items-center justify-between pt-4 border-t border-white/20">
                     <div class="text-white/60 text-sm">
                         <i class="fas fa-calendar mr-1"></i>
-                        {{ $room->bookings_count ?? 0 }} pemesanan
+                        {{ $room->bookings_count ?? 0 }} pemesanan total
+                        @if($todayBookings->count() > 0)
+                            <span class="text-green-300">({{ $todayBookings->count() }} hari ini)</span>
+                        @endif
                     </div>
                     <div class="flex space-x-2">
                         <button onclick="viewRoom({{ $room->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
