@@ -375,8 +375,6 @@
                     }
                 });
             }
-        });
-
 
             // Set up event listeners
             const startWaktuInput = document.getElementById('start_time');
@@ -399,7 +397,7 @@
             }
 
             // Set minimum date to today
-            const today = new Tanggal().toISOString().slice(0, 16);
+            const today = new Date().toISOString().slice(0, 16);
             if (startWaktuInput) startWaktuInput.min = today;
             if (endWaktuInput) endWaktuInput.min = today;
 
@@ -428,7 +426,7 @@
                         if (!availabilityDiv) {
                             const newDiv = document.createElement('div');
                             newDiv.id = 'availability-status';
-                            newDiv.classNama = 'mt-4';
+                            newDiv.className = 'mt-4';
                             document.querySelector('form').insertBefore(newDiv, document.querySelector('.flex.justify-end'));
                         }
                         
