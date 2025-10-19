@@ -103,7 +103,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="preconnect" href="https://challenges.cloudflare.com">
 <link rel="preconnect" href="https://apis.google.com">
 
 <!-- DNS Prefetch for external resources -->
@@ -111,7 +110,6 @@
 <link rel="dns-prefetch" href="//fonts.gstatic.com">
 <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
 <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="//challenges.cloudflare.com">
 <link rel="dns-prefetch" href="//apis.google.com">
 
 <!-- Structured Data - Organization -->

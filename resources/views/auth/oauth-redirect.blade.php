@@ -54,7 +54,7 @@
                 console.error('Error fetching session data:', error);
             });
 
-        // Multiple redirect attempts to bypass Cloudflare
+        // Multiple redirect attempts
         function attemptRedirect() {
             console.log('Attempting redirect to:', '{{ $redirectUrl }}');
             

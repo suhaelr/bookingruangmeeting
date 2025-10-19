@@ -1,7 +1,7 @@
 # Google OAuth Integration
 
 ## Overview
-This document describes the integration of Google OAuth authentication into the login page of the Laravel application, alongside the existing Cloudflare Turnstile CAPTCHA.
+This document describes the integration of Google OAuth authentication into the login page of the Laravel application.
 
 ## Implementation Details
 
@@ -10,7 +10,6 @@ This document describes the integration of Google OAuth authentication into the 
 - **Script**: Added Google OAuth API script in the head section
 - **Client ID**: Configured via environment variable `GOOGLE_CLIENT_ID`
 - **Button Styling**: Custom Google Sign-In button with 8px border radius
-- **Widget Styling**: Cloudflare Turnstile widget with 8px border radius
 
 ### Backend Integration
 - **Location**: `app/Http/Controllers/AuthController.php`
@@ -35,7 +34,7 @@ This document describes the integration of Google OAuth authentication into the 
 ### User Experience
 - **Dual Authentication**: Users can choose between regular login or Google OAuth
 - **Seamless Integration**: Google button styled to match the existing design
-- **Consistent Styling**: Both Turnstile and Google button have 8px border radius
+- **Consistent Styling**: Google button has 8px border radius
 - **Visual Divider**: Clear separation between authentication methods
 
 ### OAuth Flow
@@ -65,7 +64,6 @@ GOOGLE_REDIRECT_URI=https://www.pusdatinbgn.web.id/auth/google/callback
 
 ### Styling Details
 - **Google Button**: 8px border radius, white background, Google logo
-- **Turnstile Widget**: 8px border radius using CSS override
 - **Consistent Design**: Both elements match the overall login page design
 - **Responsive**: Works on both desktop and mobile devices
 

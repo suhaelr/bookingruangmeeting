@@ -110,11 +110,9 @@ Implementasi SEO on-page yang komprehensif dan modern untuk sistem pemesanan rua
 ```html
 <!-- Preconnect to external domains -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
 <!-- DNS Prefetch -->
 <link rel="dns-prefetch" href="//fonts.googleapis.com">
-<link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
 
 <!-- Preload Critical Resources -->
 <link rel="preload" href="{{ asset('css/app.css') }}" as="style">

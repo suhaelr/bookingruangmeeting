@@ -89,7 +89,6 @@
                             <li>Alamat IP</li>
                             <li>Browser dan perangkat yang digunakan</li>
                             <li>Waktu login terakhir</li>
-                            <li>Data Cloudflare Turnstile (untuk keamanan)</li>
                         </ul>
                     </div>
 
@@ -114,7 +113,6 @@
                             <li>Enkripsi password menggunakan hash yang aman</li>
                             <li>Koneksi HTTPS untuk semua komunikasi</li>
                             <li>Verifikasi email untuk akun baru</li>
-                            <li>Cloudflare Turnstile untuk mencegah bot</li>
                             <li>OAuth 2.0 untuk autentikasi Google</li>
                             <li>Pembatasan akses berdasarkan peran pengguna</li>
                             <li>Pencadangan data secara berkala</li>
@@ -161,7 +159,6 @@
                         <p class="mb-4">Kami menggunakan:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li>Session cookies untuk autentikasi</li>
-                            <li>Cloudflare Turnstile untuk keamanan</li>
                             <li>Google OAuth untuk login sosial</li>
                             <li>Analytics cookies (jika ada) untuk meningkatkan layanan</li>
                         </ul>

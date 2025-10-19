@@ -26,7 +26,7 @@ The privacy policy covers all aspects relevant to the project:
    - Personal information (name, email, username, phone, department)
    - OAuth information (Google ID, profile data)
    - Booking information (meeting room details, documents)
-   - Technical information (IP, browser, login times, Turnstile data)
+   - Technical information (IP, browser, login times)
 
 3. **Data Usage** - How information is used:
    - Providing booking services
@@ -41,7 +41,6 @@ The privacy policy covers all aspects relevant to the project:
    - Password encryption
    - HTTPS connections
    - Email verification
-   - Cloudflare Turnstile
    - OAuth 2.0
    - Role-based access
    - Regular backups
@@ -104,7 +103,6 @@ The privacy policy is specifically tailored for:
 - **Sistem Pemesanan Ruang Meeting** project
 - **eL PUSDATIN** organization
 - **Google OAuth** integration
-- **Cloudflare Turnstile** security
 - **Meeting room booking** functionality
 - **Indonesian language** (Bahasa Indonesia)
 

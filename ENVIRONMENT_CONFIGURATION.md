@@ -11,11 +11,6 @@ GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 GOOGLE_REDIRECT_URI=https://www.pusdatinbgn.web.id/auth/google/callback
 ```
 
-### Cloudflare Turnstile Configuration
-```env
-CLOUDFLARE_SITE_KEY=0x4AAAAAAB56ltjhELoBWYew
-CLOUDFLARE_SECRET_KEY=0x4AAAAAAB56ljRNTob9cGtXsqh8c-ZuxxE
-```
 
 ## Production Setup
 

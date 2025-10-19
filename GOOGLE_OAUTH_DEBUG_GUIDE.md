@@ -48,10 +48,6 @@ Setelah login Google, Anda akan melihat halaman "Login Berhasil!" dengan loading
 - **Penyebab**: Session data hilang saat redirect
 - **Solusi**: Periksa session configuration
 
-##### C. **Cloudflare Interference**
-- **Gejala**: Redirect berhenti di halaman intermediate
-- **Penyebab**: Cloudflare memblokir JavaScript redirect
-- **Solusi**: Gunakan link fallback di halaman intermediate
 
 ##### D. **Role Assignment Issue**
 - **Gejala**: User data ada tapi role bukan 'user'
