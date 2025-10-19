@@ -633,16 +633,27 @@
                 editForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     
-                    const formData = new FormData(this);
+                    // Collect form data manually
+                    const formData = {
+                        title: document.querySelector('input[name="title"]').value,
+                        description: document.querySelector('textarea[name="description"]').value,
+                        start_time: document.querySelector('input[name="start_time"]').value,
+                        end_time: document.querySelector('input[name="end_time"]').value,
+                        special_requirements: document.querySelector('textarea[name="special_requirements"]').value
+                    };
+                    
                     const bookingId = currentBookingId;
+                    
+                    console.log('Sending form data:', formData);
                     
                     fetch(`/user/bookings/${bookingId}`, {
                         method: 'PUT',
-                        body: formData,
                         headers: {
+                            'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                             'Accept': 'application/json'
-                        }
+                        },
+                        body: JSON.stringify(formData)
                     })
                     .then(response => {
                         if (response.status === 403) {

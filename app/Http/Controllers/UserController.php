@@ -358,7 +358,7 @@ class UserController extends Controller
             $updateData = [];
 
             // Title validation - only if provided and different from current
-            if ($request->has('title') && $request->title !== null && $request->title !== '' && $request->title !== $booking->title) {
+            if ($request->filled('title') && $request->title !== $booking->title) {
                 $validationRules['title'] = 'required|string|max:255';
                 $updateData['title'] = $request->title;
             }
@@ -370,13 +370,13 @@ class UserController extends Controller
             }
 
             // Start time validation - only if provided and different from current
-            if ($request->has('start_time') && $request->start_time !== null && $request->start_time !== '' && $request->start_time !== $booking->start_time->format('Y-m-d\TH:i')) {
+            if ($request->filled('start_time') && $request->start_time !== $booking->start_time->format('Y-m-d\TH:i')) {
                 $validationRules['start_time'] = 'required|date';
                 $updateData['start_time'] = $request->start_time;
             }
 
             // End time validation - only if provided and different from current
-            if ($request->has('end_time') && $request->end_time !== null && $request->end_time !== '' && $request->end_time !== $booking->end_time->format('Y-m-d\TH:i')) {
+            if ($request->filled('end_time') && $request->end_time !== $booking->end_time->format('Y-m-d\TH:i')) {
                 $validationRules['end_time'] = 'required|date';
                 $updateData['end_time'] = $request->end_time;
             }
