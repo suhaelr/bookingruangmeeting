@@ -483,18 +483,18 @@
                 });
             }
 
-            // Set minimum date to 1 hour from now
+            // Set minimum date to 15 minutes from now (allows urgent bookings)
             const now = new Date();
-            const minTime = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour from now
+            const minTime = new Date(now.getTime() + 15 * 60 * 1000); // 15 minutes from now
             const minTimeString = minTime.toISOString().slice(0, 16);
             
             if (startWaktuInput) {
                 startWaktuInput.min = minTimeString;
-                startWaktuInput.setCustomValidity('Waktu mulai harus minimal 1 jam dari sekarang');
+                startWaktuInput.setCustomValidity('Waktu mulai harus minimal 15 menit dari sekarang');
             }
             if (endWaktuInput) {
                 endWaktuInput.min = minTimeString;
-                endWaktuInput.setCustomValidity('Waktu selesai harus minimal 1 jam dari sekarang');
+                endWaktuInput.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
             }
 
             // Real-time availability check

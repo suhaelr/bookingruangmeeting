@@ -212,7 +212,7 @@ class UserController extends Controller
             'meeting_room_id' => 'required|exists:meeting_rooms,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'start_time' => 'required|date|after:+1 hour',
+            'start_time' => 'required|date|after:+15 minutes',
             'end_time' => 'required|date|after:start_time',
             'attendees_count' => 'required|integer|min:1',
             'attendees' => 'nullable|string',
