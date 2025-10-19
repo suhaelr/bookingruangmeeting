@@ -218,9 +218,15 @@
                                     <i class="fas fa-eye mr-1"></i>Lihat
                                 </button>
                                 
+                                @if($booking->status !== 'confirmed')
                                 <button onclick="editBooking({{ $booking->id }})" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                                     <i class="fas fa-edit mr-1"></i>Edit
                                 </button>
+                                @else
+                                <button disabled class="px-4 py-2 bg-gray-400 text-gray-200 rounded-lg cursor-not-allowed flex items-center" title="Tidak dapat diedit karena sudah dikonfirmasi admin">
+                                    <i class="fas fa-lock mr-1"></i>Edit
+                                </button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -570,7 +576,14 @@
                             'Accept': 'application/json'
                         }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (response.status === 403) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Booking tidak dapat diedit karena sudah dikonfirmasi admin.');
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             alert('Booking updated successfully!');
@@ -582,7 +595,7 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Error updating booking');
+                        alert(error.message || 'Error updating booking');
                     });
                 });
             }

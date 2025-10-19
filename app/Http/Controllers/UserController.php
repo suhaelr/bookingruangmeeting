@@ -333,6 +333,14 @@ class UserController extends Controller
                 ->where('user_id', $user['id'])
                 ->firstOrFail();
 
+            // Check if booking is already confirmed by admin
+            if ($booking->status === 'confirmed') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Booking tidak dapat diedit karena sudah dikonfirmasi oleh admin.'
+                ], 403);
+            }
+
             $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
