@@ -222,7 +222,17 @@
                 <div class="mb-6">
                     <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
                     <p class="text-white/60 text-sm mt-1">
-                        {{ now()->addDay()->format('l, d F Y') }} (Besok)
+                        @php
+                            $todayBookings = \App\Models\Booking::whereIn('status', ['pending', 'confirmed'])
+                                ->whereDate('start_time', today())
+                                ->count();
+                            $isShowingToday = $todayBookings > 0;
+                        @endphp
+                        @if($isShowingToday)
+                            {{ now()->format('l, d F Y') }} (Hari Ini)
+                        @else
+                            {{ now()->addDay()->format('l, d F Y') }} (Besok)
+                        @endif
                     </p>
                 </div>
                 
