@@ -354,13 +354,31 @@ class UserController extends Controller
             $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'start_time' => 'required|date|after:now',
+                'start_time' => 'required|date',
                 'end_time' => 'required|date|after:start_time',
                 'special_requirements' => 'nullable|string',
             ]);
 
             $startTime = Carbon::parse($request->start_time);
             $endTime = Carbon::parse($request->end_time);
+            
+            // Only validate future time if the time has actually changed
+            $originalStartTime = Carbon::parse($booking->start_time);
+            $originalEndTime = Carbon::parse($booking->end_time);
+            
+            if ($startTime->ne($originalStartTime) && $startTime->isPast()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Waktu mulai tidak boleh di masa lalu jika diubah.'
+                ], 422);
+            }
+            
+            if ($endTime->ne($originalEndTime) && $endTime->isPast()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Waktu selesai tidak boleh di masa lalu jika diubah.'
+                ], 422);
+            }
             
             // Check for conflicts excluding current booking
             $conflictingBookings = $this->getConflictingBookings($booking->meeting_room_id, $startTime, $endTime, $id);

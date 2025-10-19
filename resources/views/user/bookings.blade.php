@@ -582,11 +582,16 @@
                                 throw new Error(data.message || 'Booking tidak dapat diedit karena sudah dikonfirmasi admin.');
                             });
                         }
+                        if (response.status === 422) {
+                            return response.json().then(data => {
+                                throw new Error(data.message || 'Validation error occurred.');
+                            });
+                        }
                         return response.json();
                     })
                     .then(data => {
                         if (data.success) {
-                            alert('Booking updated successfully!');
+                            alert('Booking berhasil diperbarui!');
                             closeModal('bookingEditModal');
                             location.reload();
                         } else {
