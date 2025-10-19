@@ -498,17 +498,8 @@
                 
                 // Add real-time validation
                 startWaktuInput.addEventListener('change', function() {
-                    const startTime = new Date(this.value);
-                    const endTime = new Date(document.getElementById('end_time').value);
-                    const minTime = new Date(minTimeString);
-                    
-                    if (startTime < minTime) {
-                        this.setCustomValidity('Waktu mulai harus minimal 15 menit dari sekarang');
-                    } else if (endTime && startTime >= endTime) {
-                        this.setCustomValidity('Waktu mulai harus sebelum waktu selesai');
-                    } else {
-                        this.setCustomValidity('');
-                    }
+                    // Use the centralized validation function
+                    validateEndTime();
                 });
             }
             
@@ -517,19 +508,44 @@
                 endWaktuInput.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
                 
                 // Add real-time validation
-                endWaktuInput.addEventListener('change', function() {
-                    const startTime = new Date(document.getElementById('start_time').value);
-                    const endTime = new Date(this.value);
-                    const minTime = new Date(minTimeString);
-                    
-                    if (endTime < minTime) {
-                        this.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
-                    } else if (startTime && endTime <= startTime) {
-                        this.setCustomValidity('Waktu selesai harus setelah waktu mulai');
-                    } else {
-                        this.setCustomValidity('');
-                    }
-                });
+                endWaktuInput.addEventListener('change', validateEndTime);
+            }
+            
+            // Separate function for end time validation
+            function validateEndTime() {
+                const endWaktuInput = document.getElementById('end_time');
+                const startWaktuInput = document.getElementById('start_time');
+                if (!endWaktuInput || !startWaktuInput) return;
+                
+                const startTime = new Date(startWaktuInput.value);
+                const endTime = new Date(endWaktuInput.value);
+                const minTime = new Date(minTimeString);
+                
+                // Clear previous errors
+                endWaktuInput.setCustomValidity('');
+                startWaktuInput.setCustomValidity('');
+                
+                // Validate end time
+                if (endTime < minTime) {
+                    endWaktuInput.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
+                } else if (startTime && !isNaN(startTime.getTime()) && endTime <= startTime) {
+                    endWaktuInput.setCustomValidity('Waktu selesai harus setelah waktu mulai');
+                }
+                
+                // Validate start time
+                if (startTime < minTime) {
+                    startWaktuInput.setCustomValidity('Waktu mulai harus minimal 15 menit dari sekarang');
+                } else if (endTime && !isNaN(endTime.getTime()) && startTime >= endTime) {
+                    startWaktuInput.setCustomValidity('Waktu mulai harus sebelum waktu selesai');
+                }
+            }
+            
+            // Also validate when form loads
+            if (startWaktuInput && endWaktuInput) {
+                // Initial validation
+                setTimeout(() => {
+                    validateEndTime();
+                }, 100);
             }
 
             // Real-time availability check
