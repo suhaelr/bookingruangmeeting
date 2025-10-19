@@ -266,30 +266,35 @@
                         Verifikasi Keamanan
                     </h3>
                     
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-1">
-                            <label for="captcha_answer" class="block text-sm font-medium text-white mb-2">
+                    <!-- Mobile-friendly vertical layout -->
+                    <div class="space-y-4">
+                        <!-- Captcha Question -->
+                        <div>
+                            <label class="block text-sm font-medium text-white mb-2">
                                 <i class="fas fa-key mr-2"></i>Masukkan angka berikut:
                             </label>
-                            <div class="flex items-center space-x-3">
-                                <div id="captcha-question" class="text-2xl font-bold text-white bg-white/20 px-6 py-4 rounded-lg border border-white/30 min-w-[200px] text-center tracking-widest">
+                            <div class="flex items-center justify-center space-x-3">
+                                <div id="captcha-question" class="text-3xl font-bold text-white bg-white/20 px-8 py-6 rounded-lg border border-white/30 text-center tracking-widest min-w-[120px]">
                                     Loading...
                                 </div>
-                                <button type="button" id="refresh-captcha" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
+                                <button type="button" id="refresh-captcha" class="px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="flex-1">
+                        
+                        <!-- Captcha Answer -->
+                        <div>
                             <label for="captcha_answer" class="block text-sm font-medium text-white mb-2">
                                 Jawaban:
                             </label>
                             <input type="text" id="captcha_answer" name="captcha_answer" required
-                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 text-center text-xl font-mono tracking-widest"
+                                   class="w-full px-4 py-4 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 text-center text-2xl font-mono tracking-widest"
                                    placeholder="Masukkan 4 digit angka" maxlength="4">
                         </div>
                     </div>
-                    <p class="text-white/60 text-xs mt-2">
+                    
+                    <p class="text-white/60 text-xs mt-3 text-center">
                         <i class="fas fa-info-circle mr-1"></i>
                         Silakan masukkan 4 digit angka yang ditampilkan di atas untuk melanjutkan pemesanan.
                     </p>
