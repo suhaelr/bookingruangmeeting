@@ -172,13 +172,15 @@ class UserController extends Controller
             'room_id' => 'required|exists:meeting_rooms,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
+            'exclude_booking_id' => 'nullable|integer|exists:bookings,id',
         ]);
 
         $room = MeetingRoom::findOrFail($request->room_id);
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
+        $excludeBookingId = $request->input('exclude_booking_id');
         
-        $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime);
+        $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime, $excludeBookingId);
         
         if ($conflictingBookings->count() > 0) {
             $conflictDetails = $this->formatConflictDetails($conflictingBookings, $room);
@@ -904,5 +906,33 @@ class UserController extends Controller
                 'message' => 'Failed to mark all notifications as read'
             ], 500);
         }
+    }
+
+    private function getConflictingBookings($roomId, $startTime, $endTime, $excludeBookingId = null)
+    {
+        $query = Booking::where('meeting_room_id', $roomId)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->where('start_time', '<', $endTime)
+            ->where('end_time', '>', $startTime)
+            ->with('user');
+
+        if ($excludeBookingId) {
+            $query->where('id', '!=', $excludeBookingId);
+        }
+
+        return $query->get();
+    }
+
+    private function formatConflictDetails($conflictingBookings, $room)
+    {
+        if ($conflictingBookings->count() === 0) {
+            return 'Ruang tersedia untuk waktu yang dipilih.';
+        }
+
+        $conflictList = $conflictingBookings->map(function($booking) {
+            return "• {$booking->title} oleh {$booking->user->full_name} ({$booking->start_time->format('d M Y H:i')} - {$booking->end_time->format('H:i')})";
+        })->join("\n");
+
+        return "Ruang {$room->name} tidak tersedia untuk waktu yang dipilih karena ada konflik dengan booking berikut:\n\n{$conflictList}\n\nSilakan pilih waktu yang berbeda.";
     }
 }

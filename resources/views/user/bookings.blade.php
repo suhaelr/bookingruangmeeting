@@ -453,11 +453,26 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Mulai Waktu</label>
-                                <input type="datetime-local" name="start_time" value="${formatTanggalWaktuLocal(booking.start_time)}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <input type="datetime-local" name="start_time" value="${formatTanggalWaktuLocal(booking.start_time)}" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                       required onchange="checkTimeConflict()">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Selesai Waktu</label>
-                                <input type="datetime-local" name="end_time" value="${formatTanggalWaktuLocal(booking.end_time)}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <input type="datetime-local" name="end_time" value="${formatTanggalWaktuLocal(booking.end_time)}" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                       required onchange="checkTimeConflict()">
+                            </div>
+                        </div>
+                        
+                        <!-- Conflict Warning -->
+                        <div id="time-conflict-warning" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mr-3 mt-1"></i>
+                                <div>
+                                    <h4 class="text-red-800 font-medium">Konflik Jadwal Terdeteksi!</h4>
+                                    <p id="conflict-message" class="text-red-700 text-sm mt-1"></p>
+                                </div>
                             </div>
                         </div>
                         <div>
@@ -517,6 +532,59 @@
             const hours = String(date.getHours()).padStart(2, '0');
             const minutes = String(date.getMinutes()).padStart(2, '0');
             return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+        
+        // Time conflict checking
+        window.checkTimeConflict = function() {
+            const startTime = document.querySelector('input[name="start_time"]').value;
+            const endTime = document.querySelector('input[name="end_time"]').value;
+            const warningDiv = document.getElementById('time-conflict-warning');
+            const conflictMessage = document.getElementById('conflict-message');
+            
+            if (!startTime || !endTime) {
+                warningDiv.classList.add('hidden');
+                return;
+            }
+            
+            // Check if end time is after start time
+            if (new Date(endTime) <= new Date(startTime)) {
+                warningDiv.classList.remove('hidden');
+                conflictMessage.textContent = 'Waktu selesai harus setelah waktu mulai.';
+                return;
+            }
+            
+            // Check for conflicts with other bookings
+            fetch('{{ route("user.check-availability") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    room_id: getCurrentBookingRoomId(),
+                    start_time: startTime,
+                    end_time: endTime,
+                    exclude_booking_id: currentBookingId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.available) {
+                    warningDiv.classList.add('hidden');
+                } else {
+                    warningDiv.classList.remove('hidden');
+                    conflictMessage.innerHTML = data.message.replace(/\n/g, '<br>');
+                }
+            })
+            .catch(error => {
+                console.error('Error checking time conflict:', error);
+            });
+        };
+        
+        function getCurrentBookingRoomId() {
+            // Get room ID from the current booking data
+            const booking = @json($bookings->items()).find(b => b.id == currentBookingId);
+            return booking ? booking.meeting_room.id : null;
         }
 
         // Event listeners
