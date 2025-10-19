@@ -495,10 +495,41 @@
             if (startWaktuInput) {
                 startWaktuInput.min = minTimeString;
                 startWaktuInput.setCustomValidity('Waktu mulai harus minimal 15 menit dari sekarang');
+                
+                // Add real-time validation
+                startWaktuInput.addEventListener('change', function() {
+                    const startTime = new Date(this.value);
+                    const endTime = new Date(document.getElementById('end_time').value);
+                    const minTime = new Date(minTimeString);
+                    
+                    if (startTime < minTime) {
+                        this.setCustomValidity('Waktu mulai harus minimal 15 menit dari sekarang');
+                    } else if (endTime && startTime >= endTime) {
+                        this.setCustomValidity('Waktu mulai harus sebelum waktu selesai');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
             }
+            
             if (endWaktuInput) {
                 endWaktuInput.min = minTimeString;
                 endWaktuInput.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
+                
+                // Add real-time validation
+                endWaktuInput.addEventListener('change', function() {
+                    const startTime = new Date(document.getElementById('start_time').value);
+                    const endTime = new Date(this.value);
+                    const minTime = new Date(minTimeString);
+                    
+                    if (endTime < minTime) {
+                        this.setCustomValidity('Waktu selesai harus minimal 15 menit dari sekarang');
+                    } else if (startTime && endTime <= startTime) {
+                        this.setCustomValidity('Waktu selesai harus setelah waktu mulai');
+                    } else {
+                        this.setCustomValidity('');
+                    }
+                });
             }
 
             // Real-time availability check

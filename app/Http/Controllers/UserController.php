@@ -232,6 +232,22 @@ class UserController extends Controller
             'captcha_answer' => 'required|integer',
         ]);
 
+        // Additional validation for logical time constraints
+        $startTime = Carbon::parse($request->start_time);
+        $endTime = Carbon::parse($request->end_time);
+        
+        if ($startTime->gte($endTime)) {
+            return back()->withErrors([
+                'end_time' => 'Waktu selesai harus setelah waktu mulai.'
+            ])->withInput();
+        }
+        
+        if ($endTime->diffInMinutes($startTime) < 15) {
+            return back()->withErrors([
+                'end_time' => 'Durasi meeting minimal 15 menit.'
+            ])->withInput();
+        }
+
         // Verify captcha
         $userAnswer = $request->input('captcha_answer');
         $correctAnswer = session('captcha_answer');
