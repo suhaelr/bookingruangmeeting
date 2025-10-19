@@ -137,6 +137,11 @@
                                 <div class="flex-1">
                                     <p class="text-white font-medium text-sm">{{ $booking->user->full_name }}</p>
                                     <p class="text-white/60 text-xs">{{ $booking->title }}</p>
+                                    @if($booking->unit_kerja)
+                                        <p class="text-blue-300 text-xs mt-1">
+                                            <i class="fas fa-building mr-1"></i>{{ $booking->unit_kerja }}
+                                        </p>
+                                    @endif
                                 </div>
                                 <div class="text-right">
                                     <p class="text-white text-sm font-medium">
