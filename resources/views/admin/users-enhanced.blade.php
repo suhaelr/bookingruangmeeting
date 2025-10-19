@@ -51,6 +51,7 @@
                         <tr class="border-b border-white/20">
                             <th class="text-left py-3 px-4">Nama</th>
                             <th class="text-left py-3 px-4">Email</th>
+                            <th class="text-left py-3 px-4">Unit Kerja</th>
                             <th class="text-left py-3 px-4">Role</th>
                             <th class="text-left py-3 px-4">Google Login</th>
                             <th class="text-left py-3 px-4">Terakhir Login</th>
@@ -60,7 +61,7 @@
                     </thead>
                     <tbody id="usersTableBody">
                         <tr>
-                            <td colspan="7" class="text-center py-8 text-white/60">
+                            <td colspan="8" class="text-center py-8 text-white/60">
                                 <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
                                 <p>Memuat data pengguna...</p>
                             </td>
@@ -186,6 +187,9 @@
                     </td>
                     <td class="py-3 px-4">${user.email}</td>
                     <td class="py-3 px-4">
+                        <span class="text-white/80">${user.unit_kerja || 'N/A'}</span>
+                    </td>
+                    <td class="py-3 px-4">
                         <span class="px-2 py-1 rounded-full text-xs font-medium ${
                             user.role === 'admin' 
                                 ? 'bg-red-500/20 text-red-300' 
@@ -212,6 +216,12 @@
                                     class="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-lg hover:bg-yellow-500/30 text-sm">
                                 <i class="fas fa-user-edit mr-1"></i>Role
                             </button>
+                            ${user.role !== 'admin' ? `
+                            <button onclick="deleteUser(${user.id}, '${user.name}')" 
+                                    class="px-3 py-1 bg-red-500/20 text-red-300 rounded-lg hover:bg-red-500/30 text-sm">
+                                <i class="fas fa-trash mr-1"></i>Hapus
+                            </button>
+                            ` : ''}
                         </div>
                     </td>
                 </tr>
@@ -324,6 +334,34 @@
             } catch (error) {
                 console.error('Error changing user role:', error);
                 showMessage('Terjadi kesalahan saat mengubah role pengguna: ' + error.message, 'error');
+            }
+        }
+
+        // Delete user
+        function deleteUser(userId, userName) {
+            if (confirm(`Apakah Anda yakin ingin menghapus pengguna "${userName}"? Semua data pengguna (bookings, notifications) akan dihapus secara permanen.`)) {
+                // Show loading message
+                showMessage('Menghapus pengguna...', 'info');
+                
+                // Create form and submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/admin/users/${userId}/delete`;
+                
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                
+                form.appendChild(csrfToken);
+                form.appendChild(methodInput);
+                document.body.appendChild(form);
+                form.submit();
             }
         }
 
