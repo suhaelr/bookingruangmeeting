@@ -22,6 +22,8 @@ class UserNotification extends Model
     protected $casts = [
         'is_read' => 'boolean',
         'read_at' => 'datetime',
+        'user_id' => 'integer',
+        'booking_id' => 'integer',
     ];
 
     public function user()

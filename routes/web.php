@@ -179,6 +179,8 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::post('/bookings/{id}/status', [AdminController::class, 'updateBookingStatus'])->name('admin.bookings.status');
     Route::get('/bookings/{id}/download', [AdminController::class, 'downloadDokumenPerizinan'])->name('admin.bookings.download');
     Route::get('/notifications', [AdminController::class, 'getNotifications'])->name('admin.notifications');
+    Route::post('/notifications/{id}/mark-read', [AdminController::class, 'markNotificationRead'])->name('admin.notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [AdminController::class, 'markAllNotificationsRead'])->name('admin.notifications.mark-all-read');
     Route::delete('/notifications/clear', [AdminController::class, 'clearAllNotifications'])->name('admin.notifications.clear');
     
     // Export routes
@@ -206,6 +208,7 @@ Route::prefix('user')->middleware('user.auth')->group(function () {
     
     // Notification routes
     Route::get('/notifications', [UserController::class, 'notifications'])->name('user.notifications');
+    Route::get('/notifications/api', [UserController::class, 'getUserNotifications'])->name('user.notifications.api');
     Route::post('/notifications/{id}/mark-read', [UserController::class, 'markNotificationRead'])->name('user.notifications.mark-read');
     Route::post('/notifications/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.mark-all-read');
 });

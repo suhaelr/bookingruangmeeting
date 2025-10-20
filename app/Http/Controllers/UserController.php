@@ -342,7 +342,7 @@ class UserController extends Controller
         }
 
         // Send notification to admin
-        $this->notifyAdmin('New Booking Request', "User {$user['full_name']} has requested a new booking: {$booking->title}");
+        $this->notifyAdmin('New Booking Request', "User {$user['full_name']} has requested a new booking: {$booking->title}", 'success', $booking->id);
 
         \Log::info('New booking created', [
             'booking_id' => $booking->id,
@@ -535,7 +535,7 @@ class UserController extends Controller
             $booking->updateStatus('cancelled', 'Cancelled by user');
 
             // Send notification to admin
-            $this->notifyAdmin('Booking Cancelled', "User {$user['full_name']} cancelled their booking: {$booking->title}");
+            $this->notifyAdmin('Booking Cancelled', "User {$user['full_name']} cancelled their booking: {$booking->title}", 'warning', $booking->id);
 
             \Log::info('Booking cancelled successfully', [
                 'booking_id' => $booking->id,
@@ -554,24 +554,30 @@ class UserController extends Controller
         }
     }
 
-    private function notifyAdmin($title, $message)
+    private function notifyAdmin($title, $message, $type = 'info', $bookingId = null)
     {
-        // Store notification in session for admin
-        $notifications = session('admin_notifications', []);
-        $notifications[] = [
-            'id' => uniqid(),
-            'title' => $title,
-            'message' => $message,
-            'time' => now()->format('Y-m-d H:i:s'),
-            'read' => false,
-            'type' => 'success'
-        ];
-        session(['admin_notifications' => $notifications]);
-        
-        \Log::info('Admin notification sent', [
-            'title' => $title,
-            'message' => $message
-        ]);
+        // Create admin notification in database
+        try {
+            \App\Models\UserNotification::create([
+                'user_id' => null, // Admin notifications don't belong to specific user
+                'booking_id' => $bookingId,
+                'type' => $type,
+                'title' => $title,
+                'message' => $message,
+                'is_read' => false,
+            ]);
+            
+            \Log::info('Admin notification created from UserController', [
+                'title' => $title,
+                'type' => $type,
+                'booking_id' => $bookingId
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create admin notification from UserController', [
+                'title' => $title,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
 
@@ -827,6 +833,31 @@ class UserController extends Controller
             ->paginate(20);
         
         return view('user.notifications', compact('notifications'));
+    }
+
+    public function getUserNotifications()
+    {
+        $user = session('user_data');
+        $userModel = User::find($user['id']);
+        
+        $notifications = $userModel->notifications()
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->map(function($notification) {
+                return [
+                    'id' => $notification->id,
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'time' => $notification->created_at->diffForHumans(),
+                    'read' => $notification->is_read,
+                    'type' => $notification->type,
+                    'booking_id' => $notification->booking_id,
+                    'created_at' => $notification->created_at->format('Y-m-d H:i:s')
+                ];
+            });
+
+        return response()->json($notifications);
     }
 
     public function markNotificationRead(Request $request, $id)

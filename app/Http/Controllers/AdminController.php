@@ -239,7 +239,12 @@ class AdminController extends Controller
             $this->createUserNotification($booking, $request->status, $request->reason);
 
             // Send notification to admin about status change
-            $this->notifyAdmin('Booking Status Updated', "Booking '{$booking->title}' status changed to {$request->status}");
+            $this->notifyAdmin(
+                'Booking Status Updated', 
+                "Booking '{$booking->title}' by {$booking->user->full_name} status changed to {$request->status}",
+                'info',
+                $booking->id
+            );
 
             return response()->json([
                 'success' => true,
@@ -324,77 +329,104 @@ class AdminController extends Controller
         }
     }
 
-    private function notifyAdmin($title, $message)
+    private function notifyAdmin($title, $message, $type = 'info', $bookingId = null)
     {
-        // In a real application, this would send notifications via:
-        // - Database notifications
-        // - Real-time websockets
-        // - Email notifications
-        // - Push notifications
-        
-        // For now, we'll store in session for demo purposes
-        $notifications = session('admin_notifications', []);
-        $notifications[] = [
-            'id' => uniqid(),
-            'title' => $title,
-            'message' => $message,
-            'time' => now()->format('Y-m-d H:i:s'),
-            'read' => false,
-            'type' => $title === 'Booking Status Updated' ? 'info' : 'success'
-        ];
-        session(['admin_notifications' => $notifications]);
+        // Create admin notification in database
+        try {
+            \App\Models\UserNotification::create([
+                'user_id' => null, // Admin notifications don't belong to specific user
+                'booking_id' => $bookingId,
+                'type' => $type,
+                'title' => $title,
+                'message' => $message,
+                'is_read' => false,
+            ]);
+            
+            \Log::info('Admin notification created', [
+                'title' => $title,
+                'type' => $type,
+                'booking_id' => $bookingId
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create admin notification', [
+                'title' => $title,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 
     public function getNotifications()
     {
-        $notifications = session('admin_notifications', []);
-        
-        // Add some default notifications if none exist
-        if (empty($notifications)) {
-            $notifications = [
-                [
-                    'id' => 1,
-                    'title' => 'Booking Updated',
-                    'message' => 'User John Doe updated their booking "Team Meeting" for tomorrow',
-                    'time' => '5 minutes ago',
-                    'read' => false,
-                    'type' => 'info'
-                ],
-                [
-                    'id' => 2,
-                    'title' => 'Booking Cancelled',
-                    'message' => 'User Jane Smith cancelled their booking "Project Review"',
-                    'time' => '15 minutes ago',
-                    'read' => false,
-                    'type' => 'warning'
-                ],
-                [
-                    'id' => 3,
-                    'title' => 'New Booking Request',
-                    'message' => 'User Mike Johnson requested a new booking for Conference Room A',
-                    'time' => '1 hour ago',
-                    'read' => true,
-                    'type' => 'success'
-                ],
-                [
-                    'id' => 4,
-                    'title' => 'Room Conflict Detected',
-                    'message' => 'Potential schedule conflict detected for Meeting Room B at 2:00 PM',
-                    'time' => '2 hours ago',
-                    'read' => false,
-                    'type' => 'error'
-                ]
-            ];
-        }
+        // Get admin notifications (where user_id is null)
+        $notifications = \App\Models\UserNotification::whereNull('user_id')
+            ->with('booking')
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get()
+            ->map(function($notification) {
+                return [
+                    'id' => $notification->id,
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'time' => $notification->created_at->diffForHumans(),
+                    'read' => $notification->is_read,
+                    'type' => $notification->type,
+                    'booking_id' => $notification->booking_id,
+                    'created_at' => $notification->created_at->format('Y-m-d H:i:s')
+                ];
+            });
 
         return response()->json($notifications);
+    }
+
+    public function markNotificationRead(Request $request, $id)
+    {
+        try {
+            $notification = \App\Models\UserNotification::whereNull('user_id')
+                ->where('id', $id)
+                ->firstOrFail();
+            
+            $notification->markAsRead();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Notification marked as read'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark notification as read'
+            ], 500);
+        }
+    }
+
+    public function markAllNotificationsRead(Request $request)
+    {
+        try {
+            \App\Models\UserNotification::whereNull('user_id')
+                ->where('is_read', false)
+                ->update([
+                    'is_read' => true,
+                    'read_at' => now()
+                ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'All notifications marked as read'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to mark all notifications as read'
+            ], 500);
+        }
     }
 
     public function clearAllNotifications()
     {
         try {
-            // Clear all notifications from session
-            session()->forget('admin_notifications');
+            // Clear all admin notifications from database
+            \App\Models\UserNotification::whereNull('user_id')->delete();
             
             return response()->json([
                 'success' => true,

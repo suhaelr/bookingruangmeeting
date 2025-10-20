@@ -46,6 +46,13 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
+                        <!-- User Notification Bell -->
+                        <div class="relative">
+                            <button onclick="toggleNotifikasis()" class="relative p-2 text-white hover:text-blue-300 transition-colors duration-300">
+                                <i class="fas fa-bell text-xl"></i>
+                                <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                            </button>
+                        </div>
                         <a href="{{ route('logout') }}" 
                            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-2"></i>
@@ -461,66 +468,45 @@
         function loadNotifikasis() {
             const notificationList = document.getElementById('notificationList');
             
-            // Sample notifications - in real app, this would come from backend
-            let notifications = [
-                {
-                    id: 1,
-                    title: 'Booking Confirmed',
-                    message: 'Your meeting "Team Standup" has been confirmed for tomorrow at 10:00 AM',
-                    time: '2 hours ago',
-                    read: false,
-                    type: 'success'
-                },
-                {
-                    id: 2,
-                    title: 'Room Available',
-                    message: 'Conference Room A is now available for booking',
-                    time: '4 hours ago',
-                    read: false,
-                    type: 'info'
-                },
-                {
-                    id: 3,
-                    title: 'Reminder',
-                    message: 'You have a meeting in 30 minutes: "Project Review"',
-                    time: '6 hours ago',
-                    read: true,
-                    type: 'warning'
-                }
-            ];
+            // Fetch notifications from backend
+            fetch('/user/notifications/api')
+                .then(response => response.json())
+                .then(notifications => {
+                    const unreadCount = notifications.filter(n => !n.read).length;
+                    const badge = document.getElementById('notification-badge');
+                    
+                    if (unreadCount > 0) {
+                        badge.textContent = unreadCount;
+                        badge.classList.remove('hidden');
+                    } else {
+                        badge.classList.add('hidden');
+                    }
 
-            // Check session storage for read status
-            const readNotifikasis = JSON.parse(sessionStorage.getItem('readNotifikasis') || '[]');
-            notifications = notifications.map(notification => ({
-                ...notification,
-                read: readNotifikasis.includes(notification.id) || notification.read
-            }));
+                    if (notifications.length === 0) {
+                        notificationList.innerHTML = '<div class="p-3 text-center text-gray-500">Tidak ada notifikasi</div>';
+                        return;
+                    }
 
-            const unreadCount = notifications.filter(n => !n.read).length;
-            const badge = document.getElementById('notification-badge');
-            
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-
-            notificationList.innerHTML = notifications.map(notification => `
-                <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAsRead(${notification.id})">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-${getNotifikasiIcon(notification.type)} text-${getNotifikasiWarna(notification.type)}"></i>
+                    notificationList.innerHTML = notifications.map(notification => `
+                        <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAsRead(${notification.id})">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-${getNotifikasiIcon(notification.type)} text-${getNotifikasiWarna(notification.type)}"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <p class="text-sm font-medium text-gray-900">${notification.title}</p>
+                                    <p class="text-sm text-gray-600">${notification.message}</p>
+                                    <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
+                                </div>
+                                ${!notification.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>' : ''}
+                            </div>
                         </div>
-                        <div class="ml-3 flex-1">
-                            <p class="text-sm font-medium text-gray-900">${notification.title}</p>
-                            <p class="text-sm text-gray-600">${notification.message}</p>
-                            <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
-                        </div>
-                        ${!notification.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>' : ''}
-                    </div>
-                </div>
-            `).join('');
+                    `).join('');
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                    notificationList.innerHTML = '<div class="p-3 text-center text-gray-500">Error loading notifications</div>';
+                });
         }
 
         function getNotifikasiIcon(type) {
@@ -544,30 +530,53 @@
         }
 
         function markAsRead(notificationId) {
-            // In real app, this would make an API call
             console.log('Marking notification as read:', notificationId);
             
-            // Add to read notifications in session storage
-            const readNotifikasis = JSON.parse(sessionStorage.getItem('readNotifikasis') || '[]');
-            if (!readNotifikasis.includes(notificationId)) {
-                readNotifikasis.push(notificationId);
-                sessionStorage.setItem('readNotifikasis', JSON.stringify(readNotifikasis));
-            }
-            
-            // Reload notifications to update UI
-            loadNotifikasis();
+            // Mark notification as read in database
+            fetch(`/user/notifications/${notificationId}/mark-read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload notifications to update UI
+                    loadNotifikasis();
+                } else {
+                    console.error('Failed to mark notification as read:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notification as read:', error);
+            });
         }
 
         function markAllAsRead() {
-            // In real app, this would make an API call
             console.log('Marking all notifications as read');
             
-            // Mark all notifications as read in session storage
-            const allNotifikasiIds = [1, 2, 3]; // All notification IDs
-            sessionStorage.setItem('readNotifikasis', JSON.stringify(allNotifikasiIds));
-            
-            // Reload notifications to update UI
-            loadNotifikasis();
+            // Mark all notifications as read in database
+            fetch('/user/notifications/mark-all-read', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload notifications to update UI
+                    loadNotifikasis();
+                } else {
+                    console.error('Failed to mark all notifications as read:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error marking all notifications as read:', error);
+            });
         }
 
         // Close notification dropdown when clicking outside
