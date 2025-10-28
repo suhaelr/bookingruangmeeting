@@ -157,6 +157,7 @@ class UserController extends Controller
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
             'department' => 'nullable|string|max:100',
+            'unit_kerja' => 'nullable|string|max:255',
         ]);
 
         // Update database and session
@@ -169,8 +170,10 @@ class UserController extends Controller
             $userModel->name = $request->full_name;
             $userModel->email = $request->email;
             $userModel->phone = $request->phone;
-            $userModel->department = $request->department;
-            $userModel->unit_kerja = $request->department; // mirror
+            // Prefer the unit_kerja input; if not provided, fallback to department
+            $unitKerjaInput = $request->unit_kerja ?? $request->department;
+            $userModel->department = $request->department ?? $unitKerjaInput;
+            $userModel->unit_kerja = $unitKerjaInput;
             $userModel->save();
         }
 
@@ -178,7 +181,8 @@ class UserController extends Controller
         $userData['full_name'] = $userModel->full_name ?? $request->full_name;
         $userData['email'] = $userModel->email ?? $request->email;
         $userData['phone'] = $userModel->phone ?? $request->phone;
-        $userData['department'] = $userModel->department ?? $request->department;
+        $userData['department'] = $userModel->department ?? ($request->department ?? $request->unit_kerja);
+        $userData['unit_kerja'] = $userModel->unit_kerja ?? $request->unit_kerja;
         session(['user_data' => $userData]);
 
         return back()->with('success', 'Profil berhasil disimpan.');
