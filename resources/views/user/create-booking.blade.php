@@ -599,7 +599,7 @@
                             submitBtn.disabled = false;
                             submitBtn.className = 'px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center';
                         } else {
-                            statusDiv.innerHTML = `
+                            let conflictHtml = `
                                 <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg">
                                     <div class="flex items-start">
                                         <i class="fas fa-exclamation-triangle mr-2 mt-1"></i>
@@ -609,6 +609,37 @@
                                     </div>
                                 </div>
                             `;
+                            
+                            // Add preempt buttons if there are conflicts
+                            if (data.conflicts && data.conflicts.length > 0) {
+                                conflictHtml += `
+                                    <div class="mt-3 bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 px-4 py-3 rounded-lg">
+                                        <div class="flex items-start">
+                                            <i class="fas fa-handshake-angle mr-2 mt-1"></i>
+                                            <div class="flex-1">
+                                                <div class="text-sm font-medium mb-2">Ingin meminta didahulukan?</div>
+                                                <div class="text-xs mb-3">Anda dapat meminta pemilik booking untuk mengalah jika ada kepentingan yang lebih mendesak.</div>
+                                                <div class="space-y-2">
+                                                    ${data.conflicts.map(conflict => `
+                                                        <div class="flex items-center justify-between bg-white/10 rounded p-2">
+                                                            <div class="text-xs">
+                                                                <div class="font-medium">${conflict.title}</div>
+                                                                <div class="text-yellow-200/80">oleh ${conflict.user} • ${conflict.start_time} - ${conflict.end_time}</div>
+                                                            </div>
+                                                            <button type="button" onclick="requestPreempt(${conflict.id})" 
+                                                                    class="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors">
+                                                                <i class="fas fa-handshake mr-1"></i>Minta Didahulukan
+                                                            </button>
+                                                        </div>
+                                                    `).join('')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                            
+                            statusDiv.innerHTML = conflictHtml;
                             // Disable submit button
                             submitBtn.disabled = true;
                             submitBtn.className = 'px-6 py-3 bg-gray-400 text-gray-200 rounded-lg cursor-not-allowed flex items-center';
@@ -641,6 +672,38 @@
                     }
                 });
             }
+
+            // Preempt request function
+            window.requestPreempt = function(bookingId) {
+                const reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
+                if (reason === null) return; // User cancelled
+                
+                fetch(`/user/bookings/${bookingId}/preempt-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        reason: reason || null
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message || 'Permintaan didahulukan berhasil dikirim!');
+                        // Refresh availability check to update UI
+                        checkAvailability();
+                    } else {
+                        alert(data.message || 'Gagal mengirim permintaan didahulukan.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error requesting preempt:', error);
+                    alert('Terjadi kesalahan saat mengirim permintaan.');
+                });
+            };
         });
     </script>
 
