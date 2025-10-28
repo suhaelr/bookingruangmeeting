@@ -283,7 +283,8 @@
                             </div>
                             <div class="space-y-1 items overflow-y-auto pr-1">
                                 @forelse($day['items'] as $item)
-                                    <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1">
+                                    <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1 cursor-pointer hover:bg-blue-500/30"
+                                         onclick='showCalendarItemDetails(@json($item))'>
                                         <div class="font-medium truncate">{{ $item['title'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['start_time'] }}-{{ $item['end_time'] }} • {{ $item['room'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['user_name'] }} • {{ $item['unit_kerja'] }}</div>
@@ -532,6 +533,56 @@
                 });
             }
         });
+
+        // Calendar item detail modal
+        function showCalendarItemDetails(item) {
+            const html = `
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">Detail Booking</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Judul:</span>
+                                        <span class="text-blue-800 font-medium">${item.title}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Waktu:</span>
+                                        <span class="text-blue-800">${item.start_time} - ${item.end_time}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-600 font-medium">Ruang:</span>
+                                        <span class="text-blue-800">${item.room}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-800 mb-3">Penyelenggara</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 font-medium">Nama:</span>
+                                        <span class="text-gray-800">${item.user_name}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600 font-medium">Unit Kerja:</span>
+                                        <span class="text-gray-800">${item.unit_kerja || '-'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end mt-6">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">Tutup</button>
+                        </div>
+                    </div>
+                </div>`;
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
 
         // Grid functionality
         function openBookingModal(roomId, startTime, roomName) {
