@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <!-- SEO Meta Tags -->
     @include('components.seo-meta', [
@@ -459,11 +460,19 @@
         function markAsRead(notificationId) {
             console.log('Marking notification as read:', notificationId);
             
+            // Get CSRF token safely
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+                return;
+            }
+            
             // Mark notification as read in database
             fetch(`/user/notifications/${notificationId}/mark-read`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
                     'Content-Type': 'application/json'
                 }
             })
@@ -492,16 +501,30 @@
         function markAllAsRead() {
             console.log('Marking all notifications as read');
             
+            // Get CSRF token safely
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+                return;
+            }
+            
             // Mark all notifications as read in database
             fetch('/user/notifications/mark-all-read', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Mark all as read response:', data);
                 if (data.success) {
                     // Reload notifications to update UI
                     loadNotifikasis();
