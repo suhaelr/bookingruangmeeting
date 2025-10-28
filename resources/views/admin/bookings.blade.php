@@ -120,6 +120,7 @@
                                 <th class="text-left py-3 px-4 font-semibold">Room</th>
                                 <th class="text-left py-3 px-4 font-semibold">Tanggal & Waktu</th>
                                 <th class="text-left py-3 px-4 font-semibold">Status</th>
+                                <th class="text-left py-3 px-4 font-semibold">Preempt</th>
                                 <th class="text-left py-3 px-4 font-semibold">Dokumen</th>
                                 <th class="text-left py-3 px-4 font-semibold">Aksi</th>
                             </tr>
@@ -163,6 +164,22 @@
                                         @else bg-gray-500 text-white @endif">
                                         {{ ucfirst($booking->status) }}
                                     </span>
+                                </td>
+                                <td class="py-3 px-4">
+                                    @if(($booking->preempt_status ?? 'none') === 'pending')
+                                        <div class="text-xs">
+                                            <span class="inline-block px-2 py-1 rounded bg-red-500 text-white mr-2">Pending</span>
+                                            @php $rq = optional(\App\Models\User::find($booking->preempt_requested_by)); @endphp
+                                            <span class="text-white/80">Diminta oleh: {{ $rq->full_name ?? 'Tidak diketahui' }}</span>
+                                            @if($booking->preempt_deadline_at)
+                                                <div class="text-white/60">Deadline: {{ \Carbon\Carbon::parse($booking->preempt_deadline_at)->format('d M Y H:i') }}</div>
+                                            @endif
+                                        </div>
+                                    @elseif(($booking->preempt_status ?? 'none') === 'closed')
+                                        <span class="text-white/60 text-xs">Closed</span>
+                                    @else
+                                        <span class="text-white/40 text-xs">-</span>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     @if($booking->dokumen_perizinan)
