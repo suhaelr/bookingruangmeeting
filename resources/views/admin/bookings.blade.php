@@ -178,7 +178,11 @@
                                     @elseif(($booking->preempt_status ?? 'none') === 'closed')
                                         <span class="text-white/60 text-xs">Selesai</span>
                                     @else
-                                        <span class="text-white/40 text-xs">-</span>
+                                        @if(isset($booking->auto_confirmed_for_user) && $booking->auto_confirmed_for_user)
+                                            <span class="text-green-300 text-xs">Auto dikonfirmasi untuk: {{ $booking->auto_confirmed_for_user }}</span>
+                                        @else
+                                            <span class="text-white/40 text-xs">-</span>
+                                        @endif
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">

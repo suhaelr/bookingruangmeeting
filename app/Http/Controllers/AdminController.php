@@ -207,6 +207,23 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
         
+        // Annotate bookings with auto-confirm info for admin visibility
+        foreach ($bookings as $b) {
+            $b->auto_confirmed_for_user = null;
+            if ($b->status === 'cancelled' && str_contains(strtolower((string) $b->cancellation_reason), 'preempt')) {
+                $matched = Booking::with('user')
+                    ->where('meeting_room_id', $b->meeting_room_id)
+                    ->where('start_time', $b->start_time)
+                    ->where('end_time', $b->end_time)
+                    ->where('status', 'confirmed')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                if ($matched && $matched->user) {
+                    $b->auto_confirmed_for_user = $matched->user->full_name;
+                }
+            }
+        }
+
         return view('admin.bookings', compact('bookings'));
     }
 
