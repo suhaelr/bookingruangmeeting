@@ -10,25 +10,25 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Fix dropdown styling */
-        select {
+        /* Fix dropdown styling – scoped to dark selects only */
+        .select-dark {
             background-color: rgba(255, 255, 255, 0.2) !important;
             color: white !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
         }
         
-        select option {
+        .select-dark option {
             background-color: #1a202c !important;
             color: white !important;
             padding: 8px 12px !important;
         }
         
-        select option:hover {
+        .select-dark option:hover {
             background-color: #2d3748 !important;
             color: white !important;
         }
         
-        select option:checked {
+        .select-dark option:checked {
             background-color: #3182ce !important;
             color: white !important;
         }
@@ -96,7 +96,7 @@
                     <p class="text-white/80">Pantau dan kelola semua pemesanan ruang meeting</p>
                 </div>
                 <div class="flex space-x-4">
-                    <select id="status-filter" class="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
+                    <select id="status-filter" class="select-dark px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
                         <option value="">Semua Status</option>
                         <option value="pending">Menunggu</option>
                         <option value="confirmed">Dikonfirmasi</option>
@@ -296,13 +296,18 @@
                     @csrf
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                        <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            <option value="">Select status</option>
-                            <option value="pending">Menunggu</option>
-                            <option value="confirmed">Dikonfirmasi</option>
-                            <option value="cancelled">Dibatalkan</option>
-                            <option value="completed">Selesai</option>
-                        </select>
+                        <div class="relative">
+                            <select name="status" class="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="">Select status</option>
+                                <option value="pending">Menunggu</option>
+                                <option value="confirmed">Dikonfirmasi</option>
+                                <option value="cancelled">Dibatalkan</option>
+                                <option value="completed">Selesai</option>
+                            </select>
+                            <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+                                <i class="fas fa-chevron-down"></i>
+                            </span>
+                        </div>
                     </div>
                     <div class="mb-6">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Reason (Optional)</label>
