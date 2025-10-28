@@ -776,9 +776,7 @@
             <p class="text-white/60 text-sm">
                 © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
             </p>
-            <p class="text-white/40 text-xs mt-2">
-                Dibuat dengan ❤️ oleh eL PUSDATIN
-            </p>
+            
             <p class="text-white/50 text-xs mt-3">
                 <a href="{{ route('privacy.policy') }}" class="hover:text-white underline transition-colors duration-300">
                     Kebijakan Privasi
