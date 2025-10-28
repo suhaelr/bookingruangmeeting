@@ -598,6 +598,11 @@
 
             // Real-time availability check and submit button control
             function checkAvailability() {
+                // Don't check availability if form is being submitted
+                if (isSubmitting) {
+                    return;
+                }
+                
                 const roomId = document.getElementById('meeting_room_id').value;
                 const startWaktu = document.getElementById('start_time').value;
                 const endWaktu = document.getElementById('end_time').value;
@@ -695,6 +700,8 @@
 
             // Ensure form submission works
             const form = document.querySelector('form');
+            let isSubmitting = false; // Flag to prevent availability check after submit
+            
             if (form) {
                 form.addEventListener('submit', function(e) {
                     // Check captcha verification
@@ -704,6 +711,9 @@
                         document.getElementById('captcha_answer').focus();
                         return false;
                     }
+                    
+                    // Set submitting flag to prevent availability checks
+                    isSubmitting = true;
                     
                     // Add loading state to submit button
                     const submitBtn = form.querySelector('button[type="submit"]');
@@ -734,8 +744,8 @@
                 .then(data => {
                     if (data.success) {
                         alert(data.message || 'Permintaan didahulukan berhasil dikirim!');
-                        // Refresh availability check to update UI
-                        checkAvailability();
+                        // Don't refresh availability check after preempt request
+                        // as it might show conflicts with the user's own booking
                     } else {
                         alert(data.message || 'Gagal mengirim permintaan didahulukan.');
                     }
