@@ -30,6 +30,31 @@
                 font-size: 0.875rem !important; /* text-base -> text-sm */
             }
         }
+
+        /* Responsive calendar grid */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 0.75rem; /* 3 */
+        }
+        @media (max-width: 1024px) {
+            .calendar-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            .calendar-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+
+        .calendar-day {
+            min-height: 120px;
+            border-radius: 0.75rem; /* xl */
+            padding: 0.75rem; /* 3 */
+            background: rgba(255,255,255,.05);
+            border: 1px solid rgba(255,255,255,.1);
+        }
+        @media (max-width: 640px) {
+            .calendar-day { min-height: 96px; padding: 0.5rem; }
+            .calendar-day .items { max-height: 3.5rem; }
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
@@ -226,7 +251,7 @@
         <!-- Kalender Bulanan (Confirmed bookings per date) -->
         <div class="mt-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <div class="mb-6 flex items-center justify-between">
+                <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
                     <div>
                         <h3 class="text-xl font-bold text-white">Kalender Booking</h3>
                         <p class="text-white/60 text-sm mt-1">{{ $calendarAnchor->translatedFormat('F Y') }}</p>
@@ -236,24 +261,27 @@
                         <a href="{{ url()->current() }}?month={{ now()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20">Hari ini</a>
                         <a href="{{ url()->current() }}?month={{ $calendarAnchor->copy()->addMonth()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20"><i class="fas fa-chevron-right"></i></a>
                     </div>
+                    <div class="w-full sm:w-auto">
+                        <input type="date" id="calendar-date-picker" value="{{ now()->toDateString() }}" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-7 gap-3">
+                <div class="calendar-grid">
                     @php
                         $firstWeekday = (int) $calendarAnchor->copy()->startOfMonth()->dayOfWeekIso; // 1..7
                         $placeholders = $firstWeekday - 1;
                     @endphp
                     @for($i=0;$i<$placeholders;$i++)
-                        <div class="rounded-xl bg-white/5 p-3 min-h-[110px]"></div>
+                        <div class="calendar-day"></div>
                     @endfor
 
                     @foreach($calendarDays as $day)
-                        <div class="rounded-xl bg-white/5 p-3 min-h-[110px] border border-white/10 {{ $day['isToday'] ? 'ring-2 ring-blue-400' : '' }}">
+                        <div class="calendar-day {{ $day['isToday'] ? 'ring-2 ring-blue-400' : '' }}">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-white font-semibold">{{ $day['day'] }}</span>
                                 <span class="text-xs text-white/60">{{ count($day['items']) }} evt</span>
                             </div>
-                            <div class="space-y-1 max-h-28 overflow-y-auto pr-1">
+                            <div class="space-y-1 items overflow-y-auto pr-1">
                                 @forelse($day['items'] as $item)
                                     <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1">
                                         <div class="font-medium truncate">{{ $item['title'] }}</div>
@@ -491,6 +519,18 @@
         // Load notifications on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadNotifikasis();
+            const dp = document.getElementById('calendar-date-picker');
+            if (dp) {
+                dp.addEventListener('change', function() {
+                    const val = this.value; // YYYY-MM-DD
+                    if (!val) return;
+                    const month = val.slice(0,7);
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('month', month);
+                    url.searchParams.set('date', val);
+                    window.location.href = url.toString();
+                });
+            }
         });
 
         // Grid functionality
