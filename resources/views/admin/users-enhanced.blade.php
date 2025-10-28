@@ -112,13 +112,6 @@
 
         // Load users from API
         async function loadUsers() {
-            console.log('Loading users...');
-            console.log('Request URL:', '/admin/users/api');
-            console.log('Request method:', 'GET');
-            console.log('Request headers:', {
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            });
             try {
                 // Add cache-busting parameter
                 const timestamp = new Date().getTime();
@@ -132,26 +125,15 @@
                     }
                 });
 
-                console.log('Load users response status:', response.status);
-                console.log('Load users response OK:', response.ok);
-
                 const data = await response.json();
-                console.log('Load users response data:', data);
-
                 if (data.success) {
                     users = data.users;
-                    console.log('Users loaded:', users);
-                    console.log('Users count:', users.length);
-                    users.forEach((user, index) => {
-                        console.log(`User ${index}: ID=${user.id}, Name=${user.name}, Role=${user.role}`);
-                    });
                     renderUsersTable();
                     showMessage(`Data berhasil dimuat: ${users.length} pengguna ditemukan`, 'success');
                 } else {
                     showMessage('Gagal memuat data pengguna: ' + data.error, 'error');
                 }
             } catch (error) {
-                console.error('Error loading users:', error);
                 showMessage('Terjadi kesalahan saat memuat data pengguna', 'error');
             }
         }
@@ -230,12 +212,10 @@
 
         // Change user role
         function changeUserRole(userId, currentRole, userName) {
-            console.log('changeUserRole called with:', {userId, currentRole, userName});
             currentUserId = userId;
             currentUserRole = currentRole;
             
             const newRole = currentRole === 'admin' ? 'user' : 'admin';
-            console.log('New role will be:', newRole);
             
             document.getElementById('roleChangeContent').innerHTML = `
                 <div class="mb-4">
@@ -279,22 +259,14 @@
         // Confirm role change
         async function confirmRoleChange() {
             if (!currentUserId) {
-                console.error('No user ID selected');
                 showMessage('Tidak ada pengguna yang dipilih', 'error');
                 return;
             }
             
             const newRole = currentUserRole === 'admin' ? 'user' : 'admin';
             
-            console.log('Attempting to change role:', {
-                userId: currentUserId,
-                currentRole: currentUserRole,
-                newRole: newRole
-            });
-            
             try {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                console.log('CSRF Token:', csrfToken);
                 
                 const response = await fetch(`/admin/users/${currentUserId}/role`, {
                     method: 'PUT',
@@ -308,13 +280,7 @@
                         role: newRole
                     })
                 });
-
-                console.log('Response status:', response.status);
-                console.log('Response OK:', response.ok);
-
                 const data = await response.json();
-                console.log('Response data:', data);
-
                 if (data.success) {
                     showMessage(data.message, 'success');
                     closeModal('roleChangeModal');
@@ -332,7 +298,6 @@
                     showMessage(data.error || 'Gagal mengubah role pengguna', 'error');
                 }
             } catch (error) {
-                console.error('Error changing user role:', error);
                 showMessage('Terjadi kesalahan saat mengubah role pengguna: ' + error.message, 'error');
             }
         }
@@ -346,13 +311,6 @@
                 // Get CSRF token
                 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 
-                console.log('Delete user request:', {
-                    userId: userId,
-                    userName: userName,
-                    csrfToken: csrfToken,
-                    url: `/admin/users/${userId}/delete`
-                });
-                
                 // Use fetch API instead of form submission
                 fetch(`/admin/users/${userId}/delete`, {
                     method: 'POST',
@@ -365,7 +323,6 @@
                     body: `_token=${csrfToken}`
                 })
                 .then(response => {
-                    console.log('Delete response:', response.status, response.statusText);
                     if (response.ok) {
                         showMessage('Pengguna berhasil dihapus!', 'success');
                         // Reload users after successful deletion
@@ -374,13 +331,11 @@
                         }, 1000);
                     } else {
                         return response.text().then(text => {
-                            console.error('Delete error response:', text);
                             throw new Error(`HTTP ${response.status}: ${text}`);
                         });
                     }
                 })
                 .catch(error => {
-                    console.error('Error deleting user:', error);
                     showMessage('Gagal menghapus pengguna: ' + error.message, 'error');
                 });
             }
@@ -388,8 +343,6 @@
 
         // Refresh users
         function refreshUsers() {
-            console.log('Refreshing users...');
-            
             // Disable refresh button and show loading
             const refreshBtn = document.querySelector('button[onclick="refreshUsers()"]');
             const originalText = refreshBtn.innerHTML;

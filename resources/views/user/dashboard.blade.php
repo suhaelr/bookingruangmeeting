@@ -223,160 +223,49 @@
             </div>
         </div>
 
-        <!-- Room Availability Grid -->
+        <!-- Kalender Bulanan (Confirmed bookings per date) -->
         <div class="mt-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="mb-6 flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-white">Ketersediaan Ruang Meeting</h3>
-                        <p class="text-white/60 text-sm mt-1">
-                            {{ $selectedDate->isToday() ? 'Hari Ini' : ($selectedDate->isTomorrow() ? 'Besok' : $selectedDate->format('l, d F Y')) }}
-                        </p>
+                        <h3 class="text-xl font-bold text-white">Kalender Booking</h3>
+                        <p class="text-white/60 text-sm mt-1">{{ $calendarAnchor->translatedFormat('F Y') }}</p>
                     </div>
-                    <div class="relative">
-                        <select id="date-selector" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 block p-3 pr-10 appearance-none cursor-pointer min-w-[150px]">
-                            <option value="{{ now()->format('Y-m-d') }}" {{ $selectedDate->isToday() ? 'selected' : '' }} style="background-color: #1a202c; color: white;">Hari Ini</option>
-                            <option value="{{ now()->addDay()->format('Y-m-d') }}" {{ $selectedDate->isTomorrow() ? 'selected' : '' }} style="background-color: #1a202c; color: white;">Besok</option>
-                            <option value="{{ now()->addDays(2)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(2)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">Lusa ({{ now()->addDays(2)->format('d M') }})</option>
-                            <option value="{{ now()->addDays(3)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(3)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(3)->format('l, d M') }}</option>
-                            <option value="{{ now()->addDays(4)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(4)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(4)->format('l, d M') }}</option>
-                            <option value="{{ now()->addDays(5)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(5)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(5)->format('l, d M') }}</option>
-                            <option value="{{ now()->addDays(6)->format('Y-m-d') }}" {{ $selectedDate->isSameDay(now()->addDays(6)) ? 'selected' : '' }} style="background-color: #1a202c; color: white;">{{ now()->addDays(6)->format('l, d M') }}</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-white/80">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
+                    <div class="flex items-center space-x-2">
+                        <a href="{{ url()->current() }}?month={{ $calendarAnchor->copy()->subMonth()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20"><i class="fas fa-chevron-left"></i></a>
+                        <a href="{{ url()->current() }}?month={{ now()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20">Hari ini</a>
+                        <a href="{{ url()->current() }}?month={{ $calendarAnchor->copy()->addMonth()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20"><i class="fas fa-chevron-right"></i></a>
                     </div>
                 </div>
 
-                <style>
-                    #date-selector {
-                        background-color: rgba(255, 255, 255, 0.2) !important;
-                        color: white !important;
-                        border: 1px solid rgba(255, 255, 255, 0.3) !important;
-                    }
-                    
-                    #date-selector option {
-                        background-color: #1a202c !important;
-                        color: white !important;
-                        padding: 8px 12px !important;
-                    }
-                    
-                    #date-selector option:hover {
-                        background-color: #2d3748 !important;
-                        color: white !important;
-                    }
-                    
-                    #date-selector option:checked {
-                        background-color: #3182ce !important;
-                        color: white !important;
-                    }
-                    
-                    #date-selector:focus {
-                        outline: none !important;
-                        border-color: #3b82f6 !important;
-                        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-                    }
-                </style>
+                <div class="grid grid-cols-7 gap-3">
+                    @php
+                        $firstWeekday = (int) $calendarAnchor->copy()->startOfMonth()->dayOfWeekIso; // 1..7
+                        $placeholders = $firstWeekday - 1;
+                    @endphp
+                    @for($i=0;$i<$placeholders;$i++)
+                        <div class="rounded-xl bg-white/5 p-3 min-h-[110px]"></div>
+                    @endfor
 
-                <script>
-                    document.getElementById('date-selector').addEventListener('change', function() {
-                        const selectedDate = this.value;
-                        window.location.href = `{{ url()->current() }}?date=${selectedDate}`;
-                    });
-                </script>
-                
-                <!-- Grid Container -->
-                <div class="overflow-x-auto">
-                    <div class="min-w-full">
-                        <!-- Time Header -->
-                        <div class="flex mb-2">
-                            <div class="w-48 flex-shrink-0"></div>
-                            <div class="flex space-x-1">
-                                @for($hour = 8; $hour <= 18; $hour++)
-                                    @for($minute = 0; $minute < 60; $minute += 30)
-                                        <div class="w-12 text-center text-white/60 text-xs py-2">
-                                            {{ sprintf('%02d:%02d', $hour, $minute) }}
-                                        </div>
-                                    @endfor
-                                @endfor
+                    @foreach($calendarDays as $day)
+                        <div class="rounded-xl bg-white/5 p-3 min-h-[110px] border border-white/10 {{ $day['isToday'] ? 'ring-2 ring-blue-400' : '' }}">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-white font-semibold">{{ $day['day'] }}</span>
+                                <span class="text-xs text-white/60">{{ count($day['items']) }} evt</span>
                             </div>
-                        </div>
-                        
-                        <!-- Room Rows -->
-                        @foreach($roomAvailabilityGrid as $room)
-                        <div class="flex mb-1">
-                            <!-- Room Info -->
-                            <div class="w-48 flex-shrink-0 bg-white/5 rounded-l-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h4 class="text-white font-medium text-sm">{{ $room['name'] }}</h4>
-                                        <p class="text-white/60 text-xs">{{ $room['location'] }}</p>
+                            <div class="space-y-1 max-h-28 overflow-y-auto pr-1">
+                                @forelse($day['items'] as $item)
+                                    <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1">
+                                        <div class="font-medium truncate">{{ $item['title'] }}</div>
+                                        <div class="text-[10px] opacity-80 truncate">{{ $item['start_time'] }}-{{ $item['end_time'] }} • {{ $item['room'] }}</div>
+                                        <div class="text-[10px] opacity-80 truncate">{{ $item['user_name'] }} • {{ $item['unit_kerja'] }}</div>
                                     </div>
-                                    <span class="text-white/60 text-xs">{{ $room['capacity'] }} kursi</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Time Slots -->
-                            <div class="flex space-x-1 flex-1">
-                                @foreach($room['timeSlots'] as $slot)
-                                <div class="w-12 h-12 rounded-lg flex items-center justify-center text-xs font-medium transition-all duration-200 hover:scale-105 cursor-pointer
-                                    @if($slot['isPastTime'])
-                                        bg-gray-500/20 border-2 border-gray-500/30 text-gray-400 cursor-not-allowed
-                                    @elseif($slot['isAvailable'] && !$slot['wasUsed'])
-                                        bg-green-500/20 border-2 border-green-500/30 text-green-300 hover:bg-green-500/30
-                                    @elseif($slot['isAvailable'] && $slot['wasUsed'])
-                                        bg-orange-500/20 border-2 border-orange-500/30 text-orange-300 hover:bg-orange-500/30
-                                    @else
-                                        bg-red-500/20 border-2 border-red-500/30 text-red-300 hover:bg-red-500/30
-                                    @endif"
-                                    data-room-id="{{ $room['id'] }}"
-                                    data-room-name="{{ $room['name'] }}"
-                                    data-room-location="{{ $room['location'] }}"
-                                    data-room-capacity="{{ $room['capacity'] }}"
-                                    data-time="{{ $slot['time'] }}"
-                                    data-datetime="{{ $slot['datetime'] }}"
-                                    data-is-available="{{ $slot['isAvailable'] ? 'true' : 'false' }}"
-                                    data-is-past-time="{{ $slot['isPastTime'] ? 'true' : 'false' }}"
-                                    data-was-used="{{ $slot['wasUsed'] ? 'true' : 'false' }}"
-                                    data-booking='@json($slot["booking"])'
-                                    data-previous-booking='@json($slot["previousBooking"])'
-                                    onmousedown="startHoldTimer(this)"
-                                    onmouseup="clearHoldTimer()"
-                                    onmouseleave="clearHoldTimer()"
-                                    onclick="handleSlotClick(this)">
-                                    @if($slot['isAvailable'] && !$slot['wasUsed'])
-                                        <i class="fas fa-check text-green-300"></i>
-                                    @elseif($slot['isAvailable'] && $slot['wasUsed'])
-                                        <i class="fas fa-history text-orange-300"></i>
-                                    @else
-                                        <i class="fas fa-times text-red-300"></i>
-                                    @endif
-                                </div>
-                                @endforeach
+                                @empty
+                                    <div class="text-[11px] text-white/40">Tidak ada</div>
+                                @endforelse
                             </div>
                         </div>
-                        @endforeach
-                    </div>
-                </div>
-                
-                <!-- Legend -->
-                <div class="mt-6 p-4 bg-white/5 rounded-lg">
-                    <h4 class="text-white font-medium mb-3">Keterangan:</h4>
-                    <div class="space-y-2">
-                        <div class="flex items-center space-x-2 text-sm">
-                            <div class="w-4 h-4 bg-green-500/20 border border-green-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang baru (belum pernah dibooking)</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm">
-                            <div class="w-4 h-4 bg-orange-500/20 border border-orange-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang pernah digunakan (tersedia untuk booking)</span>
-                        </div>
-                        <div class="flex items-center space-x-2 text-sm">
-                            <div class="w-4 h-4 bg-red-500/20 border border-red-500/30 rounded"></div>
-                            <span class="text-white/80">Ruang sedang dibooking (akan berubah ke orange setelah selesai)</span>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>

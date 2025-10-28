@@ -1141,7 +1141,8 @@ class AuthController extends Controller
                     'username' => $user->username,
                     'name' => $displayName,
                     'email' => $user->email,
-                    'unit_kerja' => $user->unit_kerja ?? 'N/A',
+                    // Prefer explicit unit_kerja, else fallback to department
+                    'unit_kerja' => $user->unit_kerja ?: ($user->department ?: 'N/A'),
                     'role' => $user->role ?? 'user', // Default role if NULL
                     'google_id' => $user->google_id ? 'Yes' : 'No',
                     'created_at' => $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'Unknown',

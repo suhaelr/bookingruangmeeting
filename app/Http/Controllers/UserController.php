@@ -81,10 +81,54 @@ class UserController extends Controller
                 ->get();
         }
 
-        // Get selected date from request, default to today
+        // Calendar month selection
+        $monthParam = $request->input('month'); // format YYYY-MM
+        $calendarAnchor = $monthParam ? Carbon::createFromFormat('Y-m', $monthParam)->startOfMonth() : now()->startOfMonth();
+
+        // Build calendar days for current anchor month
+        $startOfMonth = $calendarAnchor->copy()->startOfMonth();
+        $endOfMonth = $calendarAnchor->copy()->endOfMonth();
+
+        // Fetch all confirmed bookings in the displayed month
+        $monthlyConfirmed = Booking::with(['meetingRoom', 'user'])
+            ->where('status', 'confirmed')
+            ->whereDate('start_time', '>=', $startOfMonth->toDateString())
+            ->whereDate('start_time', '<=', $endOfMonth->toDateString())
+            ->orderBy('start_time')
+            ->get()
+            ->groupBy(function ($b) {
+                return $b->start_time->toDateString();
+            });
+
+        $calendarDays = [];
+        $cursor = $startOfMonth->copy();
+        while ($cursor->lte($endOfMonth)) {
+            $dateKey = $cursor->toDateString();
+            $items = [];
+            foreach ($monthlyConfirmed->get($dateKey, collect([])) as $booking) {
+                $items[] = [
+                    'title' => $booking->title,
+                    'start_time' => $booking->start_time->format('H:i'),
+                    'end_time' => $booking->end_time->format('H:i'),
+                    'room' => $booking->meetingRoom?->name,
+                    'user_name' => $booking->user?->full_name ?? $booking->user?->name,
+                    'unit_kerja' => $booking->unit_kerja ?? ($booking->user?->unit_kerja ?? $booking->user?->department),
+                    'description' => $booking->description,
+                ];
+            }
+            $calendarDays[] = [
+                'date' => $dateKey,
+                'day' => (int) $cursor->format('j'),
+                'isToday' => $cursor->isToday(),
+                'items' => $items,
+            ];
+            $cursor->addDay();
+        }
+
+        // Get selected date from request, default to today (for legacy grid)
         $selectedDate = $request->has('date') ? Carbon::parse($request->input('date')) : now();
 
-        // Get room availability grid data
+        // Get room availability grid data (kept for other sections that still use it)
         $roomAvailabilityGrid = $this->getRoomAvailabilityGrid($selectedDate);
 
         return view('user.dashboard', compact(
@@ -94,7 +138,9 @@ class UserController extends Controller
             'availableRooms',
             'notifications',
             'roomAvailabilityGrid',
-            'selectedDate'
+            'selectedDate',
+            'calendarDays',
+            'calendarAnchor'
         ));
     }
 
