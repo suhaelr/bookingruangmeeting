@@ -159,15 +159,29 @@ class UserController extends Controller
             'department' => 'nullable|string|max:100',
         ]);
 
-        // Update session data
+        // Update database and session
         $userData = session('user_data');
-        $userData['full_name'] = $request->full_name;
-        $userData['email'] = $request->email;
-        $userData['phone'] = $request->phone;
-        $userData['department'] = $request->department;
+        $userModel = User::find($userData['id']);
+
+        if ($userModel) {
+            // Persist to DB (mirror department to unit_kerja for admin listing)
+            $userModel->full_name = $request->full_name;
+            $userModel->name = $request->full_name;
+            $userModel->email = $request->email;
+            $userModel->phone = $request->phone;
+            $userModel->department = $request->department;
+            $userModel->unit_kerja = $request->department; // mirror
+            $userModel->save();
+        }
+
+        // Refresh session data from DB to ensure consistency
+        $userData['full_name'] = $userModel->full_name ?? $request->full_name;
+        $userData['email'] = $userModel->email ?? $request->email;
+        $userData['phone'] = $userModel->phone ?? $request->phone;
+        $userData['department'] = $userModel->department ?? $request->department;
         session(['user_data' => $userData]);
 
-        return back()->with('success', 'Profile berhasil diupdate!');
+        return back()->with('success', 'Profil berhasil disimpan.');
     }
 
     public function bookings()

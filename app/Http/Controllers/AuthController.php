@@ -174,7 +174,8 @@ class AuthController extends Controller
                 'full_name' => $freshUser->full_name ?? $freshUser->name,
                 'email' => $freshUser->email,
                 'role' => $freshUser->role, // Use fresh role from database
-                'department' => $freshUser->department
+                'department' => $freshUser->department,
+                'unit_kerja' => $freshUser->unit_kerja
             ]);
 
             // Force session regeneration and save
@@ -670,7 +671,8 @@ class AuthController extends Controller
                 'full_name' => $user->full_name ?? $user->name,
                 'email' => $user->email,
                 'role' => $user->role,
-                'department' => $user->department
+                'department' => $user->department,
+                'unit_kerja' => $user->unit_kerja
             ];
             
             // Check if this is a mobile device
