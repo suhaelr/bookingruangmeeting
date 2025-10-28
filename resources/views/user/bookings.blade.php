@@ -381,6 +381,39 @@
     @endif
 
     <script>
+        // Pre-serialize bookings with invitations and PIC data to ensure availability in JS
+        const BOOKINGS = @json($bookings->getCollection()->map(function($b) {
+            return [
+                'id' => $b->id,
+                'title' => $b->title,
+                'status' => $b->status,
+                'meeting_room' => [
+                    'name' => optional($b->meetingRoom)->name,
+                    'location' => optional($b->meetingRoom)->location,
+                    'id' => optional($b->meetingRoom)->id,
+                ],
+                'start_time' => (string) $b->start_time,
+                'end_time' => (string) $b->end_time,
+                'description' => $b->description,
+                'description_visibility' => $b->description_visibility,
+                'special_requirements' => $b->special_requirements,
+                'attendees_count' => $b->attendees_count,
+                'attendees' => $b->attendees,
+                'user' => [
+                    'full_name' => optional($b->user)->full_name,
+                    'email' => optional($b->user)->email,
+                ],
+                'invitations' => $b->invitations->map(function($i) {
+                    return [
+                        'status' => $i->status,
+                        'pic' => [
+                            'full_name' => optional($i->pic)->full_name,
+                            'unit_kerja' => optional($i->pic)->unit_kerja,
+                        ],
+                    ];
+                })->values(),
+            ];
+        })->values());
         let currentBookingId = null;
 
         // Modal functions
@@ -397,7 +430,7 @@
         // Booking actions
         function viewBooking(bookingId) {
             currentBookingId = bookingId;
-            const booking = @json($bookings->items()).find(b => b.id == bookingId);
+            const booking = BOOKINGS.find(b => b.id == bookingId);
             
             if (booking) {
                 document.getElementById('bookingDetailContent').innerHTML = `
@@ -496,7 +529,7 @@
 
         function editBooking(bookingId) {
             currentBookingId = bookingId;
-            const booking = @json($bookings->items()).find(b => b.id == bookingId);
+            const booking = BOOKINGS.find(b => b.id == bookingId);
             
             if (booking) {
                 document.getElementById('bookingEditContent').innerHTML = `
@@ -701,7 +734,7 @@
         
         function getCurrentBookingRoomId() {
             // Get room ID from the current booking data
-            const booking = @json($bookings->items()).find(b => b.id == currentBookingId);
+            const booking = BOOKINGS.find(b => b.id == currentBookingId);
             return booking ? booking.meeting_room.id : null;
         }
 
@@ -728,7 +761,7 @@
             const exportBtn = document.getElementById('export-btn');
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
-                    const bookings = @json($bookings->items());
+                    const bookings = BOOKINGS;
                     let csv = 'Judul,Room,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
                     
                     bookings.forEach(booking => {
