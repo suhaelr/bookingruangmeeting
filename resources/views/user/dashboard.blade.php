@@ -288,7 +288,7 @@
                                          onclick='showCalendarItemDetails(@json($item))'>
                                         <div class="font-medium truncate">{{ $item['title'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['start_time'] }}-{{ $item['end_time'] }} • {{ $item['room'] }}</div>
-                                        <div class="text-[10px] opacity-80 truncate">{{ $item['user_name'] }} • {{ $item['unit_kerja'] }}</div>
+                                        <div class="text-[10px] opacity-80 truncate">{{ $item['pic_name'] }} • {{ $item['unit_kerja'] }}</div>
                                     </div>
                                 @empty
                                     <div class="text-[11px] text-white/40">Tidak ada</div>
