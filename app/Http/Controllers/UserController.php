@@ -1181,14 +1181,25 @@ class UserController extends Controller
             
             $notification->markAsRead();
             
+            \Log::info('Notification marked as read', [
+                'notification_id' => $id,
+                'user_id' => $user['id']
+            ]);
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Notification marked as read'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to mark notification as read', [
+                'notification_id' => $id,
+                'user_id' => $user['id'] ?? 'unknown',
+                'error' => $e->getMessage()
+            ]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to mark notification as read'
+                'message' => 'Failed to mark notification as read: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -1199,21 +1210,39 @@ class UserController extends Controller
             $user = session('user_data');
             $userModel = User::find($user['id']);
             
-            $userModel->notifications()
+            if (!$userModel) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found'
+                ], 404);
+            }
+            
+            $updatedCount = $userModel->notifications()
                 ->where('is_read', false)
                 ->update([
                     'is_read' => true,
                     'read_at' => now()
                 ]);
             
+            \Log::info('Mark all notifications as read', [
+                'user_id' => $user['id'],
+                'updated_count' => $updatedCount
+            ]);
+            
             return response()->json([
                 'success' => true,
-                'message' => 'All notifications marked as read'
+                'message' => 'All notifications marked as read',
+                'updated_count' => $updatedCount
             ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to mark all notifications as read', [
+                'user_id' => $user['id'] ?? 'unknown',
+                'error' => $e->getMessage()
+            ]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to mark all notifications as read'
+                'message' => 'Failed to mark all notifications as read: ' . $e->getMessage()
             ], 500);
         }
     }

@@ -388,10 +388,19 @@
             
             // Fetch notifications from backend
             fetch('/user/notifications/api')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(notifications => {
+                    console.log('Loaded notifications:', notifications);
+                    
                     const unreadCount = notifications.filter(n => !n.read).length;
                     const badge = document.getElementById('notification-badge');
+                    
+                    console.log('Unread count:', unreadCount);
                     
                     if (unreadCount > 0) {
                         badge.textContent = unreadCount;
@@ -423,7 +432,7 @@
                 })
                 .catch(error => {
                     console.error('Error loading notifications:', error);
-                    notificationList.innerHTML = '<div class="p-3 text-center text-gray-500">Error loading notifications</div>';
+                    notificationList.innerHTML = '<div class="p-3 text-center text-gray-500">Error loading notifications: ' + error.message + '</div>';
                 });
         }
 
@@ -458,17 +467,25 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Mark as read response:', data);
                 if (data.success) {
                     // Reload notifications to update UI
                     loadNotifikasis();
                 } else {
                     console.error('Failed to mark notification as read:', data.message);
+                    alert('Gagal menandai notifikasi sebagai terbaca: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error marking notification as read:', error);
+                alert('Error: ' + error.message);
             });
         }
 
@@ -490,10 +507,12 @@
                     loadNotifikasis();
                 } else {
                     console.error('Failed to mark all notifications as read:', data.message);
+                    alert('Gagal menandai semua notifikasi sebagai terbaca: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error marking all notifications as read:', error);
+                alert('Error: ' + error.message);
             });
         }
 
