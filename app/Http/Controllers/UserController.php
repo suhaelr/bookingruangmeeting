@@ -90,7 +90,7 @@ class UserController extends Controller
         $endOfMonth = $calendarAnchor->copy()->endOfMonth();
 
         // Fetch all confirmed bookings in the displayed month
-        $monthlyConfirmed = Booking::with(['meetingRoom', 'user'])
+        $monthlyConfirmed = Booking::with(['meetingRoom', 'user', 'invitations'])
             ->where('status', 'confirmed')
             ->whereDate('start_time', '>=', $startOfMonth->toDateString())
             ->whereDate('start_time', '<=', $endOfMonth->toDateString())
@@ -106,14 +106,20 @@ class UserController extends Controller
             $dateKey = $cursor->toDateString();
             $items = [];
             foreach ($monthlyConfirmed->get($dateKey, collect([])) as $booking) {
+                $canSeeDescription = $this->canPicSeeDescription($booking, $userModel->id);
+                $isInvitedPic = $booking->invitations->contains('pic_id', $userModel->id);
+                
                 $items[] = [
+                    'id' => $booking->id,
                     'title' => $booking->title,
                     'start_time' => $booking->start_time->format('H:i'),
                     'end_time' => $booking->end_time->format('H:i'),
                     'room' => $booking->meetingRoom?->name,
-                    'user_name' => $booking->user?->full_name ?? $booking->user?->name,
+                    'pic_name' => $booking->user?->full_name ?? $booking->user?->name,
                     'unit_kerja' => $booking->unit_kerja ?? ($booking->user?->unit_kerja ?? $booking->user?->department),
-                    'description' => $booking->description,
+                    'description' => $canSeeDescription ? $booking->description : null,
+                    'can_see_description' => $canSeeDescription,
+                    'is_invited_pic' => $isInvitedPic,
                 ];
             }
             $calendarDays[] = [
@@ -221,13 +227,18 @@ class UserController extends Controller
             ->orderBy('name')
             ->get();
         
+        // Get all PICs (users) for invitation
+        $allPics = User::where('role', 'user')
+            ->orderBy('full_name')
+            ->get();
+        
         // Check if no rooms are available
         if ($rooms->count() === 0) {
-            return view('user.create-booking', compact('rooms'))
+            return view('user.create-booking', compact('rooms', 'allPics'))
                 ->with('warning', 'Saat ini tidak ada ruang meeting yang tersedia. Silakan hubungi administrator untuk informasi lebih lanjut.');
         }
         
-        return view('user.create-booking', compact('rooms'));
+        return view('user.create-booking', compact('rooms', 'allPics'));
     }
 
     public function checkAvailability(Request $request)
@@ -285,6 +296,9 @@ class UserController extends Controller
             'meeting_room_id' => 'required|exists:meeting_rooms,id',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'description_visibility' => 'required|in:public,invited_pics_only',
+            'invited_pics' => 'nullable|array',
+            'invited_pics.*' => 'exists:users,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'attendees_count' => 'required|integer|min:1',
@@ -378,6 +392,7 @@ class UserController extends Controller
                 'meeting_room_id' => $request->meeting_room_id,
                 'title' => $request->title,
                 'description' => $request->description,
+                'description_visibility' => $request->description_visibility,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
                 'attendees_count' => $request->attendees_count,
@@ -387,6 +402,27 @@ class UserController extends Controller
                 'dokumen_perizinan' => $dokumenPerizinanPath,
                 'total_cost' => 0, // Set to 0 since we removed pricing
             ]);
+
+            // Create PIC invitation records
+            if ($request->has('invited_pics')) {
+                foreach ($request->invited_pics as $picId) {
+                    \App\Models\MeetingInvitation::create([
+                        'booking_id' => $booking->id,
+                        'pic_id' => $picId,
+                        'invited_by_pic_id' => $userModel->id,
+                        'status' => 'invited'
+                    ]);
+                    
+                    // Send notification to invited PIC
+                    \App\Models\UserNotification::createNotification(
+                        $picId,
+                        'info',
+                        'Undangan Meeting dari PIC',
+                        "PIC {$userModel->full_name} mengundang Anda ke meeting '{$booking->title}'",
+                        $booking->id
+                    );
+                }
+            }
         } catch (\Exception $e) {
             \Log::error('Booking creation failed', [
                 'error' => $e->getMessage(),
@@ -863,6 +899,26 @@ class UserController extends Controller
             ]);
             return response()->json(['success' => false, 'message' => 'Gagal memproses tanggapan.'], 500);
         }
+    }
+
+    private function canPicSeeDescription($booking, $picId)
+    {
+        // PIC yang membuat booking selalu bisa melihat deskripsi
+        if ($booking->user_id == $picId) {
+            return true;
+        }
+        
+        // Jika visibility public, semua PIC bisa melihat
+        if ($booking->description_visibility === 'public') {
+            return true;
+        }
+        
+        // Jika visibility invited_pics_only, hanya PIC yang diundang yang bisa melihat
+        if ($booking->description_visibility === 'invited_pics_only') {
+            return $booking->invitations->contains('pic_id', $picId);
+        }
+        
+        return false;
     }
 
     private function notifyAdmin($title, $message, $type = 'info', $bookingId = null)

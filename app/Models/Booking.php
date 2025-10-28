@@ -15,6 +15,7 @@ class Booking extends Model
         'meeting_room_id',
         'title',
         'description',
+        'description_visibility',
         'start_time',
         'end_time',
         'status',
@@ -143,6 +144,18 @@ class Booking extends Model
         $this->preempt_deadline_at = null;
         $this->preempt_reason = null;
         $this->save();
+    }
+
+    public function invitations()
+    {
+        return $this->hasMany(MeetingInvitation::class);
+    }
+
+    public function invitedPics()
+    {
+        return $this->belongsToMany(User::class, 'meeting_invitations', 'booking_id', 'pic_id')
+            ->withPivot(['status', 'invited_at', 'responded_at'])
+            ->withTimestamps();
     }
 
     public function updateStatus($status, $reason = null)

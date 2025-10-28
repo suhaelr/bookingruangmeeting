@@ -167,7 +167,48 @@
                     </label>
                     <textarea id="description" name="description" rows="3"
                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                              placeholder="Enter meeting description">{{ old('description') }}</textarea>
+                              placeholder="Masukkan deskripsi meeting, link Zoom/Google Meet, atau informasi penting lainnya">{{ old('description') }}</textarea>
+                    <p class="text-white/60 text-xs mt-1">Anda dapat memasukkan link Zoom, Google Meet, atau informasi penting lainnya</p>
+                </div>
+
+                <!-- PIC Invitations Section -->
+                <div class="pic-invitations-section">
+                    <label class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-user-tie mr-2"></i>Undang PIC Lain
+                    </label>
+                    
+                    <!-- Visibility Setting -->
+                    <div class="mb-4">
+                        <label class="flex items-center text-white mb-2">
+                            <input type="radio" name="description_visibility" value="invited_pics_only" checked class="mr-2">
+                            Hanya PIC yang diundang dapat melihat deskripsi
+                        </label>
+                        <label class="flex items-center text-white">
+                            <input type="radio" name="description_visibility" value="public" class="mr-2">
+                            Semua PIC dapat melihat deskripsi
+                        </label>
+                    </div>
+                    
+                    <!-- PIC Selection -->
+                    <div class="bg-white/10 rounded-lg p-4 max-h-60 overflow-y-auto">
+                        <h4 class="text-white font-medium mb-3">Pilih PIC yang akan diundang:</h4>
+                        @foreach($allPics as $pic)
+                            @if($pic->id !== auth()->id())
+                            <label class="flex items-center text-white mb-2 cursor-pointer hover:bg-white/5 p-2 rounded">
+                                <input type="checkbox" name="invited_pics[]" value="{{ $pic->id }}" class="mr-3">
+                                <div>
+                                    <div class="font-medium">{{ $pic->full_name }}</div>
+                                    <div class="text-sm text-white/60">{{ $pic->unit_kerja }}</div>
+                                </div>
+                            </label>
+                            @endif
+                        @endforeach
+                    </div>
+                    
+                    <p class="text-white/60 text-xs mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        PIC yang diundang akan menerima notifikasi dan dapat melihat deskripsi meeting (termasuk link Zoom/Meet) di kalender mereka.
+                    </p>
                 </div>
 
                 <!-- Tanggal and Waktu -->
