@@ -183,6 +183,26 @@
                                     </p>
                                 </div>
                                 @endif
+
+                                @if(isset($booking->preempt_status) && $booking->preempt_status === 'pending')
+                                <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-3 mb-3">
+                                    <p class="text-red-200 text-sm mb-3">
+                                        <i class="fas fa-handshake-angle mr-2"></i>
+                                        <strong>Permintaan Didahulukan:</strong> Booking ini sedang menunggu tanggapan Anda.
+                                    </p>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button onclick="respondPreempt({{ $booking->id }}, 'accept_cancel')" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
+                                            Terima & Batalkan
+                                        </button>
+                                        <button onclick="respondPreempt({{ $booking->id }}, 'accept_reschedule')" class="px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded">
+                                            Terima & Pindah
+                                        </button>
+                                        <button onclick="proposeTimesPreempt({{ $booking->id }})" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
+                                            Usulkan Waktu Lain
+                                        </button>
+                                    </div>
+                                </div>
+                                @endif
                                 
                                 @if($booking->attendees && count($booking->attendees) > 0)
                                 <div class="mb-3">
@@ -505,6 +525,47 @@
                 document.body.appendChild(form);
                 form.submit();
             }
+        }
+
+        function respondPreempt(bookingId, action) {
+            fetch(`/user/bookings/${bookingId}/preempt-respond`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ action })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || 'Berhasil memproses tanggapan.');
+                if (data.success) location.reload();
+            })
+            .catch(err => {
+                alert('Gagal memproses tanggapan.');
+            });
+        }
+
+        function proposeTimesPreempt(bookingId) {
+            const proposed = prompt('Masukkan usulan waktu alternatif (mis. 10:00-11:00, 14:00-15:00):');
+            if (proposed === null) return;
+            fetch(`/user/bookings/${bookingId}/preempt-respond`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ action: 'propose_times', proposed_times: proposed })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || 'Usulan waktu terkirim.');
+            })
+            .catch(err => {
+                alert('Gagal mengirim usulan waktu.');
+            });
         }
 
         function getStatusColor(status) {

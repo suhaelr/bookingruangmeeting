@@ -253,6 +253,7 @@ class UserController extends Controller
                 'message' => $conflictDetails,
                 'conflicts' => $conflictingBookings->map(function($booking) {
                     return [
+                        'id' => $booking->id,
                         'title' => $booking->title,
                         'user' => $booking->user->full_name,
                         'start_time' => $booking->start_time->format('d M Y H:i'),
@@ -607,6 +608,138 @@ class UserController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             return back()->with('error', 'Gagal membatalkan booking: ' . $e->getMessage());
+        }
+    }
+
+    public function requestPreempt(Request $request, $id)
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $user = session('user_data');
+        $requesterId = $user['id'] ?? null;
+
+        try {
+            $target = Booking::with('user')->findOrFail($id);
+
+            // Cannot preempt own booking
+            if ($target->user_id === $requesterId) {
+                return response()->json(['success' => false, 'message' => 'Tidak dapat meminta didahulukan pada booking milik sendiri.'], 400);
+            }
+
+            // If already pending, do nothing (idempotent)
+            if ($target->preempt_status === 'pending') {
+                return response()->json(['success' => true, 'message' => 'Permintaan sudah dalam status menunggu tanggapan.']);
+            }
+
+            // Compute SLA
+            $now = now();
+            $minutes = 60;
+            if ($target->start_time && $target->start_time->diffInHours($now, false) > -2) {
+                // < 2 hours to start
+                $minutes = 15;
+            }
+            $deadline = $now->copy()->addMinutes($minutes);
+
+            // Start preempt
+            $target->startPreempt($requesterId, $deadline, $request->input('reason'));
+
+            \Log::info('Preempt requested', [
+                'booking_id' => $target->id,
+                'requested_by' => $requesterId,
+                'deadline_at' => $deadline->toDateTimeString(),
+            ]);
+
+            // Notify owner (simple DB notification)
+            try {
+                \App\Models\UserNotification::createNotification(
+                    $target->user_id,
+                    'info',
+                    'Permintaan Didahulukan',
+                    'Booking Anda diminta untuk didahulukan oleh pengguna lain. Mohon tanggapi segera.',
+                    $target->id
+                );
+            } catch (\Throwable $e) {
+                \Log::error('Failed to create preempt notification to owner', ['error' => $e->getMessage()]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Permintaan dikirim. Menunggu tanggapan pemilik booking.']);
+        } catch (\Exception $e) {
+            \Log::error('Error in requestPreempt', [
+                'error' => $e->getMessage(),
+                'booking_id' => $id,
+                'user_id' => $requesterId,
+            ]);
+            return response()->json(['success' => false, 'message' => 'Gagal mengirim permintaan.'], 500);
+        }
+    }
+
+    public function respondPreempt(Request $request, $id)
+    {
+        $request->validate([
+            'action' => 'required|in:accept_cancel,accept_reschedule,propose_times',
+            'proposed_times' => 'nullable|string',
+        ]);
+
+        $user = session('user_data');
+        $ownerId = $user['id'] ?? null;
+
+        try {
+            $booking = Booking::findOrFail($id);
+
+            if ($booking->user_id !== $ownerId) {
+                return response()->json(['success' => false, 'message' => 'Anda bukan pemilik booking ini.'], 403);
+            }
+
+            if ($booking->preempt_status !== 'pending') {
+                return response()->json(['success' => false, 'message' => 'Tidak ada permintaan yang perlu ditanggapi.'], 400);
+            }
+
+            $action = $request->input('action');
+
+            if ($action === 'accept_cancel') {
+                $booking->updateStatus('cancelled', 'Cancelled due to preempt request');
+                $booking->closePreempt();
+                \Log::info('Preempt accepted with cancel', ['booking_id' => $booking->id, 'owner_id' => $ownerId]);
+                return response()->json(['success' => true, 'message' => 'Booking dibatalkan dan slot dirilis.']);
+            }
+
+            if ($action === 'accept_reschedule') {
+                // For MVP, simply close preempt and let owner manually reschedule via edit flow
+                $booking->closePreempt();
+                \Log::info('Preempt accepted with reschedule', ['booking_id' => $booking->id, 'owner_id' => $ownerId]);
+                return response()->json(['success' => true, 'message' => 'Silakan reschedule booking Anda ke waktu lain.']);
+            }
+
+            if ($action === 'propose_times') {
+                // Store proposal via notification to requester
+                try {
+                    if ($booking->preempt_requested_by) {
+                        \App\Models\UserNotification::createNotification(
+                            $booking->preempt_requested_by,
+                            'info',
+                            'Usulan Waktu dari Pemilik Booking',
+                            'Pemilik mengusulkan waktu alternatif: ' . ($request->input('proposed_times') ?? '-'),
+                            $booking->id
+                        );
+                    }
+                } catch (\Throwable $e) {
+                    \Log::error('Failed to notify requester about proposed times', ['error' => $e->getMessage()]);
+                }
+                // Keep pending status; requester can re-request or agree offline
+                \Log::info('Preempt responded with proposed times', ['booking_id' => $booking->id, 'owner_id' => $ownerId]);
+                return response()->json(['success' => true, 'message' => 'Usulan waktu terkirim.']);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Aksi tidak dikenal.'], 400);
+        } catch (\Exception $e) {
+            \Log::error('Error in respondPreempt', [
+                'error' => $e->getMessage(),
+                'booking_id' => $id,
+                'user_id' => $ownerId,
+            ]);
+            return response()->json(['success' => false, 'message' => 'Gagal memproses tanggapan.'], 500);
         }
     }
 
@@ -966,7 +1099,10 @@ class UserController extends Controller
     private function getConflictingBookings($roomId, $startTime, $endTime, $excludeBookingId = null)
     {
         $query = Booking::where('meeting_room_id', $roomId)
-            ->whereIn('status', ['pending', 'confirmed'])
+            ->where(function ($q) {
+                $q->whereIn('status', ['pending', 'confirmed'])
+                  ->orWhere('preempt_status', 'pending');
+            })
             ->where('start_time', '<', $endTime)
             ->where('end_time', '>', $startTime)
             ->with('user');
