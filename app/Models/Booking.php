@@ -31,6 +31,8 @@ class Booking extends Model
         'preempt_requested_by',
         'preempt_deadline_at',
         'preempt_reason',
+        'needs_reschedule',
+        'reschedule_deadline_at',
     ];
 
     protected $casts = [
@@ -41,6 +43,8 @@ class Booking extends Model
         'cancelled_at' => 'datetime',
         'total_cost' => 'decimal:2',
         'preempt_deadline_at' => 'datetime',
+        'reschedule_deadline_at' => 'datetime',
+        'needs_reschedule' => 'boolean',
     ];
 
     public function user()

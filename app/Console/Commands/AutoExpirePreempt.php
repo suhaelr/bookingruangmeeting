@@ -68,7 +68,40 @@ class AutoExpirePreempt extends Command
             }
         }
 
-        $this->info("Processed {$count} expired preempt bookings.");
+        // Auto-cancel for owners who didn't reschedule in time
+        $rescheduleExpired = Booking::where('needs_reschedule', true)
+            ->whereNotNull('reschedule_deadline_at')
+            ->where('reschedule_deadline_at', '<=', $now)
+            ->get();
+
+        $cancelledReschedules = 0;
+        foreach ($rescheduleExpired as $booking) {
+            try {
+                \DB::transaction(function () use ($booking) {
+                    $booking->updateStatus('cancelled', 'Auto-cancel due to reschedule deadline expired');
+                    $booking->needs_reschedule = false;
+                    $booking->reschedule_deadline_at = null;
+                    $booking->save();
+                });
+                $cancelledReschedules++;
+                try {
+                    \App\Models\UserNotification::createNotification(
+                        $booking->user_id,
+                        'warning',
+                        'Booking Dibatalkan Otomatis',
+                        'Booking Anda dibatalkan karena melewati batas waktu reschedule.',
+                        $booking->id
+                    );
+                } catch (\Throwable $e) { \Log::error('Failed to notify owner after reschedule auto-cancel', ['e'=>$e->getMessage()]); }
+            } catch (\Throwable $e) {
+                \Log::error('Failed to auto-cancel after reschedule deadline', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        $this->info("Processed {$count} expired preempt bookings and {$cancelledReschedules} reschedule timeouts.");
         return self::SUCCESS;
     }
 }

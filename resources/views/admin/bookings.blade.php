@@ -121,6 +121,7 @@
                                 <th class="text-left py-3 px-4 font-semibold">Tanggal & Waktu</th>
                                 <th class="text-left py-3 px-4 font-semibold">Status</th>
                                 <th class="text-left py-3 px-4 font-semibold">Permintaan Didahulukan</th>
+                                <th class="text-left py-3 px-4 font-semibold">Reschedule</th>
                                 <th class="text-left py-3 px-4 font-semibold">Dokumen</th>
                                 <th class="text-left py-3 px-4 font-semibold">Aksi</th>
                             </tr>
@@ -183,6 +184,16 @@
                                         @else
                                             <span class="text-white/40 text-xs">-</span>
                                         @endif
+                                    @endif
+                                </td>
+                                <td class="py-3 px-4">
+                                    @if(($booking->needs_reschedule ?? false) && $booking->reschedule_deadline_at)
+                                        <span class="inline-block px-2 py-1 rounded bg-yellow-600 text-white text-xs">Butuh Reschedule</span>
+                                        <div class="text-white/70 text-xs mt-1">Batas Waktu: {{ \Carbon\Carbon::parse($booking->reschedule_deadline_at)->format('d M Y H:i') }}</div>
+                                    @elseif(($booking->needs_reschedule ?? false))
+                                        <span class="text-yellow-300 text-xs">Butuh Reschedule</span>
+                                    @else
+                                        <span class="text-white/40 text-xs">-</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
