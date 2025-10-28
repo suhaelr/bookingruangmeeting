@@ -362,6 +362,16 @@ class UserController extends Controller
         // Clear captcha from session after successful verification
         session()->forget(['captcha_answer', 'captcha_question', 'captcha_verified']);
 
+        // Validate user exists in database first
+        $userModel = User::find($user['id']);
+        if (!$userModel) {
+            \Log::error('User not found in database', [
+                'session_user_id' => $user['id'],
+                'session_user_data' => $user
+            ]);
+            return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
+        }
+
         $room = MeetingRoom::findOrFail($request->meeting_room_id);
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
@@ -400,16 +410,6 @@ class UserController extends Controller
         $attendees = [];
         if ($request->attendees) {
             $attendees = array_filter(array_map('trim', explode(',', $request->attendees)));
-        }
-
-        // Validate user exists in database
-        $userModel = User::find($user['id']);
-        if (!$userModel) {
-            \Log::error('User not found in database', [
-                'session_user_id' => $user['id'],
-                'session_user_data' => $user
-            ]);
-            return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
         }
 
         // Log user validation for debugging
