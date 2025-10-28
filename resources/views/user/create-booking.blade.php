@@ -580,15 +580,37 @@
                 }, 100);
             }
 
-            // Add event listeners for real-time availability checking
+            // Add event listeners for real-time availability checking with debouncing
+            let availabilityCheckTimeout;
+            
+            function debouncedCheckAvailability() {
+                // Clear previous timeout
+                if (availabilityCheckTimeout) {
+                    clearTimeout(availabilityCheckTimeout);
+                }
+                
+                // Clear current availability status
+                const availabilityDiv = document.getElementById('availability-status');
+                if (availabilityDiv) {
+                    availabilityDiv.innerHTML = '';
+                }
+                
+                // Set new timeout for availability check
+                availabilityCheckTimeout = setTimeout(() => {
+                    checkAvailability();
+                }, 500); // Wait 500ms after user stops typing/selecting
+            }
+            
             if (meetingRoomSelect) {
-                meetingRoomSelect.addEventListener('change', checkAvailability);
+                meetingRoomSelect.addEventListener('change', debouncedCheckAvailability);
             }
             if (startWaktuInput) {
-                startWaktuInput.addEventListener('change', checkAvailability);
+                startWaktuInput.addEventListener('change', debouncedCheckAvailability);
+                startWaktuInput.addEventListener('input', debouncedCheckAvailability);
             }
             if (endWaktuInput) {
-                endWaktuInput.addEventListener('change', checkAvailability);
+                endWaktuInput.addEventListener('change', debouncedCheckAvailability);
+                endWaktuInput.addEventListener('input', debouncedCheckAvailability);
             }
 
             // Initial availability check
@@ -610,6 +632,14 @@
                 const endWaktu = document.getElementById('end_time').value;
                 const submitBtn = document.getElementById('submit-booking-btn');
                 
+                // Debug logging
+                console.log('Checking availability with:', {
+                    roomId: roomId,
+                    startWaktu: startWaktu,
+                    endWaktu: endWaktu,
+                    timestamp: new Date().toISOString()
+                });
+                
                 if (roomId && startWaktu && endWaktu) {
                     fetch('{{ route("user.check-availability") }}', {
                         method: 'POST',
@@ -625,6 +655,9 @@
                     })
                     .then(response => response.json())
                     .then(data => {
+                        // Debug logging for response
+                        console.log('Availability check response:', data);
+                        
                         const availabilityDiv = document.getElementById('availability-status');
                         if (!availabilityDiv) {
                             const newDiv = document.createElement('div');
