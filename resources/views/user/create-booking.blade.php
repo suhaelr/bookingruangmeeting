@@ -228,10 +228,10 @@
                            placeholder="Masukkan unit kerja Anda">
                 </div>
 
-                <!-- Dokumen Perizinan -->
+                <!-- Dokumen Tambahan (Opsional) -->
                 <div>
                     <label for="dokumen_perizinan" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-file-pdf mr-2"></i>Dokumen Perizinan (PDF, Max 2MB) *
+                        <i class="fas fa-file-pdf mr-2"></i>Dokumen Tambahan (Opsional) (PDF, Max 2MB)
                     </label>
                     
                     <!-- File Input -->
@@ -256,7 +256,7 @@
                         </div>
                     </div>
                     
-                    <p class="text-white/60 text-xs mt-1">Upload dokumen perizinan dalam format PDF (maksimal 2MB)</p>
+                    <p class="text-white/60 text-xs mt-1">Opsional: unggah dokumen pendukung dalam format PDF (maksimal 2MB)</p>
                 </div>
 
                 <!-- Captcha Section -->
