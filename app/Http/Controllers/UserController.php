@@ -221,7 +221,7 @@ class UserController extends Controller
             return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
         }
         
-        $bookings = Booking::with('meetingRoom')
+        $bookings = Booking::with(['meetingRoom', 'invitations.pic'])
             ->where('user_id', $userModel->id)
             ->orderBy('created_at', 'desc')
             ->paginate(10);

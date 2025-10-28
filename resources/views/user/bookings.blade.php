@@ -433,6 +433,45 @@
                         </div>
                         ` : ''}
                         
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Visibility Deskripsi</label>
+                            <p class="text-gray-900">
+                                ${booking.description_visibility === 'public' ? 
+                                    '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"><i class="fas fa-globe mr-1"></i>Publik - Semua PIC dapat melihat</span>' :
+                                    '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"><i class="fas fa-lock mr-1"></i>Terbatas - Hanya PIC yang diundang</span>'
+                                }
+                            </p>
+                        </div>
+                        
+                        ${booking.invitations && booking.invitations.length > 0 ? `
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">PIC yang Diundang</label>
+                            <div class="space-y-2">
+                                ${booking.invitations.map(invitation => `
+                                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                                        <div class="flex items-center">
+                                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                                                ${invitation.pic.full_name.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-900 font-medium">${invitation.pic.full_name}</p>
+                                                <p class="text-gray-600 text-sm">${invitation.pic.unit_kerja || 'Tidak ada unit kerja'}</p>
+                                            </div>
+                                        </div>
+                                        <span class="px-2 py-1 rounded-full text-xs font-medium ${getInvitationStatusColor(invitation.status)}">
+                                            ${getInvitationStatusText(invitation.status)}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : `
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">PIC yang Diundang</label>
+                            <p class="text-gray-500 italic">Tidak ada PIC yang diundang</p>
+                        </div>
+                        `}
+                        
                         ${booking.special_requirements ? `
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Special Requirements</label>
@@ -575,6 +614,24 @@
                 'cancelled': 'bg-red-100 text-red-800'
             };
             return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getInvitationStatusColor(status) {
+            const colors = {
+                'invited': 'bg-yellow-100 text-yellow-800',
+                'accepted': 'bg-green-100 text-green-800',
+                'declined': 'bg-red-100 text-red-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getInvitationStatusText(status) {
+            const texts = {
+                'invited': 'Diundang',
+                'accepted': 'Diterima',
+                'declined': 'Ditolak'
+            };
+            return texts[status] || 'Tidak diketahui';
         }
 
         function calculateDuration(startWaktu, endWaktu) {
