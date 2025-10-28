@@ -651,7 +651,7 @@
                                 </div>
                             `;
                             
-                            // Add preempt buttons if there are conflicts
+                            // Add preempt buttons if there are conflicts with OTHER users
                             if (data.conflicts && data.conflicts.length > 0) {
                                 conflictHtml += `
                                     <div class="mt-3 bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 px-4 py-3 rounded-lg">

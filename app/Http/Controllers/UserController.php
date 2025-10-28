@@ -250,6 +250,15 @@ class UserController extends Controller
             'exclude_booking_id' => 'nullable|integer|exists:bookings,id',
         ]);
 
+        $user = session('user_data');
+        $userModel = User::find($user['id']);
+        if (!$userModel) {
+            return response()->json([
+                'available' => false,
+                'message' => 'User session invalid. Please login again.'
+            ], 401);
+        }
+
         $room = MeetingRoom::findOrFail($request->room_id);
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
@@ -258,11 +267,17 @@ class UserController extends Controller
         $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime, $excludeBookingId);
         
         if ($conflictingBookings->count() > 0) {
+            // Filter out bookings by the same user (prevent self-preempt)
+            $otherUserConflicts = $conflictingBookings->filter(function($booking) use ($userModel) {
+                return $booking->user_id !== $userModel->id;
+            });
+            
             $conflictDetails = $this->formatConflictDetails($conflictingBookings, $room);
+            
             return response()->json([
                 'available' => false,
                 'message' => $conflictDetails,
-                'conflicts' => $conflictingBookings->map(function($booking) {
+                'conflicts' => $otherUserConflicts->map(function($booking) {
                     return [
                         'id' => $booking->id,
                         'title' => $booking->title,
