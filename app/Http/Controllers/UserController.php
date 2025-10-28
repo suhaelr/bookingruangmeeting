@@ -109,6 +109,19 @@ class UserController extends Controller
                 $canSeeDescription = $this->canPicSeeDescription($booking, $userModel->id);
                 $isInvitedPic = $booking->invitations->contains('pic_id', $userModel->id);
                 
+                // Debug logging
+                \Log::info('Calendar item debug', [
+                    'booking_id' => $booking->id,
+                    'booking_title' => $booking->title,
+                    'user_id' => $userModel->id,
+                    'booking_user_id' => $booking->user_id,
+                    'description_visibility' => $booking->description_visibility,
+                    'has_description' => !empty($booking->description),
+                    'can_see_description' => $canSeeDescription,
+                    'is_invited_pic' => $isInvitedPic,
+                    'invitations_count' => $booking->invitations->count(),
+                ]);
+                
                 $items[] = [
                     'id' => $booking->id,
                     'title' => $booking->title,

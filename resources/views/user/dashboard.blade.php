@@ -578,6 +578,8 @@
 
         // Calendar item detail modal
         function showCalendarItemDetails(item) {
+            console.log('Calendar item data:', item); // Debug log
+            
             let descriptionHtml = '';
             
             if (item.can_see_description && item.description) {
@@ -599,6 +601,26 @@
                         <div class="text-sm text-gray-600">
                             <i class="fas fa-user-check mr-2"></i>
                             Anda adalah PIC yang diundang ke meeting ini
+                        </div>
+                    </div>
+                `;
+            } else if (item.description && !item.can_see_description) {
+                // Show message that description exists but user can't see it
+                descriptionHtml = `
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-lock mr-2"></i>
+                            Deskripsi meeting tersedia namun hanya untuk PIC yang diundang
+                        </div>
+                    </div>
+                `;
+            } else if (!item.description) {
+                // Show message that no description is available
+                descriptionHtml = `
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div class="text-sm text-gray-600">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Tidak ada deskripsi meeting
                         </div>
                     </div>
                 `;
