@@ -381,39 +381,8 @@
     @endif
 
     <script>
-        // Pre-serialize bookings with invitations and PIC data to ensure availability in JS
-        const BOOKINGS = @json($bookings->getCollection()->map(function($b) {
-            return [
-                'id' => $b->id,
-                'title' => $b->title,
-                'status' => $b->status,
-                'meeting_room' => [
-                    'name' => optional($b->meetingRoom)->name,
-                    'location' => optional($b->meetingRoom)->location,
-                    'id' => optional($b->meetingRoom)->id,
-                ],
-                'start_time' => (string) $b->start_time,
-                'end_time' => (string) $b->end_time,
-                'description' => $b->description,
-                'description_visibility' => $b->description_visibility,
-                'special_requirements' => $b->special_requirements,
-                'attendees_count' => $b->attendees_count,
-                'attendees' => $b->attendees,
-                'user' => [
-                    'full_name' => optional($b->user)->full_name,
-                    'email' => optional($b->user)->email,
-                ],
-                'invitations' => $b->invitations->map(function($i) {
-                    return [
-                        'status' => $i->status,
-                        'pic' => [
-                            'full_name' => optional($i->pic)->full_name,
-                            'unit_kerja' => optional($i->pic)->unit_kerja,
-                        ],
-                    ];
-                })->values(),
-            ];
-        })->values());
+        // Serialize bookings for client-side use (relations eager loaded in controller)
+        const BOOKINGS = @json($bookings->items());
         let currentBookingId = null;
 
         // Modal functions
