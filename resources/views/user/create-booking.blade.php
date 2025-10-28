@@ -592,8 +592,10 @@
             }
 
             // Initial availability check
-            setTimeout(() => {
-                checkAvailability();
+            let initialCheckTimeout = setTimeout(() => {
+                if (!isSubmitting) {
+                    checkAvailability();
+                }
             }, 500);
 
             // Real-time availability check and submit button control
@@ -714,6 +716,28 @@
                     
                     // Set submitting flag to prevent availability checks
                     isSubmitting = true;
+                    
+                    // Clear any pending timeouts
+                    if (initialCheckTimeout) {
+                        clearTimeout(initialCheckTimeout);
+                    }
+                    
+                    // Remove event listeners to prevent further availability checks
+                    if (meetingRoomSelect) {
+                        meetingRoomSelect.removeEventListener('change', checkAvailability);
+                    }
+                    if (startWaktuInput) {
+                        startWaktuInput.removeEventListener('change', checkAvailability);
+                    }
+                    if (endWaktuInput) {
+                        endWaktuInput.removeEventListener('change', checkAvailability);
+                    }
+                    
+                    // Clear availability status div to prevent showing conflicts
+                    const availabilityDiv = document.getElementById('availability-status');
+                    if (availabilityDiv) {
+                        availabilityDiv.innerHTML = '';
+                    }
                     
                     // Add loading state to submit button
                     const submitBtn = form.querySelector('button[type="submit"]');

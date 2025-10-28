@@ -376,8 +376,13 @@ class UserController extends Controller
         // Check availability with detailed feedback
         $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime);
         
-        if ($conflictingBookings->count() > 0) {
-            $conflictDetails = $this->formatConflictDetails($conflictingBookings, $room);
+        // Filter out bookings by the same user (prevent self-conflict)
+        $otherUserConflicts = $conflictingBookings->filter(function($booking) use ($userModel) {
+            return $booking->user_id !== $userModel->id;
+        });
+        
+        if ($otherUserConflicts->count() > 0) {
+            $conflictDetails = $this->formatConflictDetails($otherUserConflicts, $room);
             return back()->withErrors([
                 'start_time' => $conflictDetails
             ])->withInput();
