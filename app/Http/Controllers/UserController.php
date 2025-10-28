@@ -279,27 +279,60 @@ class UserController extends Controller
         
         $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime, $excludeBookingId);
         
+        // Debug logging
+        \Log::info('Availability check debug', [
+            'user_id' => $userModel->id,
+            'room_id' => $room->id,
+            'start_time' => $startTime->toDateTimeString(),
+            'end_time' => $endTime->toDateTimeString(),
+            'conflicting_bookings_count' => $conflictingBookings->count(),
+            'conflicting_bookings' => $conflictingBookings->map(function($booking) {
+                return [
+                    'id' => $booking->id,
+                    'user_id' => $booking->user_id,
+                    'title' => $booking->title,
+                    'start_time' => $booking->start_time->toDateTimeString(),
+                    'end_time' => $booking->end_time->toDateTimeString(),
+                ];
+            })
+        ]);
+        
         if ($conflictingBookings->count() > 0) {
             // Filter out bookings by the same user (prevent self-preempt)
             $otherUserConflicts = $conflictingBookings->filter(function($booking) use ($userModel) {
                 return $booking->user_id !== $userModel->id;
             });
             
-            $conflictDetails = $this->formatConflictDetails($conflictingBookings, $room);
-            
-            return response()->json([
-                'available' => false,
-                'message' => $conflictDetails,
-                'conflicts' => $otherUserConflicts->map(function($booking) {
+            \Log::info('Filtered conflicts', [
+                'user_id' => $userModel->id,
+                'other_user_conflicts_count' => $otherUserConflicts->count(),
+                'other_user_conflicts' => $otherUserConflicts->map(function($booking) {
                     return [
                         'id' => $booking->id,
+                        'user_id' => $booking->user_id,
                         'title' => $booking->title,
-                        'user' => $booking->user->full_name,
-                        'start_time' => $booking->start_time->format('d M Y H:i'),
-                        'end_time' => $booking->end_time->format('H:i'),
                     ];
                 })
             ]);
+            
+            // Only show conflicts if there are conflicts with other users
+            if ($otherUserConflicts->count() > 0) {
+                $conflictDetails = $this->formatConflictDetails($otherUserConflicts, $room);
+                
+                return response()->json([
+                    'available' => false,
+                    'message' => $conflictDetails,
+                    'conflicts' => $otherUserConflicts->map(function($booking) {
+                        return [
+                            'id' => $booking->id,
+                            'title' => $booking->title,
+                            'user' => $booking->user->full_name,
+                            'start_time' => $booking->start_time->format('d M Y H:i'),
+                            'end_time' => $booking->end_time->format('H:i'),
+                        ];
+                    })
+                ]);
+            }
         }
 
         return response()->json([
