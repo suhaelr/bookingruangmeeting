@@ -237,13 +237,18 @@ class UserController extends Controller
             ->where('user_id', $userModel->id)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
+        // All PICs for edit modal (checkbox list)
+        $allPics = User::where('role', 'user')
+            ->orderBy('full_name')
+            ->get(['id','full_name','unit_kerja']);
         
         \Log::info('User bookings retrieved', [
             'user_id' => $userModel->id,
             'bookings_count' => $bookings->count()
         ]);
         
-        return view('user.bookings', compact('bookings'));
+        return view('user.bookings', compact('bookings','allPics'));
     }
 
     public function createBooking()
@@ -556,6 +561,12 @@ class UserController extends Controller
                 $updateData['special_requirements'] = $request->special_requirements;
             }
 
+            // Description visibility
+            if ($request->filled('description_visibility') && $request->description_visibility !== $booking->description_visibility) {
+                $validationRules['description_visibility'] = 'required|in:public,invited_pics_only';
+                $updateData['description_visibility'] = $request->description_visibility;
+            }
+
             // If no fields to update, return error
             if (empty($updateData)) {
                 \Log::info('No fields to update in edit booking', [
@@ -628,6 +639,32 @@ class UserController extends Controller
 
             // Update booking with only changed fields
             $booking->update($updateData);
+
+            // Sync invited PICs if provided
+            if ($request->has('invited_pics')) {
+                $request->validate([
+                    'invited_pics' => 'array',
+                    'invited_pics.*' => 'integer|exists:users,id'
+                ]);
+
+                $newPicIds = collect($request->invited_pics)->map(fn($v) => (int)$v)->unique()->values();
+                $currentPicIds = $booking->invitations()->pluck('pic_id');
+
+                $toAdd = $newPicIds->diff($currentPicIds);
+                $toDelete = $currentPicIds->diff($newPicIds);
+
+                if ($toDelete->count() > 0) {
+                    $booking->invitations()->whereIn('pic_id', $toDelete)->delete();
+                }
+                foreach ($toAdd as $picId) {
+                    \App\Models\MeetingInvitation::create([
+                        'booking_id' => $booking->id,
+                        'pic_id' => $picId,
+                        'invited_by_pic_id' => $user['id'],
+                        'status' => 'invited'
+                    ]);
+                }
+            }
 
             // Send notification to admin
             $this->notifyAdmin('Booking Updated', "User {$user['full_name']} updated their booking: {$booking->title}");

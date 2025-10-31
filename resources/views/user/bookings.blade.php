@@ -493,13 +493,41 @@
         function editBooking(bookingId) {
             currentBookingId = bookingId;
             const booking = BOOKINGS.find(b => b.id == bookingId);
+            const ALL_PICS = @json($allPics ?? []);
             
             if (booking) {
+                // Build invited pics checklist
+                const invitedIds = (booking.invitations || []).map(inv => inv.pic_id);
+                const picsHtml = ALL_PICS
+                    .filter(p => p.id !== booking.user_id)
+                    .map(p => `
+                        <label class="flex items-center text-gray-700 mb-2 cursor-pointer">
+                            <input type="checkbox" name="invited_pics[]" value="${p.id}" class="mr-3" ${invitedIds.includes(p.id) ? 'checked' : ''}>
+                            <div>
+                                <div class="font-medium">${p.full_name}</div>
+                                <div class="text-sm text-gray-500">${p.unit_kerja || ''}</div>
+                            </div>
+                        </label>
+                    `).join('');
+
                 document.getElementById('bookingEditContent').innerHTML = `
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Judul</label>
                             <input type="text" name="title" value="${booking.title}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Visibility Deskripsi</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center"><input type="radio" name="description_visibility" value="invited_pics_only" class="mr-2" ${booking.description_visibility === 'invited_pics_only' ? 'checked' : ''}>Hanya PIC yang diundang dapat melihat deskripsi</label>
+                                <label class="flex items-center"><input type="radio" name="description_visibility" value="public" class="mr-2" ${booking.description_visibility === 'public' ? 'checked' : ''}>Semua PIC dapat melihat deskripsi</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pilih PIC yang akan diundang</label>
+                            <div class="max-h-48 overflow-y-auto border rounded-lg p-3">
+                                ${picsHtml || '<div class="text-sm text-gray-500">Tidak ada PIC tersedia</div>'}
+                            </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
@@ -732,10 +760,13 @@
                     const formData = {
                         title: document.querySelector('input[name="title"]').value,
                         description: document.querySelector('textarea[name="description"]').value,
+                        description_visibility: (document.querySelector('input[name="description_visibility"]:checked') || {}).value,
                         start_time: document.querySelector('input[name="start_time"]').value,
                         end_time: document.querySelector('input[name="end_time"]').value,
                         special_requirements: document.querySelector('textarea[name="special_requirements"]').value
                     };
+                    const invited = Array.from(document.querySelectorAll('input[name="invited_pics[]"]:checked')).map(i => parseInt(i.value));
+                    formData.invited_pics = invited;
                     
                     const bookingId = currentBookingId;
                     
