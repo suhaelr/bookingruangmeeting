@@ -92,7 +92,9 @@ class UserController extends Controller
             }
         } elseif (!empty($monthParam)) {
             try {
-                $calendarAnchor = Carbon::createFromFormat('Y-m', $monthParam)->startOfMonth();
+                // Normalize month string to YYYY-MM and build a safe date
+                $monthKey = substr($monthParam, 0, 7);
+                $calendarAnchor = Carbon::parse($monthKey . '-01')->startOfMonth();
             } catch (\Throwable $e) {
                 $calendarAnchor = now()->startOfMonth();
             }
