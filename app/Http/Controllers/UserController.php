@@ -802,20 +802,21 @@ class UserController extends Controller
             if ($action === 'accept_cancel') {
                 $requesterId = $booking->preempt_requested_by;
 
-                // 1) Batalkan booking lama
-                $booking->updateStatus('cancelled', 'Cancelled due to preempt request');
-                $booking->closePreempt();
+                \DB::transaction(function () use ($booking, $requesterId) {
+                    // 1) Batalkan booking lama & tutup preempt
+                    $booking->updateStatus('cancelled', 'Cancelled due to preempt request');
+                    $booking->closePreempt();
 
-                // 2) Auto-create & confirm booking baru untuk peminta pada slot yang sama
-                try {
+                    // 2) Auto-create & confirm booking baru untuk peminta pada slot yang sama
                     if ($requesterId) {
-                        $requester = \App\Models\User::find($requesterId);
+                        $requester = \App\Models\User::lockForUpdate()->find($requesterId);
                         if ($requester) {
                             $new = new \App\Models\Booking();
                             $new->user_id = $requester->id;
                             $new->meeting_room_id = $booking->meeting_room_id;
                             $new->title = '[Didahulukan] ' . ($booking->title ?? 'Meeting');
                             $new->description = 'Dibuat otomatis setelah disetujui didahulukan.';
+                            $new->description_visibility = $booking->description_visibility ?: 'invited_pics_only';
                             $new->start_time = $booking->start_time;
                             $new->end_time = $booking->end_time;
                             $new->status = 'confirmed';
@@ -827,36 +828,26 @@ class UserController extends Controller
                             $new->save();
 
                             // Notifikasi ke peminta
-                            try {
-                                \App\Models\UserNotification::createNotification(
-                                    $requester->id,
-                                    'success',
-                                    'Booking Anda Otomatis Dikonfirmasi',
-                                    'Permintaan didahulukan disetujui. Booking baru telah dibuat dan dikonfirmasi pada slot tersebut.',
-                                    $new->id
-                                );
-                            } catch (\Throwable $e) { \Log::error('Notify requester auto-confirm failed', ['e'=>$e->getMessage()]); }
+                            \App\Models\UserNotification::createNotification(
+                                $requester->id,
+                                'success',
+                                'Booking Anda Otomatis Dikonfirmasi',
+                                'Permintaan didahulukan disetujui. Booking baru telah dibuat dan dikonfirmasi pada slot tersebut.',
+                                $new->id
+                            );
 
                             // Notifikasi ke admin (global)
-                            try {
-                                \App\Models\UserNotification::create([
-                                    'user_id' => null,
-                                    'booking_id' => $new->id,
-                                    'type' => 'info',
-                                    'title' => 'Auto-Confirm Setelah Didahulukan',
-                                    'message' => "Booking #{$booking->id} dibatalkan oleh pemilik; booking baru #{$new->id} untuk peminta telah dikonfirmasi.",
-                                    'is_read' => false,
-                                ]);
-                            } catch (\Throwable $e) { \Log::error('Notify admin auto-confirm failed', ['e'=>$e->getMessage()]); }
+                            \App\Models\UserNotification::create([
+                                'user_id' => null,
+                                'booking_id' => $new->id,
+                                'type' => 'info',
+                                'title' => 'Auto-Confirm Setelah Didahulukan',
+                                'message' => "Booking #{$booking->id} dibatalkan oleh pemilik; booking baru #{$new->id} untuk peminta telah dikonfirmasi.",
+                                'is_read' => false,
+                            ]);
                         }
                     }
-                } catch (\Throwable $e) {
-                    \Log::error('Auto-create/confirm booking for requester failed', [
-                        'booking_id' => $booking->id,
-                        'requester_id' => $requesterId,
-                        'error' => $e->getMessage()
-                    ]);
-                }
+                });
 
                 \Log::info('Preempt accepted with cancel (auto-confirm created for requester if possible)', [
                     'booking_id' => $booking->id,
@@ -1310,3 +1301,4 @@ class UserController extends Controller
         return "Ruang {$room->name} tidak tersedia untuk waktu yang dipilih karena ada konflik dengan booking berikut:\n\n{$conflictList}\n\nSilakan pilih waktu yang berbeda.";
     }
 }
+
