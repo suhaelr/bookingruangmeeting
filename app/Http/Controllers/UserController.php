@@ -780,8 +780,7 @@ class UserController extends Controller
     public function respondPreempt(Request $request, $id)
     {
         $request->validate([
-            'action' => 'required|in:accept_cancel,accept_reschedule,propose_times',
-            'proposed_times' => 'nullable|string',
+            'action' => 'required|in:accept_cancel',
         ]);
 
         $user = session('user_data');
@@ -865,95 +864,6 @@ class UserController extends Controller
                     'requester_id' => $booking->preempt_requested_by
                 ]);
                 return response()->json(['success' => true, 'message' => 'Booking dibatalkan. Permintaan didahulukan disetujui dan booking peminta dikonfirmasi otomatis.']);
-            }
-
-            if ($action === 'accept_reschedule') {
-                // Auto-confirm requester on the same slot
-                $requesterId = $booking->preempt_requested_by;
-                try {
-                    if ($requesterId) {
-                        $requester = \App\Models\User::find($requesterId);
-                        if ($requester) {
-                            $new = new \App\Models\Booking();
-                            $new->user_id = $requester->id;
-                            $new->meeting_room_id = $booking->meeting_room_id;
-                            $new->title = '[Didahulukan] ' . ($booking->title ?? 'Meeting');
-                            $new->description = 'Dibuat otomatis setelah pemilik memilih Terima & Pindah.';
-                            $new->start_time = $booking->start_time;
-                            $new->end_time = $booking->end_time;
-                            $new->status = 'confirmed';
-                            $new->attendees_count = max(1, (int)($booking->attendees_count ?? 1));
-                            $new->attendees = $booking->attendees ?? [];
-                            $new->special_requirements = $booking->special_requirements;
-                            $new->unit_kerja = $requester->unit_kerja ?? $requester->department ?? null;
-                            $new->total_cost = 0;
-                            $new->save();
-
-                            // Notifications
-                            try {
-                                \App\Models\UserNotification::createNotification(
-                                    $requester->id,
-                                    'success',
-                                    'Booking Anda Otomatis Dikonfirmasi',
-                                    'Permintaan didahulukan disetujui. Booking baru telah dibuat dan dikonfirmasi pada slot tersebut.',
-                                    $new->id
-                                );
-                            } catch (\Throwable $e) { \Log::error('Notify requester auto-confirm (reschedule) failed', ['e'=>$e->getMessage()]); }
-                        }
-                    }
-                } catch (\Throwable $e) {
-                    \Log::error('Auto-confirm for requester (reschedule) failed', [
-                        'booking_id' => $booking->id,
-                        'requester_id' => $requesterId,
-                        'error' => $e->getMessage()
-                    ]);
-                }
-
-                // Mark owner booking to require reschedule with deadline
-                $deadlineMinutes = 24 * 60; // default 24h
-                $booking->needs_reschedule = true;
-                $booking->reschedule_deadline_at = now()->addMinutes($deadlineMinutes);
-                $booking->closePreempt();
-                $booking->save();
-
-                // Notify owner
-                try {
-                    \App\Models\UserNotification::createNotification(
-                        $ownerId,
-                        'warning',
-                        'Wajib Reschedule Booking',
-                        'Anda menyetujui Terima & Pindah. Silakan reschedule sebelum ' . $booking->reschedule_deadline_at->format('d M Y H:i') . '.',
-                        $booking->id
-                    );
-                } catch (\Throwable $e) { \Log::error('Notify owner reschedule required failed', ['e'=>$e->getMessage()]); }
-
-                \Log::info('Preempt accepted with reschedule (auto-confirm requester, owner needs reschedule)', [
-                    'booking_id' => $booking->id,
-                    'owner_id' => $ownerId,
-                    'requester_id' => $booking->preempt_requested_by,
-                    'deadline_at' => optional($booking->reschedule_deadline_at)->toDateTimeString()
-                ]);
-                return response()->json(['success' => true, 'message' => 'Booking peminta dikonfirmasi. Anda wajib reschedule sebelum batas waktu.']);
-            }
-
-            if ($action === 'propose_times') {
-                // Store proposal via notification to requester
-                try {
-                    if ($booking->preempt_requested_by) {
-                        \App\Models\UserNotification::createNotification(
-                            $booking->preempt_requested_by,
-                            'info',
-                            'Usulan Waktu dari Pemilik Booking',
-                            'Pemilik mengusulkan waktu alternatif: ' . ($request->input('proposed_times') ?? '-'),
-                            $booking->id
-                        );
-                    }
-                } catch (\Throwable $e) {
-                    \Log::error('Failed to notify requester about proposed times', ['error' => $e->getMessage()]);
-                }
-                // Keep pending status; requester can re-request or agree offline
-                \Log::info('Preempt responded with proposed times', ['booking_id' => $booking->id, 'owner_id' => $ownerId]);
-                return response()->json(['success' => true, 'message' => 'Usulan waktu terkirim.']);
             }
 
             return response()->json(['success' => false, 'message' => 'Aksi tidak dikenal.'], 400);

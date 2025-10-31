@@ -194,12 +194,6 @@
                                         <button onclick="respondPreempt({{ $booking->id }}, 'accept_cancel')" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
                                             Terima & Batalkan
                                         </button>
-                                        <button onclick="respondPreempt({{ $booking->id }}, 'accept_reschedule')" class="px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded">
-                                            Terima & Pindah
-                                        </button>
-                                        <button onclick="proposeTimesPreempt({{ $booking->id }})" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded">
-                                            Usulkan Waktu Lain
-                                        </button>
                                     </div>
                                 </div>
                                 @endif
@@ -588,26 +582,7 @@
             });
         }
 
-        function proposeTimesPreempt(bookingId) {
-            const proposed = prompt('Masukkan usulan waktu alternatif (mis. 10:00-11:00, 14:00-15:00):');
-            if (proposed === null) return;
-            fetch(`/user/bookings/${bookingId}/preempt-respond`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ action: 'propose_times', proposed_times: proposed })
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert(data.message || 'Usulan waktu terkirim.');
-            })
-            .catch(err => {
-                alert('Gagal mengirim usulan waktu.');
-            });
-        }
+        // removed proposeTimesPreempt: only 'Terima & Batalkan' is supported
 
         function getStatusColor(status) {
             const colors = {
