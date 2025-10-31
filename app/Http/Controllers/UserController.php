@@ -824,7 +824,12 @@ class UserController extends Controller
                             $new->attendees_count = max(1, (int)($booking->attendees_count ?? 1));
                             $new->attendees = $booking->attendees ?? [];
                             $new->special_requirements = $booking->special_requirements;
-                            $new->unit_kerja = $requester->unit_kerja ?? $requester->department ?? null;
+                            // Ensure unit_kerja is never null (DB may enforce NOT NULL on some envs)
+                            $fallbackUnit = $booking->unit_kerja
+                                ?? $requester->unit_kerja
+                                ?? $requester->department
+                                ?? 'Tidak diketahui';
+                            $new->unit_kerja = $fallbackUnit;
                             $new->total_cost = 0;
                             $new->save();
 
