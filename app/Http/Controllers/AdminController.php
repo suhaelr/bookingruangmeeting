@@ -224,6 +224,24 @@ class AdminController extends Controller
             }
         }
 
+        // Hide cancelled (preempt) records if there is a matching auto-confirmed booking for the same slot
+        $collection = $bookings->getCollection();
+        $filtered = $collection->filter(function ($b) {
+            if ($b->status !== 'cancelled') {
+                return true;
+            }
+            if (!str_contains(strtolower((string) $b->cancellation_reason), 'preempt')) {
+                return true;
+            }
+            $existsConfirmed = Booking::where('meeting_room_id', $b->meeting_room_id)
+                ->where('start_time', $b->start_time)
+                ->where('end_time', $b->end_time)
+                ->where('status', 'confirmed')
+                ->exists();
+            return !$existsConfirmed; // keep only if no confirmed replacement exists
+        });
+        $bookings->setCollection($filtered->values());
+
         return view('admin.bookings', compact('bookings'));
     }
 
