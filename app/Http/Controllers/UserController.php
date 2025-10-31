@@ -802,14 +802,15 @@ class UserController extends Controller
             if ($action === 'accept_cancel') {
                 $requesterId = $booking->preempt_requested_by;
 
-                \DB::transaction(function () use ($booking, $requesterId) {
+                try {
+                    \DB::beginTransaction();
                     // 1) Batalkan booking lama & tutup preempt
                     $booking->updateStatus('cancelled', 'Cancelled due to preempt request');
                     $booking->closePreempt();
 
                     // 2) Auto-create & confirm booking baru untuk peminta pada slot yang sama
                     if ($requesterId) {
-                        $requester = \App\Models\User::lockForUpdate()->find($requesterId);
+                        $requester = \App\Models\User::find($requesterId);
                         if ($requester) {
                             $new = new \App\Models\Booking();
                             $new->user_id = $requester->id;
@@ -847,7 +848,16 @@ class UserController extends Controller
                             ]);
                         }
                     }
-                });
+                    \DB::commit();
+                } catch (\Throwable $t) {
+                    \DB::rollBack();
+                    \Log::error('respondPreempt transaction failed', [
+                        'booking_id' => $booking->id,
+                        'requester_id' => $requesterId,
+                        'error' => $t->getMessage(),
+                    ]);
+                    throw $t;
+                }
 
                 \Log::info('Preempt accepted with cancel (auto-confirm created for requester if possible)', [
                     'booking_id' => $booking->id,
