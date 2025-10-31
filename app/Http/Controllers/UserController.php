@@ -310,41 +310,27 @@ class UserController extends Controller
         ]);
         
         if ($conflictingBookings->count() > 0) {
-            // Filter out bookings by the same user (prevent self-preempt)
+            // Build UI message with all conflicts (including same user) to BLOCK booking
+            $conflictDetails = $this->formatConflictDetails($conflictingBookings, $room);
+
+            // For preempt UI purposes, only return conflicts owned by other users
             $otherUserConflicts = $conflictingBookings->filter(function($booking) use ($userModel) {
                 return $booking->user_id !== $userModel->id;
             });
-            
-            \Log::info('Filtered conflicts', [
-                'user_id' => $userModel->id,
-                'other_user_conflicts_count' => $otherUserConflicts->count(),
-                'other_user_conflicts' => $otherUserConflicts->map(function($booking) {
+
+            return response()->json([
+                'available' => false,
+                'message' => $conflictDetails,
+                'conflicts' => $otherUserConflicts->map(function($booking) {
                     return [
                         'id' => $booking->id,
-                        'user_id' => $booking->user_id,
                         'title' => $booking->title,
+                        'user' => $booking->user->full_name,
+                        'start_time' => $booking->start_time->format('d M Y H:i'),
+                        'end_time' => $booking->end_time->format('H:i'),
                     ];
                 })
             ]);
-            
-            // Only show conflicts if there are conflicts with other users
-            if ($otherUserConflicts->count() > 0) {
-                $conflictDetails = $this->formatConflictDetails($otherUserConflicts, $room);
-                
-                return response()->json([
-                    'available' => false,
-                    'message' => $conflictDetails,
-                    'conflicts' => $otherUserConflicts->map(function($booking) {
-                        return [
-                            'id' => $booking->id,
-                            'title' => $booking->title,
-                            'user' => $booking->user->full_name,
-                            'start_time' => $booking->start_time->format('d M Y H:i'),
-                            'end_time' => $booking->end_time->format('H:i'),
-                        ];
-                    })
-                ]);
-            }
         }
 
         return response()->json([
@@ -428,16 +414,10 @@ class UserController extends Controller
             ])->withInput();
         }
         
-        // Check availability with detailed feedback
+        // Check availability with detailed feedback (BLOCK regardless of owner)
         $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime);
-        
-        // Filter out bookings by the same user (prevent self-conflict)
-        $otherUserConflicts = $conflictingBookings->filter(function($booking) use ($userModel) {
-            return $booking->user_id !== $userModel->id;
-        });
-        
-        if ($otherUserConflicts->count() > 0) {
-            $conflictDetails = $this->formatConflictDetails($otherUserConflicts, $room);
+        if ($conflictingBookings->count() > 0) {
+            $conflictDetails = $this->formatConflictDetails($conflictingBookings, $room);
             return back()->withErrors([
                 'start_time' => $conflictDetails
             ])->withInput();
