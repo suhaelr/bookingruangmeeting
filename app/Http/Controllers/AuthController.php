@@ -474,10 +474,10 @@ class AuthController extends Controller
      */
     public function redirectToGoogle()
     {
-        // Regenerate session and clear previous OAuth state to avoid stale CSRF/state
+        // Clear previous OAuth state to avoid stale CSRF/state (tanpa mengganti session id)
         try {
             Session::forget('google_oauth_state');
-            Session::regenerate(true);
+            Session::save();
         } catch (\Throwable $e) { /* ignore */ }
         // Try config first, fallback to env() if config fails
         $clientId = config('services.google.client_id') ?: env('GOOGLE_CLIENT_ID');
@@ -717,13 +717,10 @@ class AuthController extends Controller
                 'session_id_before' => session()->getId()
             ]);
             
-            // Clear any existing session data first
+            // Clear any existing session data first (jangan ganti session id agar cookie tetap konsisten)
             Session::forget('user_logged_in');
             Session::forget('user_data');
             Session::forget('google_oauth_state');
-            
-            // Regenerate session ID for security
-            Session::regenerate(true);
             
             // Set new session data
             Session::put('user_logged_in', true);
