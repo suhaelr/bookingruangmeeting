@@ -258,7 +258,7 @@
                         <p class="text-white/60 text-sm mt-1">{{ $calendarAnchor->translatedFormat('F Y') }}</p>
                     </div>
                     <div class="w-full sm:w-auto">
-                        <input type="date" id="calendar-date-picker" value="{{ isset($selectedDate) ? $selectedDate->toDateString() : now()->toDateString() }}" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
+                        <input type="month" id="calendar-date-picker" value="{{ $calendarAnchor->format('Y-m') }}" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
                     </div>
                 </div>
 
@@ -560,12 +560,11 @@
             const dp = document.getElementById('calendar-date-picker');
             if (dp) {
                 dp.addEventListener('change', function() {
-                    const val = this.value; // YYYY-MM-DD
-                    if (!val) return;
-                    const month = val.slice(0,7);
+                    const month = this.value; // YYYY-MM from <input type="month">
+                    if (!month) return;
                     const url = new URL(window.location.href);
                     url.searchParams.set('month', month);
-                    url.searchParams.set('date', val);
+                    url.searchParams.delete('date');
                     window.location.href = url.toString();
                 });
             }
