@@ -842,15 +842,19 @@ class UserController extends Controller
                                 $new->id
                             );
 
-                            // Notifikasi ke admin (global)
-                            \App\Models\UserNotification::create([
-                                'user_id' => null,
-                                'booking_id' => $new->id,
-                                'type' => 'info',
-                                'title' => 'Auto-Confirm Setelah Didahulukan',
-                                'message' => "Booking #{$booking->id} dibatalkan oleh pemilik; booking baru #{$new->id} untuk peminta telah dikonfirmasi.",
-                                'is_read' => false,
-                            ]);
+                            // Notifikasi ke admin: gunakan user admin pertama jika kolom user_id NOT NULL
+                            try {
+                                $adminUser = \App\Models\User::where('role', 'admin')->orderBy('id')->first();
+                                if ($adminUser) {
+                                    \App\Models\UserNotification::createNotification(
+                                        $adminUser->id,
+                                        'info',
+                                        'Auto-Confirm Setelah Didahulukan',
+                                        "Booking #{$booking->id} dibatalkan oleh pemilik; booking baru #{$new->id} untuk peminta telah dikonfirmasi.",
+                                        $new->id
+                                    );
+                                }
+                            } catch (\Throwable $e) { \Log::error('Notify admin auto-confirm failed', ['e'=>$e->getMessage()]); }
                         }
                     }
                     \DB::commit();

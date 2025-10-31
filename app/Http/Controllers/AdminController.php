@@ -393,7 +393,10 @@ class AdminController extends Controller
     public function getNotifications()
     {
         // Get admin notifications (where user_id is null)
+        // Tampilkan notifikasi global (user_id null) atau notifikasi yang ditujukan ke akun admin
+        $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
         $notifications = \App\Models\UserNotification::whereNull('user_id')
+            ->orWhereIn('user_id', $adminIds)
             ->with('booking')
             ->orderBy('created_at', 'desc')
             ->limit(50)
