@@ -81,9 +81,24 @@ class UserController extends Controller
                 ->get();
         }
 
-        // Calendar month selection
+        // Calendar month selection (date param takes precedence over month)
         $monthParam = $request->input('month'); // format YYYY-MM
-        $calendarAnchor = $monthParam ? Carbon::createFromFormat('Y-m', $monthParam)->startOfMonth() : now()->startOfMonth();
+        $dateParam = $request->input('date');   // format YYYY-MM-DD
+        if (!empty($dateParam)) {
+            try {
+                $calendarAnchor = Carbon::parse($dateParam)->startOfMonth();
+            } catch (\Throwable $e) {
+                $calendarAnchor = now()->startOfMonth();
+            }
+        } elseif (!empty($monthParam)) {
+            try {
+                $calendarAnchor = Carbon::createFromFormat('Y-m', $monthParam)->startOfMonth();
+            } catch (\Throwable $e) {
+                $calendarAnchor = now()->startOfMonth();
+            }
+        } else {
+            $calendarAnchor = now()->startOfMonth();
+        }
 
         // Build calendar days for current anchor month
         $startOfMonth = $calendarAnchor->copy()->startOfMonth();
