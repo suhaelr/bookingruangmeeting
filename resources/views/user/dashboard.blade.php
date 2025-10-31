@@ -257,13 +257,8 @@
                         <h3 class="text-xl font-bold text-white">Kalender Booking</h3>
                         <p class="text-white/60 text-sm mt-1">{{ $calendarAnchor->translatedFormat('F Y') }}</p>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ url()->current() }}?month={{ $calendarAnchor->copy()->subMonth()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20"><i class="fas fa-chevron-left"></i></a>
-                        <a href="{{ url()->current() }}?month={{ now()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20">Hari ini</a>
-                        <a href="{{ url()->current() }}?month={{ $calendarAnchor->copy()->addMonth()->format('Y-m') }}" class="px-3 py-2 bg-white/10 text-white rounded hover:bg-white/20"><i class="fas fa-chevron-right"></i></a>
-                    </div>
                     <div class="w-full sm:w-auto">
-                        <input type="date" id="calendar-date-picker" value="{{ now()->toDateString() }}" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
+                        <input type="date" id="calendar-date-picker" value="{{ isset($selectedDate) ? $selectedDate->toDateString() : now()->toDateString() }}" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
                     </div>
                 </div>
 
@@ -280,7 +275,7 @@
                         <div class="calendar-day {{ $day['isToday'] ? 'ring-2 ring-blue-400' : '' }}">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-white font-semibold">{{ $day['day'] }}</span>
-                                <span class="text-xs text-white/60">{{ count($day['items']) }} evt</span>
+                                <span class="text-xs text-white/60">{{ count($day['items']) }} booking</span>
                             </div>
                             <div class="space-y-1 items overflow-y-auto pr-1">
                                 @forelse($day['items'] as $item)
