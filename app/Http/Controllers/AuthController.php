@@ -466,6 +466,11 @@ class AuthController extends Controller
      */
     public function redirectToGoogle()
     {
+        // Regenerate session and clear previous OAuth state to avoid stale CSRF/state
+        try {
+            Session::forget('google_oauth_state');
+            Session::regenerate(true);
+        } catch (\Throwable $e) { /* ignore */ }
         // Try config first, fallback to env() if config fails
         $clientId = config('services.google.client_id') ?: env('GOOGLE_CLIENT_ID');
         $clientSecret = config('services.google.client_secret') ?: env('GOOGLE_CLIENT_SECRET');
@@ -514,9 +519,12 @@ class AuthController extends Controller
             'include_granted_scopes' => 'true' // Include previously granted scopes
         ];
         
+        // Add cache-buster to avoid any intermediary caching issues
+        $params['cb'] = (string) time();
         $authUrl = "https://accounts.google.com/o/oauth2/v2/auth?" . http_build_query($params);
         
-        return redirect($authUrl);
+        $response = redirect($authUrl);
+        return $this->addNoCacheHeaders($response);
     }
 
     /**

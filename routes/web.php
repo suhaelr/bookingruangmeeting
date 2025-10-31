@@ -61,8 +61,9 @@ Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->nam
 Route::post('/resend-verification', [AuthController::class, 'resendVerification'])->name('verification.resend');
 
 // Google OAuth Routes with mobile session fix
-Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google')->middleware('mobile.session.fix');
-Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware('mobile.session.fix');
+// Ensure web middleware (session) is applied and disable caching at controller level
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google')->middleware('web');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback')->middleware('web');
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
 // Debug route for session checking
