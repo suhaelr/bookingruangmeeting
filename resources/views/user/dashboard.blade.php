@@ -620,6 +620,19 @@
                 `;
             }
             
+            // Invited PICs block
+            let invitedHtml = '';
+            if (Array.isArray(item.invited_pics) && item.invited_pics.length > 0) {
+                invitedHtml = `
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-800 mb-3">PIC yang Diundang</h4>
+                        <ul class="list-disc pl-5 text-sm text-gray-700">
+                            ${item.invited_pics.map(p => `<li>${(p.name || 'Tidak diketahui')}${p.unit_kerja ? ' - ' + p.unit_kerja : ''}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
             const modalContent = `
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
                     <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
@@ -663,6 +676,7 @@
                             </div>
                             
                             ${descriptionHtml}
+                            ${invitedHtml}
                         </div>
                         
                         <div class="flex justify-end mt-6">

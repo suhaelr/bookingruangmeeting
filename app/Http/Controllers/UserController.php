@@ -107,7 +107,7 @@ class UserController extends Controller
         $endOfMonth = $calendarAnchor->copy()->endOfMonth();
 
         // Fetch all confirmed bookings in the displayed month
-        $monthlyConfirmed = Booking::with(['meetingRoom', 'user', 'invitations'])
+        $monthlyConfirmed = Booking::with(['meetingRoom', 'user', 'invitations.pic'])
             ->where('status', 'confirmed')
             ->whereDate('start_time', '>=', $startOfMonth->toDateString())
             ->whereDate('start_time', '<=', $endOfMonth->toDateString())
@@ -151,6 +151,14 @@ class UserController extends Controller
                     'invitations_count' => $booking->invitations->count(),
                 ]);
                 
+                $invitedPics = $booking->invitations->map(function($inv){
+                    return [
+                        'id' => $inv->pic_id,
+                        'name' => $inv->pic?->full_name,
+                        'unit_kerja' => $inv->pic?->unit_kerja,
+                    ];
+                })->values();
+
                 $items[] = [
                     'id' => $booking->id,
                     'title' => $booking->title,
@@ -162,6 +170,7 @@ class UserController extends Controller
                     'description' => $canSeeDescription ? $booking->description : null,
                     'can_see_description' => $canSeeDescription,
                     'is_invited_pic' => $isInvitedPic,
+                    'invited_pics' => $invitedPics,
                 ];
             }
             $calendarDays[] = [
