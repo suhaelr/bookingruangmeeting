@@ -106,8 +106,20 @@ class UserController extends Controller
             $dateKey = $cursor->toDateString();
             $items = [];
             foreach ($monthlyConfirmed->get($dateKey, collect([])) as $booking) {
-                $canSeeDescription = $this->canPicSeeDescription($booking, $userModel->id);
-                $isInvitedPic = $booking->invitations->contains('pic_id', $userModel->id);
+                // Strict visibility: only admin, owner, or invited PIC may see description when visibility is invited_pics_only
+                $isAdmin = $userModel->role === 'admin';
+                $isOwner = (int)$booking->user_id === (int)$userModel->id;
+                $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
+                    return (int)$inv->pic_id === (int)$userModel->id;
+                });
+                $canSeeDescription = false;
+                if ($isAdmin || $isOwner) {
+                    $canSeeDescription = true;
+                } elseif ($booking->description_visibility === 'public') {
+                    $canSeeDescription = true;
+                } elseif ($booking->description_visibility === 'invited_pics_only' && $isInvitedPic) {
+                    $canSeeDescription = true;
+                }
                 
                 // Debug logging
                 \Log::info('Calendar item debug', [
