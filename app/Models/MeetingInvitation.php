@@ -9,6 +9,8 @@ class MeetingInvitation extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'booking_id',
         'pic_id',
