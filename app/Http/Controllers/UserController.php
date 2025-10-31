@@ -567,26 +567,7 @@ class UserController extends Controller
                 $updateData['description_visibility'] = $request->description_visibility;
             }
 
-            // If no fields to update, return error
-            if (empty($updateData)) {
-                \Log::info('No fields to update in edit booking', [
-                    'booking_id' => $id,
-                    'user_id' => $user['id'],
-                    'request_data' => $request->all(),
-                    'current_booking' => [
-                        'title' => $booking->title,
-                        'description' => $booking->description,
-                        'start_time' => $booking->start_time->format('Y-m-d\TH:i'),
-                        'end_time' => $booking->end_time->format('Y-m-d\TH:i'),
-                        'special_requirements' => $booking->special_requirements
-                    ]
-                ]);
-                
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tidak ada field yang diupdate.'
-                ], 422);
-            }
+            // It's valid to update only invited PICs without changing booking fields, so do not return error here
 
             // Validate only the fields being updated
             $request->validate($validationRules);
@@ -634,11 +615,12 @@ class UserController extends Controller
                 }
             }
 
-            // Recalculate total cost (hourly_rate removed, set to 0)
-            $updateData['total_cost'] = 0.00;
-
-            // Update booking with only changed fields
-            $booking->update($updateData);
+            // Recalculate total cost (hourly_rate removed, set to 0) only if there are changes
+            if (!empty($updateData)) {
+                $updateData['total_cost'] = 0.00;
+                // Update booking with only changed fields
+                $booking->update($updateData);
+            }
 
             // Sync invited PICs if provided
             if ($request->has('invited_pics')) {
