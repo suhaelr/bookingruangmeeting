@@ -212,22 +212,30 @@ class AuthController extends Controller
         ])->withInput($request->only('username'));
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        // Clear only user-related session data, preserve other session data
+        // Clear app-specific session keys
         Session::forget('user_logged_in');
         Session::forget('user_data');
-        
-        // Regenerate session ID to prevent session fixation
-        Session::regenerate();
-        
+        Session::forget('google_oauth_state');
+        Session::forget('google_refresh_token');
+
+        // Invalidate session completely and regenerate CSRF token
+        try {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        } catch (\Throwable $e) {
+            // Fallback to legacy methods
+            Session::regenerate(true);
+        }
+
+        // Redirect to login with strict no-cache headers
         $response = redirect()->route('login')->with('success', 'Logout berhasil!');
-        
-        // Add no-cache headers to prevent browser caching
         $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
         $response->headers->set('Pragma', 'no-cache');
         $response->headers->set('Expires', '0');
-        
+        $response->headers->set('X-Accel-Expires', '0');
+        $response->headers->set('Vary', '*');
         return $response;
     }
 
