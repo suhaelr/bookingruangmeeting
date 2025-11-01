@@ -84,11 +84,14 @@
                         <h3 class="text-xl font-semibold text-white mb-3">3.2 Kewajiban Pengguna</h3>
                         <p class="mb-4">Anda wajib untuk:</p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
-                            <li>Menyediakan informasi yang akurat dan lengkap</li>
-                            <li>Menggunakan sistem sesuai dengan tujuan yang dimaksud</li>
-                            <li>Menghormati hak pengguna lain</li>
-                            <li>Mematuhi jadwal pemesanan yang telah dibuat</li>
-                            <li>Memberikan notifikasi jika ada perubahan atau pembatalan</li>
+                            <li>Menyediakan informasi yang akurat dan lengkap (username, nama lengkap, email, unit kerja)</li>
+                            <li>Memverifikasi email Anda sebelum dapat menggunakan sistem</li>
+                            <li>Menggunakan sistem sesuai dengan tujuan yang dimaksud (pemesanan ruang meeting)</li>
+                            <li>Menghormati hak pengguna lain dan tidak membuat booking yang bertentangan dengan jadwal yang sudah dikonfirmasi</li>
+                            <li>Mematuhi jadwal pemesanan yang telah dibuat dan menepati waktu yang telah ditentukan</li>
+                            <li>Merespons permintaan didahulukan dari pengguna lain dalam batas waktu yang ditentukan</li>
+                            <li>Memberikan notifikasi jika ada perubahan atau pembatalan melalui sistem</li>
+                            <li>Menjaga kerahasiaan akun dan tidak membagikan kredensial login</li>
                         </ul>
                     </div>
 
@@ -118,15 +121,40 @@
                             <li>Pemesanan dilakukan secara online melalui sistem</li>
                             <li>Ketersediaan ruang dapat berubah sewaktu-waktu</li>
                             <li>Pemesanan harus dilakukan sesuai dengan jadwal yang tersedia</li>
-                            <li>Dokumen perizinan harus disertakan jika diperlukan</li>
+                            <li>Pengguna tidak dapat membuat booking yang overlap dengan booking miliknya sendiri</li>
+                            <li>Dokumen perizinan dalam format PDF (maksimal 2MB) dapat disertakan jika diperlukan</li>
+                            <li>Validasi captcha wajib dilakukan saat membuat booking baru</li>
+                            <li>Booking baru berstatus "pending" dan menunggu konfirmasi admin</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">5.2 Pembatalan dan Perubahan</h3>
+                        <h3 class="text-xl font-semibold text-white mb-3">5.2 PIC Invitations (Undangan PIC)</h3>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Pengguna dapat mengundang PIC (Person In Charge) lain untuk melihat booking mereka</li>
+                            <li>PIC yang diundang akan menerima notifikasi undangan</li>
+                            <li>PIC yang diundang dapat melihat booking di kalender dashboard mereka</li>
+                            <li>Visibilitas deskripsi meeting dapat diatur menjadi "public" (semua PIC) atau "invited_pics_only" (hanya PIC yang diundang)</li>
+                            <li>Hanya admin, owner booking, atau PIC yang diundang (jika pengaturan "invited_pics_only") yang dapat melihat deskripsi meeting lengkap</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-white mb-3">5.3 Preempt Booking (Permintaan Didahulukan)</h3>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Pengguna dapat meminta booking milik pengguna lain untuk didahulukan jika ada konflik jadwal</li>
+                            <li>Pengguna tidak dapat meminta didahulukan booking miliknya sendiri</li>
+                            <li>Pemilik booking yang diminta akan menerima notifikasi permintaan didahulukan</li>
+                            <li>Pemilik booking dapat merespons dengan "Terima & Batalkan"</li>
+                            <li>Jika diterima, sistem akan otomatis membatalkan booking pemilik dan mengonfirmasi booking baru untuk peminta</li>
+                            <li>Deadline respons: 60 menit (jika booking > 2 jam sebelum start time) atau 15 menit (jika booking < 2 jam sebelum start time)</li>
+                            <li>Jika tidak direspons dalam deadline, permintaan didahulukan akan otomatis kadaluarsa</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-white mb-3">5.4 Pembatalan dan Perubahan</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Pembatalan dapat dilakukan sesuai dengan kebijakan yang berlaku</li>
-                            <li>Perubahan pemesanan harus dilakukan minimal 24 jam sebelumnya</li>
-                            <li>Pembatalan mendadak dapat dikenakan sanksi</li>
-                            <li>Notifikasi pembatalan akan dikirim melalui email</li>
+                            <li>Booking dengan status "pending" dapat dibatalkan kapan saja oleh pemilik</li>
+                            <li>Booking dengan status "confirmed" hanya dapat dibatalkan jika lebih dari 2 jam sebelum waktu mulai meeting</li>
+                            <li>Perubahan booking dapat dilakukan melalui menu "Edit Booking"</li>
+                            <li>Pengguna dapat mengedit PIC yang diundang dan visibilitas deskripsi tanpa mengubah detail booking lainnya</li>
+                            <li>Notifikasi pembatalan atau perubahan akan dikirim melalui sistem notifikasi</li>
                         </ul>
                     </div>
 

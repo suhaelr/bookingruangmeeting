@@ -66,22 +66,36 @@
                             <li>Alamat email</li>
                             <li>Username</li>
                             <li>Nomor telepon (opsional)</li>
-                            <li>Departemen/Unit kerja</li>
+                            <li>Unit kerja</li>
                             <li>Password (dienkripsi)</li>
+                            <li>Role/Peran pengguna (admin atau user)</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">2.2 Informasi OAuth</h3>
+                        <h3 class="text-xl font-semibold text-white mb-3">2.2 Informasi Pemesanan</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
-                            <li>Google ID (jika menggunakan Google OAuth)</li>
-                            <li>Informasi profil Google (nama, email, foto profil)</li>
+                            <li>Detail pemesanan ruang meeting (judul, deskripsi, waktu)</li>
+                            <li>Tanggal dan waktu pemesanan (start_time, end_time)</li>
+                            <li>Dokumen perizinan dalam format PDF (jika diperlukan)</li>
+                            <li>Status pemesanan (pending, confirmed, cancelled, completed)</li>
+                            <li>Unit kerja pemesan</li>
+                            <li>Jumlah peserta dan daftar email peserta (opsional)</li>
+                            <li>Kebutuhan khusus meeting</li>
+                            <li>Pengaturan visibilitas deskripsi (public atau invited_pics_only)</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">2.3 Informasi Pemesanan</h3>
+                        <h3 class="text-xl font-semibold text-white mb-3">2.3 Informasi PIC Invitations</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
-                            <li>Detail pemesanan ruang meeting</li>
-                            <li>Tanggal dan waktu pemesanan</li>
-                            <li>Dokumen perizinan (jika diperlukan)</li>
-                            <li>Status pemesanan</li>
+                            <li>Daftar PIC (Person In Charge) yang diundang untuk meeting</li>
+                            <li>Status undangan PIC</li>
+                            <li>Riwayat undangan yang dikirim dan diterima</li>
+                        </ul>
+
+                        <h3 class="text-xl font-semibold text-white mb-3">2.4 Informasi Preempt Booking</h3>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li>Permintaan didahulukan (preempt request) dari pengguna lain</li>
+                            <li>Alasan permintaan didahulukan</li>
+                            <li>Status tanggapan pemilik booking</li>
+                            <li>Deadline untuk merespons permintaan</li>
                         </ul>
 
                         <h3 class="text-xl font-semibold text-white mb-3">2.4 Informasi Teknis</h3>
@@ -97,10 +111,14 @@
                         <p class="mb-4">Kami menggunakan informasi yang dikumpulkan untuk:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li>Menyediakan layanan pemesanan ruang meeting</li>
-                            <li>Memverifikasi identitas pengguna</li>
-                            <li>Mengelola dan memproses pemesanan</li>
-                            <li>Mengirim notifikasi terkait pemesanan</li>
-                            <li>Meningkatkan keamanan sistem</li>
+                            <li>Memverifikasi identitas pengguna melalui email verification</li>
+                            <li>Mengelola dan memproses pemesanan ruang meeting</li>
+                            <li>Mengirim notifikasi terkait pemesanan, undangan PIC, dan permintaan didahulukan</li>
+                            <li>Mengelola undangan PIC ke meeting tertentu</li>
+                            <li>Memproses permintaan didahulukan (preempt booking) antar pengguna</li>
+                            <li>Mengatur visibilitas deskripsi meeting berdasarkan pengaturan pengguna</li>
+                            <li>Meningkatkan keamanan sistem dengan role-based access control</li>
+                            <li>Menyediakan dashboard dan kalender untuk monitoring booking</li>
                             <li>Menyediakan dukungan teknis</li>
                             <li>Mematuhi kewajiban hukum</li>
                         </ul>
@@ -110,23 +128,35 @@
                     <div class="text-white/90 mb-6">
                         <p class="mb-4">Kami menerapkan berbagai langkah keamanan untuk melindungi informasi Anda:</p>
                         <ul class="list-disc list-inside space-y-2">
-                            <li>Enkripsi password menggunakan hash yang aman</li>
+                            <li>Enkripsi password menggunakan hash yang aman (bcrypt)</li>
                             <li>Koneksi HTTPS untuk semua komunikasi</li>
-                            <li>Verifikasi email untuk akun baru</li>
-                            <li>OAuth 2.0 untuk autentikasi Google</li>
-                            <li>Pembatasan akses berdasarkan peran pengguna</li>
+                            <li>Verifikasi email wajib untuk akun baru sebelum dapat menggunakan sistem</li>
+                            <li>Pembatasan akses berdasarkan peran pengguna (role-based access control)</li>
+                            <li>Kontrol visibilitas deskripsi meeting (hanya admin, owner, atau PIC yang diundang dapat melihat deskripsi jika pengaturan "invited_pics_only")</li>
+                            <li>Proteksi terhadap double booking dan konflik jadwal</li>
+                            <li>Transaksi database untuk memastikan integritas data saat proses preempt booking</li>
+                            <li>Validasi captcha untuk mencegah abuse saat membuat booking</li>
                             <li>Pencadangan data secara berkala</li>
+                            <li>Session management yang aman dengan CSRF protection</li>
                         </ul>
                     </div>
 
                     <h2 class="text-2xl font-bold text-white mb-4">5. Berbagi Informasi</h2>
                     <div class="text-white/90 mb-6">
                         <p class="mb-4">Kami tidak menjual, menyewakan, atau membagikan informasi pribadi Anda kepada pihak ketiga, kecuali:</p>
-                        <ul class="list-disc list-inside space-y-2">
+                        <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Dengan persetujuan eksplisit dari Anda</li>
                             <li>Untuk mematuhi kewajiban hukum</li>
                             <li>Untuk melindungi hak dan keamanan kami atau pengguna lain</li>
                             <li>Dengan penyedia layanan tepercaya yang membantu operasional sistem</li>
+                        </ul>
+                        <h3 class="text-xl font-semibold text-white mb-3">5.1 Berbagi Informasi dalam Sistem</h3>
+                        <p class="mb-4">Informasi berikut dibagikan kepada pengguna lain dalam sistem sesuai dengan fitur:</p>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Informasi Booking:</strong> Judul, waktu, ruang, unit kerja, dan nama PIC pemesan ditampilkan di kalender untuk semua pengguna yang memiliki akses (berdasarkan visibilitas)</li>
+                            <li><strong>Deskripsi Meeting:</strong> Hanya dapat dilihat oleh admin, owner booking, atau PIC yang diundang (jika pengaturan visibilitas "invited_pics_only")</li>
+                            <li><strong>PIC Invitations:</strong> PIC yang diundang dapat melihat informasi booking mereka di dashboard</li>
+                            <li><strong>Preempt Booking:</strong> Informasi permintaan didahulukan dibagikan kepada pemilik booking yang diminta untuk didahulukan</li>
                         </ul>
                     </div>
 
@@ -158,11 +188,11 @@
                     <div class="text-white/90 mb-6">
                         <p class="mb-4">Kami menggunakan:</p>
                         <ul class="list-disc list-inside space-y-2">
-                            <li>Session cookies untuk autentikasi</li>
-                            <li>Google OAuth untuk login sosial</li>
-                            <li>Analytics cookies (jika ada) untuk meningkatkan layanan</li>
+                            <li>Session cookies untuk autentikasi dan menjaga status login pengguna</li>
+                            <li>CSRF tokens untuk melindungi dari serangan cross-site request forgery</li>
+                            <li>Session storage untuk menyimpan preferensi pengguna sementara</li>
                         </ul>
-                        <p class="mt-4">Anda dapat mengatur browser untuk menolak cookies, namun hal ini dapat mempengaruhi fungsionalitas sistem.</p>
+                        <p class="mt-4">Anda dapat mengatur browser untuk menolak cookies, namun hal ini dapat mempengaruhi fungsionalitas sistem seperti kemampuan untuk tetap login dan menggunakan fitur-fitur yang memerlukan autentikasi.</p>
                     </div>
 
                     <h2 class="text-2xl font-bold text-white mb-4">9. Perubahan Kebijakan</h2>
