@@ -53,7 +53,7 @@
                     
                     <h2 class="text-2xl font-bold text-white mb-4">1. Penerimaan Syarat</h2>
                     <p class="text-white/90 mb-6">
-                        Dengan menggunakan Sistem Pemesanan Ruang Meeting yang dikembangkan oleh eL PUSDATIN, 
+                        Dengan menggunakan Sistem Pemesanan Ruang Meeting, 
                         Anda menyetujui untuk terikat oleh syarat dan ketentuan ini. Jika Anda tidak menyetujui 
                         syarat dan ketentuan ini, harap tidak menggunakan layanan ini.
                     </p>
@@ -65,7 +65,6 @@
                             <li><strong>"Pengguna"</strong> - Individu yang menggunakan sistem</li>
                             <li><strong>"Pemesanan"</strong> - Reservasi ruang meeting melalui sistem</li>
                             <li><strong>"Ruang Meeting"</strong> - Fasilitas yang dapat dipesan</li>
-                            <li><strong>"eL PUSDATIN"</strong> - Pengembang dan pengelola sistem</li>
                         </ul>
                     </div>
 
@@ -180,7 +179,7 @@
 
                     <h2 class="text-2xl font-bold text-white mb-4">7. Ketersediaan Layanan</h2>
                     <div class="text-white/90 mb-6">
-                        <p class="mb-4">eL PUSDATIN berusaha untuk:</p>
+                        <p class="mb-4">Kami berusaha untuk:</p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Menyediakan layanan 24/7 sebisa mungkin</li>
                             <li>Memberikan notifikasi jika ada maintenance</li>
@@ -219,7 +218,7 @@
                             <li>Logo dan merek dagang</li>
                         </ul>
                         <p class="mt-4">
-                            Adalah milik eL PUSDATIN dan dilindungi oleh undang-undang hak cipta. 
+                            Adalah milik pengembang sistem dan dilindungi oleh undang-undang hak cipta. 
                             Pengguna tidak diperkenankan untuk menyalin, memodifikasi, atau mendistribusikan 
                             tanpa izin tertulis.
                         </p>
@@ -228,7 +227,7 @@
                     <h2 class="text-2xl font-bold text-white mb-4">10. Pembatasan Tanggung Jawab</h2>
                     <div class="text-white/90 mb-6">
                         <p class="mb-4">
-                            eL PUSDATIN tidak bertanggung jawab atas:
+                            Kami tidak bertanggung jawab atas:
                         </p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Kerugian yang timbul dari penggunaan sistem</li>
@@ -242,7 +241,7 @@
                     <h2 class="text-2xl font-bold text-white mb-4">11. Perubahan Syarat dan Ketentuan</h2>
                     <div class="text-white/90 mb-6">
                         <p class="mb-4">
-                            eL PUSDATIN berhak untuk mengubah syarat dan ketentuan ini sewaktu-waktu. 
+                            Kami berhak untuk mengubah syarat dan ketentuan ini sewaktu-waktu. 
                             Perubahan akan diberitahukan melalui:
                         </p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
@@ -269,7 +268,7 @@
                     <div class="text-white/90 mb-6">
                         <p class="mb-4">Jika Anda memiliki pertanyaan tentang syarat dan ketentuan ini:</p>
                         <div class="bg-white/10 rounded-lg p-4">
-                            <p><strong>eL PUSDATIN</strong></p>
+                            <p><strong>PUSDATIN</strong></p>
                             <p>Email: <a href="mailto:SuhaelR@gmail.com" class="text-blue-300 hover:text-blue-200">SuhaelR@gmail.com</a></p>
                             <p>Website: <a href="https://www.pusdatinbgn.web.id" class="text-blue-300 hover:text-blue-200">www.pusdatinbgn.web.id</a></p>
                             <p class="mt-2 text-sm">Jam operasional: Senin - Jumat, 08:00 - 17:00 WIB</p>
@@ -278,7 +277,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-white/60 text-sm text-center">
-                            Dokumen ini dibuat dengan ❤️ oleh eL PUSDATIN<br>
+                            Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
                     </div>

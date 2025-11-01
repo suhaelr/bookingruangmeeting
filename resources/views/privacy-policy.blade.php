@@ -53,8 +53,7 @@
                     
                     <h2 class="text-2xl font-bold text-white mb-4">1. Pengenalan</h2>
                     <p class="text-white/90 mb-6">
-                        Sistem Pemesanan Ruang Meeting adalah aplikasi web yang dikembangkan oleh eL PUSDATIN 
-                        untuk memfasilitasi pemesanan ruang meeting secara online. Kebijakan privasi ini menjelaskan 
+                        Sistem Pemesanan Ruang Meeting adalah aplikasi web untuk memfasilitasi pemesanan ruang meeting secara online. Kebijakan privasi ini menjelaskan 
                         bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.
                     </p>
 
@@ -212,7 +211,7 @@
                     <div class="text-white/90 mb-6">
                         <p class="mb-4">Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi:</p>
                         <div class="bg-white/10 rounded-lg p-4">
-                            <p><strong>eL PUSDATIN</strong></p>
+                            <p><strong>PUSDATIN</strong></p>
                             <p>Email: <a href="mailto:SuhaelR@gmail.com" class="text-blue-300 hover:text-blue-200">SuhaelR@gmail.com</a></p>
                             <p>Website: <a href="https://www.pusdatinbgn.web.id" class="text-blue-300 hover:text-blue-200">www.pusdatinbgn.web.id</a></p>
                         </div>
@@ -220,7 +219,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-white/60 text-sm text-center">
-                            Dokumen ini dibuat dengan ❤️ oleh eL PUSDATIN<br>
+                            Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
                     </div>
