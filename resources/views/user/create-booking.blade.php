@@ -87,8 +87,8 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="glass-effect rounded-2xl p-8 shadow-2xl">
             <div class="mb-8">
-                <h2 class="text-2xl font-bold text-white mb-2">Book a Meeting Room</h2>
-                <p class="text-white/80">Fill in the details below to book your meeting room</p>
+                <h2 class="text-2xl font-bold text-white mb-2">Pesan Ruang Meeting</h2>
+                <p class="text-white/80">Isi detail di bawah untuk memesan ruang meeting Anda</p>
             </div>
 
             @if ($errors->any())
@@ -113,12 +113,12 @@
                 <!-- Meeting Room Selection -->
                 <div>
                     <label for="meeting_room_id" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-door-open mr-2"></i>Meeting Room *
+                        <i class="fas fa-door-open mr-2"></i>Ruang Meeting *
                     </label>
                     <div class="relative">
                         <select id="meeting_room_id" name="meeting_room_id" required
                                 class="w-full px-4 py-3 pr-10 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 appearance-none cursor-pointer">
-                            <option value="" class="bg-gray-800 text-white">Select a meeting room</option>
+                            <option value="" class="bg-gray-800 text-white">Pilih ruang meeting</option>
                             @foreach($rooms as $room)
                             <option value="{{ $room->id }}" 
                                     data-capacity="{{ $room->capacity }}"
@@ -137,7 +137,7 @@
 
                 <!-- Room Details Display -->
                 <div id="room-details" class="hidden bg-white/10 rounded-lg p-4">
-                    <h4 class="text-white font-medium mb-2">Room Details</h4>
+                    <h4 class="text-white font-medium mb-2">Detail Ruang</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
                             <span class="text-white/60">Kapasitas:</span>
@@ -153,11 +153,11 @@
                 <!-- Meeting Judul -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-white mb-2">
-                        <i class="fas fa-heading mr-2"></i>Meeting Judul *
+                        <i class="fas fa-heading mr-2"></i>Judul Meeting *
                     </label>
                     <input type="text" id="title" name="title" value="{{ old('title') }}" required
                            class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                           placeholder="Enter meeting title">
+                           placeholder="Masukkan judul pertemuan">
                 </div>
 
                 <!-- Deskripsi -->
@@ -233,19 +233,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="attendees_count" class="block text-sm font-medium text-white mb-2">
-                            <i class="fas fa-users mr-2"></i>Number of Peserta *
+                            <i class="fas fa-users mr-2"></i>Jumlah Peserta *
                         </label>
                         <input type="number" id="attendees_count" name="attendees_count" value="{{ old('attendees_count', 1) }}" min="1" required
                                class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
                     </div>
                     <div>
                         <label for="attendees" class="block text-sm font-medium text-white mb-2">
-                            <i class="fas fa-envelope mr-2"></i>Attendee Emails (Optional)
+                            <i class="fas fa-envelope mr-2"></i>Email Peserta (Opsional)
                         </label>
                         <input type="text" id="attendees" name="attendees" value="{{ old('attendees') }}"
                                class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
                                placeholder="email1@example.com, email2@example.com">
-                        <p class="text-white/60 text-xs mt-1">Separate multiple emails with commas</p>
+                        <p class="text-white/60 text-xs mt-1">Pisahkan beberapa email dengan koma</p>
                     </div>
                 </div>
 
@@ -352,7 +352,7 @@
                     <button type="submit" id="submit-booking-btn"
                             class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-calendar-plus mr-2"></i>
-                        Book Meeting Room
+                        Pesan Ruang Meeting
                     </button>
                 </div>
             </form>
@@ -778,7 +778,7 @@
                     const submitBtn = form.querySelector('button[type="submit"]');
                     if (submitBtn) {
                         submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
                     }
                 });
             }

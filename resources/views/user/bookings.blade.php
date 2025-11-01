@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>My Bookings - Meeting Room Booking</title>
+    <title>Pemesanan Saya - Sistem Pemesanan Ruang Meeting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -179,7 +179,7 @@
                                 <div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-3 mb-3">
                                     <p class="text-yellow-300 text-sm">
                                         <i class="fas fa-exclamation-triangle mr-1"></i>
-                                        <strong>Special Requirements:</strong> {{ $booking->special_requirements }}
+                                        <strong>Kebutuhan Khusus:</strong> {{ $booking->special_requirements }}
                                     </p>
                                 </div>
                                 @endif
@@ -215,7 +215,7 @@
                                 <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
                                     <p class="text-red-300 text-sm">
                                         <i class="fas fa-times-circle mr-1"></i>
-                                        <strong>Cancellation Reason:</strong> {{ $booking->cancellation_reason }}
+                                        <strong>Alasan Pembatalan:</strong> {{ $booking->cancellation_reason }}
                                     </p>
                                 </div>
                                 @endif
@@ -281,12 +281,12 @@
             @else
                 <div class="text-center py-12">
                     <i class="fas fa-calendar-times text-white/40 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">No Bookings Found</h3>
-                    <p class="text-white/60 mb-6">You haven't made any meeting room bookings yet.</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Tidak Ada Pemesanan</h3>
+                    <p class="text-white/60 mb-6">Anda belum membuat pemesanan ruang meeting.</p>
                     <a href="{{ route('user.bookings.create') }}" 
                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 inline-flex items-center">
                         <i class="fas fa-plus mr-2"></i>
-                        Book Your First Meeting Room
+                        Buat Pemesanan Pertama
                     </a>
                 </div>
             @endif
@@ -298,7 +298,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Booking Details</h3>
+                    <h3 class="text-2xl font-bold text-gray-800">Detail Pemesanan</h3>
                     <button onclick="closeModal('bookingDetailModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -315,7 +315,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Edit Booking</h3>
+                    <h3 class="text-2xl font-bold text-gray-800">Edit Pemesanan</h3>
                     <button onclick="closeModal('bookingEditModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -348,10 +348,10 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-gray-800">Batal Booking</h3>
-                        <p class="text-gray-600">This action cannot be undone</p>
+                        <p class="text-gray-600">Tindakan ini tidak dapat dibatalkan</p>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-6">Are you sure you want to cancel this booking?</p>
+                <p class="text-gray-700 mb-6">Apakah Anda yakin ingin membatalkan pemesanan ini?</p>
                 <div class="flex justify-end space-x-4">
                     <button onclick="closeModal('bookingBatalModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                         Batal
@@ -407,7 +407,7 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Room</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ruang</label>
                                 <p class="text-gray-900">${booking.meeting_room.name}</p>
                                 <p class="text-gray-600 text-sm">${booking.meeting_room.location}</p>
                             </div>
@@ -417,14 +417,14 @@
                                 <p class="text-gray-600 text-sm">${new Date(booking.start_time).toLocaleTimeString()} - ${new Date(booking.end_time).toLocaleTimeString()}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                                <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} hours</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Durasi</label>
+                                <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} jam</p>
                             </div>
                         </div>
                         
                         ${booking.description ? `
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
                             <p class="text-gray-900">${booking.description}</p>
                         </div>
                         ` : ''}
@@ -470,14 +470,14 @@
                         
                         ${booking.special_requirements ? `
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Special Requirements</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kebutuhan Khusus</label>
                             <p class="text-gray-900">${booking.special_requirements}</p>
                         </div>
                         ` : ''}
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Peserta</label>
-                            <p class="text-gray-900">${booking.attendees_count} people</p>
+                            <p class="text-gray-900">${booking.attendees_count} orang</p>
                             ${booking.attendees && booking.attendees.length > 0 ? `
                                 <div class="mt-2">
                                     ${booking.attendees.map(email => `<span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm mr-2 mb-1">${email}</span>`).join('')}
@@ -529,10 +529,10 @@
                                 ${picsHtml || '<div class="text-sm text-gray-500">Tidak ada PIC tersedia</div>'}
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                            <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${booking.description || ''}</textarea>
-                        </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                                <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${booking.description || ''}</textarea>
+                            </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Mulai Waktu</label>
@@ -558,10 +558,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Special Requirements</label>
-                            <textarea name="special_requirements" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${booking.special_requirements || ''}</textarea>
-                        </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Kebutuhan Khusus</label>
+                                <textarea name="special_requirements" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${booking.special_requirements || ''}</textarea>
+                            </div>
                     </div>
                 `;
                 openModal('bookingEditModal');
@@ -734,7 +734,7 @@
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
                     const bookings = BOOKINGS;
-                    let csv = 'Judul,Room,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
+                    let csv = 'Judul,Ruang,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
                     
                     bookings.forEach(booking => {
                         csv += `"${booking.title}","${booking.meeting_room.name}","${booking.start_time}","${booking.end_time}","${booking.status}","${booking.total_cost}"\n`;
@@ -800,12 +800,12 @@
                             closeModal('bookingEditModal');
                             location.reload();
                         } else {
-                            alert(data.message || 'Error updating booking');
+                            alert(data.message || 'Gagal memperbarui pemesanan');
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert(error.message || 'Error updating booking');
+                        alert(error.message || 'Gagal memperbarui pemesanan');
                     });
                 });
             }
