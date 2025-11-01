@@ -53,7 +53,6 @@
                             <th class="text-left py-3 px-4">Email</th>
                             <th class="text-left py-3 px-4">Unit Kerja</th>
                             <th class="text-left py-3 px-4">Role</th>
-                            <th class="text-left py-3 px-4">Google Login</th>
                             <th class="text-left py-3 px-4">Terakhir Login</th>
                             <th class="text-left py-3 px-4">Bergabung</th>
                             <th class="text-left py-3 px-4">Aksi</th>
@@ -61,7 +60,7 @@
                     </thead>
                     <tbody id="usersTableBody">
                         <tr>
-                            <td colspan="8" class="text-center py-8 text-white/60">
+                            <td colspan="7" class="text-center py-8 text-white/60">
                                 <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
                                 <p>Memuat data pengguna...</p>
                             </td>
@@ -178,16 +177,6 @@
                                 : 'bg-blue-500/20 text-blue-300'
                         }">
                             ${user.role === 'admin' ? 'Admin' : 'User'}
-                        </span>
-                    </td>
-                    <td class="py-3 px-4">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium ${
-                            user.google_id === 'Yes' 
-                                ? 'bg-green-500/20 text-green-300' 
-                                : 'bg-gray-500/20 text-gray-300'
-                        }">
-                            <i class="fas fa-${user.google_id === 'Yes' ? 'check' : 'times'} mr-1"></i>
-                            ${user.google_id}
                         </span>
                     </td>
                     <td class="py-3 px-4 text-sm text-white/80">${user.last_login_at}</td>
@@ -365,10 +354,10 @@
                 return;
             }
 
-            let csv = 'ID,Username,Nama,Email,Role,Google Login,Terakhir Login,Bergabung\n';
+            let csv = 'ID,Username,Nama,Email,Role,Terakhir Login,Bergabung\n';
             
             users.forEach(user => {
-                csv += `"${user.id}","${user.username}","${user.name}","${user.email}","${user.role}","${user.google_id}","${user.last_login_at}","${user.created_at}"\n`;
+                csv += `"${user.id}","${user.username}","${user.name}","${user.email}","${user.role}","${user.last_login_at}","${user.created_at}"\n`;
             });
             
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

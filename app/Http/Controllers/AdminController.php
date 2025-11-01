@@ -87,6 +87,10 @@ class AdminController extends Controller
                 'role' => 'required|in:admin,user'
             ]);
 
+            // Pastikan hanya admin yang bisa membuat akun admin
+            // Akun yang dibuat manual defaultnya 'user' kecuali admin memilih 'admin'
+            $role = $request->role === 'admin' ? 'admin' : 'user';
+
             $user = User::create([
                 'username' => $request->username,
                 'name' => $request->full_name,
@@ -95,7 +99,7 @@ class AdminController extends Controller
                 'password' => bcrypt($request->password),
                 'phone' => $request->phone,
                 'department' => $request->department,
-                'role' => $request->role,
+                'role' => $role,
                 'email_verified_at' => now(),
             ]);
 

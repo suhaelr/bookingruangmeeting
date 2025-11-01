@@ -18,8 +18,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script>
     </script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <meta name="google-signin-client_id" content="{{ env('GOOGLE_CLIENT_ID') }}">
     
     
     <!-- Prevent caching of login page -->
@@ -591,51 +589,6 @@
             animation: logoGlow 2s ease-in-out infinite alternate;
         }
         
-        
-        /* Google Sign-In button styling - Small square with logo only */
-        .google-signin-button {
-            width: 48px;
-            height: 48px;
-            background: #fff;
-            border: 1px solid #dadce0;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            margin: 0 auto;
-        }
-        
-        .google-signin-button:hover {
-            background: #f8f9fa;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-            transform: translateY(-1px);
-        }
-        
-        .google-signin-button:active {
-            background: #f1f3f4;
-            transform: translateY(0);
-        }
-        
-        .google-signin-button img {
-            width: 24px;
-            height: 24px;
-            margin: 0;
-        }
-        
-        /* Hide text, show only logo */
-        .google-signin-button {
-            color: transparent !important;
-            font-size: 0 !important;
-            line-height: 0 !important;
-        }
-        
-        .google-signin-button:hover {
-            color: transparent !important;
-        }
 
     </style>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -736,23 +689,6 @@
                     Masuk
                 </button>
             </form>
-
-            <!-- Divider -->
-            <div class="relative my-6">
-                <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-white/20"></div>
-                </div>
-                <div class="relative flex justify-center text-sm">
-                    <span class="px-2 bg-transparent text-white/60">atau</span>
-                </div>
-            </div>
-
-            <!-- Google Sign-In Button -->
-            <div class="mb-6 flex justify-center">
-                <a href="{{ route('auth.google') }}" class="google-signin-button" title="Masuk dengan Google">
-                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google">
-                </a>
-            </div>
 
             <!-- Additional Links -->
             <div class="mt-6 space-y-3">
