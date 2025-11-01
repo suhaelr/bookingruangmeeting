@@ -98,7 +98,7 @@
                             <li>Deadline untuk merespons permintaan</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">2.4 Informasi Teknis</h3>
+                        <h3 class="text-xl font-semibold text-white mb-3">2.5 Informasi Teknis</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Alamat IP</li>
                             <li>Browser dan perangkat yang digunakan</li>
