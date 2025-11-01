@@ -288,13 +288,18 @@ class UserController extends Controller
             ->orderBy('full_name')
             ->get();
         
+        // Get current user's unit_kerja for auto-fill
+        $user = session('user_data');
+        $userModel = User::find($user['id'] ?? null);
+        $userUnitKerja = $userModel ? ($userModel->unit_kerja ?? null) : null;
+        
         // Check if no rooms are available
         if ($rooms->count() === 0) {
-            return view('user.create-booking', compact('rooms', 'allPics'))
+            return view('user.create-booking', compact('rooms', 'allPics', 'userUnitKerja'))
                 ->with('warning', 'Saat ini tidak ada ruang meeting yang tersedia. Silakan hubungi administrator untuk informasi lebih lanjut.');
         }
         
-        return view('user.create-booking', compact('rooms', 'allPics'));
+        return view('user.create-booking', compact('rooms', 'allPics', 'userUnitKerja'));
     }
 
     public function checkAvailability(Request $request)

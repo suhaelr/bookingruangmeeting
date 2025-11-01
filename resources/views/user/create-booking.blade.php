@@ -264,7 +264,9 @@
                     <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">
                         <i class="fas fa-building mr-2"></i>Unit Kerja *
                     </label>
-                    <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}" required
+                    <input type="text" id="unit_kerja" name="unit_kerja" 
+                           value="{{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') }}" 
+                           required
                            class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
                            placeholder="Masukkan unit kerja Anda">
                 </div>
