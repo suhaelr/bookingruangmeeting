@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Profile - Meeting Room Booking</title>
+    <title>Profil - Sistem Pemesanan Ruang Meeting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -79,18 +79,18 @@
 
                 <!-- Quick Stats -->
                 <div class="glass-effect rounded-2xl p-6 shadow-2xl mt-6">
-                    <h4 class="text-lg font-bold text-white mb-4">Quick Stats</h4>
+                    <h4 class="text-lg font-bold text-white mb-4">Statistik Singkat</h4>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-white/80 text-sm">Member Since</span>
+                            <span class="text-white/80 text-sm">Anggota Sejak</span>
                             <span class="text-white text-sm">Jan 2024</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-white/80 text-sm">Last Login</span>
+                            <span class="text-white/80 text-sm">Login Terakhir</span>
                             <span class="text-white text-sm">{{ now()->format('M d, Y') }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-white/80 text-sm">Total Bookings</span>
+                            <span class="text-white/80 text-sm">Total Pemesanan</span>
                             <span class="text-white text-sm">-</span>
                         </div>
                     </div>
@@ -101,8 +101,8 @@
             <div class="lg:col-span-2">
                 <div class="glass-effect rounded-2xl p-8 shadow-2xl">
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-white mb-2">Edit Profile</h2>
-                        <p class="text-white/80">Perbarui your personal information</p>
+                        <h2 class="text-2xl font-bold text-white mb-2">Edit Profil</h2>
+                        <p class="text-white/80">Perbarui informasi personal Anda</p>
                     </div>
 
                     @if (session('success'))
@@ -119,7 +119,7 @@
                             <div class="flex items-center">
                                 <i class="fas fa-exclamation-circle mr-2"></i>
                                 <div>
-                                    <strong>Please correct the following errors:</strong>
+                                    <strong>Silakan perbaiki kesalahan berikut:</strong>
                                     <ul class="mt-1 list-disc list-inside">
                                         @foreach ($errors->all() as $error)
                                             <li>{{ $error }}</li>
@@ -136,31 +136,31 @@
                         <!-- Full Nama -->
                         <div>
                             <label for="full_name" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-user mr-2"></i>Full Nama *
+                                <i class="fas fa-user mr-2"></i>Nama Lengkap *
                             </label>
                             <input type="text" id="full_name" name="full_name" value="{{ old('full_name', $user['full_name']) }}" required
                                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                                   placeholder="Enter your full name">
+                                   placeholder="Masukkan nama lengkap Anda">
                         </div>
 
                         <!-- Email -->
                         <div>
                             <label for="email" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-envelope mr-2"></i>Email Address *
+                                <i class="fas fa-envelope mr-2"></i>Alamat Email *
                             </label>
                             <input type="email" id="email" name="email" value="{{ old('email', $user['email']) }}" required
                                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                                   placeholder="Enter your email address">
+                                   placeholder="Masukkan alamat email Anda">
                         </div>
 
                         <!-- Telepon -->
                         <div>
                             <label for="phone" class="block text-sm font-medium text-white mb-2">
-                                <i class="fas fa-phone mr-2"></i>Telepon Number
+                                <i class="fas fa-phone mr-2"></i>Nomor Telepon
                             </label>
                             <input type="tel" id="phone" name="phone" value="{{ old('phone', $user['phone'] ?? '') }}"
                                    class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
-                                   placeholder="Enter your phone number">
+                                   placeholder="Masukkan nomor telepon Anda">
                         </div>
 
                         <!-- Unit Kerja -->
@@ -211,13 +211,13 @@
             
             if (!fullNama) {
                 e.preventDefault();
-                alert('Please enter your full name');
+                alert('Silakan masukkan nama lengkap Anda');
                 return;
             }
             
             if (!email || !email.includes('@')) {
                 e.preventDefault();
-                alert('Please enter a valid email address');
+                alert('Silakan masukkan alamat email yang valid');
                 return;
             }
         });
