@@ -17,7 +17,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="gradient-bg min-h-screen">
@@ -134,20 +133,6 @@
             </div>
         </div>
 
-        <!-- Charts Row -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            <!-- Monthly Stats Chart -->
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <h3 class="text-xl font-bold text-white mb-4">Tren Pemesanan (6 Bulan)</h3>
-                <canvas id="monthlyChart" width="400" height="200"></canvas>
-            </div>
-
-            <!-- Booking Status Chart -->
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <h3 class="text-xl font-bold text-white mb-4">Status Pemesanan</h3>
-                <canvas id="statusChart" width="400" height="200"></canvas>
-            </div>
-        </div>
 
         <!-- Recent Bookings & Today's Bookings -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -251,82 +236,6 @@
     @include('components.whatsapp-float')
 
     <script>
-        // Monthly Chart
-        const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-        new Chart(monthlyCtx, {
-            type: 'line',
-            data: {
-                labels: {!! json_encode(array_column($monthlyStats, 'month')) !!},
-                datasets: [{
-                    label: 'Pemesanan',
-                    data: {!! json_encode(array_column($monthlyStats, 'bookings')) !!},
-                    borderWarna: 'rgb(59, 130, 246)',
-                    backgroundWarna: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: 'white'
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: 'white'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: 'white'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }
-                }
-            }
-        });
-
-        // Status Chart
-        const statusCtx = document.getElementById('statusChart').getContext('2d');
-        new Chart(statusCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Menunggu', 'Dikonfirmasi', 'Dibatalkan'],
-                datasets: [{
-                    data: [
-                        {{ $stats['pending_bookings'] }},
-                        {{ $stats['confirmed_bookings'] }},
-                        {{ $stats['cancelled_bookings'] }}
-                    ],
-                    backgroundWarna: [
-                        'rgb(245, 158, 11)',
-                        'rgb(34, 197, 94)',
-                        'rgb(239, 68, 68)'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: 'white'
-                        }
-                    }
-                }
-            }
-        });
-
         // Admin notification functions
         function toggleAdminNotifikasis() {
             const dropdown = document.getElementById('adminNotifikasiDropdown');
