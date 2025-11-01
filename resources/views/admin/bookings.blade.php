@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Kelola Bookings - Meeting Room Booking</title>
+    <title>Kelola Bookings - Sistem Pemesanan Ruang Meeting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -116,8 +116,8 @@
                             <tr class="border-b border-white/20">
                                 <th class="text-left py-3 px-4 font-semibold">ID</th>
                                 <th class="text-left py-3 px-4 font-semibold">Judul</th>
-                                <th class="text-left py-3 px-4 font-semibold">User</th>
-                                <th class="text-left py-3 px-4 font-semibold">Room</th>
+                                <th class="text-left py-3 px-4 font-semibold">Pengguna</th>
+                                <th class="text-left py-3 px-4 font-semibold">Ruang</th>
                                 <th class="text-left py-3 px-4 font-semibold">Tanggal & Waktu</th>
                                 <th class="text-left py-3 px-4 font-semibold">Status</th>
                                 <th class="text-left py-3 px-4 font-semibold">Permintaan Didahulukan</th>
@@ -163,7 +163,12 @@
                                         @elseif($booking->status === 'cancelled') bg-red-500 text-white
                                         @elseif($booking->status === 'completed') bg-blue-500 text-white
                                         @else bg-gray-500 text-white @endif">
-                                        {{ ucfirst($booking->status) }}
+                                        @if($booking->status === 'pending') Menunggu
+                                        @elseif($booking->status === 'confirmed') Dikonfirmasi
+                                        @elseif($booking->status === 'cancelled') Dibatalkan
+                                        @elseif($booking->status === 'completed') Selesai
+                                        @else {{ ucfirst($booking->status) }}
+                                        @endif
                                     </span>
                                 </td>
                                 <td class="py-3 px-4">
@@ -210,7 +215,7 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">
-                                        <button onclick="viewBooking({{ $booking->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
+                                        <button onclick="viewBooking({{ $booking->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Perbarui Status">
@@ -258,8 +263,8 @@
             @else
                 <div class="text-center py-12">
                     <i class="fas fa-calendar-times text-white/40 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">No Bookings Found</h3>
-                    <p class="text-white/60">There are no meeting room bookings yet.</p>
+                    <h3 class="text-xl font-bold text-white mb-2">Tidak Ada Booking</h3>
+                    <p class="text-white/60">Belum ada pemesanan ruang meeting.</p>
                 </div>
             @endif
         </div>
@@ -270,7 +275,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Booking Details</h3>
+                    <h3 class="text-2xl font-bold text-gray-800">Detail Booking</h3>
                     <button onclick="closeModal('bookingDetailModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -298,7 +303,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                         <div class="relative">
                             <select name="status" class="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="">Select status</option>
+                                <option value="">Pilih status</option>
                                 <option value="pending">Menunggu</option>
                                 <option value="confirmed">Dikonfirmasi</option>
                                 <option value="cancelled">Dibatalkan</option>
@@ -310,8 +315,8 @@
                         </div>
                     </div>
                     <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Reason (Optional)</label>
-                        <textarea name="reason" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter reason for status change..."></textarea>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Alasan (Opsional)</label>
+                        <textarea name="reason" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Masukkan alasan perubahan status..."></textarea>
                     </div>
                     <div class="flex justify-end space-x-4">
                         <button type="button" onclick="closeModal('bookingStatusModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
@@ -361,32 +366,32 @@
                         <div class="flex items-center justify-between">
                             <h4 class="text-xl font-bold text-gray-800">${booking.title}</h4>
                             <span class="px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(booking.status)}">
-                                ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                ${getStatusText(booking.status)}
                             </span>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">User</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Pengguna</label>
                                 <p class="text-gray-900">${booking.user.full_name}</p>
                                 <p class="text-gray-600 text-sm">${booking.user.email}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Room</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ruang</label>
                                 <p class="text-gray-900">${booking.meeting_room.name}</p>
                                 <p class="text-gray-600 text-sm">${booking.meeting_room.location}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Mulai Waktu</label>
-                                <p class="text-gray-900">${new Tanggal(booking.start_time).toLocaleString()}</p>
+                                <p class="text-gray-900">${new Date(booking.start_time).toLocaleString('id-ID')}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Selesai Waktu</label>
-                                <p class="text-gray-900">${new Tanggal(booking.end_time).toLocaleString()}</p>
+                                <p class="text-gray-900">${new Date(booking.end_time).toLocaleString('id-ID')}</p>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
-                                <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} hours</p>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Durasi</label>
+                                <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} jam</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Total Biaya</label>
@@ -396,21 +401,21 @@
                         
                         ${booking.description ? `
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
                             <p class="text-gray-900">${booking.description}</p>
                         </div>
                         ` : ''}
                         
                         ${booking.special_requirements ? `
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Special Requirements</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kebutuhan Khusus</label>
                             <p class="text-gray-900">${booking.special_requirements}</p>
                         </div>
                         ` : ''}
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Peserta</label>
-                            <p class="text-gray-900">${booking.attendees_count} people</p>
+                            <p class="text-gray-900">${booking.attendees_count} orang</p>
                             ${booking.attendees && booking.attendees.length > 0 ? `
                                 <div class="mt-2">
                                     ${booking.attendees.map(email => `<span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm mr-2 mb-1">${email}</span>`).join('')}
@@ -438,14 +443,25 @@
             const colors = {
                 'pending': 'bg-yellow-100 text-yellow-800',
                 'confirmed': 'bg-green-100 text-green-800',
-                'cancelled': 'bg-red-100 text-red-800'
+                'cancelled': 'bg-red-100 text-red-800',
+                'completed': 'bg-blue-100 text-blue-800'
             };
             return colors[status] || 'bg-gray-100 text-gray-800';
         }
+        
+        function getStatusText(status) {
+            const statusTexts = {
+                'pending': 'Menunggu',
+                'confirmed': 'Dikonfirmasi',
+                'cancelled': 'Dibatalkan',
+                'completed': 'Selesai'
+            };
+            return statusTexts[status] || status;
+        }
 
         function calculateDuration(startWaktu, endWaktu) {
-            const start = new Tanggal(startWaktu);
-            const end = new Tanggal(endWaktu);
+            const start = new Date(startWaktu);
+            const end = new Date(endWaktu);
             const diffMs = end - start;
             const diffHours = diffMs / (1000 * 60 * 60);
             return diffHours.toFixed(1);
@@ -475,7 +491,7 @@
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
                     const bookings = @json($bookings->items());
-                    let csv = 'ID,Judul,User,Email,Room,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
+                    let csv = 'ID,Judul,Pengguna,Email,Ruang,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
                     
                     bookings.forEach(booking => {
                         csv += `"${booking.id}","${booking.title}","${booking.user.full_name}","${booking.user.email}","${booking.meeting_room.name}","${booking.start_time}","${booking.end_time}","${booking.status}","${booking.total_cost}"\n`;
@@ -532,15 +548,15 @@
                         .then(data => {
                             console.log('Response data:', data);
                             if (data.success) {
-                                alert(data.message);
+                                alert(data.message || 'Status berhasil diperbarui!');
                                 location.reload();
                             } else {
-                                alert(data.message || 'Error updating status');
+                                alert(data.message || 'Gagal memperbarui status');
                             }
                         })
                         .catch(error => {
                             console.error('Error details:', error);
-                            alert('Error updating status: ' + error.message);
+                            alert('Gagal memperbarui status: ' + error.message);
                         });
                     }
                 });
@@ -560,12 +576,12 @@
         });
 
         // Auto-hide success message
-        setWaktuout(() => {
+        setTimeout(() => {
             const successMessage = document.getElementById('success-message');
             if (successMessage) {
                 successMessage.style.transition = 'opacity 0.5s';
                 successMessage.style.opacity = '0';
-                setWaktuout(() => successMessage.remove(), 500);
+                setTimeout(() => successMessage.remove(), 500);
             }
         }, 3000);
     </script>
