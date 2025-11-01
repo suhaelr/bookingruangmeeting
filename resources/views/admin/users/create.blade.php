@@ -137,12 +137,12 @@
                                placeholder="Enter phone number">
                     </div>
 
-                    <!-- Departemen -->
+                    <!-- Unit Kerja -->
                     <div>
-                        <label for="department" class="block text-sm font-medium text-white mb-2">Departemen</label>
-                        <input type="text" id="department" name="department" value="{{ old('department') }}" 
+                        <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">Unit Kerja</label>
+                        <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter department">
+                               placeholder="Enter unit kerja">
                     </div>
 
                     <!-- Peran -->

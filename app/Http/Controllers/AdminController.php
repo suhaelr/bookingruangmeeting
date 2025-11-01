@@ -83,7 +83,7 @@ class AdminController extends Controller
                 'email' => 'required|email|max:255|unique:users',
                 'password' => 'required|string|min:8',
                 'phone' => 'nullable|string|max:20',
-                'department' => 'nullable|string|max:100',
+                'unit_kerja' => 'nullable|string|max:255',
                 'role' => 'required|in:admin,user'
             ]);
 
@@ -98,7 +98,7 @@ class AdminController extends Controller
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
                 'phone' => $request->phone,
-                'department' => $request->department,
+                'unit_kerja' => $request->unit_kerja,
                 'role' => $role,
                 'email_verified_at' => now(),
             ]);

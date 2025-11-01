@@ -113,12 +113,12 @@
                            placeholder="Masukkan nomor telepon">
                 </div>
 
-                <!-- Department -->
+                <!-- Unit Kerja -->
                 <div>
-                    <label for="department" class="block text-sm font-medium text-white mb-2">Departemen</label>
-                    <input type="text" id="department" name="department" value="{{ old('department') }}" 
+                    <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">Unit Kerja</label>
+                    <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}" 
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                           placeholder="Masukkan departemen">
+                           placeholder="Masukkan unit kerja">
                 </div>
 
                 <!-- Password -->
