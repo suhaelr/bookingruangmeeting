@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah User - Admin Panel</title>
+    <title>Tambah Pengguna - Panel Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
@@ -80,11 +80,11 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Baru User</h2>
-                    <p class="text-white/80">Buat a new user account</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Pengguna Baru</h2>
+                    <p class="text-white/80">Buat akun pengguna baru</p>
                 </div>
                 <a href="{{ route('admin.users') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Kembali to Pengguna
+                    <i class="fas fa-arrow-left mr-2"></i>Kembali ke Pengguna
                 </a>
             </div>
         </div>
@@ -107,18 +107,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Username -->
                     <div>
-                        <label for="username" class="block text-sm font-medium text-white mb-2">Username *</label>
+                        <label for="username" class="block text-sm font-medium text-white mb-2">Nama Pengguna *</label>
                         <input type="text" id="username" name="username" value="{{ old('username') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter username" required>
+                               placeholder="Masukkan nama pengguna" required>
                     </div>
 
-                    <!-- Full Nama -->
+                    <!-- Nama Lengkap -->
                     <div>
-                        <label for="full_name" class="block text-sm font-medium text-white mb-2">Full Nama *</label>
+                        <label for="full_name" class="block text-sm font-medium text-white mb-2">Nama Lengkap *</label>
                         <input type="text" id="full_name" name="full_name" value="{{ old('full_name') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter full name" required>
+                               placeholder="Masukkan nama lengkap" required>
                     </div>
 
                     <!-- Email -->
@@ -126,7 +126,7 @@
                         <label for="email" class="block text-sm font-medium text-white mb-2">Email *</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter email address" required>
+                               placeholder="Masukkan alamat email" required>
                     </div>
 
                     <!-- Telepon -->
@@ -134,7 +134,7 @@
                         <label for="phone" class="block text-sm font-medium text-white mb-2">Telepon</label>
                         <input type="text" id="phone" name="phone" value="{{ old('phone') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter phone number">
+                               placeholder="Masukkan nomor telepon">
                     </div>
 
                     <!-- Unit Kerja -->
@@ -142,7 +142,7 @@
                         <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">Unit Kerja</label>
                         <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Enter unit kerja">
+                               placeholder="Masukkan unit kerja">
                     </div>
 
                     <!-- Peran -->
@@ -150,9 +150,9 @@
                         <label for="role" class="block text-sm font-medium text-white mb-2">Peran *</label>
                         <select id="role" name="role" 
                                 class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            <option value="">Pilih role</option>
-                            <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
-                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="">Pilih peran</option>
+                            <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Pengguna</option>
+                            <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
                         </select>
                     </div>
                 </div>
@@ -162,17 +162,17 @@
                     <label for="password" class="block text-sm font-medium text-white mb-2">Kata Sandi *</label>
                     <input type="password" id="password" name="password" 
                            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                           placeholder="Enter password (min 8 characters)" required>
+                           placeholder="Masukkan kata sandi (minimal 8 karakter)" required>
                 </div>
 
-                <!-- Kirim Button -->
+                <!-- Tombol Submit -->
                 <div class="flex justify-end space-x-4 mt-8">
                     <a href="{{ route('admin.users') }}" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300">
                         Batal
                     </a>
                     <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-save mr-2"></i>
-                        Buat User
+                        Buat Pengguna
                     </button>
                 </div>
             </form>
