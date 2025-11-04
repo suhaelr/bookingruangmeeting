@@ -163,7 +163,7 @@ class AdminController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'capacity' => 'required|numeric|min:1',
+                'capacity' => 'nullable|numeric|min:1',
                 'location' => 'required|string|max:255',
                 'is_active' => 'required|string|in:0,1,true,false,on,off,',
                 'amenities' => 'nullable|string'
@@ -184,7 +184,7 @@ class AdminController extends Controller
             $room = MeetingRoom::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'capacity' => (int)$request->capacity,
+                'capacity' => $request->capacity ? (int)$request->capacity : null,
                 'location' => $request->location,
                 'is_active' => $isActive,
                 'amenities' => $amenities

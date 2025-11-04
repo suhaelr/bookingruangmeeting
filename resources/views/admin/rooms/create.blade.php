@@ -116,10 +116,10 @@
 
                     <!-- Kapasitas -->
                     <div>
-                        <label for="capacity" class="block text-sm font-medium text-white mb-2">Kapasitas *</label>
+                        <label for="capacity" class="block text-sm font-medium text-white mb-2">Kapasitas</label>
                         <input type="number" id="capacity" name="capacity" value="{{ old('capacity') }}" 
                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                               placeholder="Masukkan kapasitas" min="1" required>
+                               placeholder="Masukkan kapasitas (opsional)" min="1">
                     </div>
 
                     <!-- Lokasi -->

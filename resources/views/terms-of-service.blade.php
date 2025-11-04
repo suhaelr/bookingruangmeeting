@@ -276,7 +276,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-white/60 text-sm text-center">
-                            <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.3</span><br>
+                            <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
@@ -312,8 +312,26 @@
                         </div>
                         
                         <div class="p-4 sm:p-6">
-                            <!-- v2.1.3 -->
+                            <!-- v2.1.4 -->
                             <div class="mb-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-bold text-gray-800">v2.1.4 (2025) - Field Kapasitas Opsional</h4>
+                                    <span class="text-sm text-gray-500">November 2025</span>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Field Kapasitas Menjadi Opsional</strong> - Field kapasitas di form create room sekarang opsional, admin bisa membuat room tanpa mengisi kapasitas</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Fleksibilitas Input Data</strong> - Admin memiliki lebih banyak fleksibilitas dalam membuat room meeting tanpa harus mengisi kapasitas</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- v2.1.3 -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="text-lg font-bold text-gray-800">v2.1.3 (2025) - Mobile Calendar Enhancement</h4>
                                     <span class="text-sm text-gray-500">November 2025</span>
