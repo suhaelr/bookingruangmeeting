@@ -6,6 +6,7 @@
     <title>Kelola Pengguna - Sistem Pemesanan Ruang Meeting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -434,19 +435,43 @@
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
                     const users = @json($users->items());
-                    let csv = 'ID,Username,Full Nama,Email,Telepon,Departemen,Peran,Last Login,Joined\n';
                     
-                    users.forEach(user => {
-                        csv += `"${user.id}","${user.username}","${user.full_name}","${user.email}","${user.phone || ''}","${user.department || ''}","${user.role}","${user.last_login_at || ''}","${user.created_at}"\n`;
-                    });
-                    
-                    const blob = new Blob([csv], { type: 'text/csv' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'users-export.csv';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
+                    // Prepare data for Excel
+                    const data = users.map(user => ({
+                        'ID': user.id,
+                        'Username': user.username,
+                        'Full Nama': user.full_name,
+                        'Email': user.email,
+                        'Telepon': user.phone || '',
+                        'Departemen': user.department || '',
+                        'Peran': user.role,
+                        'Last Login': user.last_login_at || '',
+                        'Joined': user.created_at || ''
+                    }));
+
+                    // Create workbook
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.json_to_sheet(data);
+
+                    // Set column widths
+                    ws['!cols'] = [
+                        { wch: 10 }, // ID
+                        { wch: 15 }, // Username
+                        { wch: 25 }, // Full Nama
+                        { wch: 30 }, // Email
+                        { wch: 15 }, // Telepon
+                        { wch: 20 }, // Departemen
+                        { wch: 15 }, // Peran
+                        { wch: 20 }, // Last Login
+                        { wch: 20 }  // Joined
+                    ];
+
+                    // Add worksheet to workbook
+                    XLSX.utils.book_append_sheet(wb, ws, 'Data Pengguna');
+
+                    // Generate Excel file
+                    const filename = `users-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+                    XLSX.writeFile(wb, filename);
                 });
             }
 

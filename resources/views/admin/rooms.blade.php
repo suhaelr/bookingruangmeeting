@@ -8,6 +8,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -461,21 +462,41 @@
         
         // Export functionality
         document.getElementById('export-btn').addEventListener('click', function() {
-            // Simple CSV export
+            // Excel export
             const rooms = @json($rooms->items());
-            let csv = 'ID,Nama,Deskripsi,Kapasitas,Lokasi,Status,Fasilitas\n';
             
-            rooms.forEach(room => {
-                csv += `"${room.id}","${room.name}","${room.description}","${room.capacity}","${room.location}","${room.is_active ? 'Aktif' : 'Tidak Aktif'}","${room.amenities ? room.amenities.join(', ') : ''}"\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'rooms-export.csv';
-            a.click();
-            window.URL.revokeObjectURL(url);
+            // Prepare data for Excel
+            const data = rooms.map(room => ({
+                'ID': room.id,
+                'Nama': room.name,
+                'Deskripsi': room.description || '',
+                'Kapasitas': room.capacity || 0,
+                'Lokasi': room.location || '',
+                'Status': room.is_active ? 'Aktif' : 'Tidak Aktif',
+                'Fasilitas': room.amenities ? room.amenities.join(', ') : ''
+            }));
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(data);
+
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 10 }, // ID
+                { wch: 25 }, // Nama
+                { wch: 40 }, // Deskripsi
+                { wch: 12 }, // Kapasitas
+                { wch: 20 }, // Lokasi
+                { wch: 15 }, // Status
+                { wch: 30 }  // Fasilitas
+            ];
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Ruang');
+
+            // Generate Excel file
+            const filename = `rooms-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, filename);
         });
 
         // Edit form submission

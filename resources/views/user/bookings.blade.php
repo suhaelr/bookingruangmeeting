@@ -7,6 +7,7 @@
     <title>Pemesanan Saya - Sistem Pemesanan Ruang Meeting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -532,7 +533,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
                                 <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${booking.description || ''}</textarea>
-                            </div>
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Mulai Waktu</label>
@@ -558,10 +559,10 @@
                                 </div>
                             </div>
                         </div>
-                            <div>
+                        <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Kebutuhan Khusus</label>
-                                <textarea name="special_requirements" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${booking.special_requirements || ''}</textarea>
-                            </div>
+                            <textarea name="special_requirements" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">${booking.special_requirements || ''}</textarea>
+                        </div>
                     </div>
                 `;
                 openModal('bookingEditModal');
@@ -734,19 +735,37 @@
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
                     const bookings = BOOKINGS;
-                    let csv = 'Judul,Ruang,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
                     
-                    bookings.forEach(booking => {
-                        csv += `"${booking.title}","${booking.meeting_room.name}","${booking.start_time}","${booking.end_time}","${booking.status}","${booking.total_cost}"\n`;
-                    });
-                    
-                    const blob = new Blob([csv], { type: 'text/csv' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'my-bookings.csv';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
+                    // Prepare data for Excel
+                    const data = bookings.map(booking => ({
+                        'Judul': booking.title,
+                        'Ruang': booking.meeting_room?.name || '',
+                        'Mulai Waktu': booking.start_time || '',
+                        'Selesai Waktu': booking.end_time || '',
+                        'Status': booking.status || '',
+                        'Biaya': booking.total_cost || 0
+                    }));
+
+                    // Create workbook
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.json_to_sheet(data);
+
+                    // Set column widths
+                    ws['!cols'] = [
+                        { wch: 30 }, // Judul
+                        { wch: 20 }, // Ruang
+                        { wch: 20 }, // Mulai Waktu
+                        { wch: 20 }, // Selesai Waktu
+                        { wch: 15 }, // Status
+                        { wch: 15 }  // Biaya
+                    ];
+
+                    // Add worksheet to workbook
+                    XLSX.utils.book_append_sheet(wb, ws, 'Pemesanan Saya');
+
+                    // Generate Excel file
+                    const filename = `my-bookings-${new Date().toISOString().split('T')[0]}.xlsx`;
+                    XLSX.writeFile(wb, filename);
                 });
             }
 

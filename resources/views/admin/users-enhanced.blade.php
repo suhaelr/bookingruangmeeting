@@ -7,6 +7,7 @@
     <title>Kelola Pengguna - Sistem Pemesanan Ruang Meeting</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .gradient-bg {
@@ -373,28 +374,47 @@
             });
         }
 
-        // Export users to CSV
+        // Export users to Excel
         function exportUsers() {
             if (users.length === 0) {
                 showMessage('Tidak ada data untuk diekspor', 'warning');
                 return;
             }
 
-            let csv = 'ID,Username,Nama,Email,Role,Terakhir Login,Bergabung\n';
+            // Prepare data for Excel
+            const data = users.map(user => ({
+                'ID': user.id,
+                'Username': user.username,
+                'Nama': user.name,
+                'Email': user.email,
+                'Role': user.role,
+                'Terakhir Login': user.last_login_at || '',
+                'Bergabung': user.created_at || ''
+            }));
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(data);
+
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 10 }, // ID
+                { wch: 15 }, // Username
+                { wch: 25 }, // Nama
+                { wch: 30 }, // Email
+                { wch: 15 }, // Role
+                { wch: 20 }, // Terakhir Login
+                { wch: 20 }  // Bergabung
+            ];
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Pengguna');
+
+            // Generate Excel file
+            const filename = `users-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, filename);
             
-            users.forEach(user => {
-                csv += `"${user.id}","${user.username}","${user.name}","${user.email}","${user.role}","${user.last_login_at}","${user.created_at}"\n`;
-            });
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `users-export-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-            
-            showMessage('Data pengguna berhasil diekspor', 'success');
+            showMessage('Data pengguna berhasil diekspor ke Excel', 'success');
         }
 
         // Modal functions
