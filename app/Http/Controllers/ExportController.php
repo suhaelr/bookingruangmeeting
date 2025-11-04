@@ -35,12 +35,12 @@ class ExportController extends Controller
             
             // Title
             $sheet->setCellValue('A1', 'LAPORAN DATA BOOKING RUANG MEETING');
-            $sheet->mergeCells('A1:J1');
+            $sheet->mergeCells('A1:N1');
             $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
             $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             
             $sheet->setCellValue('A2', 'Dibuat pada: ' . Carbon::now()->format('d M Y H:i:s'));
-            $sheet->mergeCells('A2:J2');
+            $sheet->mergeCells('A2:N2');
             $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             
             // Headers
