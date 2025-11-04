@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class ExportController extends Controller
 {
@@ -64,13 +65,15 @@ class ExportController extends Controller
             $row = 4;
             $col = 1;
             foreach ($headers as $header) {
-                $sheet->setCellValueByColumnAndRow($col, $row, $header);
-                $sheet->getStyleByColumnAndRow($col, $row)->getFont()->setBold(true);
-                $sheet->getStyleByColumnAndRow($col, $row)->getFill()
+                $columnLetter = Coordinate::stringFromColumnIndex($col);
+                $cellAddress = $columnLetter . $row;
+                $sheet->setCellValue($cellAddress, $header);
+                $sheet->getStyle($cellAddress)->getFont()->setBold(true);
+                $sheet->getStyle($cellAddress)->getFill()
                     ->setFillType(Fill::FILL_SOLID)
                     ->getStartColor()->setARGB('FF4472C4');
-                $sheet->getStyleByColumnAndRow($col, $row)->getFont()->getColor()->setARGB('FFFFFFFF');
-                $sheet->getStyleByColumnAndRow($col, $row)->getAlignment()
+                $sheet->getStyle($cellAddress)->getFont()->getColor()->setARGB('FFFFFFFF');
+                $sheet->getStyle($cellAddress)->getAlignment()
                     ->setHorizontal(Alignment::HORIZONTAL_CENTER)
                     ->setVertical(Alignment::VERTICAL_CENTER);
                 $col++;
