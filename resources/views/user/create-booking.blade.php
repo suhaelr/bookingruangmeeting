@@ -690,7 +690,7 @@
                         
                         if (data.available) {
                             // Hide conflict modal if exists
-                            closeConflictModal();
+                            window.closeConflictModal();
                             
                             // Show success message
                             if (availabilityDiv) {
@@ -754,11 +754,11 @@
                 }
                 
                 const modalHtml = `
-                    <div id="conflictModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeConflictModal()">
+                    <div id="conflictModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="window.closeConflictModal()">
                         <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                             <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
                                 <h3 class="text-lg sm:text-xl font-bold text-gray-800">Jadwal Bentrok</h3>
-                                <button onclick="closeConflictModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <button type="button" onclick="window.closeConflictModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
                                     <i class="fas fa-times text-xl sm:text-2xl"></i>
                                 </button>
                             </div>
@@ -776,7 +776,7 @@
                                 ${conflictContent}
                                 
                                 <div class="mt-6 flex justify-end">
-                                    <button onclick="closeConflictModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
+                                    <button type="button" onclick="window.closeConflictModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
                                         Tutup
                                     </button>
                                 </div>
@@ -786,22 +786,34 @@
                 `;
                 
                 document.body.insertAdjacentHTML('beforeend', modalHtml);
+                
+                // Add event listener for ESC key
+                document.addEventListener('keydown', function escHandler(e) {
+                    if (e.key === 'Escape') {
+                        const modal = document.getElementById('conflictModal');
+                        if (modal && !modal.classList.contains('hidden')) {
+                            window.closeConflictModal();
+                            document.removeEventListener('keydown', escHandler);
+                        }
+                    }
+                });
             }
             
-            function closeConflictModal() {
+            // Make functions globally accessible
+            window.closeConflictModal = function() {
                 const modal = document.getElementById('conflictModal');
                 if (modal) {
                     modal.remove();
                 }
-            }
+            };
             
-            function requestPreemptFromModal(bookingId) {
-                closeConflictModal();
+            window.requestPreemptFromModal = function(bookingId) {
+                window.closeConflictModal();
                 const reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
                 if (reason === null) return; // User cancelled
                 
                 requestPreempt(bookingId, reason);
-            }
+            };
 
 
             // Ensure form submission works
