@@ -719,7 +719,7 @@
             
             const modalContent = `
                 <div id="dayMeetingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeDayMeetingsModal()">
-                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()" data-day-number="${day.day}">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
                             <div>
                                 <h3 class="text-lg sm:text-xl font-bold text-gray-800">Meeting Hari ${day.day}</h3>
@@ -778,7 +778,31 @@
             if (meetingItem) {
                 const modal = document.getElementById('dayMeetingsModal');
                 if (modal) {
+                    // Prevent event from bubbling up
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
                     const itemIndex = parseInt(meetingItem.getAttribute('data-item-index'));
+                    
+                    // Get items data from window.dayMeetingsData using day number
+                    const modalContainer = modal.querySelector('[data-day-number]');
+                    if (modalContainer && window.dayMeetingsData) {
+                        const dayNumber = modalContainer.getAttribute('data-day-number');
+                        const items = window.dayMeetingsData[dayNumber];
+                        
+                        if (items && items[itemIndex]) {
+                            // Close modal first
+                            closeDayMeetingsModal();
+                            
+                            // Small delay to ensure modal is closed before showing detail
+                            setTimeout(() => {
+                                showCalendarItemDetails(items[itemIndex]);
+                            }, 100);
+                            return;
+                        }
+                    }
+                    
+                    // Fallback: try using header text to find day
                     const dayHeader = modal.querySelector('h3');
                     if (dayHeader) {
                         const dayMatch = dayHeader.textContent.match(/Hari (\d+)/);
@@ -787,7 +811,9 @@
                             const items = window.dayMeetingsData[day];
                             if (items && items[itemIndex]) {
                                 closeDayMeetingsModal();
-                                showCalendarItemDetails(items[itemIndex]);
+                                setTimeout(() => {
+                                    showCalendarItemDetails(items[itemIndex]);
+                                }, 100);
                             }
                         }
                     }
