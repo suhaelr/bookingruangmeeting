@@ -276,7 +276,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-white/60 text-sm text-center">
-                            <span class="text-white/80 font-medium">Versi Aplikasi v2.1.0</span><br>
+                            <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.0</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
@@ -297,5 +297,181 @@
 
     <!-- WhatsApp Floating Button -->
     @include('components.whatsapp-float')
+
+    <script>
+        // Changelog Modal Functions
+        window.showChangelogModal = function() {
+            const modalHtml = `
+                <div id="changelogModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeChangelogModal()">
+                    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Changelog Aplikasi</h3>
+                            <button type="button" onclick="closeChangelogModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <i class="fas fa-times text-xl sm:text-2xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="p-4 sm:p-6">
+                            <!-- v2.1.0 -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-bold text-gray-800">v2.1.0 (2025) - Feature Update</h4>
+                                    <span class="text-sm text-gray-500">Januari 2025</span>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Export Excel</strong> - Menggantikan export CSV dengan format Excel (.xlsx) menggunakan SheetJS</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Sistem Preempt Request dengan SLA 1 Jam</strong> - Sistem ajukan pendahuluan meeting dengan deadline 1 jam</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Popup Warning Jadwal Bentrok Real-time</strong> - Popup modal muncul langsung saat deteksi konflik tanpa perlu submit form</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan User Access Control</strong> - Kontrol akses deskripsi dan PDF berdasarkan checkbox invitation yang dicentang</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Responsive Design</strong> - Header mobile ditambahkan di semua halaman (admin dashboard, user dashboard)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Popup Conflict Modal</strong> - Popup jadwal bentrok dapat ditutup dengan tombol X, button Tutup, atau ESC key</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Dokumentasi Lengkap</strong> - Dokumentasi lengkap skenario order bentrok dan sistem ajukan pendahuluan meeting</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- v2.0.0 -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-bold text-gray-800">v2.0.0 (2025) - Major Update</h4>
+                                    <span class="text-sm text-gray-500">Januari 2025</span>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Dukungan Bahasa Indonesia Penuh</strong> - Semua pesan validasi dalam bahasa Indonesia</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Sistem Email Reminder</strong> - Email otomatis 30 menit sebelum meeting</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Smart Room Deletion Logic</strong> - Logika penghapusan ruang yang cerdas</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Auto Status Update</strong> - Booking otomatis selesai saat waktu habis</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>User Notification System</strong> - Sistem notifikasi in-app yang lengkap</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Room Maintenance Notices</strong> - Notifikasi maintenance untuk user</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Enhanced User Experience</strong> - Peringatan saat tidak ada ruang tersedia</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Automated Commands</strong> - Command untuk update status dan email reminder</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Beautiful Email Templates</strong> - Template HTML yang indah untuk email</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Comprehensive Logging</strong> - Logging lengkap untuk semua aktivitas</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- v1.0.0 -->
+                            <div class="mb-4 border-t border-gray-200 pt-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-bold text-gray-800">v1.0.0 (2024)</h4>
+                                    <span class="text-sm text-gray-500">2024</span>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Sistem authentication lengkap</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Dashboard user dan admin</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Sistem booking dengan validasi cerdas</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Manajemen user dan ruang meeting</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Sistem notifikasi real-time</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Export data dalam format CSV</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Responsive design</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span>Bahasa Indonesia dasar</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-6 flex justify-end">
+                                <button type="button" onclick="closeChangelogModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Add event listener for ESC key
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('changelogModal');
+                    if (modal && !modal.classList.contains('hidden')) {
+                        closeChangelogModal();
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                }
+            });
+        };
+
+        window.closeChangelogModal = function() {
+            const modal = document.getElementById('changelogModal');
+            if (modal) {
+                modal.remove();
+            }
+        };
+    </script>
 </body>
 </html>
