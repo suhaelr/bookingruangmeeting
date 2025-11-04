@@ -1,6 +1,6 @@
 {{-- WhatsApp Floating Button Component --}}
 <div class="whatsapp-float" id="whatsappFloat">
-    <a href="https://wa.me/6289667373491" 
+    <a href="https://wa.me/6281517957977" 
        target="_blank" 
        rel="noopener noreferrer"
        class="whatsapp-link"

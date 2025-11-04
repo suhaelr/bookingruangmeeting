@@ -393,10 +393,6 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Durasi</label>
                                 <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} jam</p>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Total Biaya</label>
-                                <p class="text-gray-900 font-semibold">Rp ${new Intl.NumberFormat('id-ID').format(booking.total_cost)}</p>
-                            </div>
                         </div>
                         
                         ${booking.description ? `
@@ -490,20 +486,8 @@
             const exportBtn = document.getElementById('export-btn');
             if (exportBtn) {
                 exportBtn.addEventListener('click', function() {
-                    const bookings = @json($bookings->items());
-                    let csv = 'ID,Judul,Pengguna,Email,Ruang,Mulai Waktu,Selesai Waktu,Status,Biaya\n';
-                    
-                    bookings.forEach(booking => {
-                        csv += `"${booking.id}","${booking.title}","${booking.user.full_name}","${booking.user.email}","${booking.meeting_room.name}","${booking.start_time}","${booking.end_time}","${booking.status}","${booking.total_cost}"\n`;
-                    });
-                    
-                    const blob = new Blob([csv], { type: 'text/csv' });
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'bookings-export.csv';
-                    a.click();
-                    window.URL.revokeObjectURL(url);
+                    // Redirect to backend Excel export route
+                    window.location.href = '{{ route("admin.export.bookings.excel") }}';
                 });
             }
 
