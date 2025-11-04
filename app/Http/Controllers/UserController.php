@@ -453,10 +453,11 @@ class UserController extends Controller
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
         
-        // Check capacity
-        if ($request->attendees_count > $room->capacity) {
+        // Check capacity (only if attendees_count is provided)
+        $attendeesCount = $request->attendees_count ?? 1;
+        if ($attendeesCount > $room->capacity) {
             return back()->withErrors([
-                'attendees_count' => "Jumlah peserta ({$request->attendees_count}) melebihi kapasitas ruangan ({$room->capacity} kursi)."
+                'attendees_count' => "Jumlah peserta ({$attendeesCount}) melebihi kapasitas ruangan ({$room->capacity} kursi)."
             ])->withInput();
         }
         
