@@ -632,10 +632,11 @@
                                 Dokumen Tambahan
                             </h4>
                             <div class="bg-white rounded-lg border border-gray-300 overflow-hidden">
-                                <iframe src="${item.document_url}" 
-                                        class="w-full h-96 border-0" 
+                                <iframe src="${item.document_url}#toolbar=1&navpanes=0&scrollbar=1" 
+                                        class="w-full h-64 sm:h-80 md:h-96 border-0" 
                                         type="application/pdf"
-                                        title="Dokumen Booking">
+                                        title="Dokumen Booking"
+                                        loading="lazy">
                                     <p>Browser Anda tidak mendukung tampilan PDF. 
                                        <a href="${item.document_url}" target="_blank" class="text-blue-500 hover:underline">
                                            Klik di sini untuk membuka PDF
@@ -687,16 +688,16 @@
             }
             
             const modalContent = `
-                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
-                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-gray-800">Detail Meeting</h3>
-                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times text-xl"></i>
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Detail Meeting</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
                         </div>
                         
-                        <div class="space-y-4">
+                        <div class="p-4 sm:p-6 space-y-4">
                             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
@@ -733,8 +734,8 @@
                             ${invitedHtml}
                         </div>
                         
-                        <div class="flex justify-end mt-6">
-                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">Tutup</button>
+                        <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 pt-4 flex justify-end">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">Tutup</button>
                         </div>
                     </div>
                 </div>
@@ -757,16 +758,16 @@
             
             // Create modal content
             const modalContent = `
-                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
-                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-gray-800">Detail Booking Aktif</h3>
-                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times text-xl"></i>
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Detail Booking Aktif</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
                         </div>
                         
-                        <div class="space-y-4">
+                        <div class="p-4 sm:p-6 space-y-4">
                             <!-- Status Alert -->
                             <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                                 <div class="flex items-center space-x-2 mb-2">
@@ -824,8 +825,8 @@
                             </div>
                         </div>
                         
-                        <div class="flex justify-end mt-6">
-                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 pt-4 flex justify-end">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
                                 Tutup
                             </button>
                         </div>
@@ -849,16 +850,16 @@
             
             // Create modal content
             const modalContent = `
-                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
-                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-gray-800">Riwayat Penggunaan</h3>
-                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times text-xl"></i>
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Riwayat Penggunaan</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
                         </div>
                         
-                        <div class="space-y-4">
+                        <div class="p-4 sm:p-6 space-y-4">
                             <!-- Status Alert -->
                             <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
                                 <div class="flex items-center space-x-2 mb-2">
@@ -913,8 +914,8 @@
                             </div>
                         </div>
                         
-                        <div class="flex justify-end mt-6">
-                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 pt-4 flex justify-end">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
                                 Tutup
                             </button>
                         </div>
@@ -931,16 +932,16 @@
             
             // Create modal content
             const modalContent = `
-                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeBookingModal()">
-                    <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-gray-800">Riwayat Penggunaan</h3>
-                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times text-xl"></i>
+                <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Riwayat Penggunaan</h3>
+                            <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
                         </div>
                         
-                        <div class="space-y-4">
+                        <div class="p-4 sm:p-6 space-y-4">
                             <!-- Status Alert -->
                             <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
                                 <div class="flex items-center space-x-2 mb-2">
@@ -1018,11 +1019,11 @@
                             </div>
                         </div>
                         
-                        <div class="flex justify-end space-x-3 mt-6">
-                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                        <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 pt-4 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+                            <button onclick="closeBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
                                 Tutup
                             </button>
-                            <button onclick="proceedToBooking('${roomId}', '${datetime}', '${roomName}')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                            <button onclick="proceedToBooking('${roomId}', '${datetime}', '${roomName}')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-full sm:w-auto">
                                 <i class="fas fa-calendar-plus mr-2"></i>Booking Sekarang
                             </button>
                         </div>

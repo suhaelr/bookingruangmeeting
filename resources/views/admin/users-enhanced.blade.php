@@ -53,16 +53,16 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-white mb-2">Kelola Pengguna</h2>
                     <p class="text-white/80">Lihat dan kelola semua akun pengguna</p>
                 </div>
-                <div class="flex space-x-4">
-                    <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                    <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
                         <i class="fas fa-plus mr-2"></i>Tambah Pengguna
                     </a>
-                    <button onclick="exportUsers()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                    <button onclick="exportUsers()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
                         <i class="fas fa-download mr-2"></i>Export
                     </button>
                 </div>
