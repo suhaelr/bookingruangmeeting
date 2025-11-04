@@ -66,7 +66,7 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Meeting Ruang</h2>
+                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Ruang Meeting</h2>
                     <p class="text-white/80">Lihat dan kelola semua ruang meeting</p>
                 </div>
                 <div class="flex space-x-4">
@@ -97,7 +97,7 @@
                 <div class="space-y-2 mb-4">
                     <div class="flex items-center justify-between">
                         <span class="text-white/60 text-sm">Kapasitas:</span>
-                        <span class="text-white font-medium">{{ $room->capacity }} kursi</span>
+                        <span class="text-white font-medium">{{ $room->capacity ? $room->capacity . ' kursi' : 'Tidak ditentukan' }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-white/60 text-sm">Lokasi:</span>

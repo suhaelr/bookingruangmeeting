@@ -138,12 +138,17 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         
-        // Debug: Log booking counts
-        \Log::info('Admin rooms - active booking counts:', [
+        // Debug: Log all rooms
+        \Log::info('Admin rooms - listing all rooms', [
+            'total_rooms' => MeetingRoom::count(),
+            'rooms_in_page' => $rooms->count(),
             'rooms' => $rooms->map(function($room) {
                 return [
                     'id' => $room->id,
                     'name' => $room->name,
+                    'location' => $room->location,
+                    'is_active' => $room->is_active,
+                    'created_at' => $room->created_at,
                     'active_bookings_count' => $room->bookings_count
                 ];
             })
@@ -190,6 +195,14 @@ class AdminController extends Controller
                 'amenities' => $amenities
             ]);
 
+            \Log::info('Room created successfully', [
+                'room_id' => $room->id,
+                'room_name' => $room->name,
+                'location' => $room->location,
+                'is_active' => $room->is_active,
+                'capacity' => $room->capacity
+            ]);
+
             return redirect()->route('admin.rooms')->with('success', 'Room berhasil ditambahkan!');
         } catch (ValidationException $e) {
             \Log::warning('Validation error in storeRoom', [
@@ -201,6 +214,11 @@ class AdminController extends Controller
                 ->withInput()
                 ->with('error', 'Validasi gagal, periksa kembali data yang dimasukkan.');
         } catch (\Exception $e) {
+            \Log::error('Error creating room', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'input' => $request->all()
+            ]);
             return back()->with('error', 'Gagal menambahkan room: ' . $e->getMessage())->withInput();
         }
     }
