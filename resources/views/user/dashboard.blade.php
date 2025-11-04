@@ -675,8 +675,10 @@
                 
                 meetingsHtml = sortedItems.map((item, index) => {
                     let itemHtml = `
-                        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 cursor-pointer hover:shadow-md transition-shadow"
-                             data-item-index="${index}">
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 cursor-pointer hover:shadow-md transition-shadow day-meeting-item"
+                             data-item-index="${index}"
+                             data-day-number="${day.day}"
+                             onclick="handleDayMeetingItemClick(event, this)">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-900 mb-2">${escapeHtml(item.title || 'Meeting')}</h4>
@@ -772,9 +774,70 @@
             }
         }
 
-        // Handle click on meeting item in modal
+        // Handle click on meeting item in modal - using direct function call
+        function handleDayMeetingItemClick(event, element) {
+            // Prevent event from bubbling up
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Get item index and day number from element
+            const itemIndex = parseInt(element.getAttribute('data-item-index'));
+            const dayNumber = element.getAttribute('data-day-number');
+            
+            // Get items data from window.dayMeetingsData using day number
+            if (window.dayMeetingsData && window.dayMeetingsData[dayNumber]) {
+                const items = window.dayMeetingsData[dayNumber];
+                
+                if (items && items[itemIndex]) {
+                    // Close modal first
+                    closeDayMeetingsModal();
+                    
+                    // Small delay to ensure modal is closed before showing detail
+                    setTimeout(() => {
+                        showCalendarItemDetails(items[itemIndex]);
+                    }, 100);
+                    return;
+                }
+            }
+            
+            // Fallback: try to find modal and get data
+            const modal = document.getElementById('dayMeetingsModal');
+            if (modal) {
+                const modalContainer = modal.querySelector('[data-day-number]');
+                if (modalContainer && window.dayMeetingsData) {
+                    const dayNum = modalContainer.getAttribute('data-day-number');
+                    const items = window.dayMeetingsData[dayNum];
+                    
+                    if (items && items[itemIndex]) {
+                        closeDayMeetingsModal();
+                        setTimeout(() => {
+                            showCalendarItemDetails(items[itemIndex]);
+                        }, 100);
+                        return;
+                    }
+                }
+                
+                // Final fallback: try using header text to find day
+                const dayHeader = modal.querySelector('h3');
+                if (dayHeader) {
+                    const dayMatch = dayHeader.textContent.match(/Hari (\d+)/);
+                    if (dayMatch && window.dayMeetingsData) {
+                        const day = dayMatch[1];
+                        const items = window.dayMeetingsData[day];
+                        if (items && items[itemIndex]) {
+                            closeDayMeetingsModal();
+                            setTimeout(() => {
+                                showCalendarItemDetails(items[itemIndex]);
+                            }, 100);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Also handle click with event delegation as backup
         document.addEventListener('click', function(e) {
-            const meetingItem = e.target.closest('[data-item-index]');
+            const meetingItem = e.target.closest('.day-meeting-item');
             if (meetingItem) {
                 const modal = document.getElementById('dayMeetingsModal');
                 if (modal) {
@@ -783,38 +846,17 @@
                     e.stopPropagation();
                     
                     const itemIndex = parseInt(meetingItem.getAttribute('data-item-index'));
-                    
-                    // Get items data from window.dayMeetingsData using day number
                     const modalContainer = modal.querySelector('[data-day-number]');
+                    
                     if (modalContainer && window.dayMeetingsData) {
                         const dayNumber = modalContainer.getAttribute('data-day-number');
                         const items = window.dayMeetingsData[dayNumber];
                         
                         if (items && items[itemIndex]) {
-                            // Close modal first
                             closeDayMeetingsModal();
-                            
-                            // Small delay to ensure modal is closed before showing detail
                             setTimeout(() => {
                                 showCalendarItemDetails(items[itemIndex]);
                             }, 100);
-                            return;
-                        }
-                    }
-                    
-                    // Fallback: try using header text to find day
-                    const dayHeader = modal.querySelector('h3');
-                    if (dayHeader) {
-                        const dayMatch = dayHeader.textContent.match(/Hari (\d+)/);
-                        if (dayMatch && window.dayMeetingsData) {
-                            const day = dayMatch[1];
-                            const items = window.dayMeetingsData[day];
-                            if (items && items[itemIndex]) {
-                                closeDayMeetingsModal();
-                                setTimeout(() => {
-                                    showCalendarItemDetails(items[itemIndex]);
-                                }, 100);
-                            }
                         }
                     }
                 }
