@@ -8,6 +8,7 @@ use App\Models\Booking;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -159,13 +160,25 @@ class UserController extends Controller
                     ];
                 })->values();
 
-                // PDF visibility follows same rules as description
-                $canSeeDocument = $canSeeDescription;
+                // Document visibility: same logic as description visibility
+                $hasDocument = !empty($booking->dokumen_perizinan);
+                $canSeeDocument = false;
                 $documentUrl = null;
-                if ($canSeeDocument && $booking->dokumen_perizinan) {
-                    $documentUrl = route('user.bookings.document', $booking->id);
-                }
                 
+                if ($hasDocument) {
+                    if ($isAdmin || $isOwner) {
+                        $canSeeDocument = true;
+                    } elseif ($booking->description_visibility === 'public') {
+                        $canSeeDocument = true;
+                    } elseif ($booking->description_visibility === 'invited_pics_only' && $isInvitedPic) {
+                        $canSeeDocument = true;
+                    }
+                    
+                    if ($canSeeDocument) {
+                        $documentUrl = route('user.bookings.document', $booking->id);
+                    }
+                }
+
                 $items[] = [
                     'id' => $booking->id,
                     'title' => $booking->title,
@@ -178,7 +191,7 @@ class UserController extends Controller
                     'can_see_description' => $canSeeDescription,
                     'is_invited_pic' => $isInvitedPic,
                     'invited_pics' => $invitedPics,
-                    'has_document' => !empty($booking->dokumen_perizinan),
+                    'has_document' => $hasDocument,
                     'can_see_document' => $canSeeDocument,
                     'document_url' => $documentUrl,
                 ];
@@ -406,7 +419,7 @@ class UserController extends Controller
             'invited_pics.*' => 'exists:users,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
-            'attendees_count' => 'nullable|integer|min:1',
+            'attendees_count' => 'required|integer|min:1',
             'attendees' => 'nullable|string',
             'special_requirements' => 'nullable|string',
             'unit_kerja' => 'required|string|max:255',
@@ -453,11 +466,10 @@ class UserController extends Controller
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
         
-        // Check capacity (only if attendees_count is provided)
-        $attendeesCount = $request->attendees_count ?? 1;
-        if ($attendeesCount > $room->capacity) {
+        // Check capacity
+        if ($request->attendees_count > $room->capacity) {
             return back()->withErrors([
-                'attendees_count' => "Jumlah peserta ({$attendeesCount}) melebihi kapasitas ruangan ({$room->capacity} kursi)."
+                'attendees_count' => "Jumlah peserta ({$request->attendees_count}) melebihi kapasitas ruangan ({$room->capacity} kursi)."
             ])->withInput();
         }
         
@@ -500,7 +512,7 @@ class UserController extends Controller
                 'description_visibility' => $request->description_visibility,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'attendees_count' => $request->attendees_count ?? 1,
+                'attendees_count' => $request->attendees_count,
                 'attendees' => $attendees,
                 'special_requirements' => $request->special_requirements,
                 'unit_kerja' => $request->unit_kerja,
@@ -1373,20 +1385,20 @@ class UserController extends Controller
         return "Ruang {$room->name} tidak tersedia untuk waktu yang dipilih karena ada konflik dengan booking berikut:\n\n{$conflictList}\n\nSilakan pilih waktu yang berbeda.";
     }
 
-    /**
-     * View/download booking document (PDF) with visibility check
-     */
     public function viewDocument($id)
     {
         try {
             $user = session('user_data');
-            $userModel = User::find($user['id'] ?? null);
+            $userModel = User::find($user['id']);
             
             if (!$userModel) {
-                return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User session invalid'
+                ], 401);
             }
 
-            $booking = Booking::with(['invitations.pic'])->findOrFail($id);
+            $booking = Booking::with('invitations.pic')->findOrFail($id);
             
             if (!$booking->dokumen_perizinan) {
                 return response()->json([
@@ -1395,7 +1407,7 @@ class UserController extends Controller
                 ], 404);
             }
 
-            // Check visibility: same rules as description
+            // Check document visibility: same logic as description visibility
             $isAdmin = $userModel->role === 'admin';
             $isOwner = (int)$booking->user_id === (int)$userModel->id;
             $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
@@ -1410,7 +1422,7 @@ class UserController extends Controller
             } elseif ($booking->description_visibility === 'invited_pics_only' && $isInvitedPic) {
                 $canSeeDocument = true;
             }
-            
+
             if (!$canSeeDocument) {
                 return response()->json([
                     'success' => false,
@@ -1421,27 +1433,34 @@ class UserController extends Controller
             $filePath = storage_path('app/public/' . $booking->dokumen_perizinan);
             
             if (!file_exists($filePath)) {
+                \Log::error('PDF file not found', [
+                    'booking_id' => $id,
+                    'file_path' => $filePath,
+                    'dokumen_perizinan' => $booking->dokumen_perizinan
+                ]);
+                
                 return response()->json([
                     'success' => false,
                     'message' => 'File dokumen tidak ditemukan'
                 ], 404);
             }
 
-            // Return PDF with inline display for rendering
+            // Return PDF with proper headers for iframe embedding
             return response()->file($filePath, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="dokumen_booking_' . $booking->id . '.pdf"',
+                'Content-Disposition' => 'inline; filename="dokumen_booking_' . $id . '.pdf"',
+                'Cache-Control' => 'public, max-age=3600',
             ]);
-            
         } catch (\Exception $e) {
-            \Log::error('Error viewing booking document: ' . $e->getMessage(), [
+            \Log::error('Error viewing document: ' . $e->getMessage(), [
                 'booking_id' => $id,
+                'user_id' => $user['id'] ?? 'unknown',
                 'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal membuka dokumen: ' . $e->getMessage()
+                'message' => 'Gagal memuat dokumen: ' . $e->getMessage()
             ], 500);
         }
     }
