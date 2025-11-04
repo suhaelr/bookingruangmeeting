@@ -224,10 +224,10 @@
         </div>
         <div class="p-2 border-t flex space-x-2">
             <button onclick="markAllAdminNotifikasisAsRead()" class="flex-1 text-center text-blue-500 hover:text-blue-700 text-sm py-2">
-                Mark all as read
+                Tandai Semua Sebagai Terbaca
             </button>
             <button onclick="clearAllAdminNotifikasis()" class="flex-1 text-center text-red-500 hover:text-red-700 text-sm py-2">
-                Clear all
+                Hapus Semua
             </button>
         </div>
     </div>
@@ -410,7 +410,7 @@
         }
 
         function clearAllAdminNotifikasis() {
-            if (confirm('Are you sure you want to clear all notifications? This action cannot be undone.')) {
+            if (confirm('Apakah Anda yakin ingin menghapus semua notifikasi? Tindakan ini tidak dapat dibatalkan.')) {
                 console.log('Clearing all admin notifications');
                 
                 fetch('/admin/notifications/clear', {
