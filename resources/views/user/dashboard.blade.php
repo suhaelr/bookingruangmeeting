@@ -624,34 +624,22 @@
             let documentHtml = '';
             if (item.has_document) {
                 if (item.can_see_document && item.document_url) {
-                    // Render PDF if user can see it
+                    // Render PDF link if user can see it
                     documentHtml = `
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
                             <h4 class="font-medium text-gray-800 mb-3 flex items-center">
                                 <i class="fas fa-file-pdf text-red-500 mr-2"></i>
                                 Dokumen Tambahan
                             </h4>
-                            <div class="bg-white rounded-lg border border-gray-300 overflow-hidden">
-                                <iframe src="${item.document_url}" 
-                                        class="w-full h-64 sm:h-80 md:h-96 border-0" 
-                                        type="application/pdf"
-                                        title="Dokumen Booking"
-                                        loading="lazy"
-                                        allow="fullscreen"
-                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
-                                    <p class="p-4 text-gray-600 text-sm">
-                                        Browser Anda tidak mendukung tampilan PDF. 
-                                       <a href="${item.document_url}" target="_blank" class="text-blue-500 hover:underline">
-                                           Klik di sini untuk membuka PDF
-                                       </a>
-                                    </p>
-                                </iframe>
-                            </div>
-                            <div class="mt-2">
+                            <div class="bg-white rounded-lg border border-gray-300 p-4">
+                                <p class="text-gray-600 text-sm mb-3">
+                                    Klik link di bawah untuk membuka dokumen PDF di tab baru.
+                                </p>
                                 <a href="${item.document_url}" 
                                    target="_blank" 
-                                   class="text-blue-500 hover:text-blue-700 text-sm inline-flex items-center">
-                                    <i class="fas fa-external-link-alt mr-1"></i>
+                                   rel="noopener noreferrer"
+                                   class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
+                                    <i class="fas fa-external-link-alt mr-2"></i>
                                     Buka di tab baru
                                 </a>
                             </div>
