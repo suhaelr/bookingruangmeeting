@@ -55,8 +55,10 @@
         @media (max-width: 640px) {
             .calendar-day { min-height: 96px; padding: 0.5rem; }
             .calendar-day .items { max-height: 3.5rem; }
-            .mobile-calendar-day { cursor: pointer; }
+            .mobile-calendar-day { cursor: pointer; position: relative; }
             .mobile-calendar-day:active { transform: scale(0.98); }
+            .mobile-calendar-day .calendar-items-container { pointer-events: auto; }
+            .mobile-calendar-day .calendar-item { pointer-events: auto; position: relative; z-index: 10; }
         }
     </style>
 </head>
@@ -277,16 +279,17 @@
                         <div class="calendar-day {{ $day['isToday'] ? 'ring-2 ring-blue-400' : '' }} mobile-calendar-day" 
                              data-day="{{ $day['day'] }}" 
                              data-date="{{ $day['date'] ?? '' }}"
-                             data-items='@json($day['items'])'
-                             onclick="handleCalendarDayClick(event, @json($day))">
-                            <div class="flex items-center justify-between mb-2">
+                             data-day-data='@json($day)'
+                             data-has-items="{{ count($day['items']) > 0 ? 'true' : 'false' }}">
+                            <div class="flex items-center justify-between mb-2 calendar-day-header">
                                 <span class="text-white font-semibold">{{ $day['day'] }}</span>
                                 <span class="text-xs text-white/60">{{ count($day['items']) }} booking</span>
                             </div>
-                            <div class="space-y-1 items overflow-y-auto pr-1">
+                            <div class="space-y-1 items overflow-y-auto pr-1 calendar-items-container">
                                 @forelse($day['items'] as $item)
                                     <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1 cursor-pointer hover:bg-blue-500/30 calendar-item"
-                                         onclick='event.stopPropagation(); showCalendarItemDetails(@json($item))'>
+                                         data-item-data='@json($item)'
+                                         onclick='event.stopPropagation(); event.preventDefault(); showCalendarItemDetails(@json($item))'>
                                         <div class="font-medium truncate">{{ $item['title'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['start_time'] }}-{{ $item['end_time'] }} • {{ $item['room'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['pic_name'] }} • {{ $item['unit_kerja'] }}</div>
@@ -579,25 +582,66 @@
                     window.location.href = url.toString();
                 });
             }
+            
+            // Setup calendar day click handlers for mobile
+            setupCalendarDayClickHandlers();
         });
-
-        // Handle calendar day click (mobile only)
-        function handleCalendarDayClick(event, day) {
-            // Only show modal on mobile (screen width < 640px)
-            if (window.innerWidth >= 640) {
-                return; // Desktop: let default behavior work
-            }
-            
-            // Prevent if clicking directly on calendar item
-            if (event.target.closest('.calendar-item')) {
-                return;
-            }
-            
-            // Show modal with all meetings for this day
-            if (day.items && day.items.length > 0) {
-                showDayMeetingsModal(day);
-            }
+        
+        // Setup calendar day click handlers using event delegation
+        function setupCalendarDayClickHandlers() {
+            // Use event delegation for better reliability
+            document.addEventListener('click', function(e) {
+                // Only handle on mobile
+                if (window.innerWidth >= 640) {
+                    return;
+                }
+                
+                // Don't trigger if clicking on calendar item directly - let item handler work
+                if (e.target.closest('.calendar-item')) {
+                    return;
+                }
+                
+                // Find the closest calendar-day element
+                const calendarDay = e.target.closest('.mobile-calendar-day');
+                if (!calendarDay) {
+                    return;
+                }
+                
+                // Check where user clicked
+                const clickedOnHeader = e.target.closest('.calendar-day-header');
+                const clickedOnContainer = e.target.closest('.calendar-items-container');
+                const clickedOnItem = e.target.closest('.calendar-item');
+                
+                // If clicked on item, let item handler work (don't show modal)
+                if (clickedOnItem) {
+                    return;
+                }
+                
+                // Show modal if:
+                // 1. Clicked on header, OR
+                // 2. Clicked on container (empty space or "Tidak ada" text), OR  
+                // 3. Clicked on calendar-day itself (outside header and container)
+                // Note: Scroll is handled by touchmove/wheel events, not click, so it will still work
+                
+                // Get day data
+                const dayDataStr = calendarDay.getAttribute('data-day-data');
+                if (!dayDataStr) {
+                    return;
+                }
+                
+                try {
+                    const dayData = JSON.parse(dayDataStr);
+                    
+                    // Show modal
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showDayMeetingsModal(dayData);
+                } catch (err) {
+                    console.error('Error parsing day data:', err);
+                }
+            });
         }
+
 
         // Escape HTML to prevent XSS
         function escapeHtml(text) {
