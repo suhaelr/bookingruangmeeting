@@ -350,7 +350,7 @@
     <!-- Notifikasi Dropdown -->
     <div id="notificationDropdown" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg border hidden z-50 w-80 max-h-96 overflow-y-auto">
         <div class="p-4 border-b">
-            <h3 class="font-semibold text-gray-800">Notifikasis</h3>
+            <h3 class="font-semibold text-gray-800">Notifikasi</h3>
         </div>
         <div id="notificationList" class="p-2">
             <!-- Notifikasis will be loaded here -->

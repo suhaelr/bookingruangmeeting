@@ -217,7 +217,7 @@
     <!-- Admin Notifikasi Dropdown -->
     <div id="adminNotifikasiDropdown" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg border hidden z-50 w-80 max-h-96 overflow-y-auto">
         <div class="p-4 border-b">
-            <h3 class="font-semibold text-gray-800">Admin Notifikasis</h3>
+            <h3 class="font-semibold text-gray-800">Admin Notifikasi</h3>
         </div>
         <div id="adminNotifikasiList" class="p-2">
             <!-- Admin notifications will be loaded here -->
@@ -315,50 +315,87 @@
         function markAdminNotifikasiAsRead(notificationId) {
             console.log('Marking admin notification as read:', notificationId);
             
+            // Get CSRF token safely
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+                return;
+            }
+            
             // Mark notification as read in database
             fetch(`/admin/notifications/${notificationId}/mark-read`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json'
+                    'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Mark as read response:', data);
                 if (data.success) {
-                    // Reload notifications to update UI
+                    // Reload notifications to update UI and badge count
                     loadAdminNotifikasis();
                 } else {
                     console.error('Failed to mark notification as read:', data.message);
+                    alert('Gagal menandai notifikasi sebagai terbaca: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error marking notification as read:', error);
+                alert('Error: ' + error.message);
             });
         }
 
         function markAllAdminNotifikasisAsRead() {
             console.log('Marking all admin notifications as read');
             
+            // Get CSRF token safely
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+                return;
+            }
+            
             // Mark all notifications as read in database
             fetch('/admin/notifications/mark-all-read', {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Content-Type': 'application/json'
+                    'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Mark all as read response:', data);
                 if (data.success) {
-                    // Reload notifications to update UI
+                    // Reload notifications to update UI and badge count
                     loadAdminNotifikasis();
+                    if (data.updated_count !== undefined) {
+                        console.log('Updated ' + data.updated_count + ' notifications');
+                    }
                 } else {
                     console.error('Failed to mark all notifications as read:', data.message);
+                    alert('Gagal menandai semua notifikasi sebagai terbaca: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error marking all notifications as read:', error);
+                alert('Error: ' + error.message);
             });
         }
 
@@ -448,3 +485,5 @@
     </script>
 </body>
 </html>
+
+

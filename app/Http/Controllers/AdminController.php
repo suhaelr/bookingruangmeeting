@@ -399,8 +399,10 @@ class AdminController extends Controller
         // Get admin notifications (where user_id is null)
         // Tampilkan notifikasi global (user_id null) atau notifikasi yang ditujukan ke akun admin
         $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
-        $notifications = \App\Models\UserNotification::whereNull('user_id')
-            ->orWhereIn('user_id', $adminIds)
+        $notifications = \App\Models\UserNotification::where(function($query) use ($adminIds) {
+                $query->whereNull('user_id')
+                      ->orWhereIn('user_id', $adminIds);
+            })
             ->with('booking')
             ->orderBy('created_at', 'desc')
             ->limit(50)
@@ -411,7 +413,7 @@ class AdminController extends Controller
                     'title' => $notification->title,
                     'message' => $notification->message,
                     'time' => $notification->created_at->diffForHumans(),
-                    'read' => $notification->is_read,
+                    'read' => (bool)$notification->is_read,
                     'type' => $notification->type,
                     'booking_id' => $notification->booking_id,
                     'created_at' => $notification->created_at->format('Y-m-d H:i:s')
@@ -424,20 +426,37 @@ class AdminController extends Controller
     public function markNotificationRead(Request $request, $id)
     {
         try {
-            $notification = \App\Models\UserNotification::whereNull('user_id')
-                ->where('id', $id)
+            $admin = session('admin_data');
+            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
+            
+            // Find notification that is either global (user_id null) or belongs to admin
+            $notification = \App\Models\UserNotification::where('id', $id)
+                ->where(function($query) use ($adminIds) {
+                    $query->whereNull('user_id')
+                          ->orWhereIn('user_id', $adminIds);
+                })
                 ->firstOrFail();
             
             $notification->markAsRead();
+            
+            \Log::info('Admin notification marked as read', [
+                'notification_id' => $id,
+                'admin_id' => $admin['id'] ?? 'unknown'
+            ]);
             
             return response()->json([
                 'success' => true,
                 'message' => 'Notification marked as read'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to mark admin notification as read', [
+                'notification_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to mark notification as read'
+                'message' => 'Failed to mark notification as read: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -445,21 +464,38 @@ class AdminController extends Controller
     public function markAllNotificationsRead(Request $request)
     {
         try {
-            \App\Models\UserNotification::whereNull('user_id')
+            $admin = session('admin_data');
+            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
+            
+            // Mark all admin notifications as read (global or for admin users)
+            $updatedCount = \App\Models\UserNotification::where(function($query) use ($adminIds) {
+                    $query->whereNull('user_id')
+                          ->orWhereIn('user_id', $adminIds);
+                })
                 ->where('is_read', false)
                 ->update([
                     'is_read' => true,
                     'read_at' => now()
                 ]);
             
+            \Log::info('All admin notifications marked as read', [
+                'updated_count' => $updatedCount,
+                'admin_id' => $admin['id'] ?? 'unknown'
+            ]);
+            
             return response()->json([
                 'success' => true,
-                'message' => 'All notifications marked as read'
+                'message' => 'All notifications marked as read',
+                'updated_count' => $updatedCount
             ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to mark all admin notifications as read', [
+                'error' => $e->getMessage()
+            ]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to mark all notifications as read'
+                'message' => 'Failed to mark all notifications as read: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -467,14 +503,31 @@ class AdminController extends Controller
     public function clearAllNotifications()
     {
         try {
-            // Clear all admin notifications from database
-            \App\Models\UserNotification::whereNull('user_id')->delete();
+            $admin = session('admin_data');
+            $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
+            
+            // Clear all admin notifications from database (global or for admin users)
+            $deletedCount = \App\Models\UserNotification::where(function($query) use ($adminIds) {
+                    $query->whereNull('user_id')
+                          ->orWhereIn('user_id', $adminIds);
+                })
+                ->delete();
+            
+            \Log::info('All admin notifications cleared', [
+                'deleted_count' => $deletedCount,
+                'admin_id' => $admin['id'] ?? 'unknown'
+            ]);
             
             return response()->json([
                 'success' => true,
-                'message' => 'All notifications cleared successfully!'
+                'message' => 'All notifications cleared successfully!',
+                'deleted_count' => $deletedCount
             ]);
         } catch (\Exception $e) {
+            \Log::error('Failed to clear admin notifications', [
+                'error' => $e->getMessage()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to clear notifications: ' . $e->getMessage()
