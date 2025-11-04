@@ -372,7 +372,8 @@ Pastikan web server mengarahkan semua request ke `public/index.php`
 - ✅ **Beautiful Email Templates** - Template HTML yang indah untuk email
 - ✅ **Comprehensive Logging** - Logging lengkap untuk semua aktivitas
 
-### v1.0.0 (2024)
+### v1.0.0 (2025) - Initial Release
+- ✅ Project dimulai sejak Oktober 2025
 - ✅ Sistem authentication lengkap
 - ✅ Dashboard user dan admin
 - ✅ Sistem booking dengan validasi cerdas
