@@ -456,8 +456,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             loadAdminNotifikasis();
             
-            // Auto-refresh notifications every 30 seconds
-            setInterval(loadAdminNotifikasis, 30000);
+            // Auto-refresh notifications every 10 seconds for real-time updates
+            setInterval(loadAdminNotifikasis, 10000);
         });
 
         // Auto-hide success message

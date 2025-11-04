@@ -558,6 +558,10 @@
         // Load notifications on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadNotifikasis();
+            
+            // Auto-refresh notifications every 10 seconds for real-time updates
+            setInterval(loadNotifikasis, 10000);
+            
             const dp = document.getElementById('calendar-date-picker');
             if (dp) {
                 dp.addEventListener('change', function() {
