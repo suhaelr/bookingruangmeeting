@@ -218,7 +218,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-white/60 text-sm text-center">
-                            <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.0</span><br>
+                            <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.1</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
@@ -254,8 +254,38 @@
                         </div>
                         
                         <div class="p-4 sm:p-6">
-                            <!-- v2.1.0 -->
+                            <!-- v2.1.1 -->
                             <div class="mb-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-bold text-gray-800">v2.1.1 (2025) - Bug Fixes</h4>
+                                    <span class="text-sm text-gray-500">Januari 2025</span>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Bug Notifikasi Admin</strong> - Teks "Admin Notifikasis" diperbaiki menjadi "Admin Notifikasi"</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Mark as Read</strong> - Badge count berkurang dengan benar setelah klik notifikasi</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Mark All as Read</strong> - Fungsi mark all as read sekarang bekerja dengan benar</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Badge Count</strong> - Badge count ter-update secara real-time setelah mark as read</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Error Handling</strong> - Menambahkan error handling dan logging yang lebih baik untuk notifikasi</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- v2.1.0 -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="text-lg font-bold text-gray-800">v2.1.0 (2025) - Feature Update</h4>
                                     <span class="text-sm text-gray-500">Januari 2025</span>

@@ -344,6 +344,13 @@ Pastikan web server mengarahkan semua request ke `public/index.php`
 
 ## 📝 Changelog
 
+### v2.1.1 (2025) - Bug Fixes
+- ✅ **Perbaikan Bug Notifikasi Admin** - Teks "Admin Notifikasis" diperbaiki menjadi "Admin Notifikasi"
+- ✅ **Perbaikan Mark as Read** - Badge count berkurang dengan benar setelah klik notifikasi
+- ✅ **Perbaikan Mark All as Read** - Fungsi mark all as read sekarang bekerja dengan benar
+- ✅ **Perbaikan Badge Count** - Badge count ter-update secara real-time setelah mark as read
+- ✅ **Perbaikan Error Handling** - Menambahkan error handling dan logging yang lebih baik untuk notifikasi
+
 ### v2.1.0 (2025) - Feature Update
 - ✅ **Export Excel** - Menggantikan export CSV dengan format Excel (.xlsx) menggunakan SheetJS
 - ✅ **Sistem Preempt Request dengan SLA 1 Jam** - Sistem ajukan pendahuluan meeting dengan deadline 1 jam
