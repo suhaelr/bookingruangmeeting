@@ -394,7 +394,7 @@
                     console.log('Loaded notifications:', notifications);
                     
                     // Calculate unread count - ensure read is boolean
-                    const unreadCount = notifications.filter(n => !n.read || n.read === false || n.read === 0).length;
+                    const unreadCount = notifications.filter(n => !n.read).length;
                     const badge = document.getElementById('notification-badge');
                     
                     console.log('Unread count:', unreadCount);
