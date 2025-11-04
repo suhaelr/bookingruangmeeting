@@ -212,7 +212,6 @@
                         <p class="mb-4">Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi:</p>
                         <div class="bg-white/10 rounded-lg p-4">
                             <p><strong>PUSDATIN</strong></p>
-                            <p>Email: <a href="mailto:SuhaelR@gmail.com" class="text-blue-300 hover:text-blue-200">SuhaelR@gmail.com</a></p>
                             <p>Website: <a href="https://www.pusdatinbgn.web.id" class="text-blue-300 hover:text-blue-200">www.pusdatinbgn.web.id</a></p>
                         </div>
                     </div>

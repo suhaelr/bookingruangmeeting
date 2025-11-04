@@ -269,7 +269,6 @@
                         <p class="mb-4">Jika Anda memiliki pertanyaan tentang syarat dan ketentuan ini:</p>
                         <div class="bg-white/10 rounded-lg p-4">
                             <p><strong>PUSDATIN</strong></p>
-                            <p>Email: <a href="mailto:SuhaelR@gmail.com" class="text-blue-300 hover:text-blue-200">SuhaelR@gmail.com</a></p>
                             <p>Website: <a href="https://www.pusdatinbgn.web.id" class="text-blue-300 hover:text-blue-200">www.pusdatinbgn.web.id</a></p>
                             <p class="mt-2 text-sm">Jam operasional: Senin - Jumat, 08:00 - 17:00 WIB</p>
                         </div>
