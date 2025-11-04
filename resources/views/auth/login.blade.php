@@ -881,7 +881,6 @@
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="text-lg font-bold text-gray-800">v1.0.0 (2025) - Initial Release</h4>
                                     <span class="text-sm text-gray-500">Oktober 2025</span>
-                                    <span class="text-sm text-gray-500">2024</span>
                                 </div>
                                 <ul class="space-y-2 text-sm text-gray-700">
                                     <li class="flex items-start">
