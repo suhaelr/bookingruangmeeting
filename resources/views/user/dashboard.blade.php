@@ -632,12 +632,15 @@
                                 Dokumen Tambahan
                             </h4>
                             <div class="bg-white rounded-lg border border-gray-300 overflow-hidden">
-                                <iframe src="${item.document_url}#toolbar=1&navpanes=0&scrollbar=1" 
+                                <iframe src="${item.document_url}" 
                                         class="w-full h-64 sm:h-80 md:h-96 border-0" 
                                         type="application/pdf"
                                         title="Dokumen Booking"
-                                        loading="lazy">
-                                    <p>Browser Anda tidak mendukung tampilan PDF. 
+                                        loading="lazy"
+                                        allow="fullscreen"
+                                        sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+                                    <p class="p-4 text-gray-600 text-sm">
+                                        Browser Anda tidak mendukung tampilan PDF. 
                                        <a href="${item.document_url}" target="_blank" class="text-blue-500 hover:underline">
                                            Klik di sini untuk membuka PDF
                                        </a>

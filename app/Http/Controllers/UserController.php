@@ -175,7 +175,8 @@ class UserController extends Controller
                     }
                     
                     if ($canSeeDocument) {
-                        $documentUrl = route('user.bookings.document', $booking->id);
+                        // Use absolute URL to ensure iframe can load it
+                        $documentUrl = url(route('user.bookings.document', $booking->id, false));
                     }
                 }
 
@@ -1446,11 +1447,17 @@ class UserController extends Controller
             }
 
             // Return PDF with proper headers for iframe embedding
-            return response()->file($filePath, [
+            $response = response()->file($filePath, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="dokumen_booking_' . $id . '.pdf"',
                 'Cache-Control' => 'public, max-age=3600',
+                'X-Content-Type-Options' => 'nosniff',
             ]);
+            
+            // Allow iframe embedding from same origin
+            $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+            
+            return $response;
         } catch (\Exception $e) {
             \Log::error('Error viewing document: ' . $e->getMessage(), [
                 'booking_id' => $id,
