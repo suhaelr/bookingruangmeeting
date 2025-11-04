@@ -55,6 +55,8 @@
         @media (max-width: 640px) {
             .calendar-day { min-height: 96px; padding: 0.5rem; }
             .calendar-day .items { max-height: 3.5rem; }
+            .mobile-calendar-day { cursor: pointer; }
+            .mobile-calendar-day:active { transform: scale(0.98); }
         }
     </style>
 </head>
@@ -272,15 +274,19 @@
                     @endfor
 
                     @foreach($calendarDays as $day)
-                        <div class="calendar-day {{ $day['isToday'] ? 'ring-2 ring-blue-400' : '' }}">
+                        <div class="calendar-day {{ $day['isToday'] ? 'ring-2 ring-blue-400' : '' }} mobile-calendar-day" 
+                             data-day="{{ $day['day'] }}" 
+                             data-date="{{ $day['date'] ?? '' }}"
+                             data-items='@json($day['items'])'
+                             onclick="handleCalendarDayClick(event, @json($day))">
                             <div class="flex items-center justify-between mb-2">
                                 <span class="text-white font-semibold">{{ $day['day'] }}</span>
                                 <span class="text-xs text-white/60">{{ count($day['items']) }} booking</span>
                             </div>
                             <div class="space-y-1 items overflow-y-auto pr-1">
                                 @forelse($day['items'] as $item)
-                                    <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1 cursor-pointer hover:bg-blue-500/30"
-                                         onclick='showCalendarItemDetails(@json($item))'>
+                                    <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1 cursor-pointer hover:bg-blue-500/30 calendar-item"
+                                         onclick='event.stopPropagation(); showCalendarItemDetails(@json($item))'>
                                         <div class="font-medium truncate">{{ $item['title'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['start_time'] }}-{{ $item['end_time'] }} • {{ $item['room'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['pic_name'] }} • {{ $item['unit_kerja'] }}</div>
@@ -572,6 +578,176 @@
                     url.searchParams.delete('date');
                     window.location.href = url.toString();
                 });
+            }
+        });
+
+        // Handle calendar day click (mobile only)
+        function handleCalendarDayClick(event, day) {
+            // Only show modal on mobile (screen width < 640px)
+            if (window.innerWidth >= 640) {
+                return; // Desktop: let default behavior work
+            }
+            
+            // Prevent if clicking directly on calendar item
+            if (event.target.closest('.calendar-item')) {
+                return;
+            }
+            
+            // Show modal with all meetings for this day
+            if (day.items && day.items.length > 0) {
+                showDayMeetingsModal(day);
+            }
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Show modal with all meetings for a specific day
+        function showDayMeetingsModal(day) {
+            const dateStr = day.date || `${day.day} ${day.month || ''}`;
+            const items = day.items || [];
+            
+            let meetingsHtml = '';
+            
+            if (items.length === 0) {
+                meetingsHtml = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-calendar-times text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-600">Tidak ada meeting pada hari ini</p>
+                    </div>
+                `;
+            } else {
+                // Sort items by start_time
+                const sortedItems = [...items].sort((a, b) => {
+                    const timeA = a.start_time || '00:00';
+                    const timeB = b.start_time || '00:00';
+                    return timeA.localeCompare(timeB);
+                });
+                
+                meetingsHtml = sortedItems.map((item, index) => {
+                    let itemHtml = `
+                        <div class="bg-white border border-gray-200 rounded-lg p-4 mb-3 cursor-pointer hover:shadow-md transition-shadow"
+                             data-item-index="${index}">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-900 mb-2">${escapeHtml(item.title || 'Meeting')}</h4>
+                                    <div class="space-y-1 text-sm text-gray-600">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock text-blue-500 mr-2 w-4"></i>
+                                            <span>${escapeHtml(item.start_time || '')} - ${escapeHtml(item.end_time || '')}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-door-open text-green-500 mr-2 w-4"></i>
+                                            <span>${escapeHtml(item.room || 'Ruang tidak ditentukan')}</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-user text-purple-500 mr-2 w-4"></i>
+                                            <span>${escapeHtml(item.pic_name || 'PIC tidak ditentukan')}</span>
+                                        </div>
+                                        ${item.unit_kerja ? `
+                                        <div class="flex items-center">
+                                            <i class="fas fa-building text-orange-500 mr-2 w-4"></i>
+                                            <span>${escapeHtml(item.unit_kerja)}</span>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    return itemHtml;
+                }).join('');
+                
+                // Store items data for click handler
+                if (!window.dayMeetingsData) {
+                    window.dayMeetingsData = {};
+                }
+                window.dayMeetingsData[day.day] = sortedItems;
+            }
+            
+            const modalContent = `
+                <div id="dayMeetingsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeDayMeetingsModal()">
+                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                            <div>
+                                <h3 class="text-lg sm:text-xl font-bold text-gray-800">Meeting Hari ${day.day}</h3>
+                                <p class="text-sm text-gray-500 mt-1">${dateStr} • ${items.length} meeting</p>
+                            </div>
+                            <button type="button" onclick="closeDayMeetingsModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <i class="fas fa-times text-xl sm:text-2xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="p-4 sm:p-6">
+                            ${meetingsHtml}
+                        </div>
+                        
+                        <div class="sticky bottom-0 bg-white border-t border-gray-200 p-4 sm:p-6 pt-4">
+                            <button type="button" onclick="closeDayMeetingsModal()" class="w-full px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('dayMeetingsModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalContent);
+            
+            // Add event listener for ESC key
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('dayMeetingsModal');
+                    if (modal && !modal.classList.contains('hidden')) {
+                        closeDayMeetingsModal();
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                }
+            });
+        }
+
+        // Close day meetings modal
+        function closeDayMeetingsModal() {
+            const modal = document.getElementById('dayMeetingsModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Handle click on meeting item in modal
+        document.addEventListener('click', function(e) {
+            const meetingItem = e.target.closest('[data-item-index]');
+            if (meetingItem) {
+                const modal = document.getElementById('dayMeetingsModal');
+                if (modal) {
+                    const itemIndex = parseInt(meetingItem.getAttribute('data-item-index'));
+                    const dayHeader = modal.querySelector('h3');
+                    if (dayHeader) {
+                        const dayMatch = dayHeader.textContent.match(/Hari (\d+)/);
+                        if (dayMatch && window.dayMeetingsData) {
+                            const day = dayMatch[1];
+                            const items = window.dayMeetingsData[day];
+                            if (items && items[itemIndex]) {
+                                closeDayMeetingsModal();
+                                showCalendarItemDetails(items[itemIndex]);
+                            }
+                        }
+                    }
+                }
             }
         });
 
