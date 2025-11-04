@@ -276,6 +276,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-white/60 text-sm text-center">
+                            <span class="text-white/80 font-medium">Versi Aplikasi v2.1.0</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>

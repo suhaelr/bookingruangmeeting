@@ -710,6 +710,7 @@
         <!-- Footer -->
         <div class="text-center mt-8">
             <p class="text-white/60 text-sm">
+                <span class="text-white/80 font-medium">Versi Aplikasi v2.1.0</span><br>
                 © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
             </p>
             

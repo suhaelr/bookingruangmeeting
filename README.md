@@ -344,6 +344,15 @@ Pastikan web server mengarahkan semua request ke `public/index.php`
 
 ## 📝 Changelog
 
+### v2.1.0 (2025) - Feature Update
+- ✅ **Export Excel** - Menggantikan export CSV dengan format Excel (.xlsx) menggunakan SheetJS
+- ✅ **Sistem Preempt Request dengan SLA 1 Jam** - Sistem ajukan pendahuluan meeting dengan deadline 1 jam
+- ✅ **Popup Warning Jadwal Bentrok Real-time** - Popup modal muncul langsung saat deteksi konflik tanpa perlu submit form
+- ✅ **Perbaikan User Access Control** - Kontrol akses deskripsi dan PDF berdasarkan checkbox invitation yang dicentang
+- ✅ **Perbaikan Responsive Design** - Header mobile ditambahkan di semua halaman (admin dashboard, user dashboard)
+- ✅ **Perbaikan Popup Conflict Modal** - Popup jadwal bentrok dapat ditutup dengan tombol X, button Tutup, atau ESC key
+- ✅ **Dokumentasi Lengkap** - Dokumentasi lengkap skenario order bentrok dan sistem ajukan pendahuluan meeting
+
 ### v2.0.0 (2025) - Major Update
 - ✅ **Dukungan Bahasa Indonesia Penuh** - Semua pesan validasi dalam bahasa Indonesia
 - ✅ **Sistem Email Reminder** - Email otomatis 30 menit sebelum meeting
