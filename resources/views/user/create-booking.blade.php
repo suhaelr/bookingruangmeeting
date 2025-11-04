@@ -682,69 +682,33 @@
                         // Debug logging for response
                         console.log('Availability check response:', data);
                         
+                        // Clear any existing availability status
                         const availabilityDiv = document.getElementById('availability-status');
-                        if (!availabilityDiv) {
-                            const newDiv = document.createElement('div');
-                            newDiv.id = 'availability-status';
-                            newDiv.className = 'mt-4';
-                            document.querySelector('form').insertBefore(newDiv, document.querySelector('.flex.justify-end'));
+                        if (availabilityDiv) {
+                            availabilityDiv.innerHTML = '';
                         }
                         
-                        const statusDiv = document.getElementById('availability-status');
                         if (data.available) {
-                            statusDiv.innerHTML = `
-                                <div class="bg-green-500/20 border border-green-500/50 text-green-300 px-4 py-3 rounded-lg">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-check-circle mr-2"></i>
-                                        <span class="font-medium">${data.message}</span>
-                                    </div>
-                                </div>
-                            `;
-                            // Enable submit button
-                            submitBtn.disabled = false;
-                            submitBtn.className = 'px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center';
-                        } else {
-                            let conflictHtml = `
-                                <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg">
-                                    <div class="flex items-start">
-                                        <i class="fas fa-exclamation-triangle mr-2 mt-1"></i>
-                                        <div class="flex-1">
-                                            <div class="text-sm whitespace-pre-line leading-relaxed">${data.message}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
+                            // Hide conflict modal if exists
+                            closeConflictModal();
                             
-                            // Add preempt buttons if there are conflicts with OTHER users
-                            if (data.conflicts && data.conflicts.length > 0) {
-                                conflictHtml += `
-                                    <div class="mt-3 bg-yellow-500/20 border border-yellow-500/50 text-yellow-300 px-4 py-3 rounded-lg">
-                                        <div class="flex items-start">
-                                            <i class="fas fa-handshake-angle mr-2 mt-1"></i>
-                                            <div class="flex-1">
-                                                <div class="text-sm font-medium mb-2">Ingin meminta didahulukan?</div>
-                                                <div class="text-xs mb-3">Anda dapat meminta pemilik booking untuk mengalah jika ada kepentingan yang lebih mendesak.</div>
-                                                <div class="space-y-2">
-                                                    ${data.conflicts.map(conflict => `
-                                                        <div class="flex items-center justify-between bg-white/10 rounded p-2">
-                                                            <div class="text-xs">
-                                                                <div class="font-medium">${conflict.title}</div>
-                                                                <div class="text-yellow-200/80">oleh ${conflict.user} • ${conflict.start_time} - ${conflict.end_time}</div>
-                                                            </div>
-                                                            <button type="button" onclick="requestPreempt(${conflict.id})" 
-                                                                    class="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs rounded transition-colors">
-                                                                <i class="fas fa-handshake mr-1"></i>Minta Didahulukan
-                                                            </button>
-                                                        </div>
-                                                    `).join('')}
-                                                </div>
-                                            </div>
+                            // Show success message
+                            if (availabilityDiv) {
+                                availabilityDiv.innerHTML = `
+                                    <div class="bg-green-500/20 border border-green-500/50 text-green-300 px-4 py-3 rounded-lg">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            <span class="font-medium">${data.message}</span>
                                         </div>
                                     </div>
                                 `;
                             }
-                            
-                            statusDiv.innerHTML = conflictHtml;
+                            // Enable submit button
+                            submitBtn.disabled = false;
+                            submitBtn.className = 'px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center';
+                        } else {
+                            // Show conflict modal/popup
+                            showConflictModal(data.message, data.conflicts || []);
                             // Disable submit button
                             submitBtn.disabled = true;
                             submitBtn.className = 'px-6 py-3 bg-gray-400 text-gray-200 rounded-lg cursor-not-allowed flex items-center';
@@ -754,6 +718,89 @@
                         console.error('Error checking availability:', error);
                     });
                 }
+            }
+            
+            // Conflict Modal Functions
+            function showConflictModal(message, conflicts) {
+                // Remove existing modal if any
+                const existingModal = document.getElementById('conflictModal');
+                if (existingModal) {
+                    existingModal.remove();
+                }
+                
+                let conflictContent = '';
+                if (conflicts && conflicts.length > 0) {
+                    conflictContent = `
+                        <div class="space-y-3 mt-4">
+                            <p class="text-sm text-gray-700 mb-3">Pilih booking yang ingin Anda minta didahulukan:</p>
+                            ${conflicts.map(conflict => `
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div class="flex-1">
+                                            <h4 class="font-medium text-gray-800">${conflict.title}</h4>
+                                            <p class="text-sm text-gray-600 mt-1">oleh ${conflict.user}</p>
+                                            <p class="text-xs text-gray-500 mt-1">${conflict.start_time} - ${conflict.end_time}</p>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="requestPreemptFromModal(${conflict.id})" 
+                                            class="w-full mt-3 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
+                                        <i class="fas fa-handshake mr-2"></i>
+                                        Minta Didahulukan
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                const modalHtml = `
+                    <div id="conflictModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeConflictModal()">
+                        <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                            <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                                <h3 class="text-lg sm:text-xl font-bold text-gray-800">Jadwal Bentrok</h3>
+                                <button onclick="closeConflictModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                    <i class="fas fa-times text-xl sm:text-2xl"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="p-4 sm:p-6">
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-exclamation-triangle text-red-500 mr-2 mt-1"></i>
+                                        <div class="flex-1">
+                                            <p class="text-sm text-red-800 whitespace-pre-line leading-relaxed">${message}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                ${conflictContent}
+                                
+                                <div class="mt-6 flex justify-end">
+                                    <button onclick="closeConflictModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
+                                        Tutup
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+            }
+            
+            function closeConflictModal() {
+                const modal = document.getElementById('conflictModal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+            
+            function requestPreemptFromModal(bookingId) {
+                closeConflictModal();
+                const reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
+                if (reason === null) return; // User cancelled
+                
+                requestPreempt(bookingId, reason);
             }
 
 
@@ -806,9 +853,11 @@
             }
 
             // Preempt request function
-            window.requestPreempt = function(bookingId) {
-                const reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
-                if (reason === null) return; // User cancelled
+            window.requestPreempt = function(bookingId, reason = null) {
+                if (reason === null) {
+                    reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
+                    if (reason === null) return; // User cancelled
+                }
                 
                 fetch(`/user/bookings/${bookingId}/preempt-request`, {
                     method: 'POST',
@@ -825,8 +874,10 @@
                 .then(data => {
                     if (data.success) {
                         alert(data.message || 'Permintaan didahulukan berhasil dikirim!');
-                        // Don't refresh availability check after preempt request
-                        // as it might show conflicts with the user's own booking
+                        // Refresh availability check after preempt request
+                        setTimeout(() => {
+                            checkAvailability();
+                        }, 1000);
                     } else {
                         alert(data.message || 'Gagal mengirim permintaan didahulukan.');
                     }
@@ -851,3 +902,4 @@
     @include('components.whatsapp-float')
 </body>
 </html>
+

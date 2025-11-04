@@ -120,8 +120,6 @@
                                 <th class="text-left py-3 px-4 font-semibold">Ruang</th>
                                 <th class="text-left py-3 px-4 font-semibold">Tanggal & Waktu</th>
                                 <th class="text-left py-3 px-4 font-semibold">Status</th>
-                                <th class="text-left py-3 px-4 font-semibold">Permintaan Didahulukan</th>
-                                <th class="text-left py-3 px-4 font-semibold">Reschedule</th>
                                 <th class="text-left py-3 px-4 font-semibold">Dokumen</th>
                                 <th class="text-left py-3 px-4 font-semibold">Aksi</th>
                             </tr>
@@ -170,36 +168,6 @@
                                         @else {{ ucfirst($booking->status) }}
                                         @endif
                                     </span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    @if(($booking->preempt_status ?? 'none') === 'pending')
-                                        <div class="text-xs">
-                                            <span class="inline-block px-2 py-1 rounded bg-red-500 text-white mr-2">Menunggu</span>
-                                            @php $rq = optional(\App\Models\User::find($booking->preempt_requested_by)); @endphp
-                                            <span class="text-white/80">Diminta oleh: {{ $rq->full_name ?? 'Tidak diketahui' }}</span>
-                                            @if($booking->preempt_deadline_at)
-                                                <div class="text-white/60">Batas Waktu: {{ \Carbon\Carbon::parse($booking->preempt_deadline_at)->format('d M Y H:i') }}</div>
-                                            @endif
-                                        </div>
-                                    @elseif(($booking->preempt_status ?? 'none') === 'closed')
-                                        <span class="text-white/60 text-xs">Selesai</span>
-                                    @else
-                                        @if(isset($booking->auto_confirmed_for_user) && $booking->auto_confirmed_for_user)
-                                            <span class="text-green-300 text-xs">Auto dikonfirmasi untuk: {{ $booking->auto_confirmed_for_user }}</span>
-                                        @else
-                                            <span class="text-white/40 text-xs">-</span>
-                                        @endif
-                                    @endif
-                                </td>
-                                <td class="py-3 px-4">
-                                    @if(($booking->needs_reschedule ?? false) && $booking->reschedule_deadline_at)
-                                        <span class="inline-block px-2 py-1 rounded bg-yellow-600 text-white text-xs">Butuh Reschedule</span>
-                                        <div class="text-white/70 text-xs mt-1">Batas Waktu: {{ \Carbon\Carbon::parse($booking->reschedule_deadline_at)->format('d M Y H:i') }}</div>
-                                    @elseif(($booking->needs_reschedule ?? false))
-                                        <span class="text-yellow-300 text-xs">Butuh Reschedule</span>
-                                    @else
-                                        <span class="text-white/40 text-xs">-</span>
-                                    @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     @if($booking->dokumen_perizinan)

@@ -801,14 +801,9 @@ class UserController extends Controller
                 return response()->json(['success' => true, 'message' => 'Permintaan sudah dalam status menunggu tanggapan.']);
             }
 
-            // Compute SLA
+            // Compute SLA - Fixed 1 hour
             $now = now();
-            $minutes = 60;
-            if ($target->start_time && $target->start_time->diffInHours($now, false) > -2) {
-                // < 2 hours to start
-                $minutes = 15;
-            }
-            $deadline = $now->copy()->addMinutes($minutes);
+            $deadline = $now->copy()->addHour(); // 1 hour SLA
 
             // Start preempt
             $target->startPreempt($requesterId, $deadline, $request->input('reason'));

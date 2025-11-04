@@ -36,20 +36,20 @@ class AutoExpirePreempt extends Command
         $count = 0;
         foreach ($expired as $booking) {
             try {
-                // Cancel booking and close preempt atomically
+                // Close preempt but keep booking confirmed (original booking stays)
+                // SLA expired means owner didn't respond, so original booking remains valid
                 \DB::transaction(function () use ($booking) {
-                    $booking->updateStatus('cancelled', 'Auto-cancel due to preempt SLA expired');
                     $booking->closePreempt();
                 });
                 $count++;
 
-                // Notify owner
+                // Notify owner that preempt request expired and booking stays confirmed
                 try {
                     \App\Models\UserNotification::createNotification(
                         $booking->user_id,
-                        'warning',
-                        'Booking Dibatalkan Otomatis',
-                        'Booking Anda dibatalkan karena melewati batas waktu tanggapan permintaan didahulukan.',
+                        'info',
+                        'Permintaan Didahulukan Expired',
+                        'Permintaan didahulukan telah expired karena tidak ditanggapi dalam 1 jam. Booking Anda tetap dikonfirmasi.',
                         $booking->id
                     );
                 } catch (\Throwable $e) {
