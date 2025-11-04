@@ -179,12 +179,12 @@
                     
                     <!-- Visibility Setting -->
                     <div class="mb-4">
-                        <label class="flex items-center text-white mb-2">
-                            <input type="radio" name="description_visibility" value="invited_pics_only" checked class="mr-2">
+                        <label class="flex items-center text-white mb-2 cursor-pointer">
+                            <input type="radio" name="description_visibility" value="invited_pics_only" checked class="mr-2" id="visibility_invited_only">
                             Hanya PIC yang diundang dapat melihat deskripsi
                         </label>
-                        <label class="flex items-center text-white">
-                            <input type="radio" name="description_visibility" value="public" class="mr-2">
+                        <label class="flex items-center text-white cursor-pointer">
+                            <input type="radio" name="description_visibility" value="public" class="mr-2" id="visibility_public">
                             Semua PIC dapat melihat deskripsi
                         </label>
                     </div>
@@ -233,9 +233,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="attendees_count" class="block text-sm font-medium text-white mb-2">
-                            <i class="fas fa-users mr-2"></i>Jumlah Peserta *
+                            <i class="fas fa-users mr-2"></i>Jumlah Peserta (Opsional)
                         </label>
-                        <input type="number" id="attendees_count" name="attendees_count" value="{{ old('attendees_count', 1) }}" min="1" required
+                        <input type="number" id="attendees_count" name="attendees_count" value="{{ old('attendees_count', 1) }}" min="1"
                                class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
                     </div>
                     <div>
@@ -508,6 +508,28 @@
                         roomDetails.classList.remove('hidden');
                     } else {
                         roomDetails.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Description visibility handler - auto-check all PICs when "public" is selected
+            const visibilityInvitedOnly = document.getElementById('visibility_invited_only');
+            const visibilityPublic = document.getElementById('visibility_public');
+            const picCheckboxes = document.querySelectorAll('input[name="invited_pics[]"]');
+            
+            if (visibilityPublic && visibilityInvitedOnly) {
+                visibilityPublic.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Auto-check all PIC checkboxes
+                        picCheckboxes.forEach(checkbox => {
+                            checkbox.checked = true;
+                        });
+                    }
+                });
+                
+                visibilityInvitedOnly.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Don't auto-uncheck, let user manage manually
                     }
                 });
             }

@@ -209,6 +209,7 @@ Route::prefix('user')->middleware('user.auth')->group(function () {
     // Preempt routes
     Route::post('/bookings/{id}/preempt-request', [UserController::class, 'requestPreempt'])->name('user.bookings.preempt.request');
     Route::post('/bookings/{id}/preempt-respond', [UserController::class, 'respondPreempt'])->name('user.bookings.preempt.respond');
+    Route::get('/bookings/{id}/document', [UserController::class, 'viewDocument'])->name('user.bookings.document');
     
     // Notification routes
     Route::get('/notifications', [UserController::class, 'notifications'])->name('user.notifications');

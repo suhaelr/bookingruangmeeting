@@ -620,6 +620,59 @@
                 `;
             }
             
+            // PDF Document section
+            let documentHtml = '';
+            if (item.has_document) {
+                if (item.can_see_document && item.document_url) {
+                    // Render PDF if user can see it
+                    documentHtml = `
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+                            <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                                <i class="fas fa-file-pdf text-red-500 mr-2"></i>
+                                Dokumen Tambahan
+                            </h4>
+                            <div class="bg-white rounded-lg border border-gray-300 overflow-hidden">
+                                <iframe src="${item.document_url}" 
+                                        class="w-full h-96 border-0" 
+                                        type="application/pdf"
+                                        title="Dokumen Booking">
+                                    <p>Browser Anda tidak mendukung tampilan PDF. 
+                                       <a href="${item.document_url}" target="_blank" class="text-blue-500 hover:underline">
+                                           Klik di sini untuk membuka PDF
+                                       </a>
+                                    </p>
+                                </iframe>
+                            </div>
+                            <div class="mt-2">
+                                <a href="${item.document_url}" 
+                                   target="_blank" 
+                                   class="text-blue-500 hover:text-blue-700 text-sm inline-flex items-center">
+                                    <i class="fas fa-external-link-alt mr-1"></i>
+                                    Buka di tab baru
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Show message that document exists but user can't see it
+                    documentHtml = `
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
+                            <div class="text-sm text-gray-600">
+                                <i class="fas fa-lock mr-2"></i>
+                                Dokumen tambahan tersedia namun hanya untuk PIC yang diundang
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                // No document available
+                documentHtml = `
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 hidden">
+                        <!-- Hidden if no document -->
+                    </div>
+                `;
+            }
+            
             // Invited PICs block
             let invitedHtml = '';
             if (Array.isArray(item.invited_pics) && item.invited_pics.length > 0) {
@@ -676,6 +729,7 @@
                             </div>
                             
                             ${descriptionHtml}
+                            ${documentHtml}
                             ${invitedHtml}
                         </div>
                         
