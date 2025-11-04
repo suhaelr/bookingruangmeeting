@@ -127,29 +127,40 @@ class UserController extends Controller
                 // Strict visibility: only admin, owner, or invited PIC may see description when visibility is invited_pics_only
                 $isAdmin = $userModel->role === 'admin';
                 $isOwner = (int)$booking->user_id === (int)$userModel->id;
-                $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
-                    return (int)$inv->pic_id === (int)$userModel->id;
-                });
+                
+                // Check if user is in the invited PICs list (check by pic_id in invitations)
+                $isInvitedPic = false;
+                if ($booking->invitations && $booking->invitations->count() > 0) {
+                    $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
+                        return $inv && $inv->pic_id && (int)$inv->pic_id === (int)$userModel->id;
+                    });
+                }
+                
                 $canSeeDescription = false;
                 if ($isAdmin || $isOwner) {
+                    // Admin and owner always can see
                     $canSeeDescription = true;
                 } elseif ($booking->description_visibility === 'public') {
+                    // Public visibility: everyone can see
                     $canSeeDescription = true;
-                } elseif ($booking->description_visibility === 'invited_pics_only' && $isInvitedPic) {
-                    $canSeeDescription = true;
+                } elseif ($booking->description_visibility === 'invited_pics_only') {
+                    // Invited PICs only: only invited PICs can see (checked via checkbox)
+                    $canSeeDescription = $isInvitedPic;
                 }
                 
                 // Debug logging
-                \Log::info('Calendar item debug', [
+                \Log::info('Calendar item visibility check', [
                     'booking_id' => $booking->id,
                     'booking_title' => $booking->title,
                     'user_id' => $userModel->id,
                     'booking_user_id' => $booking->user_id,
                     'description_visibility' => $booking->description_visibility,
-                    'has_description' => !empty($booking->description),
-                    'can_see_description' => $canSeeDescription,
+                    'is_admin' => $isAdmin,
+                    'is_owner' => $isOwner,
                     'is_invited_pic' => $isInvitedPic,
-                    'invitations_count' => $booking->invitations->count(),
+                    'invitations_count' => $booking->invitations ? $booking->invitations->count() : 0,
+                    'invited_pic_ids' => $booking->invitations ? $booking->invitations->pluck('pic_id')->toArray() : [],
+                    'can_see_description' => $canSeeDescription,
                 ]);
                 
                 $invitedPics = $booking->invitations->map(function($inv){
@@ -166,12 +177,16 @@ class UserController extends Controller
                 $documentUrl = null;
                 
                 if ($hasDocument) {
+                    // Use same visibility logic as description
                     if ($isAdmin || $isOwner) {
+                        // Admin and owner always can see
                         $canSeeDocument = true;
                     } elseif ($booking->description_visibility === 'public') {
+                        // Public visibility: everyone can see
                         $canSeeDocument = true;
-                    } elseif ($booking->description_visibility === 'invited_pics_only' && $isInvitedPic) {
-                        $canSeeDocument = true;
+                    } elseif ($booking->description_visibility === 'invited_pics_only') {
+                        // Invited PICs only: only invited PICs can see (checked via checkbox)
+                        $canSeeDocument = $isInvitedPic;
                     }
                     
                     if ($canSeeDocument) {
@@ -1406,18 +1421,38 @@ class UserController extends Controller
             // Check document visibility: same logic as description visibility
             $isAdmin = $userModel->role === 'admin';
             $isOwner = (int)$booking->user_id === (int)$userModel->id;
-            $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
-                return (int)$inv->pic_id === (int)$userModel->id;
-            });
+            
+            // Check if user is in the invited PICs list (check by pic_id in invitations)
+            $isInvitedPic = false;
+            if ($booking->invitations && $booking->invitations->count() > 0) {
+                $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
+                    return $inv && $inv->pic_id && (int)$inv->pic_id === (int)$userModel->id;
+                });
+            }
             
             $canSeeDocument = false;
             if ($isAdmin || $isOwner) {
+                // Admin and owner always can see
                 $canSeeDocument = true;
             } elseif ($booking->description_visibility === 'public') {
+                // Public visibility: everyone can see
                 $canSeeDocument = true;
-            } elseif ($booking->description_visibility === 'invited_pics_only' && $isInvitedPic) {
-                $canSeeDocument = true;
+            } elseif ($booking->description_visibility === 'invited_pics_only') {
+                // Invited PICs only: only invited PICs can see (checked via checkbox)
+                $canSeeDocument = $isInvitedPic;
             }
+            
+            \Log::info('Document visibility check', [
+                'booking_id' => $id,
+                'user_id' => $userModel->id,
+                'is_admin' => $isAdmin,
+                'is_owner' => $isOwner,
+                'is_invited_pic' => $isInvitedPic,
+                'description_visibility' => $booking->description_visibility,
+                'invitations_count' => $booking->invitations ? $booking->invitations->count() : 0,
+                'invited_pic_ids' => $booking->invitations ? $booking->invitations->pluck('pic_id')->toArray() : [],
+                'can_see_document' => $canSeeDocument,
+            ]);
 
             if (!$canSeeDocument) {
                 return response()->json([
