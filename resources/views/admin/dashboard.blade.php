@@ -253,10 +253,20 @@
             
             // Fetch notifications from backend
             fetch('/admin/notifications')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(notifications => {
-                    const unreadCount = notifications.filter(n => !n.read).length;
+                    console.log('Loaded admin notifications:', notifications);
+                    
+                    // Calculate unread count - ensure read is boolean
+                    const unreadCount = notifications.filter(n => !n.read || n.read === false || n.read === 0).length;
                     const badge = document.getElementById('admin-notification-badge');
+                    
+                    console.log('Unread count:', unreadCount);
                     
                     if (unreadCount > 0) {
                         badge.textContent = unreadCount;
