@@ -59,35 +59,35 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
-    <!-- Desktop Navigation -->
-        <nav class="glass-effect shadow-lg desktop-nav">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <!-- User Notification Bell -->
-                        <div class="relative">
-                            <button onclick="toggleNotifikasis()" class="relative p-2 text-white hover:text-blue-300 transition-colors duration-300">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                            </button>
-                        </div>
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
+    <!-- Navigation -->
+    <nav class="glass-effect shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
                     </div>
                 </div>
+                <div class="flex items-center space-x-2">
+                    <!-- User Notification Bell -->
+                    <div class="relative">
+                        <button onclick="toggleNotifikasis()" class="relative p-2 text-white hover:text-blue-300 transition-colors duration-300">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                        </button>
+                    </div>
+                    <a href="{{ route('logout') }}" 
+                       class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Keluar
+                    </a>
+                </div>
             </div>
-        </nav>
+        </div>
+    </nav>
 
     <!-- Mobile Sidebar -->
     @include('components.mobile-sidebar', [
