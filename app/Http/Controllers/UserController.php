@@ -1568,6 +1568,10 @@ class UserController extends Controller
             // Allow iframe embedding from same origin
             $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
             
+            // Override CSP to allow iframe embedding (remove frame-ancestors restriction)
+            $response->headers->remove('Content-Security-Policy');
+            $response->headers->set('Content-Security-Policy', "frame-ancestors 'self'");
+            
             return $response;
         } catch (\Exception $e) {
             \Log::error('Error viewing document: ' . $e->getMessage(), [

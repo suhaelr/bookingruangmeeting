@@ -17,6 +17,9 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- PDF.js for cross-browser PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         /* Mobile navbar text size adjustments */
@@ -564,6 +567,185 @@
             }
         }, 1000);
 
+        // Download PDF function
+        function downloadPDF(url) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'dokumen_booking.pdf';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Load PDF viewer with multiple fallback methods
+        function loadPDFViewer(pdfUrl, viewerId, isMobile) {
+            const iframeEl = document.getElementById(`${viewerId}-iframe`);
+            const canvasEl = document.getElementById(`${viewerId}-canvas`);
+            const loadingEl = document.getElementById(`${viewerId}-loading`);
+            const errorEl = document.getElementById(`${viewerId}-error`);
+            
+            if (!iframeEl || !canvasEl || !loadingEl) {
+                console.error('PDF viewer elements not found');
+                return;
+            }
+
+            // Detect browser
+            const isChrome = /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
+            const isFirefox = /Firefox/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
+            const isEdge = /Edge/.test(navigator.userAgent) || /Edg/.test(navigator.userAgent);
+
+            // Try native iframe first (best for Chrome, Edge, Firefox)
+            // Safari and mobile: use PDF.js directly (better compatibility)
+            if (isSafari || isMobile) {
+                tryPDFJS();
+            } else if (isChrome || isFirefox || isEdge) {
+                tryNativeIframe();
+            } else {
+                // Fallback: try native iframe first, then PDF.js
+                tryNativeIframe();
+            }
+
+            function tryNativeIframe() {
+                if (!iframeEl) return;
+                
+                // Set up iframe load handlers
+                iframeEl.onload = function() {
+                    loadingEl.style.display = 'none';
+                    iframeEl.style.display = 'block';
+                    canvasEl.style.display = 'none';
+                };
+                
+                iframeEl.onerror = function() {
+                    // If iframe fails, try PDF.js
+                    tryPDFJS();
+                };
+                
+                // Set source
+                iframeEl.src = pdfUrl;
+                
+                // Timeout fallback: if iframe doesn't load in 5 seconds, try PDF.js
+                setTimeout(() => {
+                    if (loadingEl.style.display !== 'none') {
+                        tryPDFJS();
+                    }
+                }, 5000);
+            }
+
+            function tryPDFJS() {
+                // Check if PDF.js is available
+                if (typeof pdfjsLib === 'undefined') {
+                    console.error('PDF.js library not loaded');
+                    showError();
+                    return;
+                }
+
+                // Set PDF.js worker
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+                // Load PDF
+                pdfjsLib.getDocument(pdfUrl).promise
+                    .then(function(pdf) {
+                        // Render first page
+                        pdf.getPage(1).then(function(page) {
+                            const viewport = page.getViewport({ scale: 1.5 });
+                            const context = canvasEl.getContext('2d');
+                            
+                            canvasEl.height = viewport.height;
+                            canvasEl.width = viewport.width;
+                            
+                            const renderContext = {
+                                canvasContext: context,
+                                viewport: viewport
+                            };
+                            
+                            page.render(renderContext).promise.then(function() {
+                                loadingEl.style.display = 'none';
+                                const canvasContainer = document.getElementById(`${viewerId}-canvas-container`);
+                                if (canvasContainer) {
+                                    canvasContainer.style.display = 'block';
+                                }
+                                canvasEl.style.display = 'block';
+                                iframeEl.style.display = 'none';
+                                
+                                // Render remaining pages if needed (for full document)
+                                renderAllPages(pdf, canvasEl, viewport);
+                            }).catch(function(error) {
+                                console.error('Error rendering PDF page:', error);
+                                showError();
+                            });
+                        }).catch(function(error) {
+                            console.error('Error getting PDF page:', error);
+                            showError();
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error('Error loading PDF:', error);
+                        showError();
+                    });
+            }
+
+            function renderAllPages(pdf, canvas, viewport) {
+                const numPages = pdf.numPages;
+                if (numPages <= 1) return; // Already rendered first page
+                
+                // Get container (canvas-container)
+                const container = canvas.parentElement;
+                if (!container) return;
+                
+                // Wrap first page canvas in a div
+                const firstPageDiv = document.createElement('div');
+                firstPageDiv.className = 'pdf-page mb-4 border-b border-gray-200 pb-4 text-center';
+                firstPageDiv.style.backgroundColor = '#f9fafb';
+                canvas.parentElement.removeChild(canvas);
+                firstPageDiv.appendChild(canvas);
+                container.appendChild(firstPageDiv);
+                
+                // Render remaining pages
+                for (let pageNum = 2; pageNum <= numPages; pageNum++) {
+                    pdf.getPage(pageNum).then(function(page) {
+                        const pageCanvas = document.createElement('canvas');
+                        const pageContext = pageCanvas.getContext('2d');
+                        pageCanvas.height = viewport.height;
+                        pageCanvas.width = viewport.width;
+                        
+                        const pageDiv = document.createElement('div');
+                        pageDiv.className = 'pdf-page mb-4 border-b border-gray-200 pb-4 text-center';
+                        pageDiv.style.backgroundColor = '#f9fafb';
+                        pageDiv.appendChild(pageCanvas);
+                        container.appendChild(pageDiv);
+                        
+                        const renderContext = {
+                            canvasContext: pageContext,
+                            viewport: viewport
+                        };
+                        
+                        page.render(renderContext).promise.then(function() {
+                            console.log(`Page ${pageNum} rendered`);
+                        }).catch(function(error) {
+                            console.error(`Error rendering page ${pageNum}:`, error);
+                        });
+                    }).catch(function(error) {
+                        console.error(`Error getting page ${pageNum}:`, error);
+                    });
+                }
+            }
+
+            function showError() {
+                loadingEl.style.display = 'none';
+                iframeEl.style.display = 'none';
+                const canvasContainerEl = document.getElementById(`${viewerId}-canvas-container`);
+                if (canvasContainerEl) {
+                    canvasContainerEl.style.display = 'none';
+                }
+                canvasEl.style.display = 'none';
+                if (errorEl) {
+                    errorEl.classList.remove('hidden');
+                }
+            }
+        }
+
         // Load notifications on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadNotifikasis();
@@ -917,7 +1099,11 @@
             let documentHtml = '';
             if (item.has_document) {
                 if (item.can_see_document && item.document_url) {
-                    // Render PDF link if user can see it
+                    // Detect if device is mobile
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    const pdfViewerId = `pdf-viewer-${item.id}`;
+                    
+                    // Render PDF with multiple fallback options
                     documentHtml = `
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
                             <h4 class="font-medium text-gray-800 mb-3 flex items-center">
@@ -925,19 +1111,75 @@
                                 Dokumen Tambahan
                             </h4>
                             <div class="bg-white rounded-lg border border-gray-300 p-4">
-                                <p class="text-gray-600 text-sm mb-3">
-                                    Klik link di bawah untuk membuka dokumen PDF di tab baru.
-                                </p>
-                                <a href="${item.document_url}" 
-                                   target="_blank" 
-                                   rel="noopener noreferrer"
-                                   class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
-                                    <i class="fas fa-external-link-alt mr-2"></i>
-                                    Buka di tab baru
-                                </a>
+                                <div class="mb-3 flex flex-wrap gap-2">
+                                    <a href="${item.document_url}" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="inline-flex items-center px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm transition-colors duration-300">
+                                        <i class="fas fa-external-link-alt mr-2"></i>
+                                        Buka di tab baru
+                                    </a>
+                                    <button onclick="downloadPDF('${item.document_url}')" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white rounded text-sm transition-colors duration-300">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Download
+                                    </button>
+                                    ${isMobile ? `
+                                    <a href="https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + item.document_url)}&embedded=true" 
+                                       target="_blank" 
+                                       rel="noopener noreferrer"
+                                       class="inline-flex items-center px-3 py-1.5 bg-purple-500 hover:bg-purple-600 text-white rounded text-sm transition-colors duration-300">
+                                        <i class="fas fa-mobile-alt mr-2"></i>
+                                        Mobile Viewer
+                                    </a>
+                                    ` : ''}
+                                </div>
+                                <div class="border border-gray-300 rounded-lg overflow-hidden relative bg-gray-50" style="min-height: 400px; height: ${isMobile ? '400px' : '600px'};">
+                                    <!-- Native iframe (works in Chrome, Edge, Firefox) -->
+                                    <iframe id="${pdfViewerId}-iframe" 
+                                            src="${item.document_url}" 
+                                            class="w-full h-full border-0" 
+                                            frameborder="0"
+                                            title="PDF Document Viewer"
+                                            style="display: none;">
+                                    </iframe>
+                                    
+                                    <!-- PDF.js Canvas Container (fallback for Safari and other browsers) -->
+                                    <div id="${pdfViewerId}-canvas-container" class="w-full h-full overflow-y-auto" style="display: none;">
+                                        <canvas id="${pdfViewerId}-canvas" 
+                                                class="mx-auto block">
+                                        </canvas>
+                                    </div>
+                                    
+                                    <!-- Loading indicator -->
+                                    <div id="${pdfViewerId}-loading" class="absolute inset-0 flex items-center justify-center bg-gray-100">
+                                        <div class="text-center">
+                                            <i class="fas fa-spinner fa-spin text-4xl text-blue-500 mb-3"></i>
+                                            <p class="text-gray-600">Memuat PDF...</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Error message -->
+                                    <div id="${pdfViewerId}-error" class="hidden absolute inset-0 flex items-center justify-center bg-gray-100 p-4">
+                                        <div class="text-center">
+                                            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-3"></i>
+                                            <p class="text-gray-700 mb-2">Gagal memuat PDF di viewer</p>
+                                            <a href="${item.document_url}" 
+                                               target="_blank" 
+                                               class="text-blue-500 hover:underline">
+                                                Klik di sini untuk membuka PDF di tab baru
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
+                    
+                    // Load PDF after modal is rendered
+                    setTimeout(() => {
+                        loadPDFViewer(item.document_url, pdfViewerId, isMobile);
+                    }, 100);
                 } else {
                     // Show message that document exists but user can't see it
                     documentHtml = `

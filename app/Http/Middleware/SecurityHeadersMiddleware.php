@@ -25,12 +25,14 @@ class SecurityHeadersMiddleware
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
         
         // More permissive CSP for development and external resources
+        // Note: blob: and data: are needed for PDF.js worker
         $csp = "default-src 'self'; " .
-               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://apis.google.com https://challenges.cloudflare.com https://accounts.google.com; " .
+               "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://apis.google.com https://challenges.cloudflare.com https://accounts.google.com; " .
                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://fonts.googleapis.com; " .
-               "img-src 'self' data: https: https://developers.google.com https://www.gstatic.com; " .
+               "img-src 'self' data: blob: https: https://developers.google.com https://www.gstatic.com; " .
                "font-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com; " .
-               "connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://challenges.cloudflare.com; " .
+               "connect-src 'self' blob: data: https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://challenges.cloudflare.com; " .
+               "worker-src 'self' blob: data: https://cdnjs.cloudflare.com; " .
                "frame-src 'self' https://accounts.google.com https://challenges.cloudflare.com; " .
                "frame-ancestors 'none'; " .
                "base-uri 'self'; " .
@@ -41,12 +43,14 @@ class SecurityHeadersMiddleware
             $response->headers->set('Content-Security-Policy', $csp);
         } else {
             // More permissive CSP for development
+            // Note: blob: and data: are needed for PDF.js worker
             $devCsp = "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; " .
-                     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; " .
+                     "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https:; " .
                      "style-src 'self' 'unsafe-inline' https:; " .
-                     "img-src 'self' data: https:; " .
+                     "img-src 'self' data: blob: https:; " .
                      "font-src 'self' https:; " .
-                     "connect-src 'self' https:; " .
+                     "connect-src 'self' blob: data: https:; " .
+                     "worker-src 'self' blob: data: https:; " .
                      "frame-src 'self' https:;";
             $response->headers->set('Content-Security-Policy', $devCsp);
         }
