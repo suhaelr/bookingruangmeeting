@@ -389,9 +389,22 @@ class AdminController extends Controller
     private function notifyAdmin($title, $message, $type = 'info', $bookingId = null)
     {
         // Create admin notification in database
+        // Get first admin user to send notification to (since user_id cannot be null)
         try {
+            $adminUser = \App\Models\User::where('role', 'admin')->orderBy('id')->first();
+            
+            if (!$adminUser) {
+                \Log::warning('No admin user found to send notification', [
+                    'title' => $title,
+                    'type' => $type,
+                    'booking_id' => $bookingId
+                ]);
+                return;
+            }
+            
+            // Send notification to first admin user
             \App\Models\UserNotification::create([
-                'user_id' => null, // Admin notifications don't belong to specific user
+                'user_id' => $adminUser->id, // Use first admin user ID
                 'booking_id' => $bookingId,
                 'type' => $type,
                 'title' => $title,
@@ -402,7 +415,8 @@ class AdminController extends Controller
             \Log::info('Admin notification created', [
                 'title' => $title,
                 'type' => $type,
-                'booking_id' => $bookingId
+                'booking_id' => $bookingId,
+                'admin_user_id' => $adminUser->id
             ]);
         } catch (\Exception $e) {
             \Log::error('Failed to create admin notification', [
