@@ -192,8 +192,11 @@
                                         <strong>Permintaan Didahulukan:</strong> Booking ini sedang menunggu tanggapan Anda.
                                     </p>
                                     <div class="flex flex-wrap gap-2">
-                                        <button onclick="respondPreempt({{ $booking->id }}, 'accept_cancel')" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded">
-                                            Terima & Batalkan
+                                        <button onclick="respondPreempt({{ $booking->id }}, 'accept_cancel')" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded">
+                                            <i class="fas fa-check mr-1"></i>Terima & Batalkan
+                                        </button>
+                                        <button onclick="respondPreempt({{ $booking->id }}, 'reject')" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded">
+                                            <i class="fas fa-times mr-1"></i>Tolak
                                         </button>
                                     </div>
                                 </div>

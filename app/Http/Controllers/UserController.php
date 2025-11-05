@@ -842,6 +842,19 @@ class UserController extends Controller
                 \Log::error('Failed to create preempt notification to owner', ['error' => $e->getMessage()]);
             }
 
+            // Notify requester - Konfirmasi bahwa request berhasil dikirim
+            try {
+                \App\Models\UserNotification::createNotification(
+                    $requesterId,
+                    'info',
+                    'Permintaan Didahulukan Dikirim',
+                    'Permintaan didahulukan Anda telah dikirim ke pemilik booking. Menunggu tanggapan dalam 1 jam.',
+                    $target->id
+                );
+            } catch (\Throwable $e) {
+                \Log::error('Failed to create preempt notification to requester', ['error' => $e->getMessage()]);
+            }
+
             return response()->json(['success' => true, 'message' => 'Permintaan dikirim. Menunggu tanggapan pemilik booking.']);
         } catch (\Exception $e) {
             \Log::error('Error in requestPreempt', [
@@ -856,7 +869,7 @@ class UserController extends Controller
     public function respondPreempt(Request $request, $id)
     {
         $request->validate([
-            'action' => 'required|in:accept_cancel',
+            'action' => 'required|in:accept_cancel,reject',
         ]);
 
         $user = session('user_data');
@@ -874,10 +887,9 @@ class UserController extends Controller
             }
 
             $action = $request->input('action');
+            $requesterId = $booking->preempt_requested_by;
 
             if ($action === 'accept_cancel') {
-                $requesterId = $booking->preempt_requested_by;
-
                 try {
                     \DB::beginTransaction();
                     // 1) Batalkan booking lama & tutup preempt
@@ -909,14 +921,31 @@ class UserController extends Controller
                             $new->total_cost = 0;
                             $new->save();
 
-                            // Notifikasi ke peminta
-                            \App\Models\UserNotification::createNotification(
-                                $requester->id,
-                                'success',
-                                'Booking Anda Otomatis Dikonfirmasi',
-                                'Permintaan didahulukan disetujui. Booking baru telah dibuat dan dikonfirmasi pada slot tersebut.',
-                                $new->id
-                            );
+                            // Notifikasi ke peminta (requester) - Permintaan diterima
+                            try {
+                                \App\Models\UserNotification::createNotification(
+                                    $requester->id,
+                                    'success',
+                                    'Permintaan Didahulukan Diterima',
+                                    'Permintaan didahulukan Anda telah disetujui. Booking baru telah dibuat dan dikonfirmasi pada slot tersebut.',
+                                    $new->id
+                                );
+                            } catch (\Throwable $e) {
+                                \Log::error('Failed to notify requester after preempt accepted', ['error' => $e->getMessage()]);
+                            }
+
+                            // Notifikasi ke owner - Konfirmasi bahwa preempt diterima
+                            try {
+                                \App\Models\UserNotification::createNotification(
+                                    $ownerId,
+                                    'info',
+                                    'Permintaan Didahulukan Diterima',
+                                    'Anda telah menyetujui permintaan didahulukan. Booking Anda telah dibatalkan dan slot diberikan kepada peminta.',
+                                    $booking->id
+                                );
+                            } catch (\Throwable $e) {
+                                \Log::error('Failed to notify owner after preempt accepted', ['error' => $e->getMessage()]);
+                            }
 
                             // Notifikasi ke admin: gunakan user admin pertama jika kolom user_id NOT NULL
                             try {
@@ -950,6 +979,58 @@ class UserController extends Controller
                     'requester_id' => $booking->preempt_requested_by
                 ]);
                 return response()->json(['success' => true, 'message' => 'Booking dibatalkan. Permintaan didahulukan disetujui dan booking peminta dikonfirmasi otomatis.']);
+            }
+
+            if ($action === 'reject') {
+                try {
+                    \DB::beginTransaction();
+                    // Tutup preempt tanpa membatalkan booking
+                    $booking->closePreempt();
+                    \DB::commit();
+
+                    // Notifikasi ke peminta (requester) - Permintaan ditolak
+                    if ($requesterId) {
+                        try {
+                            \App\Models\UserNotification::createNotification(
+                                $requesterId,
+                                'warning',
+                                'Permintaan Didahulukan Ditolak',
+                                'Permintaan didahulukan Anda telah ditolak oleh pemilik booking. Booking tetap dikonfirmasi untuk pemilik asli.',
+                                $booking->id
+                            );
+                        } catch (\Throwable $e) {
+                            \Log::error('Failed to notify requester after preempt rejected', ['error' => $e->getMessage()]);
+                        }
+                    }
+
+                    // Notifikasi ke owner - Konfirmasi bahwa preempt ditolak
+                    try {
+                        \App\Models\UserNotification::createNotification(
+                            $ownerId,
+                            'info',
+                            'Permintaan Didahulukan Ditolak',
+                            'Anda telah menolak permintaan didahulukan. Booking Anda tetap dikonfirmasi.',
+                            $booking->id
+                        );
+                    } catch (\Throwable $e) {
+                        \Log::error('Failed to notify owner after preempt rejected', ['error' => $e->getMessage()]);
+                    }
+
+                    \Log::info('Preempt rejected', [
+                        'booking_id' => $booking->id,
+                        'owner_id' => $ownerId,
+                        'requester_id' => $requesterId
+                    ]);
+                    return response()->json(['success' => true, 'message' => 'Permintaan didahulukan ditolak. Booking Anda tetap dikonfirmasi.']);
+                } catch (\Throwable $t) {
+                    \DB::rollBack();
+                    \Log::error('respondPreempt reject transaction failed', [
+                        'booking_id' => $booking->id,
+                        'requester_id' => $requesterId,
+                        'error' => $t->getMessage(),
+                    ]);
+                    throw $t;
+                }
             }
 
             return response()->json(['success' => false, 'message' => 'Aksi tidak dikenal.'], 400);

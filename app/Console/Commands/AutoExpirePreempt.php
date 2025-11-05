@@ -43,6 +43,8 @@ class AutoExpirePreempt extends Command
                 });
                 $count++;
 
+                $requesterId = $booking->preempt_requested_by;
+
                 // Notify owner that preempt request expired and booking stays confirmed
                 try {
                     \App\Models\UserNotification::createNotification(
@@ -56,9 +58,26 @@ class AutoExpirePreempt extends Command
                     \Log::error('Failed to notify owner after auto-expire', ['error' => $e->getMessage()]);
                 }
 
+                // Notify requester that preempt request expired
+                if ($requesterId) {
+                    try {
+                        \App\Models\UserNotification::createNotification(
+                            $requesterId,
+                            'warning',
+                            'Permintaan Didahulukan Expired',
+                            'Permintaan didahulukan Anda telah expired karena pemilik booking tidak menanggapi dalam 1 jam. Booking tetap dikonfirmasi untuk pemilik asli.',
+                            $booking->id
+                        );
+                    } catch (\Throwable $e) {
+                        \Log::error('Failed to notify requester after auto-expire', ['error' => $e->getMessage()]);
+                    }
+                }
+
                 \Log::info('Auto-expired preempt booking', [
                     'booking_id' => $booking->id,
                     'deadline_at' => optional($booking->preempt_deadline_at)->toDateTimeString(),
+                    'owner_id' => $booking->user_id,
+                    'requester_id' => $requesterId,
                 ]);
             } catch (\Throwable $e) {
                 \Log::error('Failed to auto-expire preempt booking', [
