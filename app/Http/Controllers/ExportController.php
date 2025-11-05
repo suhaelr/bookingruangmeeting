@@ -23,9 +23,9 @@ class ExportController extends Controller
     {
         try {
             // Get all bookings (not filtered by date for admin export)
-            $bookings = Booking::with(['user', 'meetingRoom'])
-                ->orderBy('created_at', 'desc')
-                ->get();
+        $bookings = Booking::with(['user', 'meetingRoom'])
+            ->orderBy('created_at', 'desc')
+            ->get();
             
             // Create new Spreadsheet
             $spreadsheet = new Spreadsheet();

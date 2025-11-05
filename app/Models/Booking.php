@@ -34,6 +34,12 @@ class Booking extends Model
         'preempt_reason',
         'needs_reschedule',
         'reschedule_deadline_at',
+        'reminder_1h_sent',
+        'reminder_30m_sent',
+        'reminder_15m_sent',
+        'reminder_1h_sent_at',
+        'reminder_30m_sent_at',
+        'reminder_15m_sent_at',
     ];
 
     protected $casts = [
@@ -46,6 +52,12 @@ class Booking extends Model
         'preempt_deadline_at' => 'datetime',
         'reschedule_deadline_at' => 'datetime',
         'needs_reschedule' => 'boolean',
+        'reminder_1h_sent' => 'boolean',
+        'reminder_30m_sent' => 'boolean',
+        'reminder_15m_sent' => 'boolean',
+        'reminder_1h_sent_at' => 'datetime',
+        'reminder_30m_sent_at' => 'datetime',
+        'reminder_15m_sent_at' => 'datetime',
     ];
 
     public function user()

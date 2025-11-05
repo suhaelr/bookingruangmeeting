@@ -39,8 +39,28 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        .reminder-notice h2 {
+        .reminder-notice.urgent {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .reminder-notice.urgent h2 {
+            color: #721c24;
+        }
+        .reminder-notice.warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+        }
+        .reminder-notice.warning h2 {
             color: #856404;
+        }
+        .reminder-notice.info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+        }
+        .reminder-notice.info h2 {
+            color: #0c5460;
+        }
+        .reminder-notice h2 {
             margin: 0 0 10px 0;
             font-size: 18px;
         }
@@ -104,9 +124,18 @@
             <h1>🏢 Meeting Room Booking System</h1>
         </div>
 
-        <div class="reminder-notice">
+        <div class="reminder-notice @if($minutesUntil < 30)urgent @elseif($minutesUntil < 60)warning @else info @endif">
             <h2>⏰ Pengingat Meeting</h2>
-            <p><strong>Meeting Anda akan dimulai dalam 1 jam!</strong></p>
+            <p style="font-size: 20px; font-weight: bold; margin: 10px 0;">
+                Meeting Anda akan dimulai dalam <strong>{{ $timeText }}!</strong>
+            </p>
+            @if($minutesUntil >= 60)
+                <p style="margin-top: 10px; font-size: 14px;">Anda masih punya waktu untuk mempersiapkan diri dan peralatan yang diperlukan.</p>
+            @elseif($minutesUntil >= 30)
+                <p style="margin-top: 10px; font-size: 14px;">Waktu meeting sudah semakin dekat. Pastikan Anda sudah siap!</p>
+            @else
+                <p style="margin-top: 10px; font-size: 14px;"><strong>Meeting akan dimulai sebentar lagi!</strong> Segera persiapkan diri dan peralatan yang diperlukan.</p>
+            @endif
         </div>
 
         <div class="booking-details">
