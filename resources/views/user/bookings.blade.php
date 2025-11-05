@@ -614,6 +614,40 @@
             });
         }
 
+        // Request preempt from edit form
+        window.requestPreemptFromEdit = function(bookingId) {
+            const reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
+            if (reason === null) return; // User cancelled
+            
+            fetch(`/user/bookings/${bookingId}/preempt-request`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    reason: reason || null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message || 'Permintaan didahulukan berhasil dikirim!');
+                    // Tutup modal edit setelah preempt dikirim
+                    closeModal('bookingEditModal');
+                    // Reload untuk refresh data
+                    location.reload();
+                } else {
+                    alert(data.message || 'Gagal mengirim permintaan didahulukan.');
+                }
+            })
+            .catch(error => {
+                console.error('Error requesting preempt:', error);
+                alert('Terjadi kesalahan saat mengirim permintaan.');
+            });
+        };
+
         // removed proposeTimesPreempt: only 'Terima & Batalkan' is supported
 
         function getStatusColor(status) {
@@ -700,7 +734,31 @@
                     warningDiv.classList.add('hidden');
                 } else {
                     warningDiv.classList.remove('hidden');
-                    conflictMessage.innerHTML = data.message.replace(/\n/g, '<br>');
+                    // Show conflicts with "Minta Didahulukan" buttons if available
+                    if (data.conflicts && data.conflicts.length > 0) {
+                        let conflictsHtml = '<div class="mt-3 space-y-2">';
+                        conflictsHtml += '<p class="text-sm font-medium text-red-700 mb-2">Pilih booking yang ingin Anda minta didahulukan:</p>';
+                        data.conflicts.forEach(conflict => {
+                            conflictsHtml += `
+                                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                                    <div class="mb-2">
+                                        <h5 class="font-medium text-gray-800">${conflict.title}</h5>
+                                        <p class="text-xs text-gray-600">oleh ${conflict.user}</p>
+                                        <p class="text-xs text-gray-500">${conflict.start_time} - ${conflict.end_time}</p>
+                                    </div>
+                                    <button type="button" onclick="requestPreemptFromEdit(${conflict.id})" 
+                                            class="w-full px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded text-sm transition-colors duration-300 flex items-center justify-center">
+                                        <i class="fas fa-handshake mr-2"></i>
+                                        Minta Didahulukan
+                                    </button>
+                                </div>
+                            `;
+                        });
+                        conflictsHtml += '</div>';
+                        conflictMessage.innerHTML = data.message.replace(/\n/g, '<br>') + conflictsHtml;
+                    } else {
+                        conflictMessage.innerHTML = data.message.replace(/\n/g, '<br>');
+                    }
                 }
             })
             .catch(error => {

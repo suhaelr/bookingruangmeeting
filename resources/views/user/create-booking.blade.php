@@ -808,9 +808,11 @@
             };
             
             window.requestPreemptFromModal = function(bookingId) {
-                window.closeConflictModal();
                 const reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
                 if (reason === null) return; // User cancelled
+                
+                // Tutup modal conflict terlebih dahulu
+                window.closeConflictModal();
                 
                 requestPreempt(bookingId, reason);
             };
@@ -886,10 +888,11 @@
                 .then(data => {
                     if (data.success) {
                         alert(data.message || 'Permintaan didahulukan berhasil dikirim!');
-                        // Refresh availability check after preempt request
-                        setTimeout(() => {
-                            checkAvailability();
-                        }, 1000);
+                        // Tutup form create booking setelah preempt dikirim
+                        // User akan dapat notifikasi jika diterima/ditolak
+                        // Jika diterima, booking otomatis dibuat, jadi tidak perlu input lagi
+                        // Jika ditolak, user dapat notif dan bisa isi ulang nanti
+                        window.location.href = '/user/bookings';
                     } else {
                         alert(data.message || 'Gagal mengirim permintaan didahulukan.');
                     }
