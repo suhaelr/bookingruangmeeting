@@ -305,7 +305,7 @@
                 <!-- Captcha Section -->
                 <div class="bg-white/10 rounded-lg p-6 border border-white/20">
                     <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
-                        <i class="fas fa-shield-alt mr-2 text-blue-400"></i>
+                        <i class="fas fa-shield-alt mr-2 text-black"></i>
                         Verifikasi Keamanan
                     </h3>
                     
@@ -737,8 +737,8 @@
                                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                                     <div class="flex justify-between items-start mb-2">
                                         <div class="flex-1">
-                                            <h4 class="font-medium text-gray-800">${conflict.title}</h4>
-                                            <p class="text-sm text-gray-600 mt-1">oleh ${conflict.user}</p>
+                                            <h4 class="font-medium text-black">${conflict.title}</h4>
+                                            <p class="text-sm text-black mt-1">oleh ${conflict.user}</p>
                                             <p class="text-xs text-gray-500 mt-1">${conflict.start_time} - ${conflict.end_time}</p>
                                         </div>
                                     </div>
@@ -757,7 +757,7 @@
                     <div id="conflictModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="window.closeConflictModal()">
                         <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                             <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
-                                <h3 class="text-lg sm:text-xl font-bold text-gray-800">Jadwal Bentrok</h3>
+                                <h3 class="text-lg sm:text-xl font-bold text-black">Jadwal Bentrok</h3>
                                 <button type="button" onclick="window.closeConflictModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
                                     <i class="fas fa-times text-xl sm:text-2xl"></i>
                                 </button>

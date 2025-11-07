@@ -49,8 +49,8 @@
             min-height: 120px;
             border-radius: 0.75rem; /* xl */
             padding: 0.75rem; /* 3 */
-            background: rgba(255,255,255,.05);
-            border: 1px solid rgba(255,255,255,.1);
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
         }
         @media (max-width: 640px) {
             .calendar-day { min-height: 96px; padding: 0.5rem; }
@@ -72,13 +72,13 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="flex-shrink-0">
-                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                        <i class="fas fa-calendar-alt text-2xl text-black"></i>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
                     <!-- User Notification Bell -->
                     <div class="relative">
-                        <button onclick="toggleNotifikasis()" class="relative p-2 text-white hover:text-blue-300 transition-colors duration-300">
+                        <button onclick="toggleNotifikasis()" class="relative p-2 text-black hover:text-indigo-600 transition-colors duration-300">
                             <i class="fas fa-bell text-xl"></i>
                             <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                         </button>
@@ -107,8 +107,8 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Selamat Datang, {{ session('user_data.full_name') }}!</h2>
-                    <p class="text-white/80">Kelola pemesanan ruang meeting Anda dan tetap terorganisir</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Selamat Datang, {{ session('user_data.full_name') }}!</h2>
+                    <p class="text-black">Kelola pemesanan ruang meeting Anda dan tetap terorganisir</p>
                 </div>
                 <div class="hidden md:block">
                     <a href="{{ route('user.bookings.create') }}" 
@@ -128,8 +128,8 @@
                         <i class="fas fa-calendar-check text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Total Pemesanan</p>
-                        <p class="text-2xl font-bold text-white">{{ $stats['total_bookings'] }}</p>
+                        <p class="text-black text-sm">Total Pemesanan</p>
+                        <p class="text-2xl font-bold text-black">{{ $stats['total_bookings'] }}</p>
                     </div>
                 </div>
             </div>
@@ -141,8 +141,8 @@
                         <i class="fas fa-check-circle text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Dikonfirmasi</p>
-                        <p class="text-2xl font-bold text-white">{{ $stats['confirmed_bookings'] }}</p>
+                        <p class="text-black text-sm">Dikonfirmasi</p>
+                        <p class="text-2xl font-bold text-black">{{ $stats['confirmed_bookings'] }}</p>
                     </div>
                 </div>
             </div>
@@ -153,8 +153,8 @@
                         <i class="fas fa-calendar text-white text-xl"></i>
                     </div>
                     <div class="ml-4">
-                        <p class="text-white/80 text-sm">Bulan Ini</p>
-                        <p class="text-2xl font-bold text-white">{{ $stats['this_month'] }}</p>
+                        <p class="text-black text-sm">Bulan Ini</p>
+                        <p class="text-2xl font-bold text-black">{{ $stats['this_month'] }}</p>
                     </div>
                 </div>
             </div>
@@ -165,22 +165,22 @@
             <!-- Active Bookings -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Pemesanan Aktif</h3>
-                    <a href="{{ route('user.bookings') }}" class="text-blue-400 hover:text-blue-300 text-sm">
+                    <h3 class="text-xl font-bold text-black">Pemesanan Aktif</h3>
+                    <a href="{{ route('user.bookings') }}" class="text-black hover:text-black text-sm">
                         Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
                 <div class="space-y-4">
                     @forelse($activeBookings as $booking)
-                    <div class="flex items-center justify-between p-4 bg-white/10 rounded-lg">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
                                 <i class="fas fa-calendar text-white"></i>
                             </div>
                             <div>
-                                <p class="text-white font-medium">{{ $booking->title }}</p>
-                                <p class="text-white/60 text-sm">{{ $booking->meetingRoom->name }}</p>
-                                <p class="text-white/60 text-xs">{{ $booking->formatted_start_time }}</p>
+                                <p class="text-black font-medium">{{ $booking->title }}</p>
+                                <p class="text-black text-sm">{{ $booking->meetingRoom->name }}</p>
+                                <p class="text-black text-xs">{{ $booking->formatted_start_time }}</p>
                             </div>
                         </div>
                         <div class="text-right">
@@ -194,7 +194,7 @@
                             @if($booking->canBeCancelled())
                             <form method="POST" action="{{ route('user.bookings.cancel', $booking->id) }}" class="mt-2">
                                 @csrf
-                                <button type="submit" class="text-red-400 hover:text-red-300 text-xs">
+                                <button type="submit" class="text-black hover:text-black text-xs">
                                     <i class="fas fa-times mr-1"></i>Batal
                                 </button>
                             </form>
@@ -203,10 +203,10 @@
                     </div>
                     @empty
                     <div class="text-center py-8">
-                        <i class="fas fa-calendar-times text-white/40 text-4xl mb-4"></i>
-                        <p class="text-white/60">Tidak ada pemesanan aktif</p>
+                        <i class="fas fa-calendar-times text-black text-4xl mb-4"></i>
+                        <p class="text-black">Tidak ada pemesanan aktif</p>
                         <a href="{{ route('user.bookings.create') }}" 
-                           class="text-blue-400 hover:text-blue-300 text-sm mt-2 inline-block">
+                           class="text-black hover:text-black text-sm mt-2 inline-block">
                             Pesan ruang meeting
                         </a>
                     </div>
@@ -217,19 +217,19 @@
             <!-- Today's Bookings -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Jadwal Hari Ini</h3>
-                    <span class="text-white/60 text-sm">{{ now()->format('M d, Y') }}</span>
+                    <h3 class="text-xl font-bold text-black">Jadwal Hari Ini</h3>
+                    <span class="text-black text-sm">{{ now()->format('M d, Y') }}</span>
                 </div>
                 <div class="space-y-4">
                     @forelse($todayBookings as $booking)
-                    <div class="flex items-center justify-between p-4 bg-white/10 rounded-lg">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                                 <i class="fas fa-clock text-white"></i>
                             </div>
                             <div>
                                 <p class="text-white font-medium">{{ $booking->title }}</p>
-                                <p class="text-white/60 text-sm">{{ $booking->meetingRoom->name }}</p>
+                                <p class="text-black text-sm">{{ $booking->meetingRoom->name }}</p>
                             </div>
                         </div>
                         <div class="text-right">
@@ -245,8 +245,8 @@
                     </div>
                     @empty
                     <div class="text-center py-8">
-                        <i class="fas fa-calendar-day text-white/40 text-4xl mb-4"></i>
-                        <p class="text-white/60">Tidak ada meeting hari ini</p>
+                        <i class="fas fa-calendar-day text-black text-4xl mb-4"></i>
+                        <p class="text-black">Tidak ada meeting hari ini</p>
                     </div>
                     @endforelse
                 </div>
@@ -259,7 +259,7 @@
                 <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
                     <div>
                         <h3 class="text-xl font-bold text-white">Kalender Booking</h3>
-                        <p class="text-white/60 text-sm mt-1">{{ $calendarAnchor->translatedFormat('F Y') }}</p>
+                        <p class="text-black text-sm mt-1">{{ $calendarAnchor->translatedFormat('F Y') }}</p>
                     </div>
                     <div class="w-full sm:w-auto">
                         <input type="month" id="calendar-date-picker" value="{{ $calendarAnchor->format('Y-m') }}" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
@@ -283,7 +283,7 @@
                              data-has-items="{{ count($day['items']) > 0 ? 'true' : 'false' }}">
                             <div class="flex items-center justify-between mb-2 calendar-day-header">
                                 <span class="text-white font-semibold">{{ $day['day'] }}</span>
-                                <span class="text-xs text-white/60">{{ count($day['items']) }} booking</span>
+                                <span class="text-xs text-black">{{ count($day['items']) }} booking</span>
                             </div>
                             <div class="space-y-1 items overflow-y-auto pr-1 calendar-items-container">
                                 @forelse($day['items'] as $item)
@@ -295,7 +295,7 @@
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['pic_name'] }} • {{ $item['unit_kerja'] }}</div>
                                     </div>
                                 @empty
-                                    <div class="text-[11px] text-white/40">Tidak ada</div>
+                                    <div class="text-[11px] text-black">Tidak ada</div>
                                 @endforelse
                             </div>
                         </div>
@@ -309,21 +309,21 @@
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-white">Ruang Meeting Tersedia</h3>
-                    <a href="{{ route('user.bookings.create') }}" class="text-blue-400 hover:text-blue-300 text-sm">
+                    <a href="{{ route('user.bookings.create') }}" class="text-black hover:text-black text-sm">
                         Pesan Sekarang <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @forelse($availableRooms as $room)
-                    <div class="bg-white/10 rounded-lg p-4 hover:bg-white/20 transition-colors">
+                    <div class="bg-gray-50 rounded-lg p-4 hover:bg-white/20 transition-colors">
                         <div class="flex items-center justify-between mb-2">
                             <h4 class="text-white font-medium">{{ $room->name }}</h4>
-                            <span class="text-white/60 text-sm">{{ $room->capacity }} kursi</span>
+                            <span class="text-black text-sm">{{ $room->capacity }} kursi</span>
                         </div>
-                        <p class="text-white/60 text-sm mb-2">{{ $room->location }}</p>
+                        <p class="text-black text-sm mb-2">{{ $room->location }}</p>
                         <div class="flex flex-wrap gap-1 mb-3">
                             @foreach($room->getAmenitiesList() as $amenity)
-                            <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded">
+                            <span class="px-2 py-1 bg-blue-500/20 text-black text-xs rounded">
                                 {{ ucfirst($amenity) }}
                             </span>
                             @endforeach
@@ -337,8 +337,8 @@
                     </div>
                     @empty
                     <div class="col-span-full text-center py-8">
-                        <i class="fas fa-door-open text-white/40 text-4xl mb-4"></i>
-                        <p class="text-white/60">Tidak ada ruang meeting tersedia</p>
+                        <i class="fas fa-door-open text-black text-4xl mb-4"></i>
+                        <p class="text-black">Tidak ada ruang meeting tersedia</p>
                     </div>
                     @endforelse
                 </div>
@@ -359,7 +359,7 @@
     <!-- Notifikasi Dropdown -->
     <div id="notificationDropdown" class="fixed top-16 right-4 bg-white rounded-lg shadow-lg border hidden z-50 w-80 max-h-96 overflow-y-auto">
         <div class="p-4 border-b">
-            <h3 class="font-semibold text-gray-800">Notifikasi</h3>
+            <h3 class="font-semibold text-black">Notifikasi</h3>
         </div>
         <div id="notificationList" class="p-2">
             <!-- Notifikasis will be loaded here -->
@@ -428,8 +428,8 @@
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <p class="text-sm font-medium text-gray-900">${notification.title}</p>
-                                    <p class="text-sm text-gray-600">${notification.message}</p>
-                                    <p class="text-xs text-gray-400 mt-1">${notification.time}</p>
+                                    <p class="text-sm text-black">${notification.message}</p>
+                                    <p class="text-xs text-black mt-1">${notification.time}</p>
                                 </div>
                                 ${!notification.read ? '<div class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>' : ''}
                             </div>
@@ -673,8 +673,8 @@
             if (items.length === 0) {
                 meetingsHtml = `
                     <div class="text-center py-8">
-                        <i class="fas fa-calendar-times text-gray-400 text-4xl mb-4"></i>
-                        <p class="text-gray-600">Tidak ada meeting pada hari ini</p>
+                        <i class="fas fa-calendar-times text-black text-4xl mb-4"></i>
+                        <p class="text-black">Tidak ada meeting pada hari ini</p>
                     </div>
                 `;
             } else {
@@ -694,7 +694,7 @@
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <h4 class="font-semibold text-gray-900 mb-2">${escapeHtml(item.title || 'Meeting')}</h4>
-                                    <div class="space-y-1 text-sm text-gray-600">
+                                    <div class="space-y-1 text-sm text-black">
                                         <div class="flex items-center">
                                             <i class="fas fa-clock text-blue-500 mr-2 w-4"></i>
                                             <span>${escapeHtml(item.start_time || '')} - ${escapeHtml(item.end_time || '')}</span>
@@ -716,7 +716,7 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                    <i class="fas fa-chevron-right text-black"></i>
                                 </div>
                             </div>
                         </div>
@@ -736,7 +736,7 @@
                     <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()" data-day-number="${day.day}">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
                             <div>
-                                <h3 class="text-lg sm:text-xl font-bold text-gray-800">Meeting Hari ${day.day}</h3>
+                                <h3 class="text-lg sm:text-xl font-bold text-black">Meeting Hari ${day.day}</h3>
                                 <p class="text-sm text-gray-500 mt-1">${dateStr} • ${items.length} meeting</p>
                             </div>
                             <button type="button" onclick="closeDayMeetingsModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
@@ -885,7 +885,7 @@
                 // Process links in description (Zoom/Meet links)
                 const processedDescription = item.description.replace(
                     /(https?:\/\/[^\s]+)/g, 
-                    '<a href="$1" target="_blank" class="text-blue-400 hover:text-blue-300 underline">$1</a>'
+                    '<a href="$1" target="_blank" class="text-black hover:text-black underline">$1</a>'
                 );
                 
                 descriptionHtml = `
@@ -897,7 +897,7 @@
             } else if (item.is_invited_pic) {
                 descriptionHtml = `
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-black">
                             <i class="fas fa-user-check mr-2"></i>
                             Anda adalah PIC yang diundang ke meeting ini
                         </div>
@@ -907,7 +907,7 @@
                 // Show message that description exists but user can't see it
                 descriptionHtml = `
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-black">
                             <i class="fas fa-lock mr-2"></i>
                             Deskripsi meeting tersedia namun hanya untuk PIC yang diundang
                         </div>
@@ -917,7 +917,7 @@
                 // Show message that no description is available
                 descriptionHtml = `
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <div class="text-sm text-gray-600">
+                        <div class="text-sm text-black">
                             <i class="fas fa-info-circle mr-2"></i>
                             Tidak ada deskripsi meeting
                         </div>
@@ -932,12 +932,12 @@
                     // Simple PDF document with download and open options
                     documentHtml = `
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
-                            <h4 class="font-medium text-gray-800 mb-3 flex items-center">
+                            <h4 class="font-medium text-black mb-3 flex items-center">
                                 <i class="fas fa-file-pdf text-red-500 mr-2"></i>
                                 Dokumen Tambahan
                             </h4>
                             <div class="bg-white rounded-lg border border-gray-300 p-4">
-                                <p class="text-gray-600 text-sm mb-4">
+                                <p class="text-black text-sm mb-4">
                                     Dokumen PDF tersedia untuk diunduh atau dibuka di tab baru.
                                 </p>
                                 <div class="flex flex-wrap gap-2">
@@ -961,7 +961,7 @@
                     // Show message that document exists but user can't see it
                     documentHtml = `
                         <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4">
-                            <div class="text-sm text-gray-600">
+                            <div class="text-sm text-black">
                                 <i class="fas fa-lock mr-2"></i>
                                 Dokumen tambahan tersedia namun hanya untuk PIC yang diundang
                             </div>
@@ -982,7 +982,7 @@
             if (Array.isArray(item.invited_pics) && item.invited_pics.length > 0) {
                 invitedHtml = `
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="font-medium text-gray-800 mb-3">PIC yang Diundang</h4>
+                        <h4 class="font-medium text-black mb-3">PIC yang Diundang</h4>
                         <ul class="list-disc pl-5 text-sm text-gray-700">
                             ${item.invited_pics.map(p => `<li>${(p.name || 'Tidak diketahui')}${p.unit_kerja ? ' - ' + p.unit_kerja : ''}</li>`).join('')}
                         </ul>
@@ -994,7 +994,7 @@
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
                     <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Detail Meeting</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-black">Detail Meeting</h3>
                             <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
                                 <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
@@ -1019,15 +1019,15 @@
                             </div>
                             
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-medium text-gray-800 mb-3">PIC Penyelenggara</h4>
+                                <h4 class="font-medium text-black mb-3">PIC Penyelenggara</h4>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Nama PIC:</span>
-                                        <span class="text-gray-800">${item.pic_name}</span>
+                                        <span class="text-black font-medium">Nama PIC:</span>
+                                        <span class="text-black">${item.pic_name}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Unit Kerja:</span>
-                                        <span class="text-gray-800">${item.unit_kerja}</span>
+                                        <span class="text-black font-medium">Unit Kerja:</span>
+                                        <span class="text-black">${item.unit_kerja}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1064,7 +1064,7 @@
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
                     <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Detail Booking Aktif</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-black">Detail Booking Aktif</h3>
                             <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
                                 <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
@@ -1106,15 +1106,15 @@
                             
                             <!-- Organizer Details -->
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-medium text-gray-800 mb-3">Informasi Penyelenggara</h4>
+                                <h4 class="font-medium text-black mb-3">Informasi Penyelenggara</h4>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Nama:</span>
-                                        <span class="text-gray-800">${booking.user_name}</span>
+                                        <span class="text-black font-medium">Nama:</span>
+                                        <span class="text-black">${booking.user_name}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Unit Kerja:</span>
-                                        <span class="text-gray-800">${booking.unit_kerja}</span>
+                                        <span class="text-black font-medium">Unit Kerja:</span>
+                                        <span class="text-black">${booking.unit_kerja}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1156,7 +1156,7 @@
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
                     <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Riwayat Penggunaan</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-black">Riwayat Penggunaan</h3>
                             <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
                                 <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
@@ -1195,15 +1195,15 @@
                             
                             <!-- Previous Organizer Details -->
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-medium text-gray-800 mb-3">Penyelenggara Sebelumnya</h4>
+                                <h4 class="font-medium text-black mb-3">Penyelenggara Sebelumnya</h4>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Nama:</span>
-                                        <span class="text-gray-800">${booking.user_name}</span>
+                                        <span class="text-black font-medium">Nama:</span>
+                                        <span class="text-black">${booking.user_name}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Unit Kerja:</span>
-                                        <span class="text-gray-800">${booking.unit_kerja}</span>
+                                        <span class="text-black font-medium">Unit Kerja:</span>
+                                        <span class="text-black">${booking.unit_kerja}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1238,7 +1238,7 @@
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
                     <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Riwayat Penggunaan</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-black">Riwayat Penggunaan</h3>
                             <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
                                 <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
@@ -1277,15 +1277,15 @@
                             
                             <!-- Previous Organizer Details -->
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-medium text-gray-800 mb-3">Penyelenggara Sebelumnya</h4>
+                                <h4 class="font-medium text-black mb-3">Penyelenggara Sebelumnya</h4>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Nama:</span>
-                                        <span class="text-gray-800">${booking.user_name}</span>
+                                        <span class="text-black font-medium">Nama:</span>
+                                        <span class="text-black">${booking.user_name}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-600 font-medium">Unit Kerja:</span>
-                                        <span class="text-gray-800">${booking.unit_kerja}</span>
+                                        <span class="text-black font-medium">Unit Kerja:</span>
+                                        <span class="text-black">${booking.unit_kerja}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1417,7 +1417,7 @@
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeSlotDetails()">
                     <div class="bg-white rounded-2xl max-w-lg w-full p-6" onclick="event.stopPropagation()">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-gray-800">Detail Slot Waktu</h3>
+                            <h3 class="text-xl font-bold text-black">Detail Slot Waktu</h3>
                             <button onclick="closeSlotDetails()" class="text-gray-500 hover:text-gray-700">
                                 <i class="fas fa-times text-xl"></i>
                             </button>
@@ -1490,12 +1490,12 @@
             if (slotInfo.previousBooking) {
                 modalContent += `
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                        <h4 class="font-medium text-gray-800 mb-2">Riwayat Penggunaan</h4>
+                        <h4 class="font-medium text-black mb-2">Riwayat Penggunaan</h4>
                         <div class="space-y-1 text-sm">
-                            <div><span class="text-gray-600 font-medium">Judul:</span> <span class="text-gray-800">${slotInfo.previousBooking.title}</span></div>
-                            <div><span class="text-gray-600 font-medium">Oleh:</span> <span class="text-gray-800">${slotInfo.previousBooking.user_name}</span></div>
-                            <div><span class="text-gray-600 font-medium">Unit:</span> <span class="text-gray-800">${slotInfo.previousBooking.unit_kerja}</span></div>
-                            <div><span class="text-gray-600 font-medium">Waktu:</span> <span class="text-gray-800">${slotInfo.previousBooking.start_time} - ${slotInfo.previousBooking.end_time}</span></div>
+                            <div><span class="text-black font-medium">Judul:</span> <span class="text-black">${slotInfo.previousBooking.title}</span></div>
+                            <div><span class="text-black font-medium">Oleh:</span> <span class="text-black">${slotInfo.previousBooking.user_name}</span></div>
+                            <div><span class="text-black font-medium">Unit:</span> <span class="text-black">${slotInfo.previousBooking.unit_kerja}</span></div>
+                            <div><span class="text-black font-medium">Waktu:</span> <span class="text-black">${slotInfo.previousBooking.start_time} - ${slotInfo.previousBooking.end_time}</span></div>
                         </div>
                     </div>
                 `;
@@ -1529,7 +1529,7 @@
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onclick="closeRoomDetailsModal()">
                     <div class="bg-white rounded-2xl max-w-md w-full p-6" onclick="event.stopPropagation()">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold text-gray-800">Detail Ruang Meeting</h3>
+                            <h3 class="text-xl font-bold text-black">Detail Ruang Meeting</h3>
                             <button onclick="closeRoomDetailsModal()" class="text-gray-500 hover:text-gray-700">
                                 <i class="fas fa-times text-xl"></i>
                             </button>
@@ -1569,10 +1569,10 @@
                             
                             <!-- Booking Info -->
                             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <h4 class="font-medium text-gray-800 mb-2">Informasi Booking</h4>
+                                <h4 class="font-medium text-black mb-2">Informasi Booking</h4>
                                 <div class="space-y-1 text-sm">
-                                    <div><span class="text-gray-600 font-medium">Waktu yang dipilih:</span> <span class="text-gray-800">${time}</span></div>
-                                    <div><span class="text-gray-600 font-medium">Tanggal:</span> <span class="text-gray-800">${new Date(datetime).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span></div>
+                                    <div><span class="text-black font-medium">Waktu yang dipilih:</span> <span class="text-black">${time}</span></div>
+                                    <div><span class="text-black font-medium">Tanggal:</span> <span class="text-black">${new Date(datetime).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span></div>
                                 </div>
                             </div>
                         </div>
@@ -1618,8 +1618,8 @@
                             </div>
                             
                             <div class="text-center">
-                                <h3 class="text-xl font-bold text-gray-800 mb-2">Waktu Sudah Lewat</h3>
-                                <p class="text-gray-600 mb-4">
+                                <h3 class="text-xl font-bold text-black mb-2">Waktu Sudah Lewat</h3>
+                                <p class="text-black mb-4">
                                     Slot waktu <strong>${time}</strong> sudah lewat dan tidak dapat dipesan lagi.
                                 </p>
                                 <p class="text-gray-500 text-sm mb-6">

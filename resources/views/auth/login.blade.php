@@ -75,9 +75,9 @@
         });
     </script>
     <style>
-        /* Background gradient */
+        /* Background white */
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            background: #ffffff !important;
             min-height: 100vh !important;
             position: relative;
             overflow-x: hidden;
@@ -214,11 +214,11 @@
             /* Links smaller */
             .glass-effect a {
                 font-size: 0.75rem !important;
-                color: rgba(255, 255, 255, 0.7) !important;
+                color: rgba(0, 0, 0, 0.9) !important;
             }
             
             .glass-effect a:hover {
-                color: rgba(255, 255, 255, 0.9) !important;
+                color: rgba(0, 0, 0, 1) !important;
             }
             
             /* Ensure footer is visible and compact */
@@ -341,11 +341,11 @@
             /* Footer links very small */
             .glass-effect .text-center a {
                 font-size: 0.5rem !important;
-                color: rgba(255, 255, 255, 0.7) !important;
+                color: rgba(0, 0, 0, 0.9) !important;
             }
             
             .glass-effect .text-center a:hover {
-                color: rgba(255, 255, 255, 0.9) !important;
+                color: rgba(0, 0, 0, 1) !important;
             }
             
             /* Ensure footer is visible and compact */
@@ -427,9 +427,9 @@
         
         /* Glass effect */
         .glass-effect {
-            background: rgba(255, 255, 255, 0.15) !important;
+            background: #ffffff !important;
             backdrop-filter: blur(15px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border: 1px solid rgba(0, 0, 0, 0.2) !important;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
         }
         
@@ -461,47 +461,47 @@
         
         /* Footer links color fix */
         .text-center a {
-            color: rgba(255, 255, 255, 0.7) !important;
+            color: rgba(0, 0, 0, 0.9) !important;
             text-decoration: underline;
             transition: color 0.3s ease;
         }
         
         .text-center a:hover {
-            color: rgba(255, 255, 255, 0.9) !important;
+            color: rgba(0, 0, 0, 1) !important;
         }
         
         /* Override any blue link colors */
         a:not(.btn):not(.button) {
-            color: rgba(255, 255, 255, 0.7) !important;
+            color: rgba(0, 0, 0, 0.9) !important;
         }
         
         a:not(.btn):not(.button):hover {
-            color: rgba(255, 255, 255, 0.9) !important;
+            color: rgba(0, 0, 0, 1) !important;
         }
         
         /* Specific footer links styling */
         .text-center p a {
-            color: rgba(255, 255, 255, 0.7) !important;
+            color: rgba(0, 0, 0, 0.9) !important;
             text-decoration: underline;
             transition: color 0.3s ease;
         }
         
         .text-center p a:hover {
-            color: rgba(255, 255, 255, 0.9) !important;
+            color: rgba(0, 0, 0, 1) !important;
         }
         
         /* Override Tailwind link colors */
         .underline {
-            color: rgba(255, 255, 255, 0.7) !important;
+            color: rgba(0, 0, 0, 0.9) !important;
         }
         
         .hover\:text-white:hover {
-            color: rgba(255, 255, 255, 0.9) !important;
+            color: rgba(0, 0, 0, 0.9) !important;
         }
         
-        /* Ensure text is white */
+        /* Ensure text is black */
         .text-white {
-            color: white !important;
+            color: black !important;
         }
         
         /* Ensure form styling is correct */
@@ -509,7 +509,7 @@
         .glass-effect h2,
         .glass-effect p,
         .glass-effect label {
-            color: white !important;
+            color: black !important;
         }
         
         /* BGN Logo Animation */
@@ -610,8 +610,8 @@
             <div class="logo-wrapper inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
                 <img src="{{ asset('logo-bgn.png') }}" alt="BGN Logo" class="w-12 h-12 object-contain logo-glow logo-blink">
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Sistem Pemesanan Ruang Meeting</h1>
-            <p class="text-white/80">Silakan masuk untuk melanjutkan</p>
+            <h1 class="text-3xl font-bold text-black mb-2">Sistem Pemesanan Ruang Meeting</h1>
+            <p class="text-black">Silakan masuk untuk melanjutkan</p>
         </div>
 
         <!-- Login Form -->
@@ -639,7 +639,7 @@
                 
                 <!-- Username/Email Field -->
                 <div>
-                    <label for="username" class="block text-base font-medium text-white mb-2 text-left" style="text-align: left !important;">
+                    <label for="username" class="block text-base font-medium text-black mb-2 text-left" style="text-align: left !important;">
                         <i class="fas fa-user mr-2"></i>Nama Pengguna atau Email
                     </label>
                     <input 
@@ -647,7 +647,7 @@
                         id="username" 
                         name="username" 
                         value="{{ old('username') }}"
-                        class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                        class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300"
                         placeholder="Masukkan nama pengguna atau email"
                         required
                         autofocus
@@ -656,7 +656,7 @@
 
                 <!-- Password Field -->
                 <div>
-                    <label for="password" class="block text-base font-medium text-white mb-2 text-left" style="text-align: left !important;">
+                    <label for="password" class="block text-base font-medium text-black mb-2 text-left" style="text-align: left !important;">
                         <i class="fas fa-lock mr-2"></i>Kata Sandi
                     </label>
                     <div class="relative">
@@ -664,14 +664,14 @@
                             type="password" 
                             id="password" 
                             name="password" 
-                            class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 pr-12"
+                            class="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 pr-12"
                             placeholder="Masukkan kata sandi"
                             required
                         >
                         <button 
                             type="button" 
                             onclick="togglePassword()"
-                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
                         >
                             <i id="password-icon" class="fas fa-eye"></i>
                         </button>
@@ -683,7 +683,7 @@
                 <button 
                     type="submit" 
                     id="loginButton"
-                    class="w-full bg-white text-indigo-600 font-semibold py-3 px-4 rounded-lg hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    class="w-full bg-gray-200 text-black font-semibold py-3 px-4 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 shadow-lg border border-gray-300"
                 >
                     <i class="fas fa-sign-in-alt mr-2"></i>
                     Masuk
@@ -693,13 +693,13 @@
             <!-- Additional Links -->
             <div class="mt-6 space-y-3">
                 <div class="text-center">
-                    <a href="{{ route('password.request') }}" class="text-white/80 hover:text-white text-sm underline">
+                    <a href="{{ route('password.request') }}" class="text-black hover:text-gray-800 text-sm underline">
                         <i class="fas fa-key mr-1"></i>
                         Lupa Password?
                     </a>
                 </div>
                 <div class="text-center">
-                    <a href="{{ route('register') }}" class="text-white/80 hover:text-white text-sm underline">
+                    <a href="{{ route('register') }}" class="text-black hover:text-gray-800 text-sm underline">
                         <i class="fas fa-user-plus mr-1"></i>
                         Daftar Akun Baru
                     </a>
@@ -709,17 +709,17 @@
 
         <!-- Footer -->
         <div class="text-center mt-8">
-            <p class="text-white/60 text-sm">
-                <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
+            <p class="text-black text-sm">
+                <span onclick="showChangelogModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
                 © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
             </p>
             
-            <p class="text-white/50 text-xs mt-3">
-                <a href="{{ route('privacy.policy') }}" class="hover:text-white underline transition-colors duration-300">
+            <p class="text-black text-xs mt-3">
+                <a href="{{ route('privacy.policy') }}" class="text-black hover:text-gray-800 underline transition-colors duration-300">
                     Kebijakan Privasi
                 </a>
                 <span class="mx-2">•</span>
-                <a href="{{ route('terms.service') }}" class="hover:text-white underline transition-colors duration-300">
+                <a href="{{ route('terms.service') }}" class="text-black hover:text-gray-800 underline transition-colors duration-300">
                     Syarat dan Ketentuan
                 </a>
             </p>

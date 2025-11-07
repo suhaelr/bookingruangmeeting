@@ -25,25 +25,25 @@
         
         /* Fix dropdown styling */
         select {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #d1d5db !important;
         }
         
         select option {
-            background-color: #1a202c !important;
-            color: white !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
             padding: 8px 12px !important;
         }
         
         select option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
+            background-color: #f3f4f6 !important;
+            color: #000000 !important;
         }
         
         select option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
+            background-color: #6366f1 !important;
+            color: #ffffff !important;
         }
         
         /* Fix button hover states */

@@ -247,7 +247,7 @@
                 <div id="changelogModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeChangelogModal()">
                     <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
-                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Changelog Aplikasi</h3>
+                            <h3 class="text-lg sm:text-xl font-bold text-black">Changelog Aplikasi</h3>
                             <button type="button" onclick="closeChangelogModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
                                 <i class="fas fa-times text-xl sm:text-2xl"></i>
                             </button>
@@ -257,7 +257,7 @@
                             <!-- v2.1.4 -->
                             <div class="mb-6">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-lg font-bold text-gray-800">v2.1.4 (2025) - Field Kapasitas Opsional</h4>
+                                    <h4 class="text-lg font-bold text-black">v2.1.4 (2025) - Field Kapasitas Opsional</h4>
                                     <span class="text-sm text-gray-500">November 2025</span>
                                 </div>
                                 <ul class="space-y-2 text-sm text-gray-700">
@@ -275,7 +275,7 @@
                             <!-- v2.1.3 -->
                             <div class="mb-6 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-lg font-bold text-gray-800">v2.1.3 (2025) - Mobile Calendar Enhancement</h4>
+                                    <h4 class="text-lg font-bold text-black">v2.1.3 (2025) - Mobile Calendar Enhancement</h4>
                                     <span class="text-sm text-gray-500">November 2025</span>
                                 </div>
                                 <ul class="space-y-2 text-sm text-gray-700">
@@ -301,7 +301,7 @@
                             <!-- v2.1.2 -->
                             <div class="mb-6 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-lg font-bold text-gray-800">v2.1.2 (2025) - Real-time Notifications</h4>
+                                    <h4 class="text-lg font-bold text-black">v2.1.2 (2025) - Real-time Notifications</h4>
                                     <span class="text-sm text-gray-500">November 2025</span>
                                 </div>
                                 <ul class="space-y-2 text-sm text-gray-700">
@@ -323,7 +323,7 @@
                             <!-- v2.1.1 -->
                             <div class="mb-6 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-lg font-bold text-gray-800">v2.1.1 (2025) - Bug Fixes</h4>
+                                    <h4 class="text-lg font-bold text-black">v2.1.1 (2025) - Bug Fixes</h4>
                                     <span class="text-sm text-gray-500">November 2025</span>
                                 </div>
                                 <ul class="space-y-2 text-sm text-gray-700">
@@ -353,7 +353,7 @@
                             <!-- v1.0.0 -->
                             <div class="mb-4 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-lg font-bold text-gray-800">v1.0.0 (2025) - Initial Release</h4>
+                                    <h4 class="text-lg font-bold text-black">v1.0.0 (2025) - Initial Release</h4>
                                     <span class="text-sm text-gray-500">Oktober 2025</span>
                                 </div>
                                 <ul class="space-y-2 text-sm text-gray-700">

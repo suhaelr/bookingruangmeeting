@@ -183,7 +183,7 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">
-                                        <button onclick="viewBooking({{ $booking->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Detail">
+                                        <button onclick="viewBooking({{ $booking->id }})" class="text-black hover:text-black transition-colors" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Perbarui Status">
@@ -243,7 +243,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Detail Booking</h3>
+                    <h3 class="text-2xl font-bold text-black">Detail Booking</h3>
                     <button onclick="closeModal('bookingDetailModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -260,7 +260,7 @@
         <div class="bg-white rounded-2xl max-w-md w-full">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-800">Perbarui Booking Status</h3>
+                    <h3 class="text-xl font-bold text-black">Perbarui Booking Status</h3>
                     <button onclick="closeModal('bookingStatusModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -332,7 +332,7 @@
                 document.getElementById('bookingDetailContent').innerHTML = `
                     <div class="space-y-6">
                         <div class="flex items-center justify-between">
-                            <h4 class="text-xl font-bold text-gray-800">${booking.title}</h4>
+                            <h4 class="text-xl font-bold text-black">${booking.title}</h4>
                             <span class="px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(booking.status)}">
                                 ${getStatusText(booking.status)}
                             </span>
@@ -342,12 +342,12 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Pengguna</label>
                                 <p class="text-gray-900">${booking.user.full_name}</p>
-                                <p class="text-gray-600 text-sm">${booking.user.email}</p>
+                                <p class="text-black text-sm">${booking.user.email}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Ruang</label>
                                 <p class="text-gray-900">${booking.meeting_room.name}</p>
-                                <p class="text-gray-600 text-sm">${booking.meeting_room.location}</p>
+                                <p class="text-black text-sm">${booking.meeting_room.location}</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Mulai Waktu</label>
@@ -382,7 +382,7 @@
                             <p class="text-gray-900">${booking.attendees_count} orang</p>
                             ${booking.attendees && booking.attendees.length > 0 ? `
                                 <div class="mt-2">
-                                    ${booking.attendees.map(email => `<span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm mr-2 mb-1">${email}</span>`).join('')}
+                                    ${booking.attendees.map(email => `<span class="inline-block bg-gray-100 text-black px-2 py-1 rounded text-sm mr-2 mb-1">${email}</span>`).join('')}
                                 </div>
                             ` : ''}
                         </div>
@@ -410,7 +410,7 @@
                 'cancelled': 'bg-red-100 text-red-800',
                 'completed': 'bg-blue-100 text-blue-800'
             };
-            return colors[status] || 'bg-gray-100 text-gray-800';
+            return colors[status] || 'bg-gray-100 text-black';
         }
         
         function getStatusText(status) {

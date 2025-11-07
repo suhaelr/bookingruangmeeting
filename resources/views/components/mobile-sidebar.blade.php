@@ -9,13 +9,13 @@
         <div class="mobile-sidebar-header">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <i class="fas fa-calendar-alt text-2xl text-white mr-3"></i>
+                    <i class="fas fa-calendar-alt text-2xl text-black mr-3"></i>
                     <div>
-                        <h1 class="text-lg font-bold text-white">Sistem Pemesanan</h1>
-                        <p class="text-white/80 text-xs">Ruang Meeting</p>
+                        <h1 class="text-lg font-bold text-black">Sistem Pemesanan</h1>
+                        <p class="text-black text-xs">Ruang Meeting</p>
                     </div>
                 </div>
-                <button onclick="toggleMobileSidebar()" class="text-white/80 hover:text-white p-2">
+                <button onclick="toggleMobileSidebar()" class="text-black hover:text-gray-800 p-2">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -109,12 +109,12 @@
             <div class="mobile-sidebar-footer">
                 <div class="mobile-user-info">
                     <div class="flex items-center">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
-                            <i class="fas fa-user text-white"></i>
+                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-user text-indigo-600"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-white font-medium text-sm truncate">{{ $userName ?? 'User' }}</p>
-                            <p class="text-white/60 text-xs truncate">{{ $userEmail ?? 'user@example.com' }}</p>
+                            <p class="text-black font-medium text-sm truncate">{{ $userName ?? 'User' }}</p>
+                            <p class="text-black text-xs truncate">{{ $userEmail ?? 'user@example.com' }}</p>
                         </div>
                     </div>
                 </div>
@@ -181,7 +181,7 @@
     width: 320px;
     max-width: 85vw;
     height: 100%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #ffffff;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
     display: flex;
@@ -190,7 +190,7 @@
 
 .mobile-sidebar-header {
     padding: 1.5rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #e5e7eb;
     flex-shrink: 0;
 }
 
@@ -204,7 +204,7 @@
     display: flex;
     align-items: center;
     padding: 0.875rem 1.5rem;
-    color: rgba(255, 255, 255, 0.8);
+    color: #000000;
     text-decoration: none;
     transition: all 0.3s ease;
     border-left: 3px solid transparent;
@@ -212,15 +212,15 @@
 }
 
 .mobile-nav-item:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border-left-color: rgba(255, 255, 255, 0.5);
+    background: #f3f4f6;
+    color: #000000;
+    border-left-color: #6366f1;
 }
 
 .mobile-nav-item.active {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border-left-color: #fff;
+    background: #eef2ff;
+    color: #000000;
+    border-left-color: #4f46e5;
 }
 
 .mobile-nav-item i {
@@ -241,13 +241,13 @@
 
 .mobile-nav-divider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: #e5e7eb;
     margin: 0.5rem 1.5rem;
 }
 
 .mobile-sidebar-footer {
     padding: 1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #e5e7eb;
     flex-shrink: 0;
 }
 
@@ -279,14 +279,14 @@
     top: 0.75rem;
     left: 1rem;
     z-index: 1000;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #e5e7eb;
     padding: 0.75rem;
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 2.5rem;
     width: 2.5rem;
     display: flex;
@@ -295,7 +295,8 @@
 }
 
 .mobile-menu-btn:hover {
-    background: rgba(0, 0, 0, 0.9);
+    background: #f3f4f6;
+    color: #000000;
     transform: scale(1.05);
 }
 

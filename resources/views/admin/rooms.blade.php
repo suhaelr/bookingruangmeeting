@@ -172,7 +172,7 @@
                         @endif
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="viewRoom({{ $room->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
+                        <button onclick="viewRoom({{ $room->id }})" class="text-black hover:text-blue-300 transition-colors" title="Lihat Details">
                             <i class="fas fa-eye"></i>
                         </button>
                         <button onclick="editRoom({{ $room->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit Ruang">
@@ -238,7 +238,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Detail Ruang</h3>
+                    <h3 class="text-2xl font-bold text-black">Detail Ruang</h3>
                     <button onclick="closeModal('roomDetailModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -255,7 +255,7 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Edit Ruang</h3>
+                    <h3 class="text-2xl font-bold text-black">Edit Ruang</h3>
                     <button onclick="closeModal('roomEditModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -287,8 +287,8 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-800">Hapus Ruang</h3>
-                        <p class="text-gray-600">Tindakan ini tidak dapat dibatalkan</p>
+                        <h3 class="text-lg font-bold text-black">Hapus Ruang</h3>
+                        <p class="text-black">Tindakan ini tidak dapat dibatalkan</p>
                     </div>
                 </div>
                 <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus ruang ini? Semua pemesanan terkait juga akan dihapus.</p>
@@ -328,38 +328,38 @@
                     <div class="space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Informasi Dasar</h4>
+                                <h4 class="text-lg font-semibold text-black mb-4">Informasi Dasar</h4>
                                 <div class="space-y-3">
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Nama Ruang</label>
-                                        <p class="text-gray-800">${room.name}</p>
+                                        <label class="text-sm font-medium text-black">Nama Ruang</label>
+                                        <p class="text-black">${room.name}</p>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Deskripsi</label>
-                                        <p class="text-gray-800">${room.description}</p>
+                                        <label class="text-sm font-medium text-black">Deskripsi</label>
+                                        <p class="text-black">${room.description}</p>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Kapasitas</label>
-                                        <p class="text-gray-800">${room.capacity} kursi</p>
+                                        <label class="text-sm font-medium text-black">Kapasitas</label>
+                                        <p class="text-black">${room.capacity} kursi</p>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Lokasi</label>
-                                        <p class="text-gray-800">${room.location}</p>
+                                        <label class="text-sm font-medium text-black">Lokasi</label>
+                                        <p class="text-black">${room.location}</p>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Status</h4>
+                                <h4 class="text-lg font-semibold text-black mb-4">Status</h4>
                                 <div class="space-y-3">
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Status</label>
+                                        <label class="text-sm font-medium text-black">Status</label>
                                         <span class="px-2 py-1 rounded-full text-xs font-medium ${room.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                                             ${room.is_active ? 'Aktif' : 'Tidak Aktif'}
                                         </span>
                                     </div>
                                     <div>
-                                        <label class="text-sm font-medium text-gray-600">Total Pemesanan</label>
-                                        <p class="text-gray-800">${room.bookings_count || 0} pemesanan</p>
+                                        <label class="text-sm font-medium text-black">Total Pemesanan</label>
+                                        <p class="text-black">${room.bookings_count || 0} pemesanan</p>
                                     </div>
                                 </div>
                             </div>
@@ -367,7 +367,7 @@
                         
                         ${room.amenities && room.amenities.length > 0 ? `
                         <div>
-                            <h4 class="text-lg font-semibold text-gray-800 mb-4">Fasilitas</h4>
+                            <h4 class="text-lg font-semibold text-black mb-4">Fasilitas</h4>
                             <div class="flex flex-wrap gap-2">
                                 ${room.amenities.map(amenity => `
                                     <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">

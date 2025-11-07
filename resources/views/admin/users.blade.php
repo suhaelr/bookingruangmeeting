@@ -210,7 +210,7 @@
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">User Details</h3>
+                    <h3 class="text-2xl font-bold text-black">User Details</h3>
                     <button onclick="closeModal('userDetailModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -227,7 +227,7 @@
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Edit User</h3>
+                    <h3 class="text-2xl font-bold text-black">Edit User</h3>
                     <button onclick="closeModal('userEditModal')" class="text-gray-500 hover:text-gray-700">
                         <i class="fas fa-times text-xl"></i>
                     </button>
@@ -259,8 +259,8 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-800">Hapus User</h3>
-                        <p class="text-gray-600">This action cannot be undone</p>
+                        <h3 class="text-lg font-bold text-black">Hapus User</h3>
+                        <p class="text-black">This action cannot be undone</p>
                     </div>
                 </div>
                 <p class="text-gray-700 mb-6">Are you sure you want to delete this user? All their bookings will also be deleted.</p>
@@ -323,8 +323,8 @@
                                 <i class="fas fa-user text-white text-2xl"></i>
                             </div>
                             <div>
-                                <h4 class="text-xl font-bold text-gray-800">${user.full_name}</h4>
-                                <p class="text-gray-600">@${user.username}</p>
+                                <h4 class="text-xl font-bold text-black">${user.full_name}</h4>
+                                <p class="text-black">@${user.username}</p>
                             </div>
                         </div>
                         
