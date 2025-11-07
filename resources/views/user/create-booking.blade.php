@@ -22,29 +22,20 @@
             pointer-events: auto !important;
         }
         
-        /* Fix dropdown styling */
-        select {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            background-image: none !important;
+        /* Uniform field styling */
+        .form-control {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.5rem;
         }
-        
-        select option {
-            background-color: #1a202c !important;
-            color: white !important;
-            padding: 8px 12px !important;
+        .form-control:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important;
+            border-color: #6366f1 !important;
         }
-        
-        select option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
-        }
-        
-        select option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
-        }
+        .form-control::placeholder { color: #000000 !important; opacity: 1; }
+        select.form-control option { background: #ffffff; color: #000000; }
         
         /* Ensure proper z-index for overlays */
         .glass-effect {
@@ -59,7 +50,7 @@
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="min-h-screen bg-white">
     <!-- Navigation -->
         <nav class="glass-effect shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,7 +60,7 @@
                             <i class="fas fa-bars"></i>
                         </button>
                         <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -87,8 +78,8 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="glass-effect rounded-2xl p-8 shadow-2xl">
             <div class="mb-8">
-                <h2 class="text-2xl font-bold text-white mb-2">Pesan Ruang Meeting</h2>
-                <p class="text-white/80">Isi detail di bawah untuk memesan ruang meeting Anda</p>
+                <h2 class="text-2xl font-bold text-black mb-2">Pesan Ruang Meeting</h2>
+                <p class="text-black">Isi detail di bawah untuk memesan ruang meeting Anda</p>
             </div>
 
             @if ($errors->any())
@@ -112,100 +103,99 @@
                 
                 <!-- Meeting Room Selection -->
                 <div>
-                    <label for="meeting_room_id" class="block text-sm font-medium text-white mb-2">
+                    <label for="meeting_room_id" class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-door-open mr-2"></i>Ruang Meeting *
                     </label>
                     <div class="relative">
                         <select id="meeting_room_id" name="meeting_room_id" required
-                                class="w-full px-4 py-3 pr-10 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 appearance-none cursor-pointer">
-                            <option value="" class="bg-gray-800 text-white">Pilih ruang meeting</option>
+                                class="w-full px-4 py-3 pr-10 form-control appearance-none cursor-pointer">
+                            <option value="">Pilih ruang meeting</option>
                             @foreach($rooms as $room)
                             <option value="{{ $room->id }}" 
                                     data-capacity="{{ $room->capacity }}"
                                     data-amenities="{{ json_encode($room->getAmenitiesList()) }}"
-                                    class="bg-gray-800 text-white"
                                     {{ old('meeting_room_id') == $room->id ? 'selected' : '' }}>
                                 {{ $room->name }} - {{ $room->location }} ({{ $room->capacity }} kursi)
                             </option>
                             @endforeach
                         </select>
                         <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <i class="fas fa-chevron-down text-white/60"></i>
+                            <i class="fas fa-chevron-down text-gray-500"></i>
                         </div>
                     </div>
                 </div>
 
                 <!-- Room Details Display -->
-                <div id="room-details" class="hidden bg-white/10 rounded-lg p-4">
-                    <h4 class="text-white font-medium mb-2">Detail Ruang</h4>
+                <div id="room-details" class="hidden bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h4 class="text-black font-medium mb-2">Detail Ruang</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div>
-                            <span class="text-white/60">Kapasitas:</span>
-                            <span id="room-capacity" class="text-white ml-2"></span>
+                            <span class="text-gray-600">Kapasitas:</span>
+                            <span id="room-capacity" class="text-black ml-2"></span>
                         </div>
                         <div>
-                            <span class="text-white/60">Fasilitas:</span>
-                            <span id="room-amenities" class="text-white ml-2"></span>
+                            <span class="text-gray-600">Fasilitas:</span>
+                            <span id="room-amenities" class="text-black ml-2"></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Meeting Judul -->
                 <div>
-                    <label for="title" class="block text-sm font-medium text-white mb-2">
+                    <label for="title" class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-heading mr-2"></i>Judul Meeting *
                     </label>
                     <input type="text" id="title" name="title" value="{{ old('title') }}" required
-                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                           class="w-full px-4 py-3 form-control"
                            placeholder="Masukkan judul pertemuan">
                 </div>
 
                 <!-- Deskripsi -->
                 <div>
-                    <label for="description" class="block text-sm font-medium text-white mb-2">
+                    <label for="description" class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-align-left mr-2"></i>Deskripsi
                     </label>
                     <textarea id="description" name="description" rows="3"
-                              class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                              class="w-full px-4 py-3 form-control"
                               placeholder="Masukkan deskripsi meeting, link Zoom/Google Meet, atau informasi penting lainnya">{{ old('description') }}</textarea>
-                    <p class="text-white/60 text-xs mt-1">Anda dapat memasukkan link Zoom, Google Meet, atau informasi penting lainnya</p>
+                    <p class="text-gray-600 text-xs mt-1">Anda dapat memasukkan link Zoom, Google Meet, atau informasi penting lainnya</p>
                 </div>
 
                 <!-- PIC Invitations Section -->
                 <div class="pic-invitations-section">
-                    <label class="block text-sm font-medium text-white mb-2">
+                    <label class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-user-tie mr-2"></i>Undang PIC Lain
                     </label>
                     
                     <!-- Visibility Setting -->
                     <div class="mb-4">
-                        <label class="flex items-center text-white mb-2 cursor-pointer">
+                        <label class="flex items-center text-black mb-2 cursor-pointer">
                             <input type="radio" name="description_visibility" value="invited_pics_only" checked class="mr-2" id="visibility_invited_only">
                             Hanya PIC yang diundang dapat melihat deskripsi
                         </label>
-                        <label class="flex items-center text-white cursor-pointer">
+                        <label class="flex items-center text-black cursor-pointer">
                             <input type="radio" name="description_visibility" value="public" class="mr-2" id="visibility_public">
                             Semua PIC dapat melihat deskripsi
                         </label>
                     </div>
                     
                     <!-- PIC Selection -->
-                    <div class="bg-white/10 rounded-lg p-4 max-h-60 overflow-y-auto">
-                        <h4 class="text-white font-medium mb-3">Pilih PIC yang akan diundang:</h4>
+                    <div class="bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto border border-gray-200">
+                        <h4 class="text-black font-medium mb-3">Pilih PIC yang akan diundang:</h4>
                         @foreach($allPics as $pic)
                             @if($pic->id !== auth()->id())
-                            <label class="flex items-center text-white mb-2 cursor-pointer hover:bg-white/5 p-2 rounded">
+                            <label class="flex items-center text-black mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded">
                                 <input type="checkbox" name="invited_pics[]" value="{{ $pic->id }}" class="mr-3">
                                 <div>
-                                    <div class="font-medium">{{ $pic->full_name }}</div>
-                                    <div class="text-sm text-white/60">{{ $pic->unit_kerja }}</div>
+                                    <div class="font-medium text-black">{{ $pic->full_name }}</div>
+                                    <div class="text-sm text-gray-600">{{ $pic->unit_kerja }}</div>
                                 </div>
                             </label>
                             @endif
                         @endforeach
                     </div>
                     
-                    <p class="text-white/60 text-xs mt-2">
+                    <p class="text-gray-600 text-xs mt-2">
                         <i class="fas fa-info-circle mr-1"></i>
                         PIC yang diundang akan menerima notifikasi dan dapat melihat deskripsi meeting (termasuk link Zoom/Meet) di kalender mereka.
                     </p>
@@ -214,84 +204,84 @@
                 <!-- Tanggal and Waktu -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="start_time" class="block text-sm font-medium text-white mb-2">
+                        <label for="start_time" class="block text-sm font-medium text-black mb-2">
                             <i class="fas fa-clock mr-2"></i>Mulai Waktu *
                         </label>
                         <input type="datetime-local" id="start_time" name="start_time" value="{{ old('start_time') }}" required
-                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
+                               class="w-full px-4 py-3 form-control">
                     </div>
                     <div>
-                        <label for="end_time" class="block text-sm font-medium text-white mb-2">
+                        <label for="end_time" class="block text-sm font-medium text-black mb-2">
                             <i class="fas fa-clock mr-2"></i>Selesai Waktu *
                         </label>
                         <input type="datetime-local" id="end_time" name="end_time" value="{{ old('end_time') }}" required
-                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
+                               class="w-full px-4 py-3 form-control">
                     </div>
                 </div>
 
                 <!-- Peserta -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="attendees_count" class="block text-sm font-medium text-white mb-2">
+                        <label for="attendees_count" class="block text-sm font-medium text-black mb-2">
                             <i class="fas fa-users mr-2"></i>Jumlah Peserta (Opsional)
                         </label>
                         <input type="number" id="attendees_count" name="attendees_count" value="{{ old('attendees_count', 1) }}" min="1"
-                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300">
+                               class="w-full px-4 py-3 form-control">
                     </div>
                     <div>
-                        <label for="attendees" class="block text-sm font-medium text-white mb-2">
+                        <label for="attendees" class="block text-sm font-medium text-black mb-2">
                             <i class="fas fa-envelope mr-2"></i>Email Peserta (Opsional)
                         </label>
                         <input type="text" id="attendees" name="attendees" value="{{ old('attendees') }}"
-                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                               class="w-full px-4 py-3 form-control"
                                placeholder="email1@example.com, email2@example.com">
-                        <p class="text-white/60 text-xs mt-1">Pisahkan beberapa email dengan koma</p>
+                        <p class="text-gray-600 text-xs mt-1">Pisahkan beberapa email dengan koma</p>
                     </div>
                 </div>
 
                 <!-- Special Requirements -->
                 <div>
-                    <label for="special_requirements" class="block text-sm font-medium text-white mb-2">
+                    <label for="special_requirements" class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-clipboard-list mr-2"></i>Kebutuhan Khusus
                     </label>
                     <textarea id="special_requirements" name="special_requirements" rows="3"
-                              class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                              class="w-full px-4 py-3 form-control"
                               placeholder="Kebutuhan khusus untuk meeting">{{ old('special_requirements') }}</textarea>
                 </div>
 
                 <!-- Unit Kerja -->
                 <div>
-                    <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">
+                    <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-building mr-2"></i>Unit Kerja *
                     </label>
                     <input type="text" id="unit_kerja" name="unit_kerja" 
                            value="{{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') }}" 
                            required
-                           class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                           class="w-full px-4 py-3 form-control"
                            placeholder="Masukkan unit kerja Anda">
                 </div>
 
                 <!-- Dokumen Tambahan (Opsional) -->
                 <div>
-                    <label for="dokumen_perizinan" class="block text-sm font-medium text-white mb-2">
+                    <label for="dokumen_perizinan" class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-file-pdf mr-2"></i>Dokumen Tambahan (Opsional) (PDF, Max 2MB)
                     </label>
                     
                     <!-- File Input -->
                     <div class="relative">
                         <input type="file" id="dokumen_perizinan" name="dokumen_perizinan" accept=".pdf" 
-                               class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                               class="w-full px-4 py-3 form-control"
                                onchange="handleFileSelect(this)">
                         <input type="hidden" id="dokumen_perizinan_data" name="dokumen_perizinan_data" value="{{ old('dokumen_perizinan_data') }}">
                     </div>
                     
                     <!-- File Preview -->
-                    <div id="file-preview" class="hidden mt-3 p-3 bg-white/10 rounded-lg border border-white/20">
+                    <div id="file-preview" class="hidden mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
                                 <i class="fas fa-file-pdf text-red-400 mr-2"></i>
-                                <span id="file-name" class="text-white text-sm"></span>
-                                <span id="file-size" class="text-white/60 text-xs ml-2"></span>
+                                <span id="file-name" class="text-black text-sm"></span>
+                                <span id="file-size" class="text-gray-600 text-xs ml-2"></span>
                             </div>
                             <button type="button" onclick="removeFile()" class="text-red-400 hover:text-red-300 transition-colors">
                                 <i class="fas fa-times"></i>
@@ -299,12 +289,12 @@
                         </div>
                     </div>
                     
-                    <p class="text-white/60 text-xs mt-1">Opsional: unggah dokumen pendukung dalam format PDF (maksimal 2MB)</p>
+                    <p class="text-gray-600 text-xs mt-1">Opsional: unggah dokumen pendukung dalam format PDF (maksimal 2MB)</p>
                 </div>
 
                 <!-- Captcha Section -->
                 <div class="bg-white/10 rounded-lg p-6 border border-white/20">
-                    <h3 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <h3 class="text-lg font-semibold text-black mb-4 flex items-center">
                         <i class="fas fa-shield-alt mr-2 text-black"></i>
                         Verifikasi Keamanan
                     </h3>
@@ -313,11 +303,11 @@
                     <div class="space-y-4">
                         <!-- Captcha Question -->
                         <div>
-                            <label class="block text-sm font-medium text-white mb-2">
+                            <label class="block text-sm font-medium text-black mb-2">
                                 <i class="fas fa-key mr-2"></i>Masukkan angka berikut:
                             </label>
                             <div class="flex items-center justify-center space-x-3">
-                                <div id="captcha-question" class="text-xl font-bold text-white bg-white/20 px-4 py-4 rounded-lg border border-white/30 text-center tracking-widest min-w-[100px] max-w-[150px]">
+                                <div id="captcha-question" class="text-xl font-bold text-black bg-gray-50 px-4 py-4 rounded-lg border border-gray-200 text-center tracking-widest min-w-[100px] max-w-[150px]">
                                     Loading...
                                 </div>
                                 <button type="button" id="refresh-captcha" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
@@ -328,16 +318,16 @@
                         
                         <!-- Captcha Answer -->
                         <div>
-                            <label for="captcha_answer" class="block text-sm font-medium text-white mb-2">
+                            <label for="captcha_answer" class="block text-sm font-medium text-black mb-2">
                                 Jawaban:
                             </label>
                             <input type="text" id="captcha_answer" name="captcha_answer" required
-                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300 text-center text-lg font-mono tracking-widest"
+                                   class="w-full px-4 py-3 form-control text-center text-lg font-mono tracking-widest"
                                    placeholder="4 digit" maxlength="4">
                         </div>
                     </div>
                     
-                    <p class="text-white/60 text-xs mt-3 text-center">
+                    <p class="text-gray-600 text-xs mt-3 text-center">
                         <i class="fas fa-info-circle mr-1"></i>
                         Silakan masukkan 4 digit angka yang ditampilkan di atas untuk melanjutkan pemesanan.
                     </p>
