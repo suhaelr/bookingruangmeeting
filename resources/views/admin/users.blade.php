@@ -10,27 +10,37 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        body.gradient-bg {
+            background: #ffffff !important;
+        }
+
+        .glass-effect {
+            background: #ffffff !important;
+            border: 1px solid #e5e7eb !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        }
+
         /* Fix dropdown styling */
         select {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #d1d5db !important;
         }
         
         select option {
-            background-color: #1a202c !important;
-            color: white !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
             padding: 8px 12px !important;
         }
         
         select option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
+            background-color: #f3f4f6 !important;
+            color: #000000 !important;
         }
         
         select option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
+            background-color: #6366f1 !important;
+            color: #ffffff !important;
         }
     </style>
 </head>
@@ -44,7 +54,7 @@
                             <i class="fas fa-bars"></i>
                         </button>
                         <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -72,8 +82,8 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Users</h2>
-                    <p class="text-white/80">Lihat and manage all system users</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Kelola Users</h2>
+                    <p class="text-black">Lihat dan kelola semua pengguna sistem</p>
                 </div>
                 <div class="flex space-x-4">
                     <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
@@ -90,42 +100,42 @@
         <div class="glass-effect rounded-2xl p-6 shadow-2xl">
             @if($users->count() > 0)
                 <div class="overflow-x-auto">
-                    <table class="w-full text-white">
+                    <table class="w-full text-black">
                         <thead>
-                            <tr class="border-b border-white/20">
+                            <tr class="border-b border-gray-200">
                                 <th class="text-left py-3 px-4 font-semibold">ID</th>
                                 <th class="text-left py-3 px-4 font-semibold">User</th>
                                 <th class="text-left py-3 px-4 font-semibold">Email</th>
                                 <th class="text-left py-3 px-4 font-semibold">Unit Kerja</th>
                                 <th class="text-left py-3 px-4 font-semibold">Last Login</th>
                                 <th class="text-left py-3 px-4 font-semibold">Joined</th>
-                                <th class="text-left py-3 px-4 font-semibold">Aksis</th>
+                                <th class="text-left py-3 px-4 font-semibold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($users as $user)
-                            <tr class="border-b border-white/10 hover:bg-white/5 transition-colors">
+                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                                 <td class="py-3 px-4">#{{ $user->id }}</td>
                                 <td class="py-3 px-4">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-user text-white"></i>
+                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-user text-black"></i>
                                         </div>
                                         <div>
-                                            <p class="text-white font-medium">{{ $user->full_name ?? $user->name }}</p>
-                                            <p class="text-white/60 text-sm">{{ $user->username ?? 'N/A' }}</p>
+                                            <p class="text-black font-medium">{{ $user->full_name ?? $user->name }}</p>
+                                            <p class="text-black text-sm">{{ $user->username ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
-                                    <p class="text-white">{{ $user->email }}</p>
+                                    <p class="text-black">{{ $user->email }}</p>
                                 </td>
                                 <td class="py-3 px-4">
                                     <div>
-                                        <span class="text-white">{{ $user->unit_kerja ?? 'N/A' }}</span>
+                                        <span class="text-black">{{ $user->unit_kerja ?? 'N/A' }}</span>
                                         @if($user->role)
                                         <div class="mt-1">
-                                            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium {{ $user->role === 'admin' ? 'bg-red-500 text-white' : 'bg-blue-500 text-white' }}">
+                                            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium {{ $user->role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700' }}">
                                                 {{ ucfirst($user->role) }}
                                             </span>
                                         </div>
@@ -134,30 +144,30 @@
                                 </td>
                                 <td class="py-3 px-4">
                                     @if($user->last_login_at)
-                                        <p class="text-white">{{ $user->last_login_at->format('M d, Y') }}</p>
-                                        <p class="text-white/60 text-sm">{{ $user->last_login_at->format('H:i') }}</p>
+                                        <p class="text-black">{{ $user->last_login_at->format('M d, Y') }}</p>
+                                        <p class="text-black text-sm">{{ $user->last_login_at->format('H:i') }}</p>
                                     @else
-                                        <span class="text-white/60">Belum pernah</span>
+                                        <span class="text-black">Belum pernah</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     @if($user->created_at)
-                                        <p class="text-white">{{ $user->created_at->format('M d, Y') }}</p>
-                                        <p class="text-white/60 text-sm">{{ $user->created_at->diffForHumans() }}</p>
+                                        <p class="text-black">{{ $user->created_at->format('M d, Y') }}</p>
+                                        <p class="text-black text-sm">{{ $user->created_at->diffForHumans() }}</p>
                                     @else
-                                        <span class="text-white/60">Tidak tersedia</span>
+                                        <span class="text-black">Tidak tersedia</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">
-                                        <button onclick="viewUser({{ $user->id }})" class="text-blue-400 hover:text-blue-300 transition-colors" title="Lihat Details">
+                                        <button onclick="viewUser({{ $user->id }})" class="text-blue-500 hover:text-blue-700 transition-colors" title="Lihat Details">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button onclick="editUser({{ $user->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit User">
+                                        <button onclick="editUser({{ $user->id }})" class="text-yellow-500 hover:text-yellow-600 transition-colors" title="Edit User">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         @if($user->role !== 'admin')
-                                        <button onclick="deleteUser({{ $user->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Hapus User">
+                                        <button onclick="deleteUser({{ $user->id }})" class="text-red-500 hover:text-red-600 transition-colors" title="Hapus User">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                         @endif
@@ -171,25 +181,25 @@
                 
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-8">
-                    <div class="text-white/80 text-sm">
+                    <div class="text-black text-sm">
                         Menampilkan {{ $users->firstItem() }} sampai {{ $users->lastItem() }} dari {{ $users->total() }} pengguna
                     </div>
                     <div class="flex space-x-2">
                         @if($users->previousPageUrl())
-                        <a href="{{ $users->previousPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                        <a href="{{ $users->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                         @endif
                         
                         @for($i = 1; $i <= $users->lastPage(); $i++)
                         <a href="{{ $users->url($i) }}" 
-                           class="px-3 py-2 rounded-lg transition-colors {{ $users->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold' : 'bg-white/20 text-white hover:bg-white/30' }}">
+                           class="px-3 py-2 rounded-lg transition-colors {{ $users->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold border border-indigo-100' : 'bg-gray-100 text-black hover:bg-gray-200' }}">
                             {{ $i }}
                         </a>
                         @endfor
                         
                         @if($users->nextPageUrl())
-                        <a href="{{ $users->nextPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                        <a href="{{ $users->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
                             <i class="fas fa-chevron-right"></i>
                         </a>
                         @endif
@@ -197,9 +207,9 @@
                 </div>
             @else
                 <div class="text-center py-12">
-                    <i class="fas fa-users text-white/40 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">No Users Found</h3>
-                    <p class="text-white/60">There are no users in the system yet.</p>
+                    <i class="fas fa-users text-gray-300 text-6xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-black mb-2">No Users Found</h3>
+                    <p class="text-black">Belum ada pengguna di dalam sistem.</p>
                 </div>
             @endif
         </div>
@@ -278,7 +288,7 @@
 
     <!-- Success Message -->
     @if (session('success'))
-        <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <div id="success-message" class="fixed top-4 right-4 bg-green-100 text-green-800 px-6 py-3 rounded-lg shadow-lg border border-green-200 z-50">
             <div class="flex items-center">
                 <i class="fas fa-check-circle mr-2"></i>
                 {{ session('success') }}
@@ -288,7 +298,7 @@
 
     <!-- Error Message -->
     @if (session('error'))
-        <div id="error-message" class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <div id="error-message" class="fixed top-4 right-4 bg-red-100 text-red-800 px-6 py-3 rounded-lg shadow-lg border border-red-200 z-50">
             <div class="flex items-center">
                 <i class="fas fa-exclamation-circle mr-2"></i>
                 {{ session('error') }}
@@ -319,8 +329,8 @@
                 document.getElementById('userDetailContent').innerHTML = `
                     <div class="space-y-6">
                         <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-white text-2xl"></i>
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-black text-2xl"></i>
                             </div>
                             <div>
                                 <h4 class="text-xl font-bold text-black">${user.full_name}</h4>
