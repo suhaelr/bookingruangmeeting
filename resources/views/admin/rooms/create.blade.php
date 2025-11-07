@@ -10,48 +10,23 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Fix dropdown styling */
-        select {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        /* Uniform form control styling */
+        .form-control {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.5rem;
         }
-        
-        select option {
-            background-color: #1a202c !important;
-            color: white !important;
-            padding: 8px 12px !important;
+        .form-control:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important;
+            border-color: #6366f1 !important;
         }
-        
-        select option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
-        }
-        
-        select option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
-        }
-        
-        /* Input styling improvements */
-        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        }
-        
-        input::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6) !important;
-        }
-        
-        input:focus, textarea:focus {
-            background-color: rgba(255, 255, 255, 0.3) !important;
-            border-color: #3182ce !important;
-            box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.2) !important;
-        }
+        .form-control::placeholder { color: #000000 !important; opacity: 1; }
+        select.form-control option { background: #ffffff; color: #000000; }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="min-h-screen bg-white">
     <!-- Navigation -->
         <nav class="glass-effect shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,7 +36,7 @@
                             <i class="fas fa-bars"></i>
                         </button>
                         <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -81,8 +56,8 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Ruang Meeting Baru</h2>
-                    <p class="text-white/80">Buat ruang meeting baru</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Tambah Ruang Meeting Baru</h2>
+                    <p class="text-black">Buat ruang meeting baru</p>
                 </div>
                 <a href="{{ route('admin.rooms') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                     <i class="fas fa-arrow-left mr-2"></i>Kembali ke Ruang
@@ -108,25 +83,25 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Room Nama -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-white mb-2">Nama Ruang *</label>
+                        <label for="name" class="block text-sm font-medium text-black mb-2">Nama Ruang *</label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan nama ruang" required>
                     </div>
 
                     <!-- Kapasitas -->
                     <div>
-                        <label for="capacity" class="block text-sm font-medium text-white mb-2">Kapasitas</label>
+                        <label for="capacity" class="block text-sm font-medium text-black mb-2">Kapasitas</label>
                         <input type="number" id="capacity" name="capacity" value="{{ old('capacity') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan kapasitas (opsional)" min="1">
                     </div>
 
                     <!-- Lokasi -->
                     <div>
-                        <label for="location" class="block text-sm font-medium text-white mb-2">Lokasi *</label>
+                        <label for="location" class="block text-sm font-medium text-black mb-2">Lokasi *</label>
                         <input type="text" id="location" name="location" value="{{ old('location') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan lokasi" required>
                     </div>
 
@@ -134,26 +109,26 @@
 
                 <!-- Deskripsi -->
                 <div class="mt-6">
-                    <label for="description" class="block text-sm font-medium text-white mb-2">Deskripsi</label>
+                    <label for="description" class="block text-sm font-medium text-black mb-2">Deskripsi</label>
                     <textarea id="description" name="description" rows="3" 
-                              class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                              class="w-full px-3 py-2 form-control" 
                               placeholder="Masukkan deskripsi ruang">{{ old('description') }}</textarea>
                 </div>
 
                 <!-- Amenities -->
                 <div class="mt-6">
-                    <label for="amenities" class="block text-sm font-medium text-white mb-2">Fasilitas</label>
+                    <label for="amenities" class="block text-sm font-medium text-black mb-2">Fasilitas</label>
                     <input type="text" id="amenities" name="amenities" value="{{ old('amenities') }}" 
-                           class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           class="w-full px-3 py-2 form-control" 
                            placeholder="projector, whiteboard, wifi, ac, sound_system">
-                    <p class="text-white/60 text-sm mt-1">Pisahkan fasilitas dengan koma</p>
+                    <p class="text-black text-sm mt-1">Pisahkan fasilitas dengan koma</p>
                 </div>
 
                 <!-- Status -->
                 <div class="mt-6">
-                    <label for="is_active" class="block text-sm font-medium text-white mb-2">Status *</label>
+                    <label for="is_active" class="block text-sm font-medium text-black mb-2">Status *</label>
                     <select id="is_active" name="is_active" 
-                            class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            class="w-full px-3 py-2 form-control" required>
                         <option value="">Pilih status</option>
                         <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Aktif</option>
                         <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Tidak Aktif</option>
