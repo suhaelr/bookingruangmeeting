@@ -10,6 +10,7 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        html,
         body,
         body.gradient-bg {
             background: #ffffff !important;
@@ -17,10 +18,11 @@
             color: #000000 !important;
         }
 
-        .glass-effect {
-            background: #ffffff !important;
-            border: 1px solid #e5e7eb !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
+        .card-white {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
         }
 
         /* Fix dropdown styling */
@@ -49,7 +51,7 @@
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Desktop Navigation -->
-        <nav class="glass-effect shadow-lg desktop-nav">
+        <nav class="bg-white border-b border-gray-200 shadow-sm desktop-nav">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
@@ -82,7 +84,7 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- Header -->
-        <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+        <div class="card-white p-6 mb-8">
             <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-2xl font-bold text-black mb-2">Kelola Users</h2>
@@ -100,7 +102,7 @@
         </div>
 
         <!-- Users Table -->
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        <div class="card-white p-6">
             @if($users->count() > 0)
                 <div class="overflow-x-auto bg-white rounded-xl border border-gray-200">
                     <table class="w-full text-black">
