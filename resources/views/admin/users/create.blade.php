@@ -9,48 +9,23 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Fix dropdown styling */
-        select {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        /* Form controls uniform styling */
+        .form-control {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.5rem;
         }
-        
-        select option {
-            background-color: #1a202c !important;
-            color: white !important;
-            padding: 8px 12px !important;
+        .form-control:focus {
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important;
+            border-color: #6366f1 !important;
         }
-        
-        select option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
-        }
-        
-        select option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
-        }
-        
-        /* Input styling improvements */
-        input[type="text"], input[type="email"], input[type="password"] {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        }
-        
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.6) !important;
-        }
-        
-        input:focus {
-            background-color: rgba(255, 255, 255, 0.3) !important;
-            border-color: #3182ce !important;
-            box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.2) !important;
-        }
+        .form-control::placeholder { color: #000000 !important; opacity: 1; }
+        select.form-control option { background: #ffffff; color: #000000; }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="min-h-screen bg-white">
     <!-- Navigation -->
         <nav class="glass-effect shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,7 +35,7 @@
                             <i class="fas fa-bars"></i>
                         </button>
                         <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -80,8 +55,8 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Tambah Pengguna Baru</h2>
-                    <p class="text-white/80">Buat akun pengguna baru</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Tambah Pengguna Baru</h2>
+                    <p class="text-black">Buat akun pengguna baru</p>
                 </div>
                 <a href="{{ route('admin.users') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                     <i class="fas fa-arrow-left mr-2"></i>Kembali ke Pengguna
@@ -107,49 +82,49 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Username -->
                     <div>
-                        <label for="username" class="block text-sm font-medium text-white mb-2">Nama Pengguna *</label>
+                        <label for="username" class="block text-sm font-medium text-black mb-2">Nama Pengguna *</label>
                         <input type="text" id="username" name="username" value="{{ old('username') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan nama pengguna" required>
                     </div>
 
                     <!-- Nama Lengkap -->
                     <div>
-                        <label for="full_name" class="block text-sm font-medium text-white mb-2">Nama Lengkap *</label>
+                        <label for="full_name" class="block text-sm font-medium text-black mb-2">Nama Lengkap *</label>
                         <input type="text" id="full_name" name="full_name" value="{{ old('full_name') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan nama lengkap" required>
                     </div>
 
                     <!-- Email -->
                     <div>
-                        <label for="email" class="block text-sm font-medium text-white mb-2">Email *</label>
+                        <label for="email" class="block text-sm font-medium text-black mb-2">Email *</label>
                         <input type="email" id="email" name="email" value="{{ old('email') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan alamat email" required>
                     </div>
 
                     <!-- Telepon -->
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-white mb-2">Telepon</label>
+                        <label for="phone" class="block text-sm font-medium text-black mb-2">Telepon</label>
                         <input type="text" id="phone" name="phone" value="{{ old('phone') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan nomor telepon">
                     </div>
 
                     <!-- Unit Kerja -->
                     <div>
-                        <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">Unit Kerja</label>
+                        <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">Unit Kerja</label>
                         <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}" 
-                               class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                               class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan unit kerja">
                     </div>
 
                     <!-- Peran -->
                     <div>
-                        <label for="role" class="block text-sm font-medium text-white mb-2">Peran *</label>
+                        <label for="role" class="block text-sm font-medium text-black mb-2">Peran *</label>
                         <select id="role" name="role" 
-                                class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                class="w-full px-3 py-2 form-control" required>
                             <option value="">Pilih peran</option>
                             <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Pengguna</option>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
@@ -159,9 +134,9 @@
 
                 <!-- Kata Sandi -->
                 <div class="mt-6">
-                    <label for="password" class="block text-sm font-medium text-white mb-2">Kata Sandi *</label>
+                    <label for="password" class="block text-sm font-medium text-black mb-2">Kata Sandi *</label>
                     <input type="password" id="password" name="password" 
-                           class="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                           class="w-full px-3 py-2 form-control" 
                            placeholder="Masukkan kata sandi (minimal 8 karakter)" required>
                 </div>
 
