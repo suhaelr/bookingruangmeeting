@@ -49,7 +49,7 @@
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="min-h-screen bg-white">
     <!-- Desktop Navigation -->
         <nav class="bg-white border-b border-gray-200 shadow-sm desktop-nav">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
