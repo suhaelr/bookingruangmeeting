@@ -29,8 +29,7 @@
     $webApplicationData = $seoConfig['structured_data']['web_application'];
     
     // Analytics
-    $googleAnalytics = $seoConfig['analytics']['google_analytics'];
-    $googleTagManager = $seoConfig['analytics']['google_tag_manager'];
+    // Google Analytics and Google Tag Manager removed to prevent doubleclick requests
     $facebookPixel = $seoConfig['analytics']['facebook_pixel'];
 @endphp
 
@@ -103,14 +102,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="preconnect" href="https://apis.google.com">
 
 <!-- DNS Prefetch for external resources -->
 <link rel="dns-prefetch" href="//fonts.googleapis.com">
 <link rel="dns-prefetch" href="//fonts.gstatic.com">
 <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
 <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="//apis.google.com">
 
 <!-- Structured Data - Organization -->
 <script type="application/ld+json">
@@ -176,34 +173,6 @@
 {!! json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
 </script>
 @endforeach
-@endif
-
-<!-- Google Analytics -->
-@if($googleAnalytics)
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={{ $googleAnalytics }}"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ $googleAnalytics }}', {
-        'page_title': '{{ $title }}',
-        'page_location': '{{ $ogUrl }}',
-        'custom_map': {
-            'custom_parameter_1': 'page_type'
-        }
-    });
-</script>
-@endif
-
-<!-- Google Tag Manager -->
-@if($googleTagManager)
-<!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','{{ $googleTagManager }}');</script>
 @endif
 
 <!-- Facebook Pixel -->
