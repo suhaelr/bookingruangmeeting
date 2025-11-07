@@ -70,13 +70,15 @@
                     <p class="text-white/80">Lihat dan kelola semua ruang meeting</p>
                 </div>
                 <div class="flex space-x-4">
-                    <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Tambah Ruang
-                    </a>
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i class="fas fa-download mr-2"></i>Export
                     </button>
                 </div>
+            </div>
+            <div class="mt-4">
+                <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 inline-flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Tambah Ruang
+                </a>
             </div>
         </div>
 
