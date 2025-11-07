@@ -19,12 +19,41 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
         }
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
+            background: #ffffff;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Ensure all text is black */
+        .text-black {
+            color: #000000 !important;
+        }
+        .text-black\/80 {
+            color: #000000 !important;
+        }
+        .text-black\/90 {
+            color: #000000 !important;
+        }
+        .text-black\/60 {
+            color: #000000 !important;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #000000 !important;
+        }
+        p, li, span, div {
+            color: #000000 !important;
+        }
+        a {
+            color: #000000 !important;
+        }
+        a:hover {
+            color: #1f2937 !important;
+        }
+        .prose-invert {
+            color: #000000 !important;
         }
     </style>
 </head>
@@ -41,9 +70,9 @@
             <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
                 <img src="{{ asset('logo-bgn.png') }}" alt="BGN Logo" class="w-12 h-12 object-contain">
             </div>
-            <h1 class="text-4xl font-bold text-white mb-2">Syarat dan Ketentuan</h1>
-            <p class="text-white/80">Sistem Pemesanan Ruang Meeting</p>
-            <p class="text-white/60 text-sm mt-2">Terakhir diperbarui: {{ date('d F Y', strtotime('first day of this month')) }}</p>
+            <h1 class="text-4xl font-bold text-black mb-2">Syarat dan Ketentuan</h1>
+            <p class="text-black">Sistem Pemesanan Ruang Meeting</p>
+            <p class="text-black text-sm mt-2">Terakhir diperbarui: {{ date('d F Y', strtotime('first day of this month')) }}</p>
         </div>
 
         <!-- Content -->
@@ -51,15 +80,15 @@
             <div class="glass-effect rounded-2xl p-8 shadow-2xl">
                 <div class="prose prose-invert max-w-none">
                     
-                    <h2 class="text-2xl font-bold text-white mb-4">1. Penerimaan Syarat</h2>
-                    <p class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">1. Penerimaan Syarat</h2>
+                    <p class="text-black/90 mb-6">
                         Dengan menggunakan Sistem Pemesanan Ruang Meeting, 
                         Anda menyetujui untuk terikat oleh syarat dan ketentuan ini. Jika Anda tidak menyetujui 
                         syarat dan ketentuan ini, harap tidak menggunakan layanan ini.
                     </p>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">2. Definisi</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">2. Definisi</h2>
+                    <div class="text-black/90 mb-6">
                         <ul class="list-disc list-inside space-y-2">
                             <li><strong>"Sistem"</strong> - Sistem Pemesanan Ruang Meeting</li>
                             <li><strong>"Pengguna"</strong> - Individu yang menggunakan sistem</li>
@@ -68,9 +97,9 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">3. Penggunaan Sistem</h2>
-                    <div class="text-white/90 mb-6">
-                        <h3 class="text-xl font-semibold text-white mb-3">3.1 Hak Penggunaan</h3>
+                    <h2 class="text-2xl font-bold text-black mb-4">3. Penggunaan Sistem</h2>
+                    <div class="text-black/90 mb-6">
+                        <h3 class="text-xl font-semibold text-black mb-3">3.1 Hak Penggunaan</h3>
                         <p class="mb-4">Anda berhak untuk:</p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Membuat akun pengguna</li>
@@ -80,7 +109,7 @@
                             <li>Menerima notifikasi terkait pemesanan</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">3.2 Kewajiban Pengguna</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">3.2 Kewajiban Pengguna</h3>
                         <p class="mb-4">Anda wajib untuk:</p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Menyediakan informasi yang akurat dan lengkap (username, nama lengkap, email, unit kerja)</li>
@@ -94,9 +123,9 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">4. Akun Pengguna</h2>
-                    <div class="text-white/90 mb-6">
-                        <h3 class="text-xl font-semibold text-white mb-3">4.1 Registrasi</h3>
+                    <h2 class="text-2xl font-bold text-black mb-4">4. Akun Pengguna</h2>
+                    <div class="text-black/90 mb-6">
+                        <h3 class="text-xl font-semibold text-black mb-3">4.1 Registrasi</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Setiap pengguna harus memiliki akun yang valid</li>
                             <li>Informasi yang diberikan harus akurat dan terkini</li>
@@ -104,7 +133,7 @@
                             <li>Satu akun per orang, tidak diperkenankan berbagi akun</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">4.2 Keamanan Akun</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">4.2 Keamanan Akun</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Anda bertanggung jawab atas keamanan akun Anda</li>
                             <li>Gunakan password yang kuat dan unik</li>
@@ -113,9 +142,9 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">5. Pemesanan Ruang Meeting</h2>
-                    <div class="text-white/90 mb-6">
-                        <h3 class="text-xl font-semibold text-white mb-3">5.1 Proses Pemesanan</h3>
+                    <h2 class="text-2xl font-bold text-black mb-4">5. Pemesanan Ruang Meeting</h2>
+                    <div class="text-black/90 mb-6">
+                        <h3 class="text-xl font-semibold text-black mb-3">5.1 Proses Pemesanan</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Pemesanan dilakukan secara online melalui sistem</li>
                             <li>Ketersediaan ruang dapat berubah sewaktu-waktu</li>
@@ -126,7 +155,7 @@
                             <li>Booking baru berstatus "pending" dan menunggu konfirmasi admin</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">5.2 PIC Invitations (Undangan PIC)</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">5.2 PIC Invitations (Undangan PIC)</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Pengguna dapat mengundang PIC (Person In Charge) lain untuk melihat booking mereka</li>
                             <li>PIC yang diundang akan menerima notifikasi undangan</li>
@@ -135,7 +164,7 @@
                             <li>Hanya admin, owner booking, atau PIC yang diundang (jika pengaturan "invited_pics_only") yang dapat melihat deskripsi meeting lengkap</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">5.3 Preempt Booking (Permintaan Didahulukan)</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">5.3 Preempt Booking (Permintaan Didahulukan)</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Pengguna dapat meminta booking milik pengguna lain untuk didahulukan jika ada konflik jadwal</li>
                             <li>Pengguna tidak dapat meminta didahulukan booking miliknya sendiri</li>
@@ -146,7 +175,7 @@
                             <li>Jika tidak direspons dalam deadline, permintaan didahulukan akan otomatis kadaluarsa</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">5.4 Pembatalan dan Perubahan</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">5.4 Pembatalan dan Perubahan</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Pembatalan dapat dilakukan sesuai dengan kebijakan yang berlaku</li>
                             <li>Booking dengan status "pending" dapat dibatalkan kapan saja oleh pemilik</li>
@@ -157,9 +186,9 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">6. Kode Etik Penggunaan</h2>
-                    <div class="text-white/90 mb-6">
-                        <h3 class="text-xl font-semibold text-white mb-3">6.1 Perilaku yang Dilarang</h3>
+                    <h2 class="text-2xl font-bold text-black mb-4">6. Kode Etik Penggunaan</h2>
+                    <div class="text-black/90 mb-6">
+                        <h3 class="text-xl font-semibold text-black mb-3">6.1 Perilaku yang Dilarang</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Menggunakan sistem untuk tujuan ilegal atau tidak pantas</li>
                             <li>Mencoba merusak atau mengganggu sistem</li>
@@ -168,7 +197,7 @@
                             <li>Menyalahgunakan informasi pengguna lain</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">6.2 Sanksi</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">6.2 Sanksi</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Peringatan tertulis untuk pelanggaran ringan</li>
                             <li>Penangguhan akses sementara untuk pelanggaran sedang</li>
@@ -177,8 +206,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">7. Ketersediaan Layanan</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">7. Ketersediaan Layanan</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Kami berusaha untuk:</p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Menyediakan layanan 24/7 sebisa mungkin</li>
@@ -192,8 +221,8 @@
                         </p>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">8. Privasi dan Keamanan Data</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">8. Privasi dan Keamanan Data</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">
                             Penggunaan data pribadi Anda diatur dalam Kebijakan Privasi yang terpisah. 
                             Dengan menggunakan sistem ini, Anda juga menyetujui Kebijakan Privasi tersebut.
@@ -206,8 +235,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">9. Hak Kekayaan Intelektual</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">9. Hak Kekayaan Intelektual</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">
                             Semua hak kekayaan intelektual terkait sistem ini, termasuk namun tidak terbatas pada:
                         </p>
@@ -224,8 +253,8 @@
                         </p>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">10. Pembatasan Tanggung Jawab</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">10. Pembatasan Tanggung Jawab</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">
                             Kami tidak bertanggung jawab atas:
                         </p>
@@ -238,8 +267,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">11. Perubahan Syarat dan Ketentuan</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">11. Perubahan Syarat dan Ketentuan</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">
                             Kami berhak untuk mengubah syarat dan ketentuan ini sewaktu-waktu. 
                             Perubahan akan diberitahukan melalui:
@@ -255,8 +284,8 @@
                         </p>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">12. Hukum yang Berlaku</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">12. Hukum yang Berlaku</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">
                             Syarat dan ketentuan ini diatur oleh dan ditafsirkan sesuai dengan 
                             hukum Republik Indonesia. Setiap sengketa yang timbul akan diselesaikan 
@@ -264,8 +293,8 @@
                         </p>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">13. Kontak dan Bantuan</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">13. Kontak dan Bantuan</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Jika Anda memiliki pertanyaan tentang syarat dan ketentuan ini:</p>
                         <div class="bg-white/10 rounded-lg p-4">
                             <p><strong>PUSDATIN</strong></p>
@@ -275,8 +304,8 @@
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-white/20">
-                        <p class="text-white/60 text-sm text-center">
-                            <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
+                        <p class="text-black/60 text-sm text-center">
+                            <span onclick="showChangelogModal()" class="text-black/80 font-medium cursor-pointer hover:text-black underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
@@ -288,7 +317,7 @@
 
         <!-- Back Button -->
         <div class="text-center mt-8">
-            <a href="{{ route('login') }}" class="inline-flex items-center px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all duration-300">
+            <a href="{{ route('login') }}" class="inline-flex items-center px-6 py-3 bg-white/20 text-black rounded-lg hover:bg-white/30 transition-all duration-300">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Kembali ke Halaman Login
             </a>

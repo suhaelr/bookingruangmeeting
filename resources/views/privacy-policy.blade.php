@@ -19,12 +19,41 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
         }
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
+            background: #ffffff;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        /* Ensure all text is black */
+        .text-black {
+            color: #000000 !important;
+        }
+        .text-black\/80 {
+            color: #000000 !important;
+        }
+        .text-black\/90 {
+            color: #000000 !important;
+        }
+        .text-black\/60 {
+            color: #000000 !important;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #000000 !important;
+        }
+        p, li, span, div {
+            color: #000000 !important;
+        }
+        a {
+            color: #000000 !important;
+        }
+        a:hover {
+            color: #1f2937 !important;
+        }
+        .prose-invert {
+            color: #000000 !important;
         }
     </style>
 </head>
@@ -41,9 +70,9 @@
             <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
                 <img src="{{ asset('logo-bgn.png') }}" alt="BGN Logo" class="w-12 h-12 object-contain">
             </div>
-            <h1 class="text-4xl font-bold text-white mb-2">Kebijakan Privasi</h1>
-            <p class="text-white/80">Sistem Pemesanan Ruang Meeting</p>
-            <p class="text-white/60 text-sm mt-2">Terakhir diperbarui: {{ date('d F Y', strtotime('first day of this month')) }}</p>
+            <h1 class="text-4xl font-bold text-black mb-2">Kebijakan Privasi</h1>
+            <p class="text-black">Sistem Pemesanan Ruang Meeting</p>
+            <p class="text-black text-sm mt-2">Terakhir diperbarui: {{ date('d F Y', strtotime('first day of this month')) }}</p>
         </div>
 
         <!-- Content -->
@@ -51,15 +80,15 @@
             <div class="glass-effect rounded-2xl p-8 shadow-2xl">
                 <div class="prose prose-invert max-w-none">
                     
-                    <h2 class="text-2xl font-bold text-white mb-4">1. Pengenalan</h2>
-                    <p class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">1. Pengenalan</h2>
+                    <p class="text-black/90 mb-6">
                         Sistem Pemesanan Ruang Meeting adalah aplikasi web untuk memfasilitasi pemesanan ruang meeting secara online. Kebijakan privasi ini menjelaskan 
                         bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.
                     </p>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">2. Informasi yang Kami Kumpulkan</h2>
-                    <div class="text-white/90 mb-6">
-                        <h3 class="text-xl font-semibold text-white mb-3">2.1 Informasi Pribadi</h3>
+                    <h2 class="text-2xl font-bold text-black mb-4">2. Informasi yang Kami Kumpulkan</h2>
+                    <div class="text-black/90 mb-6">
+                        <h3 class="text-xl font-semibold text-black mb-3">2.1 Informasi Pribadi</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Nama lengkap</li>
                             <li>Alamat email</li>
@@ -70,7 +99,7 @@
                             <li>Role/Peran pengguna (admin atau user)</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">2.2 Informasi Pemesanan</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">2.2 Informasi Pemesanan</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Detail pemesanan ruang meeting (judul, deskripsi, waktu)</li>
                             <li>Tanggal dan waktu pemesanan (start_time, end_time)</li>
@@ -82,14 +111,14 @@
                             <li>Pengaturan visibilitas deskripsi (public atau invited_pics_only)</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">2.3 Informasi PIC Invitations</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">2.3 Informasi PIC Invitations</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Daftar PIC (Person In Charge) yang diundang untuk meeting</li>
                             <li>Status undangan PIC</li>
                             <li>Riwayat undangan yang dikirim dan diterima</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">2.4 Informasi Preempt Booking</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">2.4 Informasi Preempt Booking</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Permintaan didahulukan (preempt request) dari pengguna lain</li>
                             <li>Alasan permintaan didahulukan</li>
@@ -97,7 +126,7 @@
                             <li>Deadline untuk merespons permintaan</li>
                         </ul>
 
-                        <h3 class="text-xl font-semibold text-white mb-3">2.5 Informasi Teknis</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">2.5 Informasi Teknis</h3>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Alamat IP</li>
                             <li>Browser dan perangkat yang digunakan</li>
@@ -105,8 +134,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">3. Cara Kami Menggunakan Informasi</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">3. Cara Kami Menggunakan Informasi</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Kami menggunakan informasi yang dikumpulkan untuk:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li>Menyediakan layanan pemesanan ruang meeting</li>
@@ -123,8 +152,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">4. Keamanan Data</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">4. Keamanan Data</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Kami menerapkan berbagai langkah keamanan untuk melindungi informasi Anda:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li>Enkripsi password menggunakan hash yang aman (bcrypt)</li>
@@ -140,8 +169,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">5. Berbagi Informasi</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">5. Berbagi Informasi</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Kami tidak menjual, menyewakan, atau membagikan informasi pribadi Anda kepada pihak ketiga, kecuali:</p>
                         <ul class="list-disc list-inside space-y-2 mb-4">
                             <li>Dengan persetujuan eksplisit dari Anda</li>
@@ -149,7 +178,7 @@
                             <li>Untuk melindungi hak dan keamanan kami atau pengguna lain</li>
                             <li>Dengan penyedia layanan tepercaya yang membantu operasional sistem</li>
                         </ul>
-                        <h3 class="text-xl font-semibold text-white mb-3">5.1 Berbagi Informasi dalam Sistem</h3>
+                        <h3 class="text-xl font-semibold text-black mb-3">5.1 Berbagi Informasi dalam Sistem</h3>
                         <p class="mb-4">Informasi berikut dibagikan kepada pengguna lain dalam sistem sesuai dengan fitur:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li><strong>Informasi Booking:</strong> Judul, waktu, ruang, unit kerja, dan nama PIC pemesan ditampilkan di kalender untuk semua pengguna yang memiliki akses (berdasarkan visibilitas)</li>
@@ -159,8 +188,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">6. Penyimpanan Data</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">6. Penyimpanan Data</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Data Anda disimpan selama:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li>Akun pengguna aktif (hingga akun dihapus)</li>
@@ -170,8 +199,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">7. Hak Pengguna</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">7. Hak Pengguna</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Anda memiliki hak untuk:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li>Mengakses data pribadi Anda</li>
@@ -183,8 +212,8 @@
                         </ul>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">8. Cookie dan Teknologi Pelacakan</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">8. Cookie dan Teknologi Pelacakan</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Kami menggunakan:</p>
                         <ul class="list-disc list-inside space-y-2">
                             <li>Session cookies untuk autentikasi dan menjaga status login pengguna</li>
@@ -194,8 +223,8 @@
                         <p class="mt-4">Anda dapat mengatur browser untuk menolak cookies, namun hal ini dapat mempengaruhi fungsionalitas sistem seperti kemampuan untuk tetap login dan menggunakan fitur-fitur yang memerlukan autentikasi.</p>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">9. Perubahan Kebijakan</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">9. Perubahan Kebijakan</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">
                             Kami dapat memperbarui kebijakan privasi ini dari waktu ke waktu. Perubahan akan diberitahukan melalui:
                         </p>
@@ -207,8 +236,8 @@
                         <p class="mt-4">Tanggal "Terakhir diperbarui" di bagian atas halaman ini menunjukkan kapan kebijakan terakhir diubah.</p>
                     </div>
 
-                    <h2 class="text-2xl font-bold text-white mb-4">10. Kontak</h2>
-                    <div class="text-white/90 mb-6">
+                    <h2 class="text-2xl font-bold text-black mb-4">10. Kontak</h2>
+                    <div class="text-black/90 mb-6">
                         <p class="mb-4">Jika Anda memiliki pertanyaan tentang kebijakan privasi ini, silakan hubungi:</p>
                         <div class="bg-white/10 rounded-lg p-4">
                             <p><strong>PUSDATIN</strong></p>
@@ -217,8 +246,8 @@
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-white/20">
-                        <p class="text-white/60 text-sm text-center">
-                            <span onclick="showChangelogModal()" class="text-white/80 font-medium cursor-pointer hover:text-white underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
+                        <p class="text-black/60 text-sm text-center">
+                            <span onclick="showChangelogModal()" class="text-black/80 font-medium cursor-pointer hover:text-black underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
@@ -230,7 +259,7 @@
 
         <!-- Back Button -->
         <div class="text-center mt-8">
-            <a href="{{ route('login') }}" class="inline-flex items-center px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all duration-300">
+            <a href="{{ route('login') }}" class="inline-flex items-center px-6 py-3 bg-white/20 text-black rounded-lg hover:bg-white/30 transition-all duration-300">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Kembali ke Halaman Login
             </a>
