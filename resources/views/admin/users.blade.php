@@ -10,14 +10,17 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        body,
         body.gradient-bg {
             background: #ffffff !important;
+            background-image: none !important;
+            color: #000000 !important;
         }
 
         .glass-effect {
             background: #ffffff !important;
             border: 1px solid #e5e7eb !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
         }
 
         /* Fix dropdown styling */
@@ -99,20 +102,20 @@
         <!-- Users Table -->
         <div class="glass-effect rounded-2xl p-6 shadow-2xl">
             @if($users->count() > 0)
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto bg-white rounded-xl border border-gray-200">
                     <table class="w-full text-black">
-                        <thead>
+                        <thead class="bg-gray-100">
                             <tr class="border-b border-gray-200">
-                                <th class="text-left py-3 px-4 font-semibold">ID</th>
-                                <th class="text-left py-3 px-4 font-semibold">User</th>
-                                <th class="text-left py-3 px-4 font-semibold">Email</th>
-                                <th class="text-left py-3 px-4 font-semibold">Unit Kerja</th>
-                                <th class="text-left py-3 px-4 font-semibold">Last Login</th>
-                                <th class="text-left py-3 px-4 font-semibold">Joined</th>
-                                <th class="text-left py-3 px-4 font-semibold">Aksi</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">ID</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">User</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Email</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Unit Kerja</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Last Login</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Joined</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white">
                             @foreach($users as $user)
                             <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                                 <td class="py-3 px-4">#{{ $user->id }}</td>
