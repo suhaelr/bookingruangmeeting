@@ -7,6 +7,15 @@
     html {
         font-family: 'Inter', system-ui, sans-serif;
     }
+    body {
+        background: #ffffff !important;
+        color: #000000;
+    }
+    /* Default black text for common elements */
+    h1, h2, h3, h4, h5, h6, p, span, li, td, th, label, small, strong, em, div {
+        color: #000000;
+    }
+    a { color: #000000; }
 }
 
 @layer components {
