@@ -18,6 +18,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        body.gradient-bg {
+            background: #ffffff !important;
+        }
+
+        .glass-effect {
+            background: #ffffff !important;
+            border: 1px solid #e5e7eb !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        }
+    </style>
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Navigation -->
@@ -64,8 +75,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex items-center">
-                    <div class="p-3 bg-blue-500 rounded-lg">
-                        <i class="fas fa-users text-white text-xl"></i>
+                    <div class="p-3 bg-blue-100 rounded-lg">
+                        <i class="fas fa-users text-black text-xl"></i>
                     </div>
                     <div class="ml-4">
                         <p class="text-black text-sm">Total Pengguna</p>
@@ -76,8 +87,8 @@
 
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex items-center">
-                    <div class="p-3 bg-green-500 rounded-lg">
-                        <i class="fas fa-door-open text-white text-xl"></i>
+                    <div class="p-3 bg-green-100 rounded-lg">
+                        <i class="fas fa-door-open text-black text-xl"></i>
                     </div>
                     <div class="ml-4">
                         <p class="text-black text-sm">Ruang Meeting</p>
@@ -88,8 +99,8 @@
 
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex items-center">
-                    <div class="p-3 bg-yellow-500 rounded-lg">
-                        <i class="fas fa-calendar-check text-white text-xl"></i>
+                    <div class="p-3 bg-yellow-100 rounded-lg">
+                        <i class="fas fa-calendar-check text-black text-xl"></i>
                     </div>
                     <div class="ml-4">
                         <p class="text-black text-sm">Total Pemesanan</p>
@@ -100,8 +111,8 @@
 
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex items-center">
-                    <div class="p-3 bg-purple-500 rounded-lg">
-                        <i class="fas fa-check-circle text-white text-xl"></i>
+                    <div class="p-3 bg-purple-100 rounded-lg">
+                        <i class="fas fa-check-circle text-black text-xl"></i>
                     </div>
                     <div class="ml-4">
                         <p class="text-black text-sm">Pemesanan Dikonfirmasi</p>
@@ -148,8 +159,8 @@
                     @forelse($recentBookings as $booking)
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-calendar text-white"></i>
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calendar text-black"></i>
                             </div>
                             <div>
                                 <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -158,10 +169,10 @@
                         </div>
                         <div class="text-right">
                             <span class="px-2 py-1 rounded-full text-xs font-medium
-                                @if($booking->status === 'pending') bg-yellow-500 text-white
-                                @elseif($booking->status === 'confirmed') bg-green-500 text-white
-                                @elseif($booking->status === 'cancelled') bg-red-500 text-white
-                                @else bg-gray-500 text-white @endif">
+                                @if($booking->status === 'pending') bg-yellow-100 text-black
+                                @elseif($booking->status === 'confirmed') bg-green-100 text-black
+                                @elseif($booking->status === 'cancelled') bg-red-100 text-black
+                                @else bg-gray-200 text-black @endif">
                                 {{ ucfirst($booking->status) }}
                             </span>
                             <p class="text-black text-sm mt-1">{{ $booking->created_at ? $booking->created_at->format('M d, H:i') : 'Tidak tersedia' }}</p>
@@ -176,7 +187,7 @@
             <!-- Today's Bookings -->
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Pemesanan Hari Ini</h3>
+                    <h3 class="text-xl font-bold text-black">Pemesanan Hari Ini</h3>
                     <span class="text-black text-sm">{{ now()->format('M d, Y') }}</span>
                 </div>
                 <div class="space-y-4">
@@ -184,15 +195,15 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-clock text-white"></i>
+                                <i class="fas fa-clock text-black"></i>
                             </div>
                             <div>
-                                <p class="text-white font-medium">{{ $booking->title }}</p>
+                                <p class="text-black font-medium">{{ $booking->title }}</p>
                                 <p class="text-black text-sm">{{ $booking->meetingRoom->name }}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-white font-medium">{{ $booking->start_time ? $booking->start_time->format('H:i') : 'Tidak tersedia' }} - {{ $booking->end_time ? $booking->end_time->format('H:i') : 'Tidak tersedia' }}</p>
+                            <p class="text-black font-medium">{{ $booking->start_time ? $booking->start_time->format('H:i') : 'Tidak tersedia' }} - {{ $booking->end_time ? $booking->end_time->format('H:i') : 'Tidak tersedia' }}</p>
                             <p class="text-black text-sm">{{ $booking->user->full_name }}</p>
                         </div>
                     </div>
@@ -223,7 +234,7 @@
             <!-- Admin notifications will be loaded here -->
         </div>
         <div class="p-2 border-t flex space-x-2">
-            <button onclick="markAllAdminNotifikasisAsRead()" class="flex-1 text-center text-blue-500 hover:text-blue-700 text-sm py-2">
+            <button onclick="markAllAdminNotifikasisAsRead()" class="flex-1 text-center text-black hover:text-gray-800 text-sm py-2">
                 Tandai Semua Sebagai Terbaca
             </button>
             <button onclick="clearAllAdminNotifikasis()" class="flex-1 text-center text-red-500 hover:text-red-700 text-sm py-2">
