@@ -94,7 +94,7 @@
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="min-h-screen bg-white">
     <!-- Navigation -->
         <nav class="glass-effect shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -104,7 +104,7 @@
                             <i class="fas fa-bars"></i>
                         </button>
                         <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -124,11 +124,11 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Pemesanan Saya</h2>
-                    <p class="text-white/80">Kelola dan pantau pemesanan ruang meeting Anda</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Pemesanan Saya</h2>
+                    <p class="text-black">Kelola dan pantau pemesanan ruang meeting Anda</p>
                 </div>
                 <div class="flex space-x-4">
-                    <select id="status-filter" class="px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
+                    <select id="status-filter" class="px-4 py-2 form-control">
                         <option value="">Semua Status</option>
                         <option value="pending">Menunggu</option>
                         <option value="confirmed">Dikonfirmasi</option>
@@ -144,15 +144,15 @@
             @if($bookings->count() > 0)
                 <div class="space-y-4">
                     @foreach($bookings as $booking)
-                    <div class="booking-item bg-white/10 rounded-lg p-6 hover:bg-white/20 transition-colors" 
+                    <div class="booking-item bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors border border-gray-200" 
                          data-status="{{ $booking->status }}">
                         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                             <div class="flex-1">
                                 <div class="mb-4">
                                     <div class="flex items-start justify-between mb-2">
                                         <div class="flex-1">
-                                            <h3 class="text-lg font-bold text-white mb-1">{{ $booking->title }}</h3>
-                                            <p class="text-white/80 text-sm mb-2">{{ $booking->meetingRoom->name }} • {{ $booking->meetingRoom->location }}</p>
+                                            <h3 class="text-lg font-bold text-black mb-1">{{ $booking->title }}</h3>
+                                            <p class="text-black text-sm mb-2">{{ $booking->meetingRoom->name }} • {{ $booking->meetingRoom->location }}</p>
                                         </div>
                                         <div class="ml-4 flex-shrink-0">
                                             <span class="px-3 py-1 rounded-full text-sm font-medium
@@ -165,7 +165,7 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-4 text-sm text-white/60">
+                                    <div class="flex items-center space-x-4 text-sm text-gray-600">
                                         <span><i class="fas fa-calendar mr-1"></i>{{ $booking->start_time->format('d M Y') }}</span>
                                         <span><i class="fas fa-clock mr-1"></i>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</span>
                                         <span><i class="fas fa-users mr-1"></i>{{ $booking->attendees_count }} peserta</span>
@@ -173,7 +173,7 @@
                                 </div>
                                 
                                 @if($booking->description)
-                                <p class="text-white/80 text-sm mb-3">{{ $booking->description }}</p>
+                                <p class="text-black text-sm mb-3">{{ $booking->description }}</p>
                                 @endif
                                 
                                 @if($booking->special_requirements)
@@ -253,7 +253,7 @@
                 
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-8">
-                    <div class="text-white/80 text-sm">
+                    <div class="text-black text-sm">
                         Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
                     </div>
                     <div class="flex items-center space-x-4">

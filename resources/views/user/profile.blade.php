@@ -10,31 +10,13 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Fix dropdown styling for profile page */
-        select {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        }
-        
-        select option {
-            background-color: #1a202c !important;
-            color: white !important;
-            padding: 8px 12px !important;
-        }
-        
-        select option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
-        }
-        
-        select option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
-        }
+        .form-control { background: #ffffff !important; color: #000000 !important; border: 1px solid #d1d5db !important; border-radius: 0.5rem; }
+        .form-control:focus { outline: none !important; box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important; border-color: #6366f1 !important; }
+        .form-control::placeholder { color: #000000 !important; opacity: 1; }
+        select.form-control option { background: #ffffff; color: #000000; }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="min-h-screen bg-white">
     <!-- Navigation -->
         <nav class="glass-effect shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,12 +47,12 @@
             <div class="lg:col-span-1">
                 <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                     <div class="text-center">
-                        <div class="w-24 h-24 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-user text-white text-3xl"></i>
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user text-black text-3xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2">{{ $user['full_name'] }}</h3>
-                        <p class="text-white/80 mb-1">{{ $user['email'] }}</p>
-                        <p class="text-white/60 text-sm">{{ $user['unit_kerja'] ?? 'N/A' }}</p>
+                        <h3 class="text-xl font-bold text-black mb-2">{{ $user['full_name'] }}</h3>
+                        <p class="text-black mb-1">{{ $user['email'] }}</p>
+                        <p class="text-black text-sm">{{ $user['unit_kerja'] ?? 'N/A' }}</p>
                         <span class="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full mt-2">
                             {{ ucfirst($user['role']) }}
                         </span>
@@ -79,19 +61,19 @@
 
                 <!-- Quick Stats -->
                 <div class="glass-effect rounded-2xl p-6 shadow-2xl mt-6">
-                    <h4 class="text-lg font-bold text-white mb-4">Statistik Singkat</h4>
+                    <h4 class="text-lg font-bold text-black mb-4">Statistik Singkat</h4>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-white/80 text-sm">Anggota Sejak</span>
-                            <span class="text-white text-sm">Jan 2024</span>
+                            <span class="text-black text-sm">Anggota Sejak</span>
+                            <span class="text-black text-sm">Jan 2024</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-white/80 text-sm">Login Terakhir</span>
-                            <span class="text-white text-sm">{{ now()->format('M d, Y') }}</span>
+                            <span class="text-black text-sm">Login Terakhir</span>
+                            <span class="text-black text-sm">{{ now()->format('M d, Y') }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-white/80 text-sm">Total Pemesanan</span>
-                            <span class="text-white text-sm">-</span>
+                            <span class="text-black text-sm">Total Pemesanan</span>
+                            <span class="text-black text-sm">-</span>
                         </div>
                     </div>
                 </div>
@@ -101,8 +83,8 @@
             <div class="lg:col-span-2">
                 <div class="glass-effect rounded-2xl p-8 shadow-2xl">
                     <div class="mb-6">
-                        <h2 class="text-2xl font-bold text-white mb-2">Edit Profil</h2>
-                        <p class="text-white/80">Perbarui informasi personal Anda</p>
+                        <h2 class="text-2xl font-bold text-black mb-2">Edit Profil</h2>
+                        <p class="text-black">Perbarui informasi personal Anda</p>
                     </div>
 
                     @if (session('success'))
@@ -135,41 +117,41 @@
                         
                         <!-- Full Nama -->
                         <div>
-                            <label for="full_name" class="block text-sm font-medium text-white mb-2">
+                            <label for="full_name" class="block text-sm font-medium text-black mb-2">
                                 <i class="fas fa-user mr-2"></i>Nama Lengkap *
                             </label>
                             <input type="text" id="full_name" name="full_name" value="{{ old('full_name', $user['full_name']) }}" required
-                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                                   class="w-full px-4 py-3 form-control"
                                    placeholder="Masukkan nama lengkap Anda">
                         </div>
 
                         <!-- Email -->
                         <div>
-                            <label for="email" class="block text-sm font-medium text-white mb-2">
+                            <label for="email" class="block text-sm font-medium text-black mb-2">
                                 <i class="fas fa-envelope mr-2"></i>Alamat Email *
                             </label>
                             <input type="email" id="email" name="email" value="{{ old('email', $user['email']) }}" required
-                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                                   class="w-full px-4 py-3 form-control"
                                    placeholder="Masukkan alamat email Anda">
                         </div>
 
                         <!-- Telepon -->
                         <div>
-                            <label for="phone" class="block text-sm font-medium text-white mb-2">
+                            <label for="phone" class="block text-sm font-medium text-black mb-2">
                                 <i class="fas fa-phone mr-2"></i>Nomor Telepon
                             </label>
                             <input type="tel" id="phone" name="phone" value="{{ old('phone', $user['phone'] ?? '') }}"
-                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                                   class="w-full px-4 py-3 form-control"
                                    placeholder="Masukkan nomor telepon Anda">
                         </div>
 
                         <!-- Unit Kerja -->
                         <div>
-                            <label for="unit_kerja" class="block text-sm font-medium text-white mb-2">
+                            <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
                                 <i class="fas fa-building mr-2"></i>Unit Kerja
                             </label>
                             <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja', $user['unit_kerja'] ?? '') }}"
-                                   class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-300"
+                                   class="w-full px-4 py-3 form-control"
                                    placeholder="Masukkan unit kerja Anda">
                         </div>
 
