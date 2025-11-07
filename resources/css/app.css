@@ -15,7 +15,22 @@
     h1, h2, h3, h4, h5, h6, p, span, li, td, th, label, small, strong, em, div {
         color: #000000;
     }
-    a { color: #000000; }
+    /* Hyperlinks default black, but keep link-buttons (have bg-*) as-is */
+    a:not([class*="bg-"]) { color: #000000 !important; }
+    
+    /* Force placeholder to black */
+    input::placeholder,
+    textarea::placeholder {
+        color: #000000 !important;
+        opacity: 1;
+    }
+    
+    /* Override stray Tailwind text-white utilities on content (not buttons) */
+    .text-white { color: #000000 !important; }
+    .text-white\/60 { color: #000000 !important; }
+    .text-white\/70 { color: #000000 !important; }
+    .text-white\/80 { color: #000000 !important; }
+    .text-white\/90 { color: #000000 !important; }
 }
 
 @layer components {
