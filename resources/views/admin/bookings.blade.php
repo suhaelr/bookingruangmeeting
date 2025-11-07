@@ -10,29 +10,30 @@
     <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Fix dropdown styling – scoped to dark selects only */
-        .select-dark {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        body,
+        body.gradient-bg {
+            background: #ffffff !important;
+            background-image: none !important;
+            color: #000000 !important;
         }
-        
-        .select-dark option {
-            background-color: #1a202c !important;
-            color: white !important;
-            padding: 8px 12px !important;
+
+        .glass-effect {
+            background: #ffffff !important;
+            border: 1px solid #e5e7eb !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
         }
-        
-        .select-dark option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
+
+        /* Filter select */
+        .status-filter {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #d1d5db !important;
         }
-        
-        .select-dark option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
+        .status-filter option {
+            background-color: #ffffff !important;
+            color: #000000 !important;
         }
-        
+
         /* Mobile responsive table */
         @media (max-width: 768px) {
             .table-responsive {
@@ -72,7 +73,7 @@
                             <i class="fas fa-bars"></i>
                         </button>
                         <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -92,11 +93,11 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Bookings</h2>
-                    <p class="text-white/80">Pantau dan kelola semua pemesanan ruang meeting</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Kelola Bookings</h2>
+                    <p class="text-black">Pantau dan kelola semua pemesanan ruang meeting</p>
                 </div>
                 <div class="flex space-x-4">
-                    <select id="status-filter" class="select-dark px-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white/50">
+                    <select id="status-filter" class="status-filter px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="">Semua Status</option>
                         <option value="pending">Menunggu</option>
                         <option value="confirmed">Dikonfirmasi</option>
@@ -110,57 +111,57 @@
         <!-- Bookings Table -->
         <div class="glass-effect rounded-2xl p-6 shadow-2xl">
             @if($bookings->count() > 0)
-                <div class="overflow-x-auto table-responsive">
-                    <table class="w-full text-white">
-                        <thead>
-                            <tr class="border-b border-white/20">
-                                <th class="text-left py-3 px-4 font-semibold">ID</th>
-                                <th class="text-left py-3 px-4 font-semibold">Judul</th>
-                                <th class="text-left py-3 px-4 font-semibold">Pengguna</th>
-                                <th class="text-left py-3 px-4 font-semibold">Ruang</th>
-                                <th class="text-left py-3 px-4 font-semibold">Tanggal & Waktu</th>
-                                <th class="text-left py-3 px-4 font-semibold">Status</th>
-                                <th class="text-left py-3 px-4 font-semibold">Dokumen</th>
-                                <th class="text-left py-3 px-4 font-semibold">Aksi</th>
+                <div class="overflow-x-auto table-responsive bg-white rounded-xl border border-gray-200">
+                    <table class="w-full text-black">
+                        <thead class="bg-gray-100">
+                            <tr class="border-b border-gray-200">
+                                <th class="text-left py-3 px-4 font-semibold text-black">ID</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Judul</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Pengguna</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Ruang</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Tanggal & Waktu</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Status</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Dokumen</th>
+                                <th class="text-left py-3 px-4 font-semibold text-black">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="bg-white">
                             @foreach($bookings as $booking)
-                            <tr class="border-b border-white/10 hover:bg-white/5 transition-colors booking-row" data-status="{{ $booking->status }}">
+                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors booking-row" data-status="{{ $booking->status }}">
                                 <td class="py-3 px-4">#{{ $booking->id }}</td>
                                 <td class="py-3 px-4">
                                     <div class="min-w-0">
-                                        <p class="text-white font-medium truncate" title="{{ $booking->title }}">{{ $booking->title }}</p>
+                                        <p class="text-black font-medium truncate" title="{{ $booking->title }}">{{ $booking->title }}</p>
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="min-w-0">
-                                        <p class="text-white font-medium truncate">{{ $booking->user->full_name }}</p>
-                                        <p class="text-white/60 text-sm truncate" title="{{ $booking->user->email }}">{{ $booking->user->email }}</p>
+                                        <p class="text-black font-medium truncate">{{ $booking->user->full_name }}</p>
+                                        <p class="text-black text-sm truncate" title="{{ $booking->user->email }}">{{ $booking->user->email }}</p>
                                         @if($booking->unit_kerja)
-                                            <p class="text-white/60 text-xs truncate">Unit: {{ $booking->unit_kerja }}</p>
+                                            <p class="text-black text-xs truncate">Unit: {{ $booking->unit_kerja }}</p>
                                         @endif
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="min-w-0">
-                                        <p class="text-white font-medium truncate">{{ $booking->meetingRoom->name }}</p>
-                                        <p class="text-white/60 text-sm truncate">{{ $booking->meetingRoom->location }}</p>
+                                        <p class="text-black font-medium truncate">{{ $booking->meetingRoom->name }}</p>
+                                        <p class="text-black text-sm truncate">{{ $booking->meetingRoom->location }}</p>
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
                                     <div>
-                                        <p class="text-white font-medium">{{ $booking->start_time->format('d M Y') }}</p>
-                                        <p class="text-white/60 text-sm">{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
+                                        <p class="text-black font-medium">{{ $booking->start_time->format('d M Y') }}</p>
+                                        <p class="text-black text-sm">{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
                                     </div>
                                 </td>
                                 <td class="py-3 px-4">
                                     <span class="px-2 py-1 rounded-full text-xs font-medium
-                                        @if($booking->status === 'pending') bg-yellow-500 text-white
-                                        @elseif($booking->status === 'confirmed') bg-green-500 text-white
-                                        @elseif($booking->status === 'cancelled') bg-red-500 text-white
-                                        @elseif($booking->status === 'completed') bg-blue-500 text-white
-                                        @else bg-gray-500 text-white @endif">
+                                        @if($booking->status === 'pending') bg-yellow-100 text-yellow-800
+                                        @elseif($booking->status === 'confirmed') bg-green-100 text-green-800
+                                        @elseif($booking->status === 'cancelled') bg-red-100 text-red-800
+                                        @elseif($booking->status === 'completed') bg-blue-100 text-blue-800
+                                        @else bg-gray-100 text-black @endif">
                                         @if($booking->status === 'pending') Menunggu
                                         @elseif($booking->status === 'confirmed') Dikonfirmasi
                                         @elseif($booking->status === 'cancelled') Dibatalkan
@@ -178,15 +179,15 @@
                                             Download PDF
                                         </a>
                                     @else
-                                        <span class="text-white/60 text-sm">Tidak ada dokumen</span>
+                                        <span class="text-black text-sm">Tidak ada dokumen</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4">
                                     <div class="flex space-x-2">
-                                        <button onclick="viewBooking({{ $booking->id }})" class="text-black hover:text-black transition-colors" title="Lihat Detail">
+                                        <button onclick="viewBooking({{ $booking->id }})" class="text-indigo-600 hover:text-indigo-800 transition-colors" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Perbarui Status">
+                                        <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-600 hover:text-yellow-700 transition-colors" title="Perbarui Status">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                     </div>
@@ -199,7 +200,7 @@
                 
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-8">
-                    <div class="text-white/80 text-sm">
+                    <div class="text-black text-sm">
                         Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
                     </div>
                     <div class="flex items-center space-x-4">
@@ -208,20 +209,20 @@
                         </button>
                         <div class="flex space-x-2">
                         @if($bookings->previousPageUrl())
-                        <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                        <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
                             <i class="fas fa-chevron-left"></i>
                         </a>
                         @endif
                         
                         @for($i = 1; $i <= $bookings->lastPage(); $i++)
                         <a href="{{ $bookings->url($i) }}" 
-                           class="px-3 py-2 rounded-lg transition-colors {{ $bookings->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold' : 'bg-white/20 text-white hover:bg-white/30' }}">
+                           class="px-3 py-2 rounded-lg transition-colors {{ $bookings->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold border border-indigo-100' : 'bg-gray-100 text-black hover:bg-gray-200' }}">
                             {{ $i }}
                         </a>
                         @endfor
                         
                         @if($bookings->nextPageUrl())
-                        <a href="{{ $bookings->nextPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                        <a href="{{ $bookings->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
                             <i class="fas fa-chevron-right"></i>
                         </a>
                         @endif
@@ -230,9 +231,9 @@
                 </div>
             @else
                 <div class="text-center py-12">
-                    <i class="fas fa-calendar-times text-white/40 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">Tidak Ada Booking</h3>
-                    <p class="text-white/60">Belum ada pemesanan ruang meeting.</p>
+                    <i class="fas fa-calendar-times text-gray-300 text-6xl mb-4"></i>
+                    <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Booking</h3>
+                    <p class="text-black">Belum ada pemesanan ruang meeting.</p>
                 </div>
             @endif
         </div>
@@ -301,7 +302,7 @@
 
     <!-- Berhasil Message -->
     @if (session('success'))
-        <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <div id="success-message" class="fixed top-4 right-4 bg-green-100 text-green-800 px-6 py-3 rounded-lg shadow-lg border border-green-200 z-50">
             <div class="flex items-center">
                 <i class="fas fa-check-circle mr-2"></i>
                 {{ session('success') }}
