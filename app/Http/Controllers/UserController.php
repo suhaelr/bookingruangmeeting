@@ -435,9 +435,6 @@ class UserController extends Controller
             'invited_pics.*' => 'exists:users,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
-            'attendees_count' => 'required|integer|min:1',
-            'attendees' => 'nullable|string',
-            'special_requirements' => 'nullable|string',
             'unit_kerja' => 'required|string|max:255',
             // Make PDF optional
             'dokumen_perizinan' => 'nullable|file|mimes:pdf|max:2048',
@@ -482,13 +479,6 @@ class UserController extends Controller
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
         
-        // Check capacity
-        if ($request->attendees_count > $room->capacity) {
-            return back()->withErrors([
-                'attendees_count' => "Jumlah peserta ({$request->attendees_count}) melebihi kapasitas ruangan ({$room->capacity} kursi)."
-            ])->withInput();
-        }
-        
         // Check availability with detailed feedback (BLOCK regardless of owner)
         $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime);
         if ($conflictingBookings->count() > 0) {
@@ -504,12 +494,6 @@ class UserController extends Controller
             $file = $request->file('dokumen_perizinan');
             $filename = time() . '_' . $file->getClientOriginalName();
             $dokumenPerizinanPath = $file->storeAs('dokumen_perizinan', $filename, 'public');
-        }
-
-        // Process attendees - convert string to array
-        $attendees = [];
-        if ($request->attendees) {
-            $attendees = array_filter(array_map('trim', explode(',', $request->attendees)));
         }
 
         // Log user validation for debugging
@@ -528,9 +512,9 @@ class UserController extends Controller
                 'description_visibility' => $request->description_visibility,
                 'start_time' => $request->start_time,
                 'end_time' => $request->end_time,
-                'attendees_count' => $request->attendees_count,
-                'attendees' => $attendees,
-                'special_requirements' => $request->special_requirements,
+                'attendees_count' => 1, // Default value
+                'attendees' => [], // Empty array
+                'special_requirements' => null, // Null value
                 'unit_kerja' => $request->unit_kerja,
                 'dokumen_perizinan' => $dokumenPerizinanPath,
                 'total_cost' => 0, // Set to 0 since we removed pricing

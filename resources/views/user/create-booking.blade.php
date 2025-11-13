@@ -219,36 +219,6 @@
                     </div>
                 </div>
 
-                <!-- Peserta -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="attendees_count" class="block text-sm font-medium text-black mb-2">
-                            <i class="fas fa-users mr-2"></i>Jumlah Peserta (Opsional)
-                        </label>
-                        <input type="number" id="attendees_count" name="attendees_count" value="{{ old('attendees_count', 1) }}" min="1"
-                               class="w-full px-4 py-3 form-control">
-                    </div>
-                    <div>
-                        <label for="attendees" class="block text-sm font-medium text-black mb-2">
-                            <i class="fas fa-envelope mr-2"></i>Email Peserta (Opsional)
-                        </label>
-                        <input type="text" id="attendees" name="attendees" value="{{ old('attendees') }}"
-                               class="w-full px-4 py-3 form-control"
-                               placeholder="email1@example.com, email2@example.com">
-                        <p class="text-gray-600 text-xs mt-1">Pisahkan beberapa email dengan koma</p>
-                    </div>
-                </div>
-
-                <!-- Special Requirements -->
-                <div>
-                    <label for="special_requirements" class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-clipboard-list mr-2"></i>Kebutuhan Khusus
-                    </label>
-                    <textarea id="special_requirements" name="special_requirements" rows="3"
-                              class="w-full px-4 py-3 form-control"
-                              placeholder="Kebutuhan khusus untuk meeting">{{ old('special_requirements') }}</textarea>
-                </div>
-
                 <!-- Unit Kerja -->
                 <div>
                     <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
@@ -527,20 +497,12 @@
             // Set up event listeners
             const startWaktuInput = document.getElementById('start_time');
             const endWaktuInput = document.getElementById('end_time');
-            const attendeesInput = document.getElementById('attendees');
 
             if (startWaktuInput) {
                 startWaktuInput.addEventListener('change', function() {
                     const startWaktu = new Date(this.value);
                     const endWaktu = new Date(startWaktu.getTime() + 60 * 60 * 1000); // Add 1 hour
                     document.getElementById('end_time').value = endWaktu.toISOString().slice(0, 16);
-                });
-            }
-
-            if (attendeesInput) {
-                attendeesInput.addEventListener('blur', function() {
-                    const emails = this.value.split(',').map(email => email.trim()).filter(email => email);
-                    this.value = emails.join(', ');
                 });
             }
 
