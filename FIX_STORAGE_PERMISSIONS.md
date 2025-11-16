@@ -13,6 +13,11 @@ cd /var/www/bookingruangmeeting
 
 ### 2. Perbaiki Ownership (Pilih salah satu sesuai web server Anda)
 
+**PENTING:** Cek dulu user yang menjalankan PHP-FPM atau web server:
+```bash
+ps aux | grep -E 'php-fpm|apache|nginx' | head -1
+```
+
 #### Untuk Apache (www-data):
 ```bash
 sudo chown -R www-data:www-data storage bootstrap/cache
@@ -28,6 +33,13 @@ sudo chmod -R 775 storage bootstrap/cache
 #### Untuk Nginx dengan user lain (misalnya nginx):
 ```bash
 sudo chown -R nginx:nginx storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+```
+
+#### Jika menggunakan user lain (misalnya www-run atau _www):
+```bash
+# Ganti USER_GROUP dengan user yang sesuai dari hasil ps aux di atas
+sudo chown -R USER_GROUP:USER_GROUP storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
 ```
 
@@ -54,6 +66,21 @@ php artisan cache:clear
 php artisan config:clear
 php artisan view:clear
 php artisan route:clear
+```
+
+### 6. Fix Permission untuk Artisan Commands
+Jika masih error saat menjalankan `php artisan optimize` atau command lain:
+
+```bash
+# Pastikan user yang menjalankan artisan memiliki akses
+# Jika menjalankan sebagai user 'linux', pastikan user tersebut memiliki akses:
+sudo chown -R www-data:www-data storage bootstrap/cache
+# Atau jika ingin user 'linux' yang memiliki akses:
+sudo chown -R linux:www-data storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
+
+# Setelah itu, coba jalankan lagi:
+php artisan optimize
 ```
 
 ### 6. Test

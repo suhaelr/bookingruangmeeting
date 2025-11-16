@@ -282,9 +282,16 @@ class AdminController extends Controller
             $this->createUserNotification($booking, $request->status, $request->reason);
 
             // Send notification to admin about status change
+            $statusText = match($request->status) {
+                'pending' => 'menunggu konfirmasi',
+                'confirmed' => 'dikonfirmasi',
+                'cancelled' => 'dibatalkan',
+                'completed' => 'selesai',
+                default => $request->status
+            };
             $this->notifyAdmin(
-                'Booking Status Updated', 
-                "Booking '{$booking->title}' by {$booking->user->full_name} status changed to {$request->status}",
+                'Status Booking Diperbarui', 
+                "Status booking '{$booking->title}' oleh {$booking->user->full_name} telah diubah menjadi {$statusText}",
                 'info',
                 $booking->id
             );
@@ -903,10 +910,17 @@ class AdminController extends Controller
                     'message' => "Meeting '{$booking->title}' telah selesai. Terima kasih telah menggunakan layanan kami."
                 ];
             default:
+                $statusText = match($status) {
+                    'pending' => 'menunggu konfirmasi',
+                    'confirmed' => 'dikonfirmasi',
+                    'cancelled' => 'dibatalkan',
+                    'completed' => 'selesai',
+                    default => $status
+                };
                 return [
                     'type' => 'booking_updated',
-                    'title' => 'Status Booking Diupdate',
-                    'message' => "Status booking '{$booking->title}' telah diupdate menjadi {$status}."
+                    'title' => 'Status Booking Diperbarui',
+                    'message' => "Status booking '{$booking->title}' telah diperbarui menjadi {$statusText}."
                 ];
         }
     }

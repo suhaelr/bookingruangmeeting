@@ -59,15 +59,6 @@ class UpdateBookingStatus extends Command
         }
         
         $this->info("Updated {$updatedCount} bookings to completed status");
-
-        // Trigger auto-expire preempt as part of routine
-        try {
-            \Artisan::call('app:auto-expire-preempt');
-        } catch (\Throwable $e) {
-            \Log::error('Failed to run auto-expire-preempt from UpdateBookingStatus', [
-                'error' => $e->getMessage(),
-            ]);
-        }
         
         return Command::SUCCESS;
     }

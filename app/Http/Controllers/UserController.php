@@ -538,7 +538,7 @@ class UserController extends Controller
         }
 
         // Send notification to admin
-        $this->notifyAdmin('New Booking Request', "User {$user['full_name']} has requested a new booking: {$booking->title}", 'success', $booking->id);
+        $this->notifyAdmin('Permintaan Booking Baru', "User {$user['full_name']} telah membuat permintaan booking baru: {$booking->title}", 'success', $booking->id);
 
         \Log::info('New booking created', [
             'booking_id' => $booking->id,
@@ -689,7 +689,7 @@ class UserController extends Controller
             }
 
             // Send notification to admin
-            $this->notifyAdmin('Booking Updated', "User {$user['full_name']} updated their booking: {$booking->title}");
+            $this->notifyAdmin('Booking Diperbarui', "User {$user['full_name']} telah memperbarui booking mereka: {$booking->title}");
 
             \Log::info('Booking updated successfully', [
                 'booking_id' => $booking->id,
@@ -742,10 +742,10 @@ class UserController extends Controller
             }
 
             // Update booking status
-            $booking->updateStatus('cancelled', 'Cancelled by user');
+            $booking->updateStatus('cancelled', 'Dibatalkan oleh user');
 
             // Send notification to admin
-            $this->notifyAdmin('Booking Cancelled', "User {$user['full_name']} cancelled their booking: {$booking->title}", 'warning', $booking->id);
+            $this->notifyAdmin('Booking Dibatalkan', "User {$user['full_name']} telah membatalkan booking mereka: {$booking->title}", 'warning', $booking->id);
 
             \Log::info('Booking cancelled successfully', [
                 'booking_id' => $booking->id,
