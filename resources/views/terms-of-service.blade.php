@@ -305,7 +305,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-black/60 text-sm text-center">
-                            <span onclick="showChangelogModal()" class="text-black/80 font-medium cursor-pointer hover:text-black underline transition-colors duration-300">Versi Aplikasi v2.1.4</span><br>
+                            <span onclick="showChangelogModal()" class="text-black/80 font-medium cursor-pointer hover:text-black underline transition-colors duration-300">Versi Aplikasi v2.1.5</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
@@ -341,8 +341,30 @@
                         </div>
                         
                         <div class="p-4 sm:p-6">
-                            <!-- v2.1.4 -->
+                            <!-- v2.1.5 -->
                             <div class="mb-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-bold text-black">v2.1.5 (2025) - Penghapusan Fitur Preempt</h4>
+                                    <span class="text-sm text-gray-500">November 2025</span>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-minus-circle text-orange-500 mr-2 mt-1"></i>
+                                        <span><strong>Penghapusan Fitur Didahulukan Meeting</strong> - Fitur "Minta Didahulukan" (preempt request) telah dihapus dari sistem untuk menyederhanakan proses booking</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Penyederhanaan Alur Booking</strong> - Sistem booking sekarang lebih sederhana tanpa fitur preempt, fokus pada booking langsung</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Validasi Konflik</strong> - Validasi konflik jadwal tetap berfungsi untuk mencegah double booking</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- v2.1.4 -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="text-lg font-bold text-black">v2.1.4 (2025) - Field Kapasitas Opsional</h4>
                                     <span class="text-sm text-gray-500">November 2025</span>

@@ -28,10 +28,6 @@ class Booking extends Model
         'total_cost',
         'cancelled_at',
         'cancellation_reason',
-        'preempt_status',
-        'preempt_requested_by',
-        'preempt_deadline_at',
-        'preempt_reason',
         'needs_reschedule',
         'reschedule_deadline_at',
         'reminder_1h_sent',
@@ -49,7 +45,6 @@ class Booking extends Model
         'attachments' => 'array',
         'cancelled_at' => 'datetime',
         'total_cost' => 'decimal:2',
-        'preempt_deadline_at' => 'datetime',
         'reschedule_deadline_at' => 'datetime',
         'needs_reschedule' => 'boolean',
         'reminder_1h_sent' => 'boolean',
@@ -135,28 +130,6 @@ class Booking extends Model
         return 0.00;
     }
 
-    public function isPreemptPending(): bool
-    {
-        return $this->preempt_status === 'pending';
-    }
-
-    public function startPreempt(int $requesterUserId, \DateTimeInterface $deadlineAt, ?string $reason = null): void
-    {
-        $this->preempt_status = 'pending';
-        $this->preempt_requested_by = $requesterUserId;
-        $this->preempt_deadline_at = $deadlineAt;
-        $this->preempt_reason = $reason;
-        $this->save();
-    }
-
-    public function closePreempt(): void
-    {
-        $this->preempt_status = 'closed';
-        $this->preempt_requested_by = null;
-        $this->preempt_deadline_at = null;
-        $this->preempt_reason = null;
-        $this->save();
-    }
 
     public function invitations()
     {

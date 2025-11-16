@@ -168,7 +168,7 @@ class AdminController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string',
-                'capacity' => 'nullable|numeric|min:1',
+                'capacity' => 'nullable|numeric|min:0',
                 'location' => 'required|string|max:255',
                 'is_active' => 'required|string|in:0,1,true,false,on,off,',
                 'amenities' => 'nullable|string'
@@ -186,10 +186,16 @@ class AdminController extends Controller
                 $isActive = false;
             }
 
+            // Handle capacity: if empty string or null, save as null; if 0 or any number, save as that number
+            $capacity = null;
+            if ($request->has('capacity') && $request->capacity !== '' && $request->capacity !== null) {
+                $capacity = (int)$request->capacity;
+            }
+            
             $room = MeetingRoom::create([
                 'name' => $request->name,
                 'description' => $request->description,
-                'capacity' => $request->capacity ? (int)$request->capacity : null,
+                'capacity' => $capacity,
                 'location' => $request->location,
                 'is_active' => $isActive,
                 'amenities' => $amenities
@@ -229,30 +235,10 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
         
-        // Annotate bookings with auto-confirm info for admin visibility
-        foreach ($bookings as $b) {
-            $b->auto_confirmed_for_user = null;
-            if ($b->status === 'cancelled' && str_contains(strtolower((string) $b->cancellation_reason), 'preempt')) {
-                $matched = Booking::with('user')
-                    ->where('meeting_room_id', $b->meeting_room_id)
-                    ->where('start_time', $b->start_time)
-                    ->where('end_time', $b->end_time)
-                    ->where('status', 'confirmed')
-                    ->orderBy('created_at', 'desc')
-                    ->first();
-                if ($matched && $matched->user) {
-                    $b->auto_confirmed_for_user = $matched->user->full_name;
-                }
-            }
-        }
-
-        // Hide cancelled (preempt) records if there is a matching auto-confirmed booking for the same slot
+        // Filter bookings collection
         $collection = $bookings->getCollection();
         $filtered = $collection->filter(function ($b) {
             if ($b->status !== 'cancelled') {
-                return true;
-            }
-            if (!str_contains(strtolower((string) $b->cancellation_reason), 'preempt')) {
                 return true;
             }
             $existsConfirmed = Booking::where('meeting_room_id', $b->meeting_room_id)

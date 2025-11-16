@@ -318,7 +318,7 @@
                     <div class="bg-gray-50 rounded-lg p-4 hover:bg-white/20 transition-colors">
                         <div class="flex items-center justify-between mb-2">
                             <h4 class="text-white font-medium">{{ $room->name }}</h4>
-                            <span class="text-black text-sm">{{ $room->capacity }} kursi</span>
+                            <span class="text-black text-sm">{{ $room->capacity ?? 0 }} kursi</span>
                         </div>
                         <p class="text-black text-sm mb-2">{{ $room->location }}</p>
                         <div class="flex flex-wrap gap-1 mb-3">
@@ -1304,7 +1304,7 @@
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-blue-600 font-medium">Kapasitas:</span>
-                                        <span class="text-blue-800">${roomCapacity} kursi</span>
+                                        <span class="text-blue-800">${roomCapacity || 0} kursi</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-blue-600 font-medium">Waktu:</span>
@@ -1438,7 +1438,7 @@
                                     </div>
                                     <div>
                                         <span class="text-blue-600 font-medium">Kapasitas:</span>
-                                        <span class="text-blue-800">${slotInfo.room_capacity} kursi</span>
+                                        <span class="text-blue-800">${slotInfo.room_capacity || 0} kursi</span>
                                     </div>
                                     <div>
                                         <span class="text-blue-600 font-medium">Waktu:</span>
@@ -1549,7 +1549,7 @@
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-blue-600 font-medium">Kapasitas:</span>
-                                        <span class="text-blue-800">${roomCapacity} kursi</span>
+                                        <span class="text-blue-800">${roomCapacity || 0} kursi</span>
                                     </div>
                                     <div class="flex justify-between">
                                         <span class="text-blue-600 font-medium">Waktu:</span>

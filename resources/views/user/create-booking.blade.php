@@ -112,10 +112,10 @@
                             <option value="">Pilih ruang meeting</option>
                             @foreach($rooms as $room)
                             <option value="{{ $room->id }}" 
-                                    data-capacity="{{ $room->capacity }}"
+                                    data-capacity="{{ $room->capacity ?? 0 }}"
                                     data-amenities="{{ json_encode($room->getAmenitiesList()) }}"
                                     {{ old('meeting_room_id') == $room->id ? 'selected' : '' }}>
-                                {{ $room->name }} - {{ $room->location }} ({{ $room->capacity }} kursi)
+                                {{ $room->name }} - {{ $room->location }} ({{ $room->capacity ?? 0 }} kursi)
                             </option>
                             @endforeach
                         </select>
@@ -459,7 +459,7 @@
                     const roomDetails = document.getElementById('room-details');
                     
                     if (this.value) {
-                        const capacity = selectedOption.dataset.capacity;
+                        const capacity = selectedOption.dataset.capacity || 0;
                         const amenities = JSON.parse(selectedOption.dataset.amenities);
                         
                         document.getElementById('room-capacity').textContent = capacity + ' kursi';
@@ -684,7 +684,7 @@
                 if (conflicts && conflicts.length > 0) {
                     conflictContent = `
                         <div class="space-y-3 mt-4">
-                            <p class="text-sm text-gray-700 mb-3">Pilih booking yang ingin Anda minta didahulukan:</p>
+                            <p class="text-sm text-gray-700 mb-3">Booking yang bentrok:</p>
                             ${conflicts.map(conflict => `
                                 <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
                                     <div class="flex justify-between items-start mb-2">
@@ -694,11 +694,6 @@
                                             <p class="text-xs text-gray-500 mt-1">${conflict.start_time} - ${conflict.end_time}</p>
                                         </div>
                                     </div>
-                                    <button type="button" onclick="requestPreemptFromModal(${conflict.id})" 
-                                            class="w-full mt-3 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
-                                        <i class="fas fa-handshake mr-2"></i>
-                                        Minta Didahulukan
-                                    </button>
                                 </div>
                             `).join('')}
                         </div>
@@ -759,17 +754,6 @@
                 }
             };
             
-            window.requestPreemptFromModal = function(bookingId) {
-                const reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
-                if (reason === null) return; // User cancelled
-                
-                // Tutup modal conflict terlebih dahulu
-                window.closeConflictModal();
-                
-                requestPreempt(bookingId, reason);
-            };
-
-
             // Ensure form submission works
             const form = document.querySelector('form');
             let isSubmitting = false; // Flag to prevent availability check after submit
@@ -818,42 +802,6 @@
                 });
             }
 
-            // Preempt request function
-            window.requestPreempt = function(bookingId, reason = null) {
-                if (reason === null) {
-                    reason = prompt('Masukkan alasan mengapa Anda perlu didahulukan (opsional):');
-                    if (reason === null) return; // User cancelled
-                }
-                
-                fetch(`/user/bookings/${bookingId}/preempt-request`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        reason: reason || null
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message || 'Permintaan didahulukan berhasil dikirim!');
-                        // Tutup form create booking setelah preempt dikirim
-                        // User akan dapat notifikasi jika diterima/ditolak
-                        // Jika diterima, booking otomatis dibuat, jadi tidak perlu input lagi
-                        // Jika ditolak, user dapat notif dan bisa isi ulang nanti
-                        window.location.href = '/user/bookings';
-                    } else {
-                        alert(data.message || 'Gagal mengirim permintaan didahulukan.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error requesting preempt:', error);
-                    alert('Terjadi kesalahan saat mengirim permintaan.');
-                });
-            };
         });
     </script>
 
