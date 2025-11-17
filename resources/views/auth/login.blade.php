@@ -7,7 +7,7 @@
     <!-- SEO Meta Tags -->
     @include('components.seo-meta', [
         'page' => 'login',
-        'title' => 'Masuk - Sistem Pemesanan Ruang Meeting',
+        'title' => 'Masuk - SIRUPAT BGN - Sistem Informasi Ruang Rapat Badan Gizi Nasional',
         'description' => 'Masuk ke sistem pemesanan ruang meeting untuk mengelola jadwal meeting Anda. Akses mudah dan aman dengan berbagai metode login.',
         'keywords' => 'login, masuk, sistem pemesanan, ruang meeting, autentikasi',
         'canonical' => '/login',
@@ -610,7 +610,7 @@
             <div class="logo-wrapper inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
                 <img src="{{ asset('logo-bgn.png') }}" alt="BGN Logo" class="w-12 h-12 object-contain logo-glow logo-blink">
             </div>
-            <h1 class="text-3xl font-bold text-black mb-2">Sistem Pemesanan Ruang Meeting</h1>
+            <h1 class="text-3xl font-bold text-black mb-2">SIRUPAT BGN - Sistem Informasi Ruang Rapat Badan Gizi Nasional</h1>
             <p class="text-black">Silakan masuk untuk melanjutkan</p>
         </div>
 
@@ -712,7 +712,7 @@
             <p class="text-black text-sm">
                 <span onclick="showChangelogModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">Versi Aplikasi v2.1.7</span><br>
                 <span onclick="showGuideModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">Lihat Panduan</span><br>
-                © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
+                © {{ date('Y') }} SIRUPAT BGN - Sistem Informasi Ruang Rapat Badan Gizi Nasional. Semua hak dilindungi.
             </p>
             
             <p class="text-black text-xs mt-3">
@@ -1022,7 +1022,7 @@
                                     1. Pendahuluan
                                 </h4>
                                 <p class="text-sm text-gray-700 mb-3">
-                                    Sistem Pemesanan Ruang Meeting adalah aplikasi berbasis web yang memungkinkan pengguna untuk memesan ruang meeting secara online. Aplikasi ini memiliki dua jenis pengguna: <strong>User</strong> (pengguna biasa) dan <strong>Admin</strong> (superadmin).
+                                    SIRUPAT BGN - Sistem Informasi Ruang Rapat Badan Gizi Nasional adalah aplikasi berbasis web yang memungkinkan pengguna untuk memesan ruang meeting secara online. Aplikasi ini memiliki dua jenis pengguna: <strong>User</strong> (pengguna biasa) dan <strong>Admin</strong> (superadmin).
                                 </p>
                             </div>
 
