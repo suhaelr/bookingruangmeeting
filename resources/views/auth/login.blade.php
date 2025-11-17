@@ -711,6 +711,7 @@
         <div class="text-center mt-8">
             <p class="text-black text-sm">
                 <span onclick="showChangelogModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">Versi Aplikasi v2.1.7</span><br>
+                <span onclick="showGuideModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">Lihat Panduan</span><br>
                 © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
             </p>
             
@@ -996,6 +997,381 @@
 
         window.closeChangelogModal = function() {
             const modal = document.getElementById('changelogModal');
+            if (modal) {
+                modal.remove();
+            }
+        };
+
+        // Guide Modal Functions
+        window.showGuideModal = function() {
+            const modalHtml = `
+                <div id="guideModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeGuideModal()">
+                    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                        <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">📖 Panduan Penggunaan Aplikasi</h3>
+                            <button type="button" onclick="closeGuideModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                                <i class="fas fa-times text-xl sm:text-2xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="p-4 sm:p-6">
+                            <!-- 1. Pendahuluan -->
+                            <div class="mb-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                    1. Pendahuluan
+                                </h4>
+                                <p class="text-sm text-gray-700 mb-3">
+                                    Sistem Pemesanan Ruang Meeting adalah aplikasi berbasis web yang memungkinkan pengguna untuk memesan ruang meeting secara online. Aplikasi ini memiliki dua jenis pengguna: <strong>User</strong> (pengguna biasa) dan <strong>Admin</strong> (superadmin).
+                                </p>
+                            </div>
+
+                            <!-- 2. Menu dan Navigasi untuk User -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-user text-green-500 mr-2"></i>
+                                    2. Menu dan Navigasi untuk User
+                                </h4>
+                                <p class="text-sm text-gray-700 mb-3">
+                                    Setelah login sebagai user, Anda akan memiliki akses ke menu-menu berikut:
+                                </p>
+                                <ul class="space-y-2 text-sm text-gray-700 ml-4">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-tachometer-alt text-indigo-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Beranda</strong> - Menampilkan dashboard dengan kalender ruang meeting, daftar ruang yang tersedia, dan informasi booking terbaru. Di sini Anda dapat melihat ketersediaan ruang meeting secara real-time.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-calendar-check text-blue-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Pemesanan Saya</strong> - Menampilkan semua booking yang telah Anda buat, termasuk statusnya (pending, confirmed, cancelled, completed). Anda dapat melihat detail, mengedit, atau membatalkan booking dari sini.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-plus text-green-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Pemesanan Baru</strong> - Form untuk membuat booking baru. Di sini Anda dapat memilih ruang meeting, tanggal, waktu, mengundang PIC (Person In Charge), dan mengisi detail meeting.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-user text-purple-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Profil</strong> - Halaman untuk mengelola informasi profil Anda, termasuk nama lengkap, email, nomor telepon, dan unit kerja. Anda juga dapat mengubah password dari sini.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-bell text-yellow-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Notifikasi</strong> - Ikon lonceng di pojok kanan atas menampilkan semua notifikasi terkait booking Anda, seperti konfirmasi admin, perubahan status, atau undangan sebagai PIC.
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- 3. Menu dan Navigasi untuk Admin -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-user-shield text-red-500 mr-2"></i>
+                                    3. Menu dan Navigasi untuk Admin
+                                </h4>
+                                <p class="text-sm text-gray-700 mb-3">
+                                    Sebagai admin, Anda memiliki akses penuh untuk mengelola sistem dengan menu-menu berikut:
+                                </p>
+                                <ul class="space-y-2 text-sm text-gray-700 ml-4">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-tachometer-alt text-indigo-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Beranda</strong> - Dashboard admin menampilkan statistik booking, ruang meeting, dan pengguna. Di sini Anda dapat melihat ringkasan aktivitas sistem.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-users text-blue-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Pengguna</strong> - Mengelola semua pengguna sistem. Anda dapat melihat daftar user, menambah user baru, mengedit informasi user, mengubah role (user/admin), atau menghapus user.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-door-open text-green-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Ruang Meeting</strong> - Mengelola semua ruang meeting. Anda dapat menambah ruang baru, mengedit informasi ruang (nama, lokasi, kapasitas, fasilitas), mengaktifkan/nonaktifkan ruang, atau menghapus ruang.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-calendar-check text-orange-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Pemesanan</strong> - Halaman utama untuk mengelola semua booking. Di sini Anda dapat melihat semua pemesanan, mengubah status booking (pending, confirmed, cancelled, completed), dan melihat detail lengkap setiap booking.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-user text-purple-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Profil</strong> - Halaman untuk mengelola profil admin, termasuk nama, email, nomor telepon, dan unit kerja.
+                                        </div>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-bell text-yellow-500 mr-2 mt-1"></i>
+                                        <div>
+                                            <strong>Notifikasi</strong> - Ikon lonceng menampilkan notifikasi tentang booking baru, perubahan status booking, dan aktivitas sistem lainnya.
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- 4. Flow Aplikasi: Membuat Booking -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-route text-blue-500 mr-2"></i>
+                                    4. Flow Aplikasi: Membuat Booking
+                                </h4>
+                                <div class="space-y-3 text-sm text-gray-700">
+                                    <div class="bg-blue-50 p-4 rounded-lg">
+                                        <h5 class="font-semibold mb-2">Langkah-langkah membuat booking:</h5>
+                                        <ol class="list-decimal list-inside space-y-2 ml-2">
+                                            <li><strong>Login ke akun</strong> - Masuk menggunakan email/username dan password Anda.</li>
+                                            <li><strong>Klik menu "Pemesanan Baru"</strong> - Atau klik tombol "Pemesanan Baru" di dashboard.</li>
+                                            <li><strong>Pilih Ruang Meeting</strong> - Pilih ruang meeting yang ingin Anda pesan dari dropdown. Sistem akan menampilkan nama ruang, lokasi, dan kapasitas (jika tersedia).</li>
+                                            <li><strong>Pilih Tanggal</strong> - Klik pada kalender untuk memilih tanggal meeting. Tanggal yang sudah terbooking akan ditandai.</li>
+                                            <li><strong>Pilih Waktu</strong> - Pilih waktu mulai dan waktu selesai meeting. Sistem akan memvalidasi apakah slot waktu tersebut tersedia.</li>
+                                            <li><strong>Isi Detail Meeting</strong>:
+                                                <ul class="list-disc list-inside ml-4 mt-1 space-y-1">
+                                                    <li>Judul meeting (wajib)</li>
+                                                    <li>Deskripsi meeting (opsional)</li>
+                                                    <li>Unit Kerja (pilih dari dropdown)</li>
+                                                    <li>Jumlah peserta</li>
+                                                </ul>
+                                            </li>
+                                            <li><strong>Undang PIC (Person In Charge)</strong> - Pilih PIC yang ingin diundang dengan mencentang checkbox. Anda dapat mengundang beberapa PIC sekaligus. Klik "Hapus Semua Pilihan" untuk menghapus semua pilihan PIC.</li>
+                                            <li><strong>Submit Booking</strong> - Klik tombol "Buat Pemesanan" untuk mengirim permintaan booking.</li>
+                                        </ol>
+                                    </div>
+                                    <p class="text-sm text-gray-600 italic">
+                                        <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                                        <strong>Catatan:</strong> Setelah submit, booking akan berstatus <strong>"pending"</strong> dan menunggu approval dari admin. Anda akan menerima notifikasi via email dan di dashboard ketika status booking berubah.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- 5. Proses Approval oleh Admin -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    5. Proses Approval oleh Admin
+                                </h4>
+                                <div class="space-y-3 text-sm text-gray-700">
+                                    <div class="bg-green-50 p-4 rounded-lg">
+                                        <h5 class="font-semibold mb-2">Alur approval booking:</h5>
+                                        <ol class="list-decimal list-inside space-y-2 ml-2">
+                                            <li><strong>User membuat booking</strong> - Booking dibuat dengan status "pending".</li>
+                                            <li><strong>Admin menerima notifikasi</strong> - Semua admin akan menerima notifikasi (di dashboard dan email) tentang booking baru yang perlu di-approve.</li>
+                                            <li><strong>Admin membuka halaman Pemesanan</strong> - Admin masuk ke menu "Pemesanan" untuk melihat daftar semua booking.</li>
+                                            <li><strong>Admin melihat detail booking</strong> - Klik pada booking untuk melihat detail lengkap, termasuk:
+                                                <ul class="list-disc list-inside ml-4 mt-1 space-y-1">
+                                                    <li>Informasi user yang membuat booking</li>
+                                                    <li>Ruang meeting yang dipesan</li>
+                                                    <li>Tanggal dan waktu meeting</li>
+                                                    <li>Judul dan deskripsi meeting</li>
+                                                    <li>Daftar PIC yang diundang</li>
+                                                    <li>Status booking saat ini</li>
+                                                </ul>
+                                            </li>
+                                            <li><strong>Admin mengubah status booking</strong>:
+                                                <ul class="list-disc list-inside ml-4 mt-1 space-y-1">
+                                                    <li><strong>Confirmed</strong> - Menyetujui booking, booking akan dikonfirmasi dan ruang meeting ter-reserve.</li>
+                                                    <li><strong>Cancelled</strong> - Menolak booking, booking akan dibatalkan dengan alasan (opsional).</li>
+                                                    <li><strong>Pending</strong> - Membiarkan status tetap pending jika masih perlu review lebih lanjut.</li>
+                                                    <li><strong>Completed</strong> - Menandai booking sebagai selesai setelah meeting berlangsung.</li>
+                                                </ul>
+                                            </li>
+                                            <li><strong>User menerima notifikasi</strong> - User akan menerima notifikasi (di dashboard dan email) tentang perubahan status booking.</li>
+                                        </ol>
+                                    </div>
+                                    <p class="text-sm text-gray-600 italic">
+                                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i>
+                                        <strong>Penting:</strong> Hanya admin yang dapat mengubah status booking. User tidak dapat mengubah status booking sendiri setelah dibuat, kecuali membatalkan booking yang masih pending atau confirmed (dengan batasan waktu).
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- 6. Sistem Notifikasi Email -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-envelope text-purple-500 mr-2"></i>
+                                    6. Sistem Notifikasi Email
+                                </h4>
+                                <div class="space-y-3 text-sm text-gray-700">
+                                    <p class="mb-3">
+                                        Sistem ini dilengkapi dengan notifikasi email otomatis yang dikirim ke email terdaftar pengguna. Notifikasi email akan dikirim untuk:
+                                    </p>
+                                    <div class="bg-purple-50 p-4 rounded-lg">
+                                        <h5 class="font-semibold mb-2">Notifikasi untuk User:</h5>
+                                        <ul class="list-disc list-inside space-y-1 ml-2">
+                                            <li><strong>Booking Baru Dibuat</strong> - Konfirmasi bahwa booking Anda telah dibuat dan sedang menunggu approval.</li>
+                                            <li><strong>Status Booking Diperbarui</strong> - Notifikasi ketika admin mengubah status booking Anda (confirmed, cancelled, completed).</li>
+                                            <li><strong>Booking Dibatalkan</strong> - Notifikasi ketika booking Anda dibatalkan oleh admin atau oleh Anda sendiri.</li>
+                                            <li><strong>Undangan sebagai PIC</strong> - Notifikasi ketika Anda diundang sebagai PIC dalam sebuah meeting.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-red-50 p-4 rounded-lg mt-3">
+                                        <h5 class="font-semibold mb-2">Notifikasi untuk Admin:</h5>
+                                        <ul class="list-disc list-inside space-y-1 ml-2">
+                                            <li><strong>Permintaan Booking Baru</strong> - Notifikasi ketika ada user yang membuat booking baru yang perlu di-approve.</li>
+                                            <li><strong>Booking Diperbarui</strong> - Notifikasi ketika user mengubah atau memperbarui booking yang sudah ada.</li>
+                                            <li><strong>Booking Dibatalkan</strong> - Notifikasi ketika user membatalkan booking mereka.</li>
+                                            <li><strong>Status Booking Diperbarui</strong> - Notifikasi ketika admin lain mengubah status booking.</li>
+                                        </ul>
+                                    </div>
+                                    <p class="text-sm text-gray-600 italic mt-3">
+                                        <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                                        <strong>Catatan:</strong> Semua notifikasi email menggunakan template modern dan responsif, serta ditulis dalam bahasa Indonesia. Email akan dikirim ke alamat email yang terdaftar di profil Anda.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- 7. Fitur Tambahan -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                    7. Fitur Tambahan
+                                </h4>
+                                <div class="space-y-3 text-sm text-gray-700">
+                                    <div class="bg-yellow-50 p-4 rounded-lg">
+                                        <ul class="space-y-2">
+                                            <li class="flex items-start">
+                                                <i class="fas fa-calendar-alt text-indigo-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Kalender Interaktif</strong> - Dashboard user menampilkan kalender yang menunjukkan ketersediaan ruang meeting. Warna berbeda menunjukkan status booking (hijau = confirmed, kuning = pending, merah = cancelled).
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-search text-blue-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Pencarian dan Filter</strong> - Admin dapat mencari dan memfilter booking berdasarkan status, tanggal, ruang meeting, atau nama user.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-users text-green-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Undangan PIC</strong> - User dapat mengundang beberapa PIC (Person In Charge) dalam satu booking. PIC yang diundang akan melihat booking tersebut di dashboard mereka.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-eye text-purple-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Visibilitas Deskripsi</strong> - User dapat mengatur siapa yang dapat melihat deskripsi meeting (public atau hanya PIC yang diundang).
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-bell text-red-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Notifikasi Real-time</strong> - Notifikasi di dashboard akan ter-update secara otomatis setiap 10 detik tanpa perlu refresh halaman.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-mobile-alt text-gray-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Responsive Design</strong> - Aplikasi dapat diakses dengan baik dari desktop, tablet, maupun smartphone.
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 8. Tips dan Best Practices -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                                    8. Tips dan Best Practices
+                                </h4>
+                                <div class="space-y-3 text-sm text-gray-700">
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <ul class="space-y-2">
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Buat booking lebih awal</strong> - Buat booking beberapa hari sebelum meeting untuk memastikan ruang tersedia dan admin memiliki waktu untuk approve.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Periksa ketersediaan</strong> - Gunakan kalender di dashboard untuk melihat ketersediaan ruang sebelum membuat booking.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Batalkan booking jika tidak digunakan</strong> - Jika meeting dibatalkan, segera batalkan booking agar ruang dapat digunakan oleh user lain.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Periksa email secara berkala</strong> - Pastikan email Anda aktif dan periksa secara berkala untuk notifikasi penting tentang status booking.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Isi detail meeting dengan lengkap</strong> - Isi judul dan deskripsi meeting dengan jelas agar admin dapat memahami tujuan meeting.
+                                                </div>
+                                            </li>
+                                            <li class="flex items-start">
+                                                <i class="fas fa-check text-green-500 mr-2 mt-1"></i>
+                                                <div>
+                                                    <strong>Admin: Approve booking dengan cepat</strong> - Sebagai admin, approve atau reject booking secepat mungkin untuk memberikan pengalaman terbaik bagi user.
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 9. Bantuan dan Kontak -->
+                            <div class="mb-4 border-t border-gray-200 pt-6">
+                                <h4 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                                    <i class="fas fa-question-circle text-blue-500 mr-2"></i>
+                                    9. Bantuan dan Kontak
+                                </h4>
+                                <div class="bg-blue-50 p-4 rounded-lg text-sm text-gray-700">
+                                    <p class="mb-2">
+                                        Jika Anda mengalami kesulitan atau memiliki pertanyaan tentang penggunaan aplikasi, silakan hubungi administrator sistem melalui:
+                                    </p>
+                                    <ul class="list-disc list-inside space-y-1 ml-2">
+                                        <li>Email: Hubungi admin melalui email yang terdaftar</li>
+                                        <li>WhatsApp: Gunakan tombol WhatsApp yang tersedia di pojok kanan bawah halaman</li>
+                                        <li>Dashboard: Periksa notifikasi di dashboard untuk informasi penting</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-end">
+                                <button type="button" onclick="closeGuideModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 w-full sm:w-auto">
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Add event listener for ESC key
+            document.addEventListener('keydown', function escHandler(e) {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('guideModal');
+                    if (modal && !modal.classList.contains('hidden')) {
+                        closeGuideModal();
+                        document.removeEventListener('keydown', escHandler);
+                    }
+                }
+            });
+        };
+
+        window.closeGuideModal = function() {
+            const modal = document.getElementById('guideModal');
             if (modal) {
                 modal.remove();
             }
