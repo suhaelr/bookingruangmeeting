@@ -14,39 +14,46 @@
     <style>
         /* Fix dropdown styling */
         select {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 1px solid #e5e7eb !important;
         }
         
         select option {
-            background-color: #1a202c !important;
-            color: white !important;
+            background-color: #ffffff !important;
+            color: #000000 !important;
             padding: 8px 12px !important;
         }
         
         select option:hover {
-            background-color: #2d3748 !important;
-            color: white !important;
+            background-color: #f3f4f6 !important;
+            color: #000000 !important;
         }
         
         select option:checked {
-            background-color: #3182ce !important;
-            color: white !important;
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+        }
+        .gradient-bg {
+            background: #ffffff;
+        }
+        .glass-effect {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="bg-white min-h-screen">
     <!-- Navigation -->
-        <nav class="glass-effect shadow-lg">
+        <nav class="bg-white border-b border-gray-200 shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center h-16">
                     <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
+                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4 text-black">
                             <i class="fas fa-bars"></i>
                         </button>
                         <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
@@ -66,8 +73,8 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Ruang Meeting</h2>
-                    <p class="text-white/80">Lihat dan kelola semua ruang meeting</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Kelola Ruang Meeting</h2>
+                    <p class="text-black">Lihat dan kelola semua ruang meeting</p>
                 </div>
                 <div class="flex space-x-4">
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
@@ -87,32 +94,32 @@
             @forelse($rooms as $room)
             <div class="glass-effect rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-300">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-white">{{ $room->name }}</h3>
+                    <h3 class="text-xl font-bold text-black">{{ $room->name }}</h3>
                     <span class="px-2 py-1 rounded-full text-xs font-medium
                         {{ $room->is_active ? 'bg-green-500 text-white' : 'bg-red-500 text-white' }}">
                         {{ $room->is_active ? 'Aktif' : 'Tidak Aktif' }}
                     </span>
                 </div>
                 
-                <p class="text-white/80 text-sm mb-4">{{ $room->description }}</p>
+                <p class="text-black text-sm mb-4">{{ $room->description }}</p>
                 
                 <div class="space-y-2 mb-4">
                     <div class="flex items-center justify-between">
-                        <span class="text-white/60 text-sm">Kapasitas:</span>
-                        <span class="text-white font-medium">{{ $room->capacity ? $room->capacity . ' kursi' : 'Tidak ditentukan' }}</span>
+                        <span class="text-black text-sm">Kapasitas:</span>
+                        <span class="text-black font-medium">{{ $room->capacity ? $room->capacity . ' kursi' : 'Tidak ditentukan' }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-white/60 text-sm">Lokasi:</span>
-                        <span class="text-white font-medium">{{ $room->location }}</span>
+                        <span class="text-black text-sm">Lokasi:</span>
+                        <span class="text-black font-medium">{{ $room->location }}</span>
                     </div>
                 </div>
                 
                 @if($room->getAmenitiesList())
                 <div class="mb-4">
-                    <p class="text-white/60 text-sm mb-2">Fasilitas:</p>
+                    <p class="text-black text-sm mb-2">Fasilitas:</p>
                     <div class="flex flex-wrap gap-1">
                         @foreach($room->getAmenitiesList() as $amenity)
-                        <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded">
+                        <span class="px-2 py-1 bg-blue-500/20 text-blue-700 text-xs rounded">
                             {{ ucfirst(str_replace('_', ' ', $amenity)) }}
                         </span>
                         @endforeach
@@ -132,29 +139,29 @@
                 
                 @if($todayBookings->count() > 0)
                 <div class="mb-4">
-                    <p class="text-white/60 text-sm mb-2">Pemesanan Hari Ini:</p>
+                    <p class="text-black text-sm mb-2">Pemesanan Hari Ini:</p>
                     <div class="space-y-2">
                         @foreach($todayBookings as $booking)
-                        <div class="bg-white/10 rounded-lg p-3">
+                        <div class="bg-gray-100 rounded-lg p-3">
                             <div class="flex items-center justify-between">
                                 <div class="flex-1">
-                                    <p class="text-white font-medium text-sm">{{ $booking->user->full_name }}</p>
-                                    <p class="text-white/60 text-xs">{{ $booking->title }}</p>
+                                    <p class="text-black font-medium text-sm">{{ $booking->user->full_name }}</p>
+                                    <p class="text-black text-xs">{{ $booking->title }}</p>
                                     @if($booking->unit_kerja)
-                                        <p class="text-blue-300 text-xs mt-1">
+                                        <p class="text-blue-600 text-xs mt-1">
                                             <i class="fas fa-building mr-1"></i>{{ $booking->unit_kerja }}
                                         </p>
                                     @endif
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-white text-sm font-medium">
+                                    <p class="text-black text-sm font-medium">
                                         {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} - 
                                         {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
                                     </p>
                                     <span class="px-2 py-1 text-xs rounded-full
-                                        @if($booking->status === 'confirmed') bg-green-500/20 text-green-300
-                                        @elseif($booking->status === 'pending') bg-yellow-500/20 text-yellow-300
-                                        @else bg-gray-500/20 text-gray-300 @endif">
+                                        @if($booking->status === 'confirmed') bg-green-500/20 text-green-700
+                                        @elseif($booking->status === 'pending') bg-yellow-500/20 text-yellow-700
+                                        @else bg-gray-500/20 text-gray-700 @endif">
                                         {{ ucfirst($booking->status) }}
                                     </span>
                                 </div>
@@ -165,22 +172,22 @@
                 </div>
                 @endif
                 
-                <div class="flex items-center justify-between pt-4 border-t border-white/20">
-                    <div class="text-white/60 text-sm">
+                <div class="flex items-center justify-between pt-4 border-t border-gray-300">
+                    <div class="text-black text-sm">
                         <i class="fas fa-calendar mr-1"></i>
                         {{ $room->bookings_count ?? 0 }} pemesanan total
                         @if($todayBookings->count() > 0)
-                            <span class="text-green-300">({{ $todayBookings->count() }} hari ini)</span>
+                            <span class="text-green-600">({{ $todayBookings->count() }} hari ini)</span>
                         @endif
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="viewRoom({{ $room->id }})" class="text-black hover:text-blue-300 transition-colors" title="Lihat Details">
+                        <button onclick="viewRoom({{ $room->id }})" class="text-blue-600 hover:text-blue-800 transition-colors" title="Lihat Details">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button onclick="editRoom({{ $room->id }})" class="text-yellow-400 hover:text-yellow-300 transition-colors" title="Edit Ruang">
+                        <button onclick="editRoom({{ $room->id }})" class="text-yellow-600 hover:text-yellow-800 transition-colors" title="Edit Ruang">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="deleteRoom({{ $room->id }})" class="text-red-400 hover:text-red-300 transition-colors" title="Hapus Ruang">
+                        <button onclick="deleteRoom({{ $room->id }})" class="text-red-600 hover:text-red-800 transition-colors" title="Hapus Ruang">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -188,9 +195,9 @@
             </div>
             @empty
             <div class="col-span-full text-center py-12">
-                <i class="fas fa-door-open text-white/40 text-6xl mb-4"></i>
-                <h3 class="text-xl font-bold text-white mb-2">Tidak Ada Ruang</h3>
-                <p class="text-white/60">Belum ada ruang meeting dalam sistem.</p>
+                <i class="fas fa-door-open text-gray-400 text-6xl mb-4"></i>
+                <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Ruang</h3>
+                <p class="text-black">Belum ada ruang meeting dalam sistem.</p>
             </div>
             @endforelse
         </div>
@@ -198,25 +205,25 @@
         @if($rooms->count() > 0)
         <!-- Pagination -->
         <div class="flex justify-between items-center mt-8">
-            <div class="text-white/80 text-sm">
+            <div class="text-black text-sm">
                 Menampilkan {{ $rooms->firstItem() }} sampai {{ $rooms->lastItem() }} dari {{ $rooms->total() }} ruang
             </div>
             <div class="flex space-x-2">
                 @if($rooms->previousPageUrl())
-                <a href="{{ $rooms->previousPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                <a href="{{ $rooms->previousPageUrl() }}" class="px-3 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition-colors">
                     <i class="fas fa-chevron-left"></i>
                 </a>
                 @endif
                 
                 @for($i = 1; $i <= $rooms->lastPage(); $i++)
                 <a href="{{ $rooms->url($i) }}" 
-                   class="px-3 py-2 rounded-lg transition-colors {{ $rooms->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold' : 'bg-white/20 text-white hover:bg-white/30' }}">
+                   class="px-3 py-2 rounded-lg transition-colors {{ $rooms->currentPage() == $i ? 'bg-blue-500 text-white font-semibold' : 'bg-gray-200 text-black hover:bg-gray-300' }}">
                     {{ $i }}
                 </a>
                 @endfor
                 
                 @if($rooms->nextPageUrl())
-                <a href="{{ $rooms->nextPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
+                <a href="{{ $rooms->nextPageUrl() }}" class="px-3 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition-colors">
                     <i class="fas fa-chevron-right"></i>
                 </a>
                 @endif
