@@ -109,11 +109,26 @@ class AuthController extends Controller
             // Add delay to ensure session is saved
             usleep(200000); // 200ms delay
             
-            // Redirect based on current role
+            // Check if there's a pending attendance confirmation
+            $pendingAttendanceConfirmation = Session::get('pending_attendance_confirmation');
+            $intendedUrl = Session::get('intended_url') ?? request()->session()->get('intended');
+            
+            // Redirect based on current role or intended URL
             $userData = Session::get('user_data');
-            $redirectRoute = $userData['role'] === 'admin' 
-                ? redirect()->route('admin.dashboard')
-                : redirect()->route('user.dashboard');
+            
+            if ($intendedUrl) {
+                // Clear intended URL from session
+                Session::forget('intended_url');
+                request()->session()->forget('intended');
+                $redirectRoute = redirect($intendedUrl);
+            } elseif ($pendingAttendanceConfirmation) {
+                // Redirect to confirm attendance page
+                $redirectRoute = redirect()->route('user.confirm-attendance', $pendingAttendanceConfirmation);
+            } else {
+                $redirectRoute = $userData['role'] === 'admin' 
+                    ? redirect()->route('admin.dashboard')
+                    : redirect()->route('user.dashboard');
+            }
             
             $response = $redirectRoute->with('success', 'Login berhasil!');
             
@@ -193,9 +208,24 @@ class AuthController extends Controller
                 'session_id' => session()->getId()
             ]);
 
-            $response = $freshUser->role === 'admin' 
-                ? redirect()->route('admin.dashboard')->with('success', 'Login berhasil!')
-                : redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
+            // Check if there's a pending attendance confirmation
+            $pendingAttendanceConfirmation = Session::get('pending_attendance_confirmation');
+            $intendedUrl = Session::get('intended_url') ?? request()->session()->get('intended');
+            
+            // Redirect based on current role or intended URL
+            if ($intendedUrl) {
+                // Clear intended URL from session
+                Session::forget('intended_url');
+                request()->session()->forget('intended');
+                $response = redirect($intendedUrl)->with('success', 'Login berhasil!');
+            } elseif ($pendingAttendanceConfirmation) {
+                // Redirect to confirm attendance page
+                $response = redirect()->route('user.confirm-attendance', $pendingAttendanceConfirmation)->with('success', 'Login berhasil!');
+            } else {
+                $response = $freshUser->role === 'admin' 
+                    ? redirect()->route('admin.dashboard')->with('success', 'Login berhasil!')
+                    : redirect()->route('user.dashboard')->with('success', 'Login berhasil!');
+            }
             
             // Add no-cache headers
             $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private, max-age=0');

@@ -195,6 +195,9 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
 Route::get('/captcha/generate', [CaptchaController::class, 'generate'])->name('captcha.generate');
 Route::post('/captcha/verify', [CaptchaController::class, 'verify'])->name('captcha.verify');
 
+// Attendance Confirmation Route (accessible without login - will redirect to login first)
+Route::get('/user/confirm-attendance/{invitationId}', [UserController::class, 'prepareConfirmAttendance'])->name('user.confirm-attendance.prepare');
+
 // User Routes
 Route::prefix('user')->middleware('user.auth')->group(function () {
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');

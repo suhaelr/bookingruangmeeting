@@ -874,6 +874,34 @@ class UserController extends Controller
     }
 
     /**
+     * Prepare confirm attendance - accessible without login
+     * Saves invitation_id to session and redirects to login
+     * If user is already logged in, directly shows the confirmation
+     */
+    public function prepareConfirmAttendance($invitationId)
+    {
+        // Validate invitation exists
+        $invitation = \App\Models\MeetingInvitation::find($invitationId);
+        
+        if (!$invitation) {
+            return redirect()->route('login')->with('error', 'Undangan tidak ditemukan.');
+        }
+        
+        // If user is already logged in, directly process the confirmation
+        if (session('user_logged_in') && session('user_data')) {
+            // Call showConfirmAttendance logic directly
+            return $this->showConfirmAttendance($invitationId);
+        }
+        
+        // Save invitation_id to session for after login
+        session(['pending_attendance_confirmation' => $invitationId]);
+        
+        // Redirect to login with intended URL
+        return redirect()->route('login')
+            ->with('intended', route('user.confirm-attendance', $invitationId));
+    }
+
+    /**
      * Show confirm attendance page
      */
     public function showConfirmAttendance($invitationId)

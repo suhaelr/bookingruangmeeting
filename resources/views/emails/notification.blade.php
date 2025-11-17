@@ -327,7 +327,7 @@
             <!-- Action Buttons -->
             <div class="button-container">
                 @if($isPicInvitation && $invitationId)
-                <a href="{{ route('user.confirm-attendance', $invitationId) }}" class="action-button" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); margin-right: 10px; display: inline-block;">
+                <a href="{{ route('user.confirm-attendance.prepare', $invitationId) }}" class="action-button" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); margin-right: 10px; display: inline-block;">
                     ✅ Konfirmasi Kehadiran
                 </a>
                 @endif

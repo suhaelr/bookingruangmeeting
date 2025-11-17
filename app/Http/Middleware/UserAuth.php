@@ -37,9 +37,16 @@ class UserAuth
                 'session_has_user_logged_in' => Session::has('user_logged_in'),
                 'user_logged_in_value' => Session::get('user_logged_in'),
                 'session_id' => session()->getId(),
-                'session_all' => Session::all()
+                'session_all' => Session::all(),
+                'url' => $request->url()
             ]);
-            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu!');
+            
+            // Save intended URL for redirect after login
+            Session::put('intended_url', $request->url());
+            
+            return redirect()->route('login')
+                ->with('error', 'Silakan login terlebih dahulu!')
+                ->with('intended', $request->url());
         }
 
         $user = Session::get('user_data');
