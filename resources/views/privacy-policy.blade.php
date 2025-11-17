@@ -247,7 +247,7 @@
 
                     <div class="mt-8 pt-6 border-t border-white/20">
                         <p class="text-black/60 text-sm text-center">
-                            <span onclick="showChangelogModal()" class="text-black/80 font-medium cursor-pointer hover:text-black underline transition-colors duration-300">Versi Aplikasi v2.1.6</span><br>
+                            <span onclick="showChangelogModal()" class="text-black/80 font-medium cursor-pointer hover:text-black underline transition-colors duration-300">Versi Aplikasi v2.1.7</span><br>
                             Dokumen ini dibuat dengan ❤️<br>
                             © {{ date('Y') }} Sistem Pemesanan Ruang Meeting. Semua hak dilindungi.
                         </p>
@@ -283,8 +283,34 @@
                         </div>
                         
                         <div class="p-4 sm:p-6">
-                            <!-- v2.1.6 -->
+                            <!-- v2.1.7 -->
                             <div class="mb-6">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-lg font-bold text-black">v2.1.7 (2025) - Peningkatan UI dan Fitur Profil</h4>
+                                    <span class="text-sm text-gray-500">November 2025</span>
+                                </div>
+                                <ul class="space-y-2 text-sm text-gray-700">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-user-shield text-purple-500 mr-2 mt-1"></i>
+                                        <span><strong>Menu Profil Admin</strong> - Tambah menu profil admin untuk edit email dan informasi lainnya, sama seperti di akun user</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-list text-blue-500 mr-2 mt-1"></i>
+                                        <span><strong>Dropdown Unit Kerja</strong> - Field Unit Kerja sekarang berbentuk dropdown dengan 7 pilihan unit kerja standar (hardcoded)</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-eye-slash text-gray-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Tampilan Kapasitas</strong> - Kapasitas ruang tidak ditampilkan jika bernilai 0 atau kosong di form create booking</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-bug text-red-500 mr-2 mt-1"></i>
+                                        <span><strong>Perbaikan Error Duplicate Email</strong> - Perbaiki error duplicate email saat update profil admin</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- v2.1.6 -->
+                            <div class="mb-6 border-t border-gray-200 pt-6">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="text-lg font-bold text-black">v2.1.6 (2025) - Email Notifikasi Otomatis</h4>
                                     <span class="text-sm text-gray-500">November 2025</span>

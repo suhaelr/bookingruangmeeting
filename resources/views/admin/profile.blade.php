@@ -165,9 +165,22 @@
                             <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
                                 <i class="fas fa-building mr-2"></i>Unit Kerja
                             </label>
-                            <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') }}"
-                                   class="w-full px-4 py-3 form-control"
-                                   placeholder="Masukkan unit kerja Anda">
+                            <div class="relative">
+                                <select id="unit_kerja" name="unit_kerja"
+                                        class="w-full px-4 py-3 pr-10 form-control appearance-none cursor-pointer">
+                                    <option value="">Pilih Unit Kerja</option>
+                                    <option value="SEKRETARIAT UTAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'SEKRETARIAT UTAMA' ? 'selected' : '' }}>SEKRETARIAT UTAMA</option>
+                                    <option value="DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN' ? 'selected' : '' }}>DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN</option>
+                                    <option value="DEPUTI BIDANG PROMOSI DAN KERJA SAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PROMOSI DAN KERJA SAMA' ? 'selected' : '' }}>DEPUTI BIDANG PROMOSI DAN KERJA SAMA</option>
+                                    <option value="DEPUTI BIDANG SISTEM DAN TATA KELOLA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG SISTEM DAN TATA KELOLA' ? 'selected' : '' }}>DEPUTI BIDANG SISTEM DAN TATA KELOLA</option>
+                                    <option value="DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN' ? 'selected' : '' }}>DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN</option>
+                                    <option value="INSPEKTORAT UTAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'INSPEKTORAT UTAMA' ? 'selected' : '' }}>INSPEKTORAT UTAMA</option>
+                                    <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
+                                </select>
+                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-500"></i>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Kirim Button -->

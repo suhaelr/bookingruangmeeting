@@ -115,7 +115,7 @@
                                     data-capacity="{{ $room->capacity ?? 0 }}"
                                     data-amenities="{{ json_encode($room->getAmenitiesList()) }}"
                                     {{ old('meeting_room_id') == $room->id ? 'selected' : '' }}>
-                                {{ $room->name }} - {{ $room->location }} ({{ $room->capacity ?? 0 }} kursi)
+                                {{ $room->name }} - {{ $room->location }}@if($room->capacity && $room->capacity > 0) ({{ $room->capacity }} kursi)@endif
                             </option>
                             @endforeach
                         </select>
@@ -129,7 +129,7 @@
                 <div id="room-details" class="hidden bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <h4 class="text-black font-medium mb-2">Detail Ruang</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
+                        <div id="room-capacity-container" class="hidden">
                             <span class="text-gray-600">Kapasitas:</span>
                             <span id="room-capacity" class="text-black ml-2"></span>
                         </div>
@@ -229,11 +229,22 @@
                     <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
                         <i class="fas fa-building mr-2"></i>Unit Kerja *
                     </label>
-                    <input type="text" id="unit_kerja" name="unit_kerja" 
-                           value="{{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') }}" 
-                           required
-                           class="w-full px-4 py-3 form-control"
-                           placeholder="Masukkan unit kerja Anda">
+                    <div class="relative">
+                        <select id="unit_kerja" name="unit_kerja" required
+                                class="w-full px-4 py-3 pr-10 form-control appearance-none cursor-pointer">
+                            <option value="">Pilih Unit Kerja</option>
+                            <option value="SEKRETARIAT UTAMA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'SEKRETARIAT UTAMA' ? 'selected' : '' }}>SEKRETARIAT UTAMA</option>
+                            <option value="DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN' ? 'selected' : '' }}>DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN</option>
+                            <option value="DEPUTI BIDANG PROMOSI DAN KERJA SAMA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG PROMOSI DAN KERJA SAMA' ? 'selected' : '' }}>DEPUTI BIDANG PROMOSI DAN KERJA SAMA</option>
+                            <option value="DEPUTI BIDANG SISTEM DAN TATA KELOLA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG SISTEM DAN TATA KELOLA' ? 'selected' : '' }}>DEPUTI BIDANG SISTEM DAN TATA KELOLA</option>
+                            <option value="DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN' ? 'selected' : '' }}>DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN</option>
+                            <option value="INSPEKTORAT UTAMA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'INSPEKTORAT UTAMA' ? 'selected' : '' }}>INSPEKTORAT UTAMA</option>
+                            <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
+                        </select>
+                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-500"></i>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Dokumen Tambahan (Opsional) -->
@@ -462,12 +473,20 @@
                 meetingRoomSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
                     const roomDetails = document.getElementById('room-details');
+                    const capacityContainer = document.getElementById('room-capacity-container');
                     
                     if (this.value) {
                         const capacity = selectedOption.dataset.capacity || 0;
                         const amenities = JSON.parse(selectedOption.dataset.amenities);
                         
-                        document.getElementById('room-capacity').textContent = capacity + ' kursi';
+                        // Show/hide capacity based on value
+                        if (capacity && parseInt(capacity) > 0) {
+                            document.getElementById('room-capacity').textContent = capacity + ' kursi';
+                            capacityContainer.classList.remove('hidden');
+                        } else {
+                            capacityContainer.classList.add('hidden');
+                        }
+                        
                         document.getElementById('room-amenities').textContent = amenities.join(', ');
                         
                         roomDetails.classList.remove('hidden');
