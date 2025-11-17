@@ -67,7 +67,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-black mb-2">{{ $user['full_name'] ?? 'Administrator' }}</h3>
                         <p class="text-black mb-1">{{ $user['email'] ?? 'N/A' }}</p>
-                        <p class="text-black text-sm">{{ $user['department'] ?? 'N/A' }}</p>
+                        <p class="text-black text-sm">{{ $user['unit_kerja'] ?? $user['department'] ?? 'N/A' }}</p>
                         <span class="inline-block px-3 py-1 bg-purple-500/20 text-purple-700 text-xs rounded-full mt-2">
                             Administrator
                         </span>
@@ -160,14 +160,14 @@
                                    placeholder="Masukkan nomor telepon Anda">
                         </div>
 
-                        <!-- Department -->
+                        <!-- Unit Kerja -->
                         <div>
-                            <label for="department" class="block text-sm font-medium text-black mb-2">
-                                <i class="fas fa-building mr-2"></i>Department
+                            <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
+                                <i class="fas fa-building mr-2"></i>Unit Kerja
                             </label>
-                            <input type="text" id="department" name="department" value="{{ old('department', $user['department'] ?? '') }}"
+                            <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') }}"
                                    class="w-full px-4 py-3 form-control"
-                                   placeholder="Masukkan department Anda">
+                                   placeholder="Masukkan unit kerja Anda">
                         </div>
 
                         <!-- Kirim Button -->

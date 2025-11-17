@@ -9,6 +9,7 @@ use App\Models\Booking;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -933,16 +934,25 @@ class AdminController extends Controller
 
     public function updateProfile(Request $request)
     {
+        $userData = session('user_data');
+        $userId = $userData['id'];
+
         $request->validate([
             'full_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('users', 'email')->ignore($userId)
+            ],
             'phone' => 'nullable|string|max:20',
-            'department' => 'nullable|string|max:100',
+            'unit_kerja' => 'nullable|string|max:255',
+        ], [
+            'email.unique' => 'Email ini sudah digunakan oleh user lain. Silakan gunakan email yang berbeda.',
         ]);
 
         // Update database and session
-        $userData = session('user_data');
-        $userModel = User::find($userData['id']);
+        $userModel = User::find($userId);
 
         if ($userModel) {
             // Persist to DB
@@ -950,7 +960,12 @@ class AdminController extends Controller
             $userModel->name = $request->full_name;
             $userModel->email = $request->email;
             $userModel->phone = $request->phone;
-            $userModel->department = $request->department;
+            // Update unit_kerja, fallback to department if unit_kerja column doesn't exist
+            if (isset($userModel->unit_kerja)) {
+                $userModel->unit_kerja = $request->unit_kerja;
+            } else {
+                $userModel->department = $request->unit_kerja;
+            }
             $userModel->save();
         }
 
@@ -958,12 +973,13 @@ class AdminController extends Controller
         $userData['full_name'] = $userModel->full_name ?? $request->full_name;
         $userData['email'] = $userModel->email ?? $request->email;
         $userData['phone'] = $userModel->phone ?? $request->phone;
-        $userData['department'] = $userModel->department ?? $request->department;
+        $userData['unit_kerja'] = $userModel->unit_kerja ?? $userModel->department ?? $request->unit_kerja;
+        $userData['department'] = $userModel->department ?? $request->unit_kerja;
         session(['user_data' => $userData]);
 
         \Log::info('Admin profile updated', [
-            'admin_id' => $userData['id'],
-            'updated_fields' => $request->only(['full_name', 'email', 'phone', 'department'])
+            'admin_id' => $userId,
+            'updated_fields' => $request->only(['full_name', 'email', 'phone', 'unit_kerja'])
         ]);
 
         return back()->with('success', 'Profil berhasil diperbarui.');
