@@ -54,12 +54,36 @@ class UserNotification extends Model
 
     public static function createNotification($userId, $type, $title, $message, $bookingId = null)
     {
-        return self::create([
+        $notification = self::create([
             'user_id' => $userId,
             'booking_id' => $bookingId,
             'type' => $type,
             'title' => $title,
             'message' => $message,
         ]);
+
+        // Send email notification
+        try {
+            $user = \App\Models\User::find($userId);
+            if ($user && $user->email) {
+                \Mail::to($user->email)->send(new \App\Mail\NotificationEmail($user, $notification));
+                
+                \Log::info('Notification email sent', [
+                    'user_id' => $userId,
+                    'user_email' => $user->email,
+                    'notification_id' => $notification->id,
+                    'type' => $type
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log error but don't fail notification creation
+            \Log::error('Failed to send notification email', [
+                'user_id' => $userId,
+                'notification_id' => $notification->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+
+        return $notification;
     }
 }

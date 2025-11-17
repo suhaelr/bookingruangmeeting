@@ -381,12 +381,11 @@ class AdminController extends Controller
 
     private function notifyAdmin($title, $message, $type = 'info', $bookingId = null)
     {
-        // Create admin notification in database
-        // Get first admin user to send notification to (since user_id cannot be null)
+        // Create admin notification in database and send email to all admin users
         try {
-            $adminUser = \App\Models\User::where('role', 'admin')->orderBy('id')->first();
+            $adminUsers = \App\Models\User::where('role', 'admin')->get();
             
-            if (!$adminUser) {
+            if ($adminUsers->isEmpty()) {
                 \Log::warning('No admin user found to send notification', [
                     'title' => $title,
                     'type' => $type,
@@ -395,21 +394,22 @@ class AdminController extends Controller
                 return;
             }
             
-            // Send notification to first admin user
-            \App\Models\UserNotification::create([
-                'user_id' => $adminUser->id, // Use first admin user ID
-                'booking_id' => $bookingId,
-                'type' => $type,
-                'title' => $title,
-                'message' => $message,
-                'is_read' => false,
-            ]);
+            // Send notification to all admin users (email will be sent automatically via createNotification)
+            foreach ($adminUsers as $adminUser) {
+                \App\Models\UserNotification::createNotification(
+                    $adminUser->id,
+                    $type,
+                    $title,
+                    $message,
+                    $bookingId
+                );
+            }
             
-            \Log::info('Admin notification created', [
+            \Log::info('Admin notifications created', [
                 'title' => $title,
                 'type' => $type,
                 'booking_id' => $bookingId,
-                'admin_user_id' => $adminUser->id
+                'admin_count' => $adminUsers->count()
             ]);
         } catch (\Exception $e) {
             \Log::error('Failed to create admin notification', [
