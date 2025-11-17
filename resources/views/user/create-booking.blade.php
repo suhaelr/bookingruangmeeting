@@ -181,11 +181,16 @@
                     
                     <!-- PIC Selection -->
                     <div class="bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto border border-gray-200">
-                        <h4 class="text-black font-medium mb-3">Pilih PIC yang akan diundang:</h4>
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-black font-medium">Pilih PIC yang akan diundang:</h4>
+                            <button type="button" id="clear-all-pics" class="text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1 rounded hover:bg-red-50 transition-colors duration-200">
+                                <i class="fas fa-times-circle mr-1"></i>Hapus Semua Pilihan
+                            </button>
+                        </div>
                         @foreach($allPics as $pic)
                             @if($pic->id !== auth()->id())
                             <label class="flex items-center text-black mb-2 cursor-pointer hover:bg-gray-100 p-2 rounded">
-                                <input type="checkbox" name="invited_pics[]" value="{{ $pic->id }}" class="mr-3">
+                                <input type="checkbox" name="invited_pics[]" value="{{ $pic->id }}" class="mr-3 pic-checkbox">
                                 <div>
                                     <div class="font-medium text-black">{{ $pic->full_name }}</div>
                                     <div class="text-sm text-gray-600">{{ $pic->unit_kerja }}</div>
@@ -491,6 +496,17 @@
                     if (this.checked) {
                         // Don't auto-uncheck, let user manage manually
                     }
+                });
+            }
+
+            // Clear all PIC selections button
+            const clearAllPicsBtn = document.getElementById('clear-all-pics');
+            if (clearAllPicsBtn) {
+                clearAllPicsBtn.addEventListener('click', function() {
+                    // Uncheck all PIC checkboxes
+                    picCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
                 });
             }
 
