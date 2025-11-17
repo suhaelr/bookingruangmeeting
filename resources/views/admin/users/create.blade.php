@@ -115,9 +115,18 @@
                     <!-- Unit Kerja -->
                     <div>
                         <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">Unit Kerja</label>
-                        <input type="text" id="unit_kerja" name="unit_kerja" value="{{ old('unit_kerja') }}" 
-                               class="w-full px-3 py-2 form-control" 
-                               placeholder="Masukkan unit kerja">
+                        <select id="unit_kerja" name="unit_kerja" 
+                                class="w-full px-3 py-2 form-control">
+                            <option value="">Pilih Unit Kerja</option>
+                            <option value="SEKRETARIAT UTAMA" {{ old('unit_kerja') == 'SEKRETARIAT UTAMA' ? 'selected' : '' }}>SEKRETARIAT UTAMA</option>
+                            <option value="DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN" {{ old('unit_kerja') == 'DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN' ? 'selected' : '' }}>DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN</option>
+                            <option value="DEPUTI BIDANG PROMOSI DAN KERJA SAMA" {{ old('unit_kerja') == 'DEPUTI BIDANG PROMOSI DAN KERJA SAMA' ? 'selected' : '' }}>DEPUTI BIDANG PROMOSI DAN KERJA SAMA</option>
+                            <option value="DEPUTI BIDANG SISTEM DAN TATA KELOLA" {{ old('unit_kerja') == 'DEPUTI BIDANG SISTEM DAN TATA KELOLA' ? 'selected' : '' }}>DEPUTI BIDANG SISTEM DAN TATA KELOLA</option>
+                            <option value="DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN" {{ old('unit_kerja') == 'DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN' ? 'selected' : '' }}>DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN</option>
+                            <option value="INSPEKTORAT UTAMA" {{ old('unit_kerja') == 'INSPEKTORAT UTAMA' ? 'selected' : '' }}>INSPEKTORAT UTAMA</option>
+                            <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
+                            <option value="Pusdatin BGN" {{ old('unit_kerja') == 'Pusdatin BGN' ? 'selected' : '' }}>Pusdatin BGN</option>
+                        </select>
                     </div>
 
                     <!-- Peran -->

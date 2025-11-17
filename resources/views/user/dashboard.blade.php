@@ -60,15 +60,22 @@
             .mobile-calendar-day .calendar-items-container { pointer-events: auto; }
             .mobile-calendar-day .calendar-item { pointer-events: auto; position: relative; z-index: 10; }
         }
+        .gradient-bg {
+            background: #ffffff;
+        }
+        .glass-effect {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="bg-white min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect shadow-lg">
+    <nav class="bg-white border-b border-gray-200 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
+                    <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4 text-black">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="flex-shrink-0">
@@ -228,12 +235,12 @@
                                 <i class="fas fa-clock text-white"></i>
                             </div>
                             <div>
-                                <p class="text-white font-medium">{{ $booking->title }}</p>
+                                <p class="text-black font-medium">{{ $booking->title }}</p>
                                 <p class="text-black text-sm">{{ $booking->meetingRoom->name }}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-white font-medium">{{ $booking->start_time ? $booking->start_time->format('H:i') : 'Tidak tersedia' }} - {{ $booking->end_time ? $booking->end_time->format('H:i') : 'Tidak tersedia' }}</p>
+                            <p class="text-black font-medium">{{ $booking->start_time ? $booking->start_time->format('H:i') : 'Tidak tersedia' }} - {{ $booking->end_time ? $booking->end_time->format('H:i') : 'Tidak tersedia' }}</p>
                             <span class="px-2 py-1 rounded-full text-xs font-medium
                                 @if($booking->status === 'pending') bg-yellow-500 text-white
                                 @elseif($booking->status === 'confirmed') bg-green-500 text-white
@@ -258,11 +265,11 @@
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
                     <div>
-                        <h3 class="text-xl font-bold text-white">Kalender Booking</h3>
+                        <h3 class="text-xl font-bold text-black">Kalender Booking</h3>
                         <p class="text-black text-sm mt-1">{{ $calendarAnchor->translatedFormat('F Y') }}</p>
                     </div>
                     <div class="w-full sm:w-auto">
-                        <input type="month" id="calendar-date-picker" value="{{ $calendarAnchor->format('Y-m') }}" class="bg-white/20 text-white text-sm rounded-lg border border-white/30 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
+                        <input type="month" id="calendar-date-picker" value="{{ $calendarAnchor->format('Y-m') }}" class="bg-white text-black text-sm rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 w-full" />
                     </div>
                 </div>
 
@@ -282,7 +289,7 @@
                              data-day-data='@json($day)'
                              data-has-items="{{ count($day['items']) > 0 ? 'true' : 'false' }}">
                             <div class="flex items-center justify-between mb-2 calendar-day-header">
-                                <span class="text-white font-semibold">{{ $day['day'] }}</span>
+                                <span class="text-black font-semibold">{{ $day['day'] }}</span>
                                 <span class="text-xs text-black">{{ count($day['items']) }} booking</span>
                             </div>
                             <div class="space-y-1 items overflow-y-auto pr-1 calendar-items-container">
@@ -334,22 +341,22 @@
         <div class="mt-8">
             <div class="glass-effect rounded-2xl p-6 shadow-2xl">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold text-white">Ruang Meeting Tersedia</h3>
-                    <a href="{{ route('user.bookings.create') }}" class="text-black hover:text-black text-sm">
+                    <h3 class="text-xl font-bold text-black">Ruang Meeting Tersedia</h3>
+                    <a href="{{ route('user.bookings.create') }}" class="text-black hover:text-blue-600 text-sm">
                         Pesan Sekarang <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @forelse($availableRooms as $room)
-                    <div class="bg-gray-50 rounded-lg p-4 hover:bg-white/20 transition-colors">
+                    <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
                         <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-white font-medium">{{ $room->name }}</h4>
+                            <h4 class="text-black font-medium">{{ $room->name }}</h4>
                             <span class="text-black text-sm">{{ $room->capacity ?? 0 }} kursi</span>
                         </div>
                         <p class="text-black text-sm mb-2">{{ $room->location }}</p>
                         <div class="flex flex-wrap gap-1 mb-3">
                             @foreach($room->getAmenitiesList() as $amenity)
-                            <span class="px-2 py-1 bg-blue-500/20 text-black text-xs rounded">
+                            <span class="px-2 py-1 bg-blue-500/20 text-blue-700 text-xs rounded">
                                 {{ ucfirst($amenity) }}
                             </span>
                             @endforeach
