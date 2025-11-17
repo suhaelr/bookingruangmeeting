@@ -210,6 +210,10 @@ Route::prefix('user')->middleware('user.auth')->group(function () {
     Route::post('/check-availability', [UserController::class, 'checkAvailability'])->name('user.check-availability');
     Route::get('/bookings/{id}/document', [UserController::class, 'viewDocument'])->name('user.bookings.document');
     
+    // Attendance Confirmation Routes
+    Route::get('/confirm-attendance/{invitationId}', [UserController::class, 'showConfirmAttendance'])->name('user.confirm-attendance');
+    Route::post('/confirm-attendance/{invitationId}', [UserController::class, 'confirmAttendance'])->name('user.confirm-attendance.submit');
+    
     // Notification routes
     Route::get('/notifications', [UserController::class, 'notifications'])->name('user.notifications');
     Route::get('/notifications/api', [UserController::class, 'getUserNotifications'])->name('user.notifications.api');

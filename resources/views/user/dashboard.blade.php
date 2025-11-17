@@ -287,12 +287,38 @@
                             </div>
                             <div class="space-y-1 items overflow-y-auto pr-1 calendar-items-container">
                                 @forelse($day['items'] as $item)
-                                    <div class="text-xs bg-blue-500/20 text-blue-100 rounded px-2 py-1 cursor-pointer hover:bg-blue-500/30 calendar-item"
+                                    @php
+                                        // Determine background color based on attendance status
+                                        $bgColor = 'bg-blue-500/20';
+                                        $textColor = 'text-blue-100';
+                                        $hoverColor = 'hover:bg-blue-500/30';
+                                        
+                                        if (isset($item['attendance_status_color']) && isset($item['is_owner']) && $item['is_owner']) {
+                                            if ($item['attendance_status_color'] === 'green') {
+                                                $bgColor = 'bg-green-500/30';
+                                                $textColor = 'text-green-100';
+                                                $hoverColor = 'hover:bg-green-500/40';
+                                            } elseif ($item['attendance_status_color'] === 'red') {
+                                                $bgColor = 'bg-red-500/30';
+                                                $textColor = 'text-red-100';
+                                                $hoverColor = 'hover:bg-red-500/40';
+                                            } elseif ($item['attendance_status_color'] === 'yellow') {
+                                                $bgColor = 'bg-yellow-500/30';
+                                                $textColor = 'text-yellow-100';
+                                                $hoverColor = 'hover:bg-yellow-500/40';
+                                            }
+                                        }
+                                    @endphp
+                                    <div class="text-xs {{ $bgColor }} {{ $textColor }} rounded px-2 py-1 cursor-pointer {{ $hoverColor }} calendar-item"
                                          data-item-data='@json($item)'
-                                         onclick='event.stopPropagation(); event.preventDefault(); showCalendarItemDetails(@json($item))'>
+                                         onclick='event.stopPropagation(); event.preventDefault(); showCalendarItemDetails(@json($item))'
+                                         title="{{ isset($item['attendance_status_text']) && !empty($item['attendance_status_text']) ? $item['attendance_status_text'] : '' }}">
                                         <div class="font-medium truncate">{{ $item['title'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['start_time'] }}-{{ $item['end_time'] }} • {{ $item['room'] }}</div>
                                         <div class="text-[10px] opacity-80 truncate">{{ $item['pic_name'] }} • {{ $item['unit_kerja'] }}</div>
+                                        @if(isset($item['attendance_status_text']) && !empty($item['attendance_status_text']) && isset($item['is_owner']) && $item['is_owner'])
+                                        <div class="text-[10px] opacity-90 mt-1 font-semibold">{{ $item['attendance_status_text'] }}</div>
+                                        @endif
                                     </div>
                                 @empty
                                     <div class="text-[11px] text-black">Tidak ada</div>
@@ -354,6 +380,84 @@
                 {{ session('success') }}
             </div>
         </div>
+    @endif
+
+    <!-- Attendance Confirmation Modal -->
+    @if (session('show_attendance_modal') && session('invitation_id'))
+        @php
+            $invitationId = session('invitation_id');
+            $invitation = \App\Models\MeetingInvitation::with(['booking', 'booking.meetingRoom', 'invitedByPic'])
+                ->where('id', $invitationId)
+                ->where('pic_id', session('user_data.id'))
+                ->first();
+        @endphp
+        @if($invitation)
+        <div id="attendanceConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" style="display: flex;">
+            <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-6 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800">Konfirmasi Kehadiran Anda di Meeting</h3>
+                    <button type="button" onclick="closeAttendanceModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <div class="mb-6">
+                        <p class="text-gray-700 mb-4">
+                            <strong>{{ $invitation->invitedByPic ? $invitation->invitedByPic->full_name : 'User' }}</strong>
+                            @if($invitation->invitedByPic && $invitation->invitedByPic->unit_kerja)
+                                dari <strong>{{ $invitation->invitedByPic->unit_kerja }}</strong>
+                            @endif
+                            mengundang Anda ke meeting berikut:
+                        </p>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h4 class="font-semibold text-gray-800 mb-3">Detail Meeting</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex">
+                                <span class="font-medium text-gray-600 w-32">Judul:</span>
+                                <span class="text-gray-800">{{ $invitation->booking->title }}</span>
+                            </div>
+                            @if($invitation->booking->meetingRoom)
+                            <div class="flex">
+                                <span class="font-medium text-gray-600 w-32">Ruang:</span>
+                                <span class="text-gray-800">{{ $invitation->booking->meetingRoom->name }} - {{ $invitation->booking->meetingRoom->location }}</span>
+                            </div>
+                            @endif
+                            <div class="flex">
+                                <span class="font-medium text-gray-600 w-32">Tanggal:</span>
+                                <span class="text-gray-800">{{ $invitation->booking->start_time->format('d M Y') }}</span>
+                            </div>
+                            <div class="flex">
+                                <span class="font-medium text-gray-600 w-32">Waktu:</span>
+                                <span class="text-gray-800">{{ $invitation->booking->start_time->format('H:i') }} - {{ $invitation->booking->end_time->format('H:i') }}</span>
+                            </div>
+                            @if($invitation->booking->description)
+                            <div class="flex flex-col mt-3">
+                                <span class="font-medium text-gray-600 mb-2">Deskripsi:</span>
+                                <div class="text-gray-800 whitespace-pre-wrap">{!! nl2br(e($invitation->booking->description)) !!}</div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4">
+                        <button onclick="submitAttendanceConfirmation({{ $invitationId }}, 'confirmed')" 
+                                class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Iya, Saya Akan Hadir
+                        </button>
+                        <button onclick="submitAttendanceConfirmation({{ $invitationId }}, 'declined')" 
+                                class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
+                            <i class="fas fa-times-circle mr-2"></i>
+                            Tidak, Saya Tidak Bisa Hadir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
     @endif
 
     <!-- Notifikasi Dropdown -->
@@ -1648,6 +1752,85 @@
             url.searchParams.set('start_time', datetime);
             window.location.href = url.toString();
         }
+
+        // Attendance Confirmation Functions
+        function closeAttendanceModal() {
+            const modal = document.getElementById('attendanceConfirmationModal');
+            if (modal) {
+                modal.remove();
+            }
+            // Clear session
+            fetch('{{ route("user.dashboard") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        }
+
+        function submitAttendanceConfirmation(invitationId, status) {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            // Disable button and show loading
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+            
+            fetch(`/user/confirm-attendance/${invitationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    attendance_status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const successMsg = document.createElement('div');
+                    successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                    successMsg.innerHTML = `<div class="flex items-center"><i class="fas fa-check-circle mr-2"></i>${data.message}</div>`;
+                    document.body.appendChild(successMsg);
+                    
+                    // Close modal
+                    closeAttendanceModal();
+                    
+                    // Remove success message after 3 seconds
+                    setTimeout(() => {
+                        successMsg.remove();
+                    }, 3000);
+                    
+                    // Reload page to update calendar
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    // Show error message
+                    alert(data.message || 'Terjadi kesalahan saat mengkonfirmasi kehadiran.');
+                    button.disabled = false;
+                    button.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mengkonfirmasi kehadiran. Silakan coba lagi.');
+                button.disabled = false;
+                button.innerHTML = originalText;
+            });
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('attendanceConfirmationModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    closeAttendanceModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>

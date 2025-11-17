@@ -195,6 +195,49 @@ class UserController extends Controller
                     }
                 }
 
+                // Get attendance status for calendar color (only for booking owner)
+                $attendanceStatus = null;
+                $attendanceStatusColor = 'blue'; // default
+                $attendanceStatusText = '';
+                
+                if ($isOwner && $booking->invitations && $booking->invitations->count() > 0) {
+                    // Check all PIC attendance statuses
+                    $allConfirmed = true;
+                    $hasDeclined = false;
+                    $hasPending = false;
+                    $hasAbsent = false;
+                    
+                    foreach ($booking->invitations as $invitation) {
+                        if ($invitation->attendance_status === 'confirmed') {
+                            // At least one confirmed
+                        } elseif ($invitation->attendance_status === 'declined' || $invitation->attendance_status === 'absent') {
+                            $hasDeclined = true;
+                            $allConfirmed = false;
+                            if ($invitation->attendance_status === 'absent') {
+                                $hasAbsent = true;
+                            }
+                        } elseif ($invitation->attendance_status === 'pending') {
+                            $hasPending = true;
+                            $allConfirmed = false;
+                        }
+                    }
+                    
+                    // Determine color and text
+                    if ($allConfirmed && !$hasPending && !$hasDeclined) {
+                        $attendanceStatus = 'all_confirmed';
+                        $attendanceStatusColor = 'green';
+                        $attendanceStatusText = 'Dikonfirmasi akan hadir';
+                    } elseif ($hasDeclined || $hasAbsent) {
+                        $attendanceStatus = 'has_declined';
+                        $attendanceStatusColor = 'red';
+                        $attendanceStatusText = $hasAbsent ? 'Tidak hadir' : 'Belum bisa hadir';
+                    } elseif ($hasPending) {
+                        $attendanceStatus = 'has_pending';
+                        $attendanceStatusColor = 'yellow';
+                        $attendanceStatusText = 'Belum ada respon';
+                    }
+                }
+
                 $items[] = [
                     'id' => $booking->id,
                     'title' => $booking->title,
@@ -210,6 +253,10 @@ class UserController extends Controller
                     'has_document' => $hasDocument,
                     'can_see_document' => $canSeeDocument,
                     'document_url' => $documentUrl,
+                    'attendance_status' => $attendanceStatus,
+                    'attendance_status_color' => $attendanceStatusColor,
+                    'attendance_status_text' => $attendanceStatusText,
+                    'is_owner' => $isOwner,
                 ];
             }
             $calendarDays[] = [
@@ -513,7 +560,8 @@ class UserController extends Controller
                         'booking_id' => $booking->id,
                         'pic_id' => $picId,
                         'invited_by_pic_id' => $userModel->id,
-                        'status' => 'invited'
+                        'status' => 'invited',
+                        'attendance_status' => 'pending' // Default attendance status
                     ]);
                     
                     // Send notification to invited PIC
@@ -825,8 +873,125 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Show confirm attendance page
+     */
+    public function showConfirmAttendance($invitationId)
+    {
+        $user = session('user_data');
+        $userModel = User::find($user['id']);
+        
+        $invitation = \App\Models\MeetingInvitation::with(['booking', 'booking.meetingRoom', 'invitedByPic'])
+            ->where('id', $invitationId)
+            ->where('pic_id', $userModel->id)
+            ->firstOrFail();
+        
+        $booking = $invitation->booking;
+        
+        // Cek apakah meeting sudah lewat
+        $isPastMeeting = $booking->start_time < now();
+        
+        // Jika meeting sudah lewat, auto set sebagai absent
+        if ($isPastMeeting && $invitation->isAttendancePending()) {
+            $invitation->markAsAbsent();
+            
+            // Kirim notifikasi ke user yang mengundang
+            if ($invitation->invitedByPic) {
+                \App\Models\UserNotification::createNotification(
+                    $invitation->invited_by_pic_id,
+                    'warning',
+                    'PIC Tidak Hadir di Meeting',
+                    "PIC {$userModel->full_name} tidak hadir di meeting '{$booking->title}' (meeting sudah lewat)",
+                    $booking->id
+                );
+            }
+        }
+        
+        // Simpan invitation_id di session untuk popup setelah redirect
+        session(['pending_attendance_confirmation' => $invitationId]);
+        
+        return redirect()->route('user.dashboard')
+            ->with('show_attendance_modal', true)
+            ->with('invitation_id', $invitationId);
+    }
 
-
+    /**
+     * Handle attendance confirmation
+     */
+    public function confirmAttendance(Request $request, $invitationId)
+    {
+        $user = session('user_data');
+        $userModel = User::find($user['id']);
+        
+        $request->validate([
+            'attendance_status' => 'required|in:confirmed,declined'
+        ]);
+        
+        $invitation = \App\Models\MeetingInvitation::with(['booking', 'booking.meetingRoom', 'invitedByPic'])
+            ->where('id', $invitationId)
+            ->where('pic_id', $userModel->id)
+            ->firstOrFail();
+        
+        $booking = $invitation->booking;
+        
+        // Cek apakah meeting sudah lewat
+        $isPastMeeting = $booking->start_time < now();
+        
+        if ($isPastMeeting) {
+            // Jika meeting sudah lewat, auto set sebagai absent
+            $invitation->markAsAbsent();
+            
+            // Kirim notifikasi ke user yang mengundang
+            if ($invitation->invitedByPic) {
+                \App\Models\UserNotification::createNotification(
+                    $invitation->invited_by_pic_id,
+                    'warning',
+                    'PIC Tidak Hadir di Meeting',
+                    "PIC {$userModel->full_name} tidak hadir di meeting '{$booking->title}' (meeting sudah lewat)",
+                    $booking->id
+                );
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Meeting sudah lewat. Status kehadiran Anda otomatis ditandai sebagai tidak hadir.'
+            ], 400);
+        }
+        
+        // Update attendance status
+        if ($request->attendance_status === 'confirmed') {
+            $invitation->confirmAttendance();
+            $statusText = 'akan hadir';
+            $notificationType = 'success';
+            $notificationTitle = 'PIC Konfirmasi Kehadiran';
+        } else {
+            $invitation->declineAttendance();
+            $statusText = 'tidak bisa hadir';
+            $notificationType = 'warning';
+            $notificationTitle = 'PIC Tidak Bisa Hadir';
+        }
+        
+        // Kirim notifikasi ke user yang mengundang
+        if ($invitation->invitedByPic) {
+            \App\Models\UserNotification::createNotification(
+                $invitation->invited_by_pic_id,
+                $notificationType,
+                $notificationTitle,
+                "PIC {$userModel->full_name} mengkonfirmasi {$statusText} di meeting '{$booking->title}'",
+                $booking->id
+            );
+        }
+        
+        // Hapus session pending_attendance_confirmation
+        session()->forget('pending_attendance_confirmation');
+        
+        return response()->json([
+            'success' => true,
+            'message' => $request->attendance_status === 'confirmed' 
+                ? 'Terima kasih! Kehadiran Anda telah dikonfirmasi.' 
+                : 'Terima kasih! Status kehadiran Anda telah diperbarui.'
+        ]);
+    }
 
     private function getRoomAvailabilityGrid($selectedDate = null)
     {

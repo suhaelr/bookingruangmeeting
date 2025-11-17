@@ -297,12 +297,41 @@
                     <div class="detail-value">{{ $booking->unit_kerja }}</div>
                 </div>
                 @endif
+
+                @if($booking->description)
+                <div class="detail-item" style="flex-direction: column; margin-top: 15px;">
+                    <div class="detail-label" style="width: 100%; margin-bottom: 8px;">Deskripsi Meeting:</div>
+                    <div class="detail-value" style="width: 100%; white-space: pre-wrap; word-wrap: break-word;">
+                        {!! nl2br(e($booking->description)) !!}
+                    </div>
+                </div>
+                @endif
             </div>
             @endif
 
-            <!-- Action Button -->
+            @php
+                // Cek apakah ini notifikasi undangan PIC
+                $isPicInvitation = false;
+                $invitationId = null;
+                if ($booking && $notification->title === 'Undangan Meeting dari PIC') {
+                    $invitation = \App\Models\MeetingInvitation::where('booking_id', $booking->id)
+                        ->where('pic_id', $user->id)
+                        ->first();
+                    if ($invitation) {
+                        $isPicInvitation = true;
+                        $invitationId = $invitation->id;
+                    }
+                }
+            @endphp
+
+            <!-- Action Buttons -->
             <div class="button-container">
-                <a href="{{ route($user->isAdmin() ? 'admin.dashboard' : 'user.dashboard') }}" class="action-button">
+                @if($isPicInvitation && $invitationId)
+                <a href="{{ route('user.confirm-attendance', $invitationId) }}" class="action-button" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); margin-right: 10px; display: inline-block;">
+                    ✅ Konfirmasi Kehadiran
+                </a>
+                @endif
+                <a href="{{ route($user->isAdmin() ? 'admin.dashboard' : 'user.dashboard') }}" class="action-button" style="{{ $isPicInvitation ? 'display: inline-block;' : '' }}">
                     Lihat Detail di Dashboard
                 </a>
             </div>
