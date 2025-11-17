@@ -11,26 +11,25 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
         }
         .glass-effect {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="bg-white min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect shadow-lg">
+    <nav class="bg-white border-b border-gray-200 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex items-center">
-                    <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
+                    <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4 text-black">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="flex-shrink-0">
-                        <i class="fas fa-calendar-alt text-2xl text-white"></i>
+                        <i class="fas fa-calendar-alt text-2xl text-black"></i>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -56,8 +55,8 @@
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Kelola Pengguna</h2>
-                    <p class="text-white/80">Lihat dan kelola semua akun pengguna</p>
+                    <h2 class="text-2xl font-bold text-black mb-2">Kelola Pengguna</h2>
+                    <p class="text-black">Lihat dan kelola semua akun pengguna</p>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
                     <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
@@ -73,21 +72,21 @@
         <!-- Users Table -->
         <div class="glass-effect rounded-2xl p-6 shadow-2xl">
             <div class="overflow-x-auto">
-                <table class="w-full text-white">
+                <table class="w-full text-black">
                     <thead>
-                        <tr class="border-b border-white/20">
-                            <th class="text-left py-3 px-4">Nama</th>
-                            <th class="text-left py-3 px-4">Email</th>
-                            <th class="text-left py-3 px-4">Unit Kerja</th>
-                            <th class="text-left py-3 px-4">Role</th>
-                            <th class="text-left py-3 px-4">Terakhir Login</th>
-                            <th class="text-left py-3 px-4">Bergabung</th>
-                            <th class="text-left py-3 px-4">Aksi</th>
+                        <tr class="border-b border-gray-300">
+                            <th class="text-left py-3 px-4 text-black">Nama</th>
+                            <th class="text-left py-3 px-4 text-black">Email</th>
+                            <th class="text-left py-3 px-4 text-black">Unit Kerja</th>
+                            <th class="text-left py-3 px-4 text-black">Role</th>
+                            <th class="text-left py-3 px-4 text-black">Terakhir Login</th>
+                            <th class="text-left py-3 px-4 text-black">Bergabung</th>
+                            <th class="text-left py-3 px-4 text-black">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="usersTableBody">
                         <tr>
-                            <td colspan="7" class="text-center py-8 text-white/60">
+                            <td colspan="7" class="text-center py-8 text-black">
                                 <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
                                 <p>Memuat data pengguna...</p>
                             </td>
@@ -171,7 +170,7 @@
             if (users.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center py-8 text-white/60">
+                        <td colspan="7" class="text-center py-8 text-black">
                             <i class="fas fa-users text-2xl mb-2"></i>
                             <p>Tidak ada pengguna ditemukan</p>
                         </td>
@@ -181,42 +180,42 @@
             }
 
             tbody.innerHTML = users.map(user => `
-                <tr class="border-b border-white/10 hover:bg-white/5">
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
                     <td class="py-3 px-4">
                         <div class="flex items-center">
-                            <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-user text-white/80"></i>
+                            <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                                <i class="fas fa-user text-black"></i>
                             </div>
                             <div>
-                                <div class="font-medium">${user.name}</div>
-                                <div class="text-sm text-white/60">@${user.username}</div>
+                                <div class="font-medium text-black">${user.name}</div>
+                                <div class="text-sm text-black">@${user.username}</div>
                             </div>
                         </div>
                     </td>
-                    <td class="py-3 px-4">${user.email}</td>
+                    <td class="py-3 px-4 text-black">${user.email}</td>
                     <td class="py-3 px-4">
-                        <span class="text-white/80">${user.unit_kerja || 'N/A'}</span>
+                        <span class="text-black">${user.unit_kerja || 'N/A'}</span>
                     </td>
                     <td class="py-3 px-4">
                         <span class="px-2 py-1 rounded-full text-xs font-medium ${
                             user.role === 'admin' 
-                                ? 'bg-red-500/20 text-red-300' 
-                                : 'bg-blue-500/20 text-blue-300'
+                                ? 'bg-red-500/20 text-red-700' 
+                                : 'bg-blue-500/20 text-blue-700'
                         }">
                             ${user.role === 'admin' ? 'Admin' : 'User'}
                         </span>
                     </td>
-                    <td class="py-3 px-4 text-sm text-white/80">${user.last_login_at}</td>
-                    <td class="py-3 px-4 text-sm text-white/80">${user.created_at}</td>
+                    <td class="py-3 px-4 text-sm text-black">${user.last_login_at}</td>
+                    <td class="py-3 px-4 text-sm text-black">${user.created_at}</td>
                     <td class="py-3 px-4">
                         <div class="flex space-x-2">
                             <button onclick="changeUserRole(${user.id}, '${user.role}', '${user.name}')" 
-                                    class="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-lg hover:bg-yellow-500/30 text-sm">
+                                    class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm">
                                 <i class="fas fa-user-edit mr-1"></i>Role
                             </button>
                             ${!(user.username === 'admin' && user.email === 'admin@pusdatinbgn.web.id') ? `
                             <button onclick="deleteUser(${user.id}, '${user.name}')" 
-                                    class="px-3 py-1 bg-red-500/20 text-red-300 rounded-lg hover:bg-red-500/30 text-sm">
+                                    class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm">
                                 <i class="fas fa-trash mr-1"></i>Hapus
                             </button>
                             ` : ''}
