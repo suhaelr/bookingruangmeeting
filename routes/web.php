@@ -160,6 +160,8 @@ Route::get('/robots.txt', [App\Http\Controllers\SeoController::class, 'generateR
 // Admin Routes
 Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
+    Route::post('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
     
     // User Management
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');

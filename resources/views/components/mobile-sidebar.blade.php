@@ -56,6 +56,11 @@
                     <span>Pemesanan</span>
                 </a>
                 
+                <a href="{{ route('admin.profile') }}" class="mobile-nav-item {{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
+                    <i class="fas fa-user"></i>
+                    <span>Profil</span>
+                </a>
+                
                 <div class="mobile-nav-divider"></div>
                 
                 <a href="{{ route('admin.users.create') }}" class="mobile-nav-item">

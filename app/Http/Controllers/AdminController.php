@@ -924,4 +924,48 @@ class AdminController extends Controller
                 ];
         }
     }
+
+    public function profile()
+    {
+        $user = session('user_data');
+        return view('admin.profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'department' => 'nullable|string|max:100',
+        ]);
+
+        // Update database and session
+        $userData = session('user_data');
+        $userModel = User::find($userData['id']);
+
+        if ($userModel) {
+            // Persist to DB
+            $userModel->full_name = $request->full_name;
+            $userModel->name = $request->full_name;
+            $userModel->email = $request->email;
+            $userModel->phone = $request->phone;
+            $userModel->department = $request->department;
+            $userModel->save();
+        }
+
+        // Refresh session data from DB to ensure consistency
+        $userData['full_name'] = $userModel->full_name ?? $request->full_name;
+        $userData['email'] = $userModel->email ?? $request->email;
+        $userData['phone'] = $userModel->phone ?? $request->phone;
+        $userData['department'] = $userModel->department ?? $request->department;
+        session(['user_data' => $userData]);
+
+        \Log::info('Admin profile updated', [
+            'admin_id' => $userData['id'],
+            'updated_fields' => $request->only(['full_name', 'email', 'phone', 'department'])
+        ]);
+
+        return back()->with('success', 'Profil berhasil diperbarui.');
+    }
 }
