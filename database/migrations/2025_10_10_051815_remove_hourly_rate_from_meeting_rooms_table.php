@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('meeting_rooms', function (Blueprint $table) {
-            $table->dropColumn('hourly_rate');
-        });
+        // Schema::table('meeting_rooms', function (Blueprint $table) {
+        //     $table->dropColumn('hourly_rate');
+        // });
     }
 
     /**
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('meeting_rooms', function (Blueprint $table) {
-            $table->decimal('hourly_rate', 8, 2)->default(0);
-        });
+        // Schema::table('meeting_rooms', function (Blueprint $table) {
+        //     $table->decimal('hourly_rate', 8, 2)->default(0);
+        // });
     }
 };

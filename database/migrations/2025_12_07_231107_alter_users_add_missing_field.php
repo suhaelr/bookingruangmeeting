@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Rename department column to unit_kerja
-            // $table->renameColumn('department', 'unit_kerja');
+            $table->string('full_name')->nullable();
+            $table->string('username')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('role')->nullable();
         });
     }
 
@@ -23,8 +25,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Rename unit_kerja column back to department
-            // $table->renameColumn('unit_kerja', 'department');
+            $table->dropColumn('full_name');
+            $table->dropColumn('username');
+            $table->dropColumn('phone');
+            $table->dropColumn('role');
         });
     }
 };

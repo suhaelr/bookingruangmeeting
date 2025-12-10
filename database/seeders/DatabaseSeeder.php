@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('admin'),
             'full_name' => 'Super Administrator',
             'phone' => '081234567890',
-            'department' => 'IT',
+            'unit_kerja' => 'IT',
             'role' => 'admin',
         ]);
 
@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('user'),
             'full_name' => 'Regular User',
             'phone' => '081234567891',
-            'department' => 'General',
+            'unit_kerja' => 'General',
             'role' => 'user',
         ]);
 
@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'full_name' => 'John Doe',
             'phone' => '081234567892',
-            'department' => 'Marketing',
+            'unit_kerja' => 'Marketing',
             'role' => 'user',
         ]);
 
@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'full_name' => 'Jane Smith',
             'phone' => '081234567893',
-            'department' => 'HR',
+            'unit_kerja' => 'HR',
             'role' => 'user',
         ]);
 
@@ -126,7 +126,7 @@ class DatabaseSeeder extends Seeder
             $room = $meetingRooms->random();
             $startTime = Carbon::now()->subDays(rand(0, 7))->addHours(rand(9, 17));
             $endTime = $startTime->copy()->addHours(rand(1, 3));
-            
+
             $statuses = ['pending', 'confirmed', 'cancelled'];
             $status = $statuses[array_rand($statuses)];
 
@@ -153,7 +153,7 @@ class DatabaseSeeder extends Seeder
             $room = $meetingRooms->random();
             $startTime = Carbon::now()->addDays(rand(1, 30))->addHours(rand(9, 17));
             $endTime = $startTime->copy()->addHours(rand(1, 4));
-            
+
             $statuses = ['pending', 'confirmed'];
             $status = $statuses[array_rand($statuses)];
 
