@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class AdminAuth
 {
@@ -17,7 +18,7 @@ class AdminAuth
      */
     public function handle(Request $request, Closure $next)
     {
-        \Log::info('AdminAuth middleware called', [
+        Log::info('AdminAuth middleware called', [
             'url' => $request->url(),
             'method' => $request->method(),
             'session_id' => session()->getId(),
@@ -28,7 +29,7 @@ class AdminAuth
         ]);
 
         if (!Session::has('user_logged_in') || !Session::get('user_logged_in')) {
-            \Log::warning('AdminAuth: User not logged in', [
+            Log::warning('AdminAuth: User not logged in', [
                 'url' => $request->url(),
                 'session_id' => session()->getId()
             ]);
@@ -36,7 +37,7 @@ class AdminAuth
         }
 
         $user = Session::get('user_data');
-        \Log::info('AdminAuth: User data', [
+        Log::info('AdminAuth: User data', [
             'user_id' => $user['id'] ?? 'unknown',
             'user_role' => $user['role'] ?? 'unknown',
             'user_email' => $user['email'] ?? 'unknown'
@@ -46,7 +47,7 @@ class AdminAuth
         try {
             $userModel = \App\Models\User::find($user['id']);
             if (!$userModel) {
-                \Log::warning('AdminAuth: User not found in database', [
+                Log::warning('AdminAuth: User not found in database', [
                     'session_user_id' => $user['id'],
                     'session_user_data' => $user
                 ]);
@@ -55,7 +56,7 @@ class AdminAuth
                 return redirect()->route('login')->with('error', 'Session tidak valid. Silakan login kembali!');
             }
         } catch (\Exception $e) {
-            \Log::error('AdminAuth: Database error during user validation', [
+            Log::error('AdminAuth: Database error during user validation', [
                 'error' => $e->getMessage(),
                 'session_user_id' => $user['id'],
                 'session_user_data' => $user
@@ -66,14 +67,14 @@ class AdminAuth
         }
 
         if ($user['role'] !== 'admin') {
-            \Log::warning('AdminAuth: User is not admin', [
+            Log::warning('AdminAuth: User is not admin', [
                 'user_role' => $user['role'],
                 'url' => $request->url()
             ]);
             return redirect()->route('user.dashboard')->with('error', 'Akses ditolak!');
         }
 
-        \Log::info('AdminAuth: Access granted', [
+        Log::info('AdminAuth: Access granted', [
             'user_id' => $user['id'],
             'url' => $request->url()
         ]);

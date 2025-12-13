@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Middleware\RateLimitMiddleware;
+use Illuminate\Support\Facades\Log;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -21,15 +22,15 @@ Route::get('/test', function () {
 // CSS and JS asset routes
 Route::get('/build/assets/{file}', function ($file) {
     $path = public_path("build/assets/{$file}");
-    
+
     if (!file_exists($path)) {
         abort(404);
     }
-    
-    $mimeType = pathinfo($file, PATHINFO_EXTENSION) === 'css' 
-        ? 'text/css' 
+
+    $mimeType = pathinfo($file, PATHINFO_EXTENSION) === 'css'
+        ? 'text/css'
         : 'application/javascript';
-    
+
     return response()->file($path, [
         'Content-Type' => $mimeType,
         'Cache-Control' => 'public, max-age=31536000',
@@ -67,7 +68,7 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 Route::post('/auth/google/revoke', [AuthController::class, 'revokeGoogleToken'])->name('auth.google.revoke');
 
 // Debug route for session checking
-Route::get('/debug/session', function() {
+Route::get('/debug/session', function () {
     return response()->json([
         'session_id' => session()->getId(),
         'user_logged_in' => session('user_logged_in'),
@@ -80,7 +81,7 @@ Route::get('/debug/session', function() {
 })->name('debug.session');
 
 // Debug route for Google OAuth callback
-Route::get('/debug/oauth', function() {
+Route::get('/debug/oauth', function () {
     return response()->json([
         'session_id' => session()->getId(),
         'user_logged_in' => session('user_logged_in'),
@@ -92,7 +93,7 @@ Route::get('/debug/oauth', function() {
 })->name('debug.oauth');
 
 // Debug route for Google OAuth configuration
-Route::get('/debug/google-config', function() {
+Route::get('/debug/google-config', function () {
     return response()->json([
         'env_google_client_id' => env('GOOGLE_CLIENT_ID') ? substr(env('GOOGLE_CLIENT_ID'), 0, 20) . '...' : 'NULL',
         'env_google_client_secret' => env('GOOGLE_CLIENT_SECRET') ? 'SET' : 'NULL',
@@ -108,7 +109,7 @@ Route::get('/debug/google-config', function() {
 
 
 // Test OAuth callback route
-Route::get('/test/oauth', function() {
+Route::get('/test/oauth', function () {
     return response()->json([
         'message' => 'OAuth test endpoint working',
         'timestamp' => now(),
@@ -117,7 +118,7 @@ Route::get('/test/oauth', function() {
 })->name('test.oauth');
 
 // OAuth callback debug route
-Route::get('/oauth/debug', function(Request $request) {
+Route::get('/oauth/debug', function (Request $request) {
     return response()->json([
         'message' => 'OAuth callback debug endpoint',
         'timestamp' => now(),
@@ -133,8 +134,8 @@ Route::get('/oauth/debug', function(Request $request) {
 
 // User Management Routes (Admin only)
 Route::middleware(['admin.auth', 'web'])->group(function () {
-    Route::get('/admin/users/api', function() {
-        \Log::info('Route /admin/users/api called', [
+    Route::get('/admin/users/api', function () {
+        Log::info('Route /admin/users/api called', [
             'timestamp' => now(),
             'session_id' => session()->getId()
         ]);
@@ -162,21 +163,21 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/profile', [AdminController::class, 'profile'])->name('admin.profile');
     Route::post('/profile', [AdminController::class, 'updateProfile'])->name('admin.profile.update');
-    
+
     // User Management
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
     Route::get('/users/create', [AdminController::class, 'createUser'])->name('admin.users.create');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.users.store');
     Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
     Route::post('/users/{id}/delete', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
-    
+
     // Room Management
     Route::get('/rooms', [AdminController::class, 'rooms'])->name('admin.rooms');
     Route::get('/rooms/create', [AdminController::class, 'createRoom'])->name('admin.rooms.create');
     Route::post('/rooms', [AdminController::class, 'storeRoom'])->name('admin.rooms.store');
     Route::put('/rooms/{id}', [AdminController::class, 'updateRoom'])->name('admin.rooms.update');
     Route::delete('/rooms/{id}', [AdminController::class, 'deleteRoom'])->name('admin.rooms.delete');
-    
+
     // Booking Management
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('admin.bookings');
     Route::post('/bookings/{id}/status', [AdminController::class, 'updateBookingStatus'])->name('admin.bookings.status');
@@ -185,7 +186,7 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::post('/notifications/{id}/mark-read', [AdminController::class, 'markNotificationRead'])->name('admin.notifications.mark-read');
     Route::post('/notifications/mark-all-read', [AdminController::class, 'markAllNotificationsRead'])->name('admin.notifications.mark-all-read');
     Route::delete('/notifications/clear', [AdminController::class, 'clearAllNotifications'])->name('admin.notifications.clear');
-    
+
     // Export routes
     Route::get('/export/bookings/excel', [App\Http\Controllers\ExportController::class, 'exportBookingsExcel'])->name('admin.export.bookings.excel');
     Route::get('/export/bookings/pdf', [App\Http\Controllers\ExportController::class, 'exportBookingsPDF'])->name('admin.export.bookings.pdf');
@@ -212,11 +213,11 @@ Route::prefix('user')->middleware('user.auth')->group(function () {
     Route::post('/bookings/{id}/cancel', [UserController::class, 'cancelBooking'])->name('user.bookings.cancel');
     Route::post('/check-availability', [UserController::class, 'checkAvailability'])->name('user.check-availability');
     Route::get('/bookings/{id}/document', [UserController::class, 'viewDocument'])->name('user.bookings.document');
-    
+
     // Attendance Confirmation Routes
     Route::get('/confirm-attendance/{invitationId}', [UserController::class, 'showConfirmAttendance'])->name('user.confirm-attendance');
     Route::post('/confirm-attendance/{invitationId}', [UserController::class, 'confirmAttendance'])->name('user.confirm-attendance.submit');
-    
+
     // Notification routes
     Route::get('/notifications', [UserController::class, 'notifications'])->name('user.notifications');
     Route::get('/notifications/api', [UserController::class, 'getUserNotifications'])->name('user.notifications.api');
@@ -227,7 +228,7 @@ Route::prefix('user')->middleware('user.auth')->group(function () {
 // Legacy route for backward compatibility
 Route::get('/dashboard', function () {
     $user = session('user_data');
-    return $user['role'] === 'admin' 
+    return $user['role'] === 'admin'
         ? redirect()->route('admin.dashboard')
         : redirect()->route('user.dashboard');
 })->middleware('admin.auth')->name('dashboard');

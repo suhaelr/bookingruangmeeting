@@ -8,102 +8,62 @@
         <!-- Header -->
         <div class="mobile-sidebar-header">
             <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <i class="fas fa-calendar-alt text-2xl text-black mr-3"></i>
+                <div class="flex items-center gap-3">
+                    <img src="{{ asset('/logo-bgn.png') }}" alt="Logo" class="w-[40px] h-[40px]">
                     <div>
                         <h1 class="text-lg font-bold text-black">Sistem Pemesanan</h1>
-                        <p class="text-black text-xs">Ruang Meeting</p>
+                        <p class="text-black text-xs text-gray-500">Ruang Meeting</p>
                     </div>
                 </div>
                 <button onclick="toggleMobileSidebar()" class="text-black hover:text-gray-800 p-2">
-                    <i class="fas fa-times text-xl"></i>
+                    <i data-feather="x" style="width: 20px; height: 20px;"></i>
                 </button>
             </div>
         </div>
-
-        <!-- Logout Button - At Top -->
-        @if(isset($userRole) && in_array($userRole, ['admin', 'user']))
-            <div class="mobile-nav-actions px-4 py-2">
-                <a href="{{ route('logout') }}" class="mobile-nav-item text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 rounded-lg">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Keluar</span>
-                </a>
-            </div>
-            <div class="mobile-nav-divider"></div>
-        @endif
 
         <!-- Navigation Menu -->
         <nav class="mobile-sidebar-nav">
             @if(isset($userRole) && $userRole === 'admin')
                 {{-- Admin Navigation --}}
                 <a href="{{ route('admin.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-tachometer-alt"></i>
+                    <i data-feather="home" style="width: 20px; height: 20px;"></i>
                     <span>Beranda</span>
                 </a>
                 
                 <a href="{{ route('admin.users') }}" class="mobile-nav-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
+                    <i data-feather="users" style="width: 20px; height: 20px;"></i>
                     <span>Pengguna</span>
                 </a>
                 
                 <a href="{{ route('admin.rooms') }}" class="mobile-nav-item {{ request()->routeIs('admin.rooms*') ? 'active' : '' }}">
-                    <i class="fas fa-door-open"></i>
+                    <i data-feather="box" style="width: 20px; height: 20px;"></i>
                     <span>Ruang Meeting</span>
                 </a>
                 
                 <a href="{{ route('admin.bookings') }}" class="mobile-nav-item {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-check"></i>
+                    <i data-feather="calendar" style="width: 20px; height: 20px;"></i>
                     <span>Pemesanan</span>
                 </a>
-                
-                <a href="{{ route('admin.profile') }}" class="mobile-nav-item {{ request()->routeIs('admin.profile*') ? 'active' : '' }}">
-                    <i class="fas fa-user"></i>
-                    <span>Profil</span>
-                </a>
-                
-                <div class="mobile-nav-divider"></div>
-                
-                <a href="{{ route('admin.users.create') }}" class="mobile-nav-item">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Tambah Pengguna</span>
-                </a>
-                
-                <a href="{{ route('admin.rooms.create') }}" class="mobile-nav-item">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Tambah Ruang</span>
-                </a>
-                
             @elseif(isset($userRole) && $userRole === 'user')
                 {{-- User Navigation --}}
                 <a href="{{ route('user.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-tachometer-alt"></i>
+                    <i data-feather="home" style="width: 20px; height: 20px;"></i>
                     <span>Beranda</span>
                 </a>
                 
                 <a href="{{ route('user.bookings') }}" class="mobile-nav-item {{ request()->routeIs('user.bookings') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-check"></i>
+                    <i data-feather="calendar" style="width: 20px; height: 20px;"></i>
                     <span>Pemesanan Saya</span>
                 </a>
-                
-                <a href="{{ route('user.bookings.create') }}" class="mobile-nav-item {{ request()->routeIs('user.bookings.create') ? 'active' : '' }}">
-                    <i class="fas fa-plus"></i>
-                    <span>Pemesanan Baru</span>
-                </a>
-                
-                <a href="{{ route('user.profile') }}" class="mobile-nav-item {{ request()->routeIs('user.profile') ? 'active' : '' }}">
-                    <i class="fas fa-user"></i>
-                    <span>Profil</span>
-                </a>
-                
             @else
                 {{-- Guest Navigation --}}
                 <a href="{{ route('login') }}" class="mobile-nav-item">
-                    <i class="fas fa-sign-in-alt"></i>
+                    <i data-feather="log-in" style="width: 20px; height: 20px;"></i>
                     <span>Masuk</span>
                 </a>
                 
                 <a href="{{ route('register') }}" class="mobile-nav-item">
-                    <i class="fas fa-user-plus"></i>
+                    <i data-feather="user-plus" style="width: 20px; height: 20px;"></i>
                     <span>Daftar</span>
                 </a>
             @endif
@@ -113,35 +73,45 @@
         @if(isset($userRole) && in_array($userRole, ['admin', 'user']))
             <div class="mobile-sidebar-footer">
                 <div class="mobile-user-info">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
-                            <i class="fas fa-user text-indigo-600"></i>
+                    <div class="relative">
+                        <div onclick="toggleUserDropdown()" class="cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center flex-1 min-w-0">
+                                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <i data-feather="user" class="text-indigo-600" style="width: 20px; height: 20px;"></i>
+                                    </div> 
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-black font-medium text-sm truncate">{{ $userName ?? 'User' }}</p>
+                                        <p class="text-black text-xs truncate">{{ $userEmail ?? 'user@example.com' }}</p>
+                                    </div>
+                                </div>
+                                <div class="ml-3 flex-shrink-0">
+                                    @if(isset($userRole) && $userRole === 'admin')
+                                    <button onclick="event.stopPropagation(); toggleAdminNotifikasis();" class="relative p-2 text-black hover:text-gray-600">
+                                        <i data-feather="bell" style="width: 20px; height: 20px;"></i>
+                                        <span id="admin-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                                    </button>
+                                    @elseif(isset($userRole) && $userRole === 'user')
+                                    <button onclick="event.stopPropagation(); toggleNotifikasis();" class="relative p-2 text-black hover:text-gray-600">
+                                        <i data-feather="bell" style="width: 20px; height: 20px;"></i>
+                                        <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                                    </button>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-black font-medium text-sm truncate">{{ $userName ?? 'User' }}</p>
-                            <p class="text-black text-xs truncate">{{ $userEmail ?? 'user@example.com' }}</p>
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdown" class="mobile-user-dropdown">
+                            <a href="{{ $userRole === 'admin' ? route('admin.profile') : route('user.profile') }}" class="mobile-dropdown-item">
+                                <i data-feather="user" style="width: 18px; height: 18px;"></i>
+                                <span>Profil</span>
+                            </a>
+                            <a href="{{ route('logout') }}" class="mobile-dropdown-item text-red-600 hover:text-red-700 hover:bg-red-50">
+                                <i data-feather="log-out" style="width: 18px; height: 18px;"></i>
+                                <span>Keluar</span>
+                            </a>
                         </div>
                     </div>
-                </div>
-                
-                <div class="mobile-nav-divider"></div>
-                
-                <div class="mobile-nav-actions">
-                    @if(isset($userRole) && $userRole === 'admin')
-                        <!-- Admin Notifikasi -->
-                        <button onclick="toggleAdminNotifikasis()" class="mobile-nav-item">
-                            <i class="fas fa-bell"></i>
-                            <span>Notifikasi</span>
-                            <span id="admin-notification-badge" class="mobile-notification-badge hidden">0</span>
-                        </button>
-                    @elseif(isset($userRole) && $userRole === 'user')
-                        <!-- User Notifikasi -->
-                        <button onclick="toggleNotifikasis()" class="mobile-nav-item">
-                            <i class="fas fa-bell"></i>
-                            <span>Notifikasi</span>
-                            <span id="notification-badge" class="mobile-notification-badge hidden">0</span>
-                        </button>
-                    @endif
                 </div>
             </div>
         @endif
@@ -150,7 +120,7 @@
 
 <!-- Mobile Menu Button -->
 <button onclick="toggleMobileSidebar()" class="mobile-menu-btn" id="mobileMenuBtn">
-    <i class="fas fa-bars"></i>
+    <i data-feather="menu" style="width: 20px; height: 20px;"></i>
 </button>
 
 <style>
@@ -199,6 +169,13 @@
     flex-shrink: 0;
 }
 
+.mobile-sidebar-header i,
+.mobile-sidebar-header svg {
+    stroke: currentColor;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
 .mobile-sidebar-nav {
     flex: 1;
     padding: 1rem 0;
@@ -208,6 +185,7 @@
 .mobile-nav-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0.875rem 1.5rem;
     color: #000000;
     text-decoration: none;
@@ -228,11 +206,15 @@
     border-left-color: #4f46e5;
 }
 
-.mobile-nav-item i {
-    width: 24px;
+.mobile-nav-item i,
+.mobile-nav-item svg {
+    width: 20px;
+    height: 20px;
     margin-right: 0.75rem;
     text-align: center;
-    font-size: 1.1rem;
+    stroke: currentColor;
+    stroke-width: 2;
+    flex-shrink: 0;
 }
 
 .mobile-nav-item span {
@@ -260,6 +242,66 @@
     margin-bottom: 1rem;
 }
 
+.mobile-user-info i,
+.mobile-user-info svg {
+    stroke: currentColor;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
+.mobile-user-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    margin-bottom: 0.5rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    z-index: 10;
+    display: none;
+}
+
+.mobile-user-dropdown.show {
+    display: block !important;
+}
+
+.mobile-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: #000000;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.mobile-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.mobile-dropdown-item:hover {
+    background: #f3f4f6;
+}
+
+.mobile-dropdown-item i,
+.mobile-dropdown-item svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.75rem;
+    text-align: center;
+    stroke: currentColor;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
+.mobile-dropdown-item span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
 .mobile-nav-actions {
     display: flex;
     flex-direction: column;
@@ -271,8 +313,8 @@
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
     border-radius: 50%;
-    min-width: 1.25rem;
-    height: 1.25rem;
+    height: 2rem;
+    width: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -283,7 +325,6 @@
     position: fixed;
     top: 0.75rem;
     left: 1rem;
-    z-index: 1000;
     background: #ffffff;
     color: #000000;
     border: 1px solid #e5e7eb;
@@ -291,7 +332,6 @@
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: 2.5rem;
     width: 2.5rem;
     display: flex;
@@ -305,8 +345,12 @@
     transform: scale(1.05);
 }
 
-.mobile-menu-btn i {
-    font-size: 1.25rem;
+.mobile-menu-btn i,
+.mobile-menu-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
 }
 
 /* Show mobile menu button on all devices */
@@ -409,7 +453,8 @@ body {
     /* Ensure text doesn't wrap inappropriately */
     .mobile-nav-item i {
         flex-shrink: 0;
-        width: 24px;
+        width: 20px;
+        height: 20px;
     }
     
     .mobile-nav-item span {
@@ -493,4 +538,22 @@ function toggleAdminNotifikasis() {
     console.log('Toggle admin notifications');
     // Add your notification logic here
 }
+
+// User dropdown function
+function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('userDropdown');
+    const userInfo = document.querySelector('.mobile-user-info');
+    
+    if (dropdown && userInfo && !userInfo.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
 </script>

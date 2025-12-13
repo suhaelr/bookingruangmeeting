@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pemesanan Saya - Sistem Pemesanan Ruang Meeting</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+@extends('layouts.user')
+
+@section('title', 'Pemesanan Saya - Sistem Pemesanan Ruang Meeting')
+
+@php
+    $pageTitle = 'Pemesanan Saya';
+@endphp
+
+@push('head')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
+@endpush
+
+@push('styles')
+<style>
         /* Ensure buttons are clickable */
         button, .btn, [role="button"], a {
             cursor: pointer !important;
@@ -65,11 +66,6 @@
             overflow: hidden;
         }
         
-        .booking-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
         /* Mobile status badge fix */
         @media (max-width: 768px) {
             .booking-item {
@@ -93,42 +89,18 @@
             }
         }
     </style>
-</head>
-<body class="min-h-screen bg-white">
-    <!-- Navigation -->
-        <nav class="glass-effect shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
+@endpush
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+@section('main-content')
+    <!-- Header -->
+    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
             <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-2xl font-bold text-black mb-2">Pemesanan Saya</h2>
                     <p class="text-black">Kelola dan pantau pemesanan ruang meeting Anda</p>
                 </div>
                 <div class="flex space-x-4">
-                    <select id="status-filter" class="px-4 py-2 form-control">
+                    <select id="status-filter" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-black focus:outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="">Semua Status</option>
                         <option value="pending">Menunggu</option>
                         <option value="confirmed">Dikonfirmasi</option>
@@ -139,12 +111,12 @@
             </div>
         </div>
 
-        <!-- Bookings List -->
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+    <!-- Bookings List -->
+    <div class="rounded-2xl p-6 border border-gray-200">
             @if($bookings->count() > 0)
                 <div class="space-y-4">
                     @foreach($bookings as $booking)
-                    <div class="booking-item bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors border border-gray-200" 
+                    <div class="booking-item bg-gray-50 rounded-lg p-6 hover:border-blue-800 transition-colors border border-gray-200" 
                          data-status="{{ $booking->status }}">
                         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                             <div class="flex-1">
@@ -155,20 +127,25 @@
                                             <p class="text-black text-sm mb-2">{{ $booking->meetingRoom->name }} • {{ $booking->meetingRoom->location }}</p>
                                         </div>
                                         <div class="ml-4 flex-shrink-0">
-                                            <span class="px-3 py-1 rounded-full text-sm font-medium
-                                                @if($booking->status === 'pending') bg-yellow-500 text-white
-                                                @elseif($booking->status === 'confirmed') bg-green-500 text-white
-                                                @elseif($booking->status === 'cancelled') bg-red-500 text-white
-                                                @elseif($booking->status === 'completed') bg-blue-500 text-white
-                                                @else bg-gray-500 text-white @endif">
-                                                {{ $booking->status_text }}
+                                            <span class="px-2 py-1 rounded-full text-xs font-medium
+                                                @if($booking->status === 'pending') bg-yellow-100 text-yellow-800
+                                                @elseif($booking->status === 'confirmed') bg-green-100 text-green-800
+                                                @elseif($booking->status === 'cancelled') bg-red-100 text-red-800
+                                                @elseif($booking->status === 'completed') bg-blue-100 text-blue-800
+                                                @else bg-gray-100 text-black @endif">
+                                                @if($booking->status === 'pending') Menunggu
+                                                @elseif($booking->status === 'confirmed') Dikonfirmasi
+                                                @elseif($booking->status === 'cancelled') Dibatalkan
+                                                @elseif($booking->status === 'completed') Selesai
+                                                @else {{ ucfirst($booking->status) }}
+                                                @endif
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-4 text-sm text-gray-600">
-                                        <span><i class="fas fa-calendar mr-1"></i>{{ $booking->start_time->format('d M Y') }}</span>
-                                        <span><i class="fas fa-clock mr-1"></i>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</span>
-                                        <span><i class="fas fa-users mr-1"></i>{{ $booking->attendees_count }} peserta</span>
+                                    <div class="flex items-center space-x-4 text-sm text-black">
+                                        <span><i data-feather="calendar" class="mr-1 inline" style="width: 16px; height: 16px;"></i>{{ $booking->start_time->format('d M Y') }}</span>
+                                        <span><i data-feather="clock" class="mr-1 inline" style="width: 16px; height: 16px;"></i>{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</span>
+                                        <span><i data-feather="users" class="mr-1 inline" style="width: 16px; height: 16px;"></i>{{ $booking->attendees_count }} peserta</span>
                                     </div>
                                 </div>
                                 
@@ -177,26 +154,26 @@
                                 @endif
                                 
                                 @if($booking->special_requirements)
-                                <div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-3 mb-3">
-                                    <p class="text-yellow-300 text-sm">
-                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                                    <p class="text-yellow-800 text-sm">
+                                        <i data-feather="alert-triangle" class="mr-1 inline" style="width: 16px; height: 16px;"></i>
                                         <strong>Kebutuhan Khusus:</strong> {{ $booking->special_requirements }}
                                     </p>
                                 </div>
                                 @endif
 
                                 @if(isset($booking->preempt_status) && $booking->preempt_status === 'pending')
-                                <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-3 mb-3">
-                                    <p class="text-red-200 text-sm mb-3">
-                                        <i class="fas fa-handshake-angle mr-2"></i>
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-3">
+                                    <p class="text-red-800 text-sm mb-3">
+                                        <i data-feather="alert-circle" class="mr-2 inline" style="width: 16px; height: 16px;"></i>
                                         <strong>Permintaan Didahulukan:</strong> Booking ini sedang menunggu tanggapan Anda.
                                     </p>
                                     <div class="flex flex-wrap gap-2">
-                                        <button onclick="respondPreempt({{ $booking->id }}, 'accept_cancel')" class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded">
-                                            <i class="fas fa-check mr-1"></i>Terima & Batalkan
+                                        <button onclick="respondPreempt({{ $booking->id }}, 'accept_cancel')" class="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors">
+                                            <i data-feather="check" class="mr-1 inline" style="width: 16px; height: 16px;"></i>Terima & Batalkan
                                         </button>
-                                        <button onclick="respondPreempt({{ $booking->id }}, 'reject')" class="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded">
-                                            <i class="fas fa-times mr-1"></i>Tolak
+                                        <button onclick="respondPreempt({{ $booking->id }}, 'reject')" class="px-3 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                                            <i data-feather="x" class="mr-1 inline" style="width: 16px; height: 16px;"></i>Tolak
                                         </button>
                                     </div>
                                 </div>
@@ -204,10 +181,10 @@
                                 
                                 @if($booking->attendees && count($booking->attendees) > 0)
                                 <div class="mb-3">
-                                    <p class="text-white/60 text-sm mb-1">Peserta:</p>
+                                    <p class="text-black text-sm mb-1">Peserta:</p>
                                     <div class="flex flex-wrap gap-1">
                                         @foreach($booking->attendees as $attendee)
-                                        <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded">
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
                                             {{ $attendee }}
                                         </span>
                                         @endforeach
@@ -216,9 +193,9 @@
                                 @endif
                                 
                                 @if($booking->status === 'cancelled' && $booking->cancellation_reason)
-                                <div class="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
-                                    <p class="text-red-300 text-sm">
-                                        <i class="fas fa-times-circle mr-1"></i>
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                    <p class="text-red-800 text-sm">
+                                        <i data-feather="x-circle" class="mr-1 inline" style="width: 16px; height: 16px;"></i>
                                         <strong>Alasan Pembatalan:</strong> {{ $booking->cancellation_reason }}
                                     </p>
                                 </div>
@@ -228,21 +205,21 @@
                             <div class="flex items-center space-x-2 mt-4 lg:mt-0 lg:ml-6">
                                 @if($booking->canBeCancelled())
                                 <button onclick="cancelBooking({{ $booking->id }})" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                                    <i class="fas fa-times mr-1"></i>Batal
+                                    <i data-feather="x" class="mr-1" style="width: 18px; height: 18px;"></i>Batal
                                 </button>
                                 @endif
                                 
-                                <button onclick="viewBooking({{ $booking->id }})" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                                    <i class="fas fa-eye mr-1"></i>Lihat
+                                <button onclick="viewBooking({{ $booking->id }})" class="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                                    <i data-feather="eye" class="mr-1" style="width: 18px; height: 18px;"></i>Lihat
                                 </button>
                                 
                                 @if($booking->status !== 'confirmed')
                                 <button onclick="editBooking({{ $booking->id }})" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                                    <i class="fas fa-edit mr-1"></i>Edit
+                                    <i data-feather="edit" class="mr-1" style="width: 18px; height: 18px;"></i>Edit
                                 </button>
                                 @else
                                 <button disabled class="px-4 py-2 bg-gray-400 text-gray-200 rounded-lg cursor-not-allowed flex items-center" title="Tidak dapat diedit karena sudah dikonfirmasi admin">
-                                    <i class="fas fa-lock mr-1"></i>Edit
+                                    <i data-feather="lock" class="mr-1" style="width: 18px; height: 18px;"></i>Edit
                                 </button>
                                 @endif
                             </div>
@@ -258,25 +235,25 @@
                     </div>
                     <div class="flex items-center space-x-4">
                         <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-download mr-2"></i>Ekspor
+                            <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Ekspor
                         </button>
                         <div class="flex space-x-2">
                         @if($bookings->previousPageUrl())
-                        <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-chevron-left"></i>
+                        <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
+                            <i data-feather="chevron-left" style="width: 18px; height: 18px;"></i>
                         </a>
                         @endif
                         
                         @for($i = 1; $i <= $bookings->lastPage(); $i++)
                         <a href="{{ $bookings->url($i) }}" 
-                           class="px-3 py-2 rounded-lg transition-colors {{ $bookings->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold' : 'bg-white/20 text-white hover:bg-white/30' }}">
+                           class="px-3 py-2 rounded-lg transition-colors {{ $bookings->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold border border-indigo-100' : 'bg-gray-100 text-black hover:bg-gray-200' }}">
                             {{ $i }}
                         </a>
                         @endfor
                         
                         @if($bookings->nextPageUrl())
-                        <a href="{{ $bookings->nextPageUrl() }}" class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors">
-                            <i class="fas fa-chevron-right"></i>
+                        <a href="{{ $bookings->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
+                            <i data-feather="chevron-right" style="width: 18px; height: 18px;"></i>
                         </a>
                         @endif
                         </div>
@@ -284,27 +261,28 @@
                 </div>
             @else
                 <div class="text-center py-12">
-                    <i class="fas fa-calendar-times text-white/40 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-white mb-2">Tidak Ada Pemesanan</h3>
-                    <p class="text-white/60 mb-6">Anda belum membuat pemesanan ruang meeting.</p>
+                    <i data-feather="calendar" class="text-gray-300 mb-4 w-[64px] h-[64px] mx-auto"></i>
+                    <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Pemesanan</h3>
+                    <p class="text-black mb-6">Anda belum membuat pemesanan ruang meeting.</p>
                     <a href="{{ route('user.bookings.create') }}" 
                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 inline-flex items-center">
-                        <i class="fas fa-plus mr-2"></i>
+                        <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>
                         Buat Pemesanan Pertama
                     </a>
                 </div>
             @endif
-        </div>
     </div>
+@endsection
 
+@push('modals')
     <!-- Booking Detail Modal -->
     <div id="bookingDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-full w-[700px] max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Detail Pemesanan</h3>
+                    <h3 class="text-2xl font-bold text-black">Detail Pemesanan</h3>
                     <button onclick="closeModal('bookingDetailModal')" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 <div id="bookingDetailContent">
@@ -319,9 +297,9 @@
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-gray-800">Edit Pemesanan</h3>
+                    <h3 class="text-2xl font-bold text-black">Edit Pemesanan</h3>
                     <button onclick="closeModal('bookingEditModal')" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 <form id="bookingEditForm">
@@ -348,14 +326,14 @@
             <div class="p-6">
                 <div class="flex items-center mb-4">
                     <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        <i data-feather="alert-triangle" class="text-red-600" style="width: 24px; height: 24px;"></i>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-gray-800">Batal Booking</h3>
-                        <p class="text-gray-600">Tindakan ini tidak dapat dibatalkan</p>
+                        <h3 class="text-lg font-bold text-black">Batal Booking</h3>
+                        <p class="text-black">Tindakan ini tidak dapat dibatalkan</p>
                     </div>
                 </div>
-                <p class="text-gray-700 mb-6">Apakah Anda yakin ingin membatalkan pemesanan ini?</p>
+                <p class="text-black mb-6">Apakah Anda yakin ingin membatalkan pemesanan ini?</p>
                 <div class="flex justify-end space-x-4">
                     <button onclick="closeModal('bookingBatalModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                         Batal
@@ -368,17 +346,10 @@
         </div>
     </div>
 
-    <!-- Berhasil Message -->
-    @if (session('success'))
-        <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                {{ session('success') }}
-            </div>
-        </div>
-    @endif
+@endpush
 
-    <script>
+@push('scripts')
+<script>
         // Serialize bookings for client-side use (relations eager loaded in controller)
         const BOOKINGS = @json($bookings->items());
         let currentBookingId = null;
@@ -654,9 +625,10 @@
             const colors = {
                 'pending': 'bg-yellow-100 text-yellow-800',
                 'confirmed': 'bg-green-100 text-green-800',
-                'cancelled': 'bg-red-100 text-red-800'
+                'cancelled': 'bg-red-100 text-red-800',
+                'completed': 'bg-blue-100 text-blue-800'
             };
-            return colors[status] || 'bg-gray-100 text-gray-800';
+            return colors[status] || 'bg-gray-100 text-black';
         }
 
         function getInvitationStatusColor(status) {
@@ -912,17 +884,5 @@
                 setTimeout(() => successMessage.remove(), 500);
             }
         }, 1000);
-    </script>
-
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'user',
-        'userName' => session('user_data.full_name'),
-        'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Pemesanan Saya'
-    ])
-
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
-</body>
-</html>
+</script>
+@endpush
