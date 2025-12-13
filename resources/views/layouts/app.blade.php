@@ -13,6 +13,9 @@
     <!-- Fonts -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
+    <!-- Feather Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    
     <!-- Styles -->
     <script src="https://cdn.tailwindcss.com"></script>
     @stack('styles')
@@ -24,6 +27,14 @@
     @yield('content')
     
     <!-- Scripts -->
+    <script>
+        // Initialize Feather icons
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

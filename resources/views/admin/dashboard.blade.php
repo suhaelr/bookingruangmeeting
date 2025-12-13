@@ -21,7 +21,7 @@
     <!-- Admin Notification Bell -->
     <div class="relative">
         <button onclick="toggleAdminNotifikasis()" class="relative p-2 text-black hover:text-indigo-600 transition-colors duration-300">
-            <i class="fas fa-bell text-xl"></i>
+            <i data-feather="bell" style="width: 20px; height: 20px;"></i>
             <span id="admin-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
         </button>
     </div>
@@ -29,11 +29,11 @@
 
 @section('main-content')
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+        <div class="border border-gray-200 rounded-2xl p-6">
             <div class="flex items-center">
-                <div class="p-3 bg-blue-100 rounded-lg">
-                    <i class="fas fa-users text-black text-xl"></i>
+                <div class="p-3 bg-blue-50 rounded-lg">
+                    <i data-feather="users" class="text-blue-500 w-[20px] h-[20px]"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-black text-sm">Total Pengguna</p>
@@ -42,10 +42,10 @@
             </div>
         </div>
 
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        <div class="border border-gray-200 rounded-2xl p-6">
             <div class="flex items-center">
-                <div class="p-3 bg-green-100 rounded-lg">
-                    <i class="fas fa-door-open text-black text-xl"></i>
+                <div class="p-3 bg-green-50 rounded-lg">
+                    <i data-feather="box" class="text-green-500 w-[20px] h-[20px]"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-black text-sm">Ruang Meeting</p>
@@ -54,10 +54,10 @@
             </div>
         </div>
 
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        <div class="border border-gray-200 rounded-2xl p-6 ">
             <div class="flex items-center">
-                <div class="p-3 bg-yellow-100 rounded-lg">
-                    <i class="fas fa-calendar-check text-black text-xl"></i>
+                <div class="p-3 bg-yellow-50 rounded-lg">
+                    <i data-feather="calendar" class="text-yellow-500 w-[20px] h-[20px]"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-black text-sm">Total Pemesanan</p>
@@ -66,10 +66,10 @@
             </div>
         </div>
 
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        <div class="border border-gray-200 rounded-2xl p-6 ">
             <div class="flex items-center">
-                <div class="p-3 bg-purple-100 rounded-lg">
-                    <i class="fas fa-check-circle text-black text-xl"></i>
+                <div class="p-3 bg-purple-50 rounded-lg">
+                    <i data-feather="check-circle" class="text-purple-500 w-[20px] h-[20px]"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-black text-sm">Pemesanan Dikonfirmasi</p>
@@ -80,7 +80,7 @@
     </div>
 
     <!-- Export Section -->
-    <div class="glass-effect rounded-2xl p-6 shadow-2xl mb-8">
+    <div class="border border-gray-200 rounded-2xl p-6  mb-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h3 class="text-xl font-bold text-black mb-2">Export Data</h3>
@@ -89,12 +89,12 @@
             <div class="flex flex-col sm:flex-row gap-3">
                 <button onclick="exportBookingData()" 
                         class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-file-excel mr-2"></i>
+                    <i data-feather="file-text" class="mr-2" style="width: 18px; height: 18px;"></i>
                     Export Excel
                 </button>
                 <button onclick="exportBookingPDF()" 
                         class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-file-pdf mr-2"></i>
+                    <i data-feather="file" class="mr-2" style="width: 18px; height: 18px;"></i>
                     Export PDF
                 </button>
             </div>
@@ -102,21 +102,21 @@
     </div>
 
     <!-- Recent Bookings & Today's Bookings -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
         <!-- Recent Bookings -->
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        <div class="border border-gray-200 rounded-2xl p-6 flex flex-col">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-black">Pemesanan Terbaru</h3>
                 <a href="{{ route('admin.bookings') }}" class="text-black hover:text-black text-sm">
-                    Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
+                    Lihat Semua <i data-feather="arrow-right" class="ml-1 inline" style="width: 16px; height: 16px;"></i>
                 </a>
             </div>
-            <div class="space-y-4">
+            <div class="space-y-4 flex-1 relative min-h-[200px] max-h-[500px] pr-1 overflow-y-auto">
                 @forelse($recentBookings as $booking)
                 <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <i class="fas fa-calendar text-black"></i>
+                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                            <i data-feather="calendar" class="text-blue-500 w-[20px] h-[20px]"></i>
                         </div>
                         <div>
                             <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -125,33 +125,36 @@
                     </div>
                     <div class="text-right">
                         <span class="px-2 py-1 rounded-full text-xs font-medium
-                            @if($booking->status === 'pending') bg-yellow-100 text-black
-                            @elseif($booking->status === 'confirmed') bg-green-100 text-black
-                            @elseif($booking->status === 'cancelled') bg-red-100 text-black
-                            @else bg-gray-200 text-black @endif">
+                            @if($booking->status === 'pending') bg-yellow-50 text-yellow-500
+                            @elseif($booking->status === 'confirmed') bg-green-50 text-green-500
+                            @elseif($booking->status === 'cancelled') bg-red-50 text-red-500
+                            @else bg-gray-50 text-gray-500 @endif">
                             {{ ucfirst($booking->status) }}
                         </span>
                         <p class="text-black text-sm mt-1">{{ $booking->created_at ? $booking->created_at->format('M d, H:i') : 'Tidak tersedia' }}</p>
                     </div>
                 </div>
                 @empty
-                <p class="text-black text-center py-4">Tidak ada pemesanan terbaru</p>
+                <div class="flex flex-col items-center justify-center absolute inset-0">
+                    <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px]"></i>
+                    <p class="text-black text-center">Tidak ada pemesanan terbaru</p>
+                </div>
                 @endforelse
             </div>
         </div>
 
         <!-- Today's Bookings -->
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        <div class="border border-gray-200 rounded-2xl p-6 flex flex-col">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-black">Pemesanan Hari Ini</h3>
                 <span class="text-black text-sm">{{ now()->format('M d, Y') }}</span>
             </div>
-            <div class="space-y-4">
+            <div class="space-y-4 relative min-h-[200px] flex-1 max-h-[500px] pr-1 overflow-y-auto">
                 @forelse($todayBookings as $booking)
                 <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                            <i class="fas fa-clock text-black"></i>
+                            <i data-feather="clock" class="text-black" style="width: 20px; height: 20px;"></i>
                         </div>
                         <div>
                             <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -164,7 +167,10 @@
                     </div>
                 </div>
                 @empty
-                <p class="text-black text-center py-4">Tidak ada pemesanan hari ini</p>
+                <div class="flex flex-col items-center justify-center absolute inset-0">
+                    <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px]"></i>
+                    <p class="text-black text-center">Tidak ada pemesanan hari ini</p>
+                </div>
                 @endforelse
             </div>
         </div>
@@ -241,7 +247,7 @@
                     <div class="p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}" onclick="markAdminNotifikasiAsRead(${notification.id})">
                         <div class="flex items-start">
                             <div class="flex-shrink-0">
-                                <i class="fas fa-${getAdminNotifikasiIcon(notification.type)} text-${getAdminNotifikasiWarna(notification.type)}"></i>
+                                <i data-feather="${getAdminNotifikasiIcon(notification.type)}" class="text-${getAdminNotifikasiWarna(notification.type)}" style="width: 18px; height: 18px;"></i>
                             </div>
                             <div class="ml-3 flex-1">
                                 <p class="text-sm font-medium text-gray-900">${notification.title}</p>
@@ -262,9 +268,9 @@
     function getAdminNotifikasiIcon(type) {
         const icons = {
             'success': 'check-circle',
-            'info': 'info-circle',
-            'warning': 'exclamation-triangle',
-            'error': 'times-circle'
+            'info': 'info',
+            'warning': 'alert-triangle',
+            'error': 'x-circle'
         };
         return icons[type] || 'bell';
     }

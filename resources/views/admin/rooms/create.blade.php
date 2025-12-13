@@ -8,7 +8,6 @@
 
 @push('head')
 <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-<link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
 @endpush
 
 @push('styles')
@@ -39,20 +38,20 @@
 @section('main-content')
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
-        <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+        <div class="border border-gray-200 rounded-2xl p-6 mb-8">
             <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-2xl font-bold text-black mb-2">Tambah Ruang Meeting Baru</h2>
                     <p class="text-black">Buat ruang meeting baru</p>
                 </div>
                 <a href="{{ route('admin.rooms') }}" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-arrow-left mr-2"></i>Kembali ke Ruang
+                    <i data-feather="arrow-left" class="mr-2" style="width: 18px; height: 18px;"></i>Kembali ke Ruang
                 </a>
             </div>
         </div>
 
         <!-- Form -->
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        <div class="border border-gray-200 rounded-2xl p-6">
             <form method="POST" action="{{ route('admin.rooms.store') }}">
                 @csrf
                 
@@ -69,7 +68,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Room Nama -->
                     <div>
-                        <label for="name" class="block text-sm font-medium text-black mb-2">Nama Ruang *</label>
+                        <label for="name" class="block text-sm font-medium text-black mb-2">
+                            Nama Ruang
+                            <span class="text-red-500">*</span>
+                        </label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" 
                                class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan nama ruang" required>
@@ -85,7 +87,10 @@
 
                     <!-- Lokasi -->
                     <div>
-                        <label for="location" class="block text-sm font-medium text-black mb-2">Lokasi *</label>
+                        <label for="location" class="block text-sm font-medium text-black mb-2">
+                            Lokasi
+                            <span class="text-red-500">*</span>
+                        </label>
                         <input type="text" id="location" name="location" value="{{ old('location') }}" 
                                class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan lokasi" required>
@@ -111,7 +116,10 @@
 
                 <!-- Status -->
                 <div class="mt-6">
-                    <label for="is_active" class="block text-sm font-medium text-black mb-2">Status *</label>
+                    <label for="is_active" class="block text-sm font-medium text-black mb-2">
+                        Status
+                        <span class="text-red-500">*</span>
+                    </label>
                     <select id="is_active" name="is_active" 
                             class="w-full px-3 py-2 form-control" required>
                         <option value="">Pilih status</option>
@@ -126,7 +134,7 @@
                         Batal
                     </a>
                     <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-save mr-2"></i>
+                        <i data-feather="save" class="mr-2" style="width: 18px; height: 18px;"></i>
                         Buat Ruang
                     </button>
                 </div>
@@ -134,3 +142,4 @@
         </div>
     </div>
 @endsection
+

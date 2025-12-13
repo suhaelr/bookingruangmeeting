@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO Meta Tags -->
+@extends('layouts.auth')
+
+@php
+    $pageTitle = 'Daftar';
+    $showLogo = true;
+    $showFooter = false;
+@endphp
+
+@push('seo-meta')
     @include('components.seo-meta', [
         'page' => 'register',
         'title' => 'Daftar - Sistem Pemesanan Ruang Meeting',
@@ -13,76 +15,10 @@
         'canonical' => '/register',
         'robots' => 'noindex, nofollow'
     ])
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        .gradient-bg {
-            background: #ffffff;
-        }
-        
-        .glass-effect {
-            background: #ffffff;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        
-        /* Input styling */
-        input[type="text"], input[type="email"], input[type="password"] {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            border: 1px solid #d1d5db !important;
-        }
-        
-        input::placeholder {
-            color: #9ca3af !important;
-        }
-        
-        input:focus {
-            background-color: #ffffff !important;
-            border-color: #6366f1 !important;
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
-        }
-        
-        /* Ensure all text is black */
-        .text-white {
-            color: #000000 !important;
-        }
-        
-        .text-white\/80 {
-            color: #000000 !important;
-        }
-        
-        label {
-            color: #000000 !important;
-        }
-        
-        p {
-            color: #000000 !important;
-        }
-        
-        h1 {
-            color: #000000 !important;
-        }
-        
-        a {
-            color: #000000 !important;
-        }
-        
-        a:hover {
-            color: #1f2937 !important;
-        }
-    </style>
-</head>
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'guest',
-        'pageTitle' => 'Daftar'
-    ])
-    <div class="glass-effect rounded-2xl p-8 w-full max-w-md shadow-2xl">
+@endpush
+
+@section('auth-content')
+    <div class="rounded-2xl p-8 border border-gray-200 w-[700px] max-w-full">
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-user-plus text-2xl text-indigo-600"></i>
@@ -107,13 +43,16 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('register') }}">
+        <form method="POST" class="text-left" action="{{ route('register') }}">
             @csrf
             
-            <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 w-full">
                 <!-- Username -->
                 <div>
-                    <label for="username" class="block text-sm font-medium text-black mb-2">Username *</label>
+                    <label for="username" class="block text-sm font-medium text-black mb-2">
+                        Username
+                        <span class="text-red-500">*</span>
+                    </label>
                     <input type="text" id="username" name="username" value="{{ old('username') }}" 
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Masukkan username" required>
@@ -121,7 +60,10 @@
 
                 <!-- Full Name -->
                 <div>
-                    <label for="full_name" class="block text-sm font-medium text-black mb-2">Nama Lengkap *</label>
+                    <label for="full_name" class="block text-sm font-medium text-black mb-2">
+                        Nama Lengkap
+                        <span class="text-red-500">*</span>
+                    </label>
                     <input type="text" id="full_name" name="full_name" value="{{ old('full_name') }}" 
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Masukkan nama lengkap" required>
@@ -129,7 +71,10 @@
 
                 <!-- Email -->
                 <div>
-                    <label for="email" class="block text-sm font-medium text-black mb-2">Email *</label>
+                    <label for="email" class="block text-sm font-medium text-black mb-2">
+                        Email
+                        <span class="text-red-500">*</span>
+                    </label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" 
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Masukkan email" required>
@@ -146,7 +91,7 @@
                 <!-- Unit Kerja -->
                 <div>
                     <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-building mr-2"></i>Unit Kerja
+                        Unit Kerja
                     </label>
                     <div class="relative">
                         <select id="unit_kerja" name="unit_kerja"
@@ -168,7 +113,10 @@
 
                 <!-- Password -->
                 <div>
-                    <label for="password" class="block text-sm font-medium text-black mb-2">Password *</label>
+                    <label for="password" class="block text-sm font-medium text-black mb-2">
+                        Password
+                        <span class="text-red-500">*</span>
+                    </label>
                     <input type="password" id="password" name="password" 
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Minimal 8 karakter" required>
@@ -176,14 +124,17 @@
 
                 <!-- Confirm Password -->
                 <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-black mb-2">Konfirmasi Password *</label>
+                    <label for="password_confirmation" class="block text-sm font-medium text-black mb-2">
+                        Konfirmasi Password
+                        <span class="text-red-500">*</span>
+                    </label>
                     <input type="password" id="password_confirmation" name="password_confirmation" 
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Ulangi password" required>
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-gray-200 hover:bg-gray-300 text-black font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-gray-300">
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-800 !text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-blue-300">
                 <i class="fas fa-user-plus mr-2"></i>
                 Daftar Sekarang
             </button>
@@ -198,8 +149,4 @@
             </p>
         </div>
     </div>
-
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
-</body>
-</html>
+@endsection

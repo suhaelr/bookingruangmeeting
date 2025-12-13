@@ -361,7 +361,7 @@ class UserController extends Controller
             'bookings_count' => $bookings->count()
         ]);
 
-        return view('user.bookings', compact('bookings', 'allPics'));
+        return view('user.bookings.index', compact('bookings', 'allPics'));
     }
 
     public function createBooking()
@@ -382,11 +382,11 @@ class UserController extends Controller
 
         // Check if no rooms are available
         if ($rooms->count() === 0) {
-            return view('user.create-booking', compact('rooms', 'allPics', 'userUnitKerja'))
+            return view('user.bookings.create', compact('rooms', 'allPics', 'userUnitKerja'))
                 ->with('warning', 'Saat ini tidak ada ruang meeting yang tersedia. Silakan hubungi administrator untuk informasi lebih lanjut.');
         }
 
-        return view('user.create-booking', compact('rooms', 'allPics', 'userUnitKerja'));
+        return view('user.bookings.create', compact('rooms', 'allPics', 'userUnitKerja'));
     }
 
     public function checkAvailability(Request $request)

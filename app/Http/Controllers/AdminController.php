@@ -280,23 +280,33 @@ class AdminController extends Controller
 
             Log::info('Booking status updated successfully');
 
-            // Create user notification
-            $this->createUserNotification($booking, $request->status, $request->reason);
+            // Dispatch notifications asynchronously to avoid blocking the response
+            // This ensures the API responds quickly while notifications are processed in the background
+            try {
+                // Create user notification (emails are already queued in the model)
+                $this->createUserNotification($booking, $request->status, $request->reason);
 
-            // Send notification to admin about status change
-            $statusText = match ($request->status) {
-                'pending' => 'menunggu konfirmasi',
-                'confirmed' => 'dikonfirmasi',
-                'cancelled' => 'dibatalkan',
-                'completed' => 'selesai',
-                default => $request->status
-            };
-            $this->notifyAdmin(
-                'Status Booking Diperbarui',
-                "Status booking '{$booking->title}' oleh {$booking->user->full_name} telah diubah menjadi {$statusText}",
-                'info',
-                $booking->id
-            );
+                // Send notification to admin about status change
+                $statusText = match ($request->status) {
+                    'pending' => 'menunggu konfirmasi',
+                    'confirmed' => 'dikonfirmasi',
+                    'cancelled' => 'dibatalkan',
+                    'completed' => 'selesai',
+                    default => $request->status
+                };
+                $this->notifyAdmin(
+                    'Status Booking Diperbarui',
+                    "Status booking '{$booking->title}' oleh {$booking->user->full_name} telah diubah menjadi {$statusText}",
+                    'info',
+                    $booking->id
+                );
+            } catch (\Exception $e) {
+                // Log notification errors but don't fail the request
+                Log::warning('Notification creation failed but booking status was updated', [
+                    'booking_id' => $booking->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

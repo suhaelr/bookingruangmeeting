@@ -9,7 +9,6 @@
 @push('head')
 <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
 @endpush
 
 @push('styles')
@@ -41,7 +40,7 @@
 
 @section('main-content')
     <!-- Header -->
-    <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="text-2xl font-bold text-black mb-2">Kelola Ruang Meeting</h2>
@@ -49,13 +48,13 @@
             </div>
             <div class="flex space-x-4">
                 <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                    <i class="fas fa-download mr-2"></i>Export
+                    <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Export
                 </button>
             </div>
         </div>
         <div class="mt-4">
             <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 inline-flex items-center">
-                <i class="fas fa-plus mr-2"></i>Tambah Ruang
+                <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>Tambah Ruang
             </a>
         </div>
     </div>
@@ -63,7 +62,7 @@
     <!-- Ruang Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($rooms as $room)
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-300">
+        <div class="border border-gray-200 rounded-2xl p-6 transition-all duration-300">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-xl font-bold text-black">{{ $room->name }}</h3>
                 <span class="px-2 py-1 rounded-full text-xs font-medium
@@ -113,26 +112,26 @@
                 <p class="text-black text-sm mb-2">Pemesanan Hari Ini:</p>
                 <div class="space-y-2">
                     @foreach($todayBookings as $booking)
-                    <div class="bg-gray-100 rounded-lg p-3">
+                    <div class="border border-gray-200 rounded-xl p-3">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <p class="text-black font-medium text-sm">{{ $booking->user->full_name }}</p>
-                                <p class="text-black text-xs">{{ $booking->title }}</p>
+                                <p class="text-gray-500 text-xs mb-3">{{ $booking->title }}</p>
                                 @if($booking->unit_kerja)
                                     <p class="text-blue-600 text-xs mt-1">
-                                        <i class="fas fa-building mr-1"></i>{{ $booking->unit_kerja }}
+                                        <i data-feather="tag" class="mr-1 inline w-[14px] h-[14px]"></i>{{ $booking->unit_kerja }}
                                     </p>
                                 @endif
                             </div>
                             <div class="text-right">
-                                <p class="text-black text-sm font-medium">
+                                <p class="text-black text-sm font-medium mb-2">
                                     {{ \Carbon\Carbon::parse($booking->start_time)->format('H:i') }} - 
                                     {{ \Carbon\Carbon::parse($booking->end_time)->format('H:i') }}
                                 </p>
                                 <span class="px-2 py-1 text-xs rounded-full
-                                    @if($booking->status === 'confirmed') bg-green-500/20 text-green-700
-                                    @elseif($booking->status === 'pending') bg-yellow-500/20 text-yellow-700
-                                    @else bg-gray-500/20 text-gray-700 @endif">
+                                    @if($booking->status === 'confirmed') bg-green-50 text-green-800
+                                    @elseif($booking->status === 'pending') bg-yellow-50 text-yellow-800
+                                    @else bg-gray-50 text-gray-800 @endif">
                                     {{ ucfirst($booking->status) }}
                                 </span>
                             </div>
@@ -145,7 +144,7 @@
             
             <div class="flex items-center justify-between pt-4 border-t border-gray-300">
                 <div class="text-black text-sm">
-                    <i class="fas fa-calendar mr-1"></i>
+                    <i data-feather="calendar" class="mr-1 inline" style="width: 16px; height: 16px;"></i>
                     {{ $room->bookings_count ?? 0 }} pemesanan total
                     @if($todayBookings->count() > 0)
                         <span class="text-green-600">({{ $todayBookings->count() }} hari ini)</span>
@@ -153,20 +152,20 @@
                 </div>
                 <div class="flex space-x-2">
                     <button onclick="viewRoom({{ $room->id }})" class="text-blue-600 hover:text-blue-800 transition-colors" title="Lihat Details">
-                        <i class="fas fa-eye"></i>
+                        <i data-feather="eye" style="width: 18px; height: 18px;"></i>
                     </button>
                     <button onclick="editRoom({{ $room->id }})" class="text-yellow-600 hover:text-yellow-800 transition-colors" title="Edit Ruang">
-                        <i class="fas fa-edit"></i>
+                        <i data-feather="edit" style="width: 18px; height: 18px;"></i>
                     </button>
                     <button onclick="deleteRoom({{ $room->id }})" class="text-red-600 hover:text-red-800 transition-colors" title="Hapus Ruang">
-                        <i class="fas fa-trash"></i>
+                        <i data-feather="trash-2" style="width: 18px; height: 18px;"></i>
                     </button>
                 </div>
             </div>
         </div>
         @empty
         <div class="col-span-full text-center py-12">
-            <i class="fas fa-door-open text-gray-400 text-6xl mb-4"></i>
+            <i data-feather="box" class="text-gray-400 mb-4" style="width: 64px; height: 64px;"></i>
             <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Ruang</h3>
             <p class="text-black">Belum ada ruang meeting dalam sistem.</p>
         </div>
@@ -182,7 +181,7 @@
         <div class="flex space-x-2">
             @if($rooms->previousPageUrl())
             <a href="{{ $rooms->previousPageUrl() }}" class="px-3 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition-colors">
-                <i class="fas fa-chevron-left"></i>
+                <i data-feather="chevron-left" style="width: 18px; height: 18px;"></i>
             </a>
             @endif
             
@@ -195,7 +194,7 @@
             
             @if($rooms->nextPageUrl())
             <a href="{{ $rooms->nextPageUrl() }}" class="px-3 py-2 bg-gray-200 text-black rounded-lg hover:bg-gray-300 transition-colors">
-                <i class="fas fa-chevron-right"></i>
+                <i data-feather="chevron-right" style="width: 18px; height: 18px;"></i>
             </a>
             @endif
         </div>
@@ -206,12 +205,12 @@
 @push('modals')
     <!-- Room Detail Modal -->
     <div id="roomDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-4xl max-w-full w-[700px] max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold text-black">Detail Ruang</h3>
                     <button onclick="closeModal('roomDetailModal')" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 <div id="roomDetailContent">
@@ -223,12 +222,12 @@
 
     <!-- Room Edit Modal -->
     <div id="roomEditModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-4xl max-w-full w-[700px] max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold text-black">Edit Ruang</h3>
                     <button onclick="closeModal('roomEditModal')" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 <form id="roomEditForm">
@@ -255,7 +254,7 @@
             <div class="p-6">
                 <div class="flex items-center mb-4">
                     <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        <i data-feather="alert-triangle" class="text-red-600" style="width: 24px; height: 24px;"></i>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-black">Hapus Ruang</h3>

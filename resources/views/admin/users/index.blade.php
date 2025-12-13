@@ -12,19 +12,46 @@
 
 @push('styles')
 <style>
-    .gradient-bg {
-        background: #ffffff;
+    body,
+    body.gradient-bg {
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #000000 !important;
     }
-    .glass-effect {
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
+
+    /* Mobile responsive table */
+    @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table-responsive table {
+            min-width: 800px;
+        }
+        
+        .table-responsive th,
+        .table-responsive td {
+            white-space: nowrap;
+            min-width: 120px;
+        }
+        
+        .table-responsive th:first-child,
+        .table-responsive td:first-child {
+            min-width: 60px;
+        }
+        
+        .table-responsive th:last-child,
+        .table-responsive td:last-child {
+            min-width: 100px;
+        }
     }
 </style>
 @endpush
 
 @section('main-content')
     <!-- Header -->
-    <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-black mb-2">Kelola Pengguna</h2>
@@ -32,34 +59,34 @@
             </div>
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
                 <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
-                    <i class="fas fa-plus mr-2"></i>Tambah Pengguna
+                    <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>Tambah Pengguna
                 </a>
                 <button onclick="exportUsers()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
-                    <i class="fas fa-download mr-2"></i>Export
+                    <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Export
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Users Table -->
-    <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-        <div class="overflow-x-auto">
+    <div class="rounded-2xl p-6 border border-gray-200">
+        <div class="overflow-x-auto table-responsive bg-white rounded-xl border border-gray-200">
             <table class="w-full text-black">
-                <thead>
-                    <tr class="border-b border-gray-300">
-                        <th class="text-left py-3 px-4 text-black">Nama</th>
-                        <th class="text-left py-3 px-4 text-black">Email</th>
-                        <th class="text-left py-3 px-4 text-black">Unit Kerja</th>
-                        <th class="text-left py-3 px-4 text-black">Role</th>
-                        <th class="text-left py-3 px-4 text-black">Terakhir Login</th>
-                        <th class="text-left py-3 px-4 text-black">Bergabung</th>
-                        <th class="text-left py-3 px-4 text-black">Aksi</th>
+                <thead class="bg-gray-100">
+                    <tr class="border-b border-gray-200">
+                        <th class="text-left py-3 px-4 font-semibold text-black">Nama</th>
+                        <th class="text-left py-3 px-4 font-semibold text-black">Email</th>
+                        <th class="text-left py-3 px-4 font-semibold text-black">Unit Kerja</th>
+                        <th class="text-left py-3 px-4 font-semibold text-black">Role</th>
+                        <th class="text-left py-3 px-4 font-semibold text-black">Terakhir Login</th>
+                        <th class="text-left py-3 px-4 font-semibold text-black">Bergabung</th>
+                        <th class="text-left py-3 px-4 font-semibold text-black">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="usersTableBody">
+                <tbody class="bg-white" id="usersTableBody">
                     <tr>
                         <td colspan="7" class="text-center py-8 text-black">
-                            <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                            <i data-feather="loader" class="text-2xl mb-2 animate-spin" style="width: 24px; height: 24px;"></i>
                             <p>Memuat data pengguna...</p>
                         </td>
                     </tr>
@@ -72,12 +99,12 @@
 @push('modals')
     <!-- Role Change Modal -->
     <div id="roleChangeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full">
+        <div class="bg-white rounded-2xl max-w-full w-[700px]">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold text-gray-800">Ubah Role Pengguna</h3>
                     <button onclick="closeModal('roleChangeModal')" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 <div id="roleChangeContent">
@@ -137,15 +164,38 @@
         }
     }
 
+    // Get user initials from name
+    function getUserInitials(name) {
+        if (!name) return '?';
+        const words = name.trim().split(/\s+/);
+        if (words.length === 1) {
+            return words[0].charAt(0).toUpperCase();
+        }
+        return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
+    }
+
+    // Get color for avatar based on name (for consistent coloring)
+    function getAvatarColor(name) {
+        const colors = [
+            'bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-pink-500',
+            'bg-indigo-500', 'bg-yellow-500', 'bg-red-500', 'bg-teal-500'
+        ];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
+    }
+
     // Render users table
     function renderUsersTable() {
         const tbody = document.getElementById('usersTableBody');
         
         if (users.length === 0) {
             tbody.innerHTML = `
-                <tr>
+                <tr class="border-b border-gray-200">
                     <td colspan="7" class="text-center py-8 text-black">
-                        <i class="fas fa-users text-2xl mb-2"></i>
+                        <i data-feather="users" class="text-2xl mb-2" style="width: 24px; height: 24px;"></i>
                         <p>Tidak ada pengguna ditemukan</p>
                     </td>
                 </tr>
@@ -154,11 +204,11 @@
         }
 
         tbody.innerHTML = users.map(user => `
-            <tr class="border-b border-gray-200 hover:bg-gray-50">
+            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                 <td class="py-3 px-4">
                     <div class="flex items-center">
-                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
-                            <i class="fas fa-user text-black"></i>
+                        <div class="w-8 h-8 ${getAvatarColor(user.name)} rounded-full flex items-center justify-center mr-3 text-white text-xs font-semibold">
+                            ${getUserInitials(user.name)}
                         </div>
                         <div>
                             <div class="font-medium text-black">${user.name}</div>
@@ -185,12 +235,12 @@
                     <div class="flex space-x-2">
                         <button onclick="changeUserRole(${user.id}, '${user.role}', '${user.name}')" 
                                 class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm">
-                            <i class="fas fa-user-edit mr-1"></i>Role
+                            <i data-feather="user" class="mr-1 inline" style="width: 14px; height: 14px;"></i>Role
                         </button>
                         ${!(user.username === 'admin' && user.email === 'admin@pusdatinbgn.web.id') ? `
                         <button onclick="deleteUser(${user.id}, '${user.name}')" 
                                 class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm">
-                            <i class="fas fa-trash mr-1"></i>Hapus
+                            <i data-feather="trash-2" class="mr-1 inline" style="width: 14px; height: 14px;"></i>Hapus
                         </button>
                         ` : ''}
                     </div>
@@ -233,7 +283,7 @@
             </div>
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <div class="flex">
-                    <i class="fas fa-exclamation-triangle text-yellow-600 mr-2 mt-0.5"></i>
+                    <i data-feather="alert-triangle" class="text-yellow-600 mr-2 mt-0.5" style="width: 18px; height: 18px;"></i>
                     <div class="text-sm text-yellow-800">
                         <p class="font-medium">Perhatian:</p>
                         <p>Perubahan role akan mempengaruhi akses pengguna ke sistem. Pastikan perubahan ini sesuai dengan kebutuhan.</p>
@@ -337,7 +387,7 @@
         if (refreshBtn) {
             const originalText = refreshBtn.innerHTML;
             refreshBtn.disabled = true;
-            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memuat...';
+            refreshBtn.innerHTML = '<i data-feather="loader" class="mr-2 animate-spin inline" style="width: 16px; height: 16px;"></i>Memuat...';
             
             showMessage('Memuat data terbaru dari database...', 'info');
             

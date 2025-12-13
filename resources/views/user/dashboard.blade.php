@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <!-- SEO Meta Tags -->
+@extends('layouts.user')
+
+@section('title', 'Dashboard Pengguna - Sistem Pemesanan Ruang Meeting')
+
+@php
+    $pageTitle = 'Dashboard Pengguna';
+@endphp
+
+@push('seo-meta')
     @include('components.seo-meta', [
         'page' => 'user_dashboard',
         'title' => 'Dashboard Pengguna - Sistem Pemesanan Ruang Meeting',
@@ -14,11 +15,20 @@
         'canonical' => '/user/dashboard',
         'robots' => 'noindex, nofollow'
     ])
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
+@endpush
+
+@push('nav-actions')
+    <!-- User Notification Bell -->
+    <div class="relative">
+        <button onclick="toggleNotifikasis()" class="relative p-2 text-black hover:text-indigo-600 transition-colors duration-300">
+            <i data-feather="bell" style="width: 20px; height: 20px;"></i>
+            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+        </button>
+    </div>
+@endpush
+
+@push('styles')
+<style>
         /* Mobile navbar text size adjustments */
         @media (max-width: 768px) {
             .navbar-title {
@@ -68,50 +78,11 @@
             border: 1px solid #e5e7eb;
         }
     </style>
-</head>
-<body class="bg-white min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white border-b border-gray-200 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4 text-black">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="flex-shrink-0">
-                        <i class="fas fa-calendar-alt text-2xl text-black"></i>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <!-- User Notification Bell -->
-                    <div class="relative">
-                        <button onclick="toggleNotifikasis()" class="relative p-2 text-black hover:text-indigo-600 transition-colors duration-300">
-                            <i class="fas fa-bell text-xl"></i>
-                            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                        </button>
-                    </div>
-                    <a href="{{ route('logout') }}" 
-                       class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
-                        Keluar
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+@endpush
 
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'user',
-        'userName' => session('user_data.full_name'),
-        'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Dashboard Pengguna'
-    ])
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Selamat Datang Section -->
-        <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+@section('main-content')
+    <!-- Selamat Datang Section -->
+    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-2xl font-bold text-black mb-2">Selamat Datang, {{ session('user_data.full_name') }}!</h2>
@@ -120,20 +91,20 @@
                 <div class="hidden md:block">
                     <a href="{{ route('user.bookings.create') }}" 
                        class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>
+                        <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>
                         Pesan Ruang Meeting
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <div class="flex items-center">
-                    <div class="p-3 bg-blue-500 rounded-lg">
-                        <i class="fas fa-calendar-check text-white text-xl"></i>
-                    </div>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="border border-gray-200 rounded-2xl p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-blue-50 rounded-lg">
+                    <i data-feather="calendar" class="text-blue-500 w-[20px] h-[20px]"></i>
+                </div>
                     <div class="ml-4">
                         <p class="text-black text-sm">Total Pemesanan</p>
                         <p class="text-2xl font-bold text-black">{{ $stats['total_bookings'] }}</p>
@@ -142,11 +113,11 @@
             </div>
 
 
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-                <div class="flex items-center">
-                    <div class="p-3 bg-green-500 rounded-lg">
-                        <i class="fas fa-check-circle text-white text-xl"></i>
-                    </div>
+        <div class="border border-gray-200 rounded-2xl p-6">
+            <div class="flex items-center">
+                <div class="p-3 bg-green-50 rounded-lg">
+                    <i data-feather="check-circle" class="text-green-500 w-[20px] h-[20px]"></i>
+                </div>
                     <div class="ml-4">
                         <p class="text-black text-sm">Dikonfirmasi</p>
                         <p class="text-2xl font-bold text-black">{{ $stats['confirmed_bookings'] }}</p>
@@ -154,10 +125,10 @@
                 </div>
             </div>
 
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+            <div class="border border-gray-200 rounded-2xl p-6">
                 <div class="flex items-center">
-                    <div class="p-3 bg-purple-500 rounded-lg">
-                        <i class="fas fa-calendar text-white text-xl"></i>
+                    <div class="p-3 bg-purple-50 rounded-lg">
+                        <i data-feather="calendar" class="text-purple-500 w-[20px] h-[20px]"></i>
                     </div>
                     <div class="ml-4">
                         <p class="text-black text-sm">Bulan Ini</p>
@@ -170,19 +141,19 @@
         <!-- Main Content Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Active Bookings -->
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+            <div class="border border-gray-200 rounded-2xl p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-black">Pemesanan Aktif</h3>
                     <a href="{{ route('user.bookings') }}" class="text-black hover:text-black text-sm">
-                        Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
+                        Lihat Semua <i data-feather="arrow-right" class="ml-1 inline" style="width: 16px; height: 16px;"></i>
                     </a>
                 </div>
                 <div class="space-y-4">
                     @forelse($activeBookings as $booking)
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-calendar text-white"></i>
+                        <div class="flex items-start space-x-3">
+                            <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                                <i data-feather="calendar" class="text-blue-500 w-[18px] h-[18px]"></i>
                             </div>
                             <div>
                                 <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -191,6 +162,11 @@
                             </div>
                         </div>
                         <div class="text-right">
+                            @if($booking->canBeCancelled())
+                            <button type="button" onclick="openCancelBookingModal({{ $booking->id }}, '{{ addslashes($booking->title) }}', '{{ $booking->meetingRoom->name }}', '{{ $booking->formatted_start_time }}')" class="text-red-500 hover:text-red-600 text-xs mr-2">
+                                <i data-feather="x" class="mr-1 inline w-[16px] h-[16px]"></i>Batal
+                            </button>
+                            @endif
                             <span class="px-2 py-1 rounded-full text-xs font-medium
                                 @if($booking->status === 'pending') bg-yellow-500 text-white
                                 @elseif($booking->status === 'confirmed') bg-green-500 text-white
@@ -198,23 +174,16 @@
                                 @else bg-gray-500 text-white @endif">
                                 {{ ucfirst($booking->status) }}
                             </span>
-                            @if($booking->canBeCancelled())
-                            <form method="POST" action="{{ route('user.bookings.cancel', $booking->id) }}" class="mt-2">
-                                @csrf
-                                <button type="submit" class="text-black hover:text-black text-xs">
-                                    <i class="fas fa-times mr-1"></i>Batal
-                                </button>
-                            </form>
-                            @endif
                         </div>
                     </div>
                     @empty
                     <div class="text-center py-8">
-                        <i class="fas fa-calendar-times text-black text-4xl mb-4"></i>
-                        <p class="text-black">Tidak ada pemesanan aktif</p>
+                        <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px] mx-auto"></i>
+                        <p class="text-black mb-4">Tidak ada pemesanan aktif</p>
                         <a href="{{ route('user.bookings.create') }}" 
-                           class="text-black hover:text-black text-sm mt-2 inline-block">
-                            Pesan ruang meeting
+                           class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 inline-flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105">
+                            <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>
+                            Pesan Ruang Meeting
                         </a>
                     </div>
                     @endforelse
@@ -222,7 +191,7 @@
             </div>
 
             <!-- Today's Bookings -->
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+            <div class="border border-gray-200 rounded-2xl p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-black">Jadwal Hari Ini</h3>
                     <span class="text-black text-sm">{{ now()->format('M d, Y') }}</span>
@@ -232,7 +201,7 @@
                     <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                                <i class="fas fa-clock text-white"></i>
+                                <i data-feather="clock" class="text-black" style="width: 18px; height: 18px;"></i>
                             </div>
                             <div>
                                 <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -252,7 +221,7 @@
                     </div>
                     @empty
                     <div class="text-center py-8">
-                        <i class="fas fa-calendar-day text-black text-4xl mb-4"></i>
+                        <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px] mx-auto"></i>
                         <p class="text-black">Tidak ada meeting hari ini</p>
                     </div>
                     @endforelse
@@ -262,7 +231,7 @@
 
         <!-- Kalender Bulanan (Confirmed bookings per date) -->
         <div class="mt-8">
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+            <div class="border border-gray-200 rounded-2xl p-6">
                 <div class="mb-6 flex items-center justify-between flex-wrap gap-3">
                     <div>
                         <h3 class="text-xl font-bold text-black">Kalender Booking</h3>
@@ -297,21 +266,21 @@
                                     @php
                                         // Determine background color based on attendance status
                                         $bgColor = 'bg-blue-500/20';
-                                        $textColor = 'text-blue-100';
+                                        $textColor = 'text-blue-800';
                                         $hoverColor = 'hover:bg-blue-500/30';
                                         
                                         if (isset($item['attendance_status_color']) && isset($item['is_owner']) && $item['is_owner']) {
                                             if ($item['attendance_status_color'] === 'green') {
                                                 $bgColor = 'bg-green-500/30';
-                                                $textColor = 'text-green-100';
+                                                $textColor = 'text-green-800';
                                                 $hoverColor = 'hover:bg-green-500/40';
                                             } elseif ($item['attendance_status_color'] === 'red') {
                                                 $bgColor = 'bg-red-500/30';
-                                                $textColor = 'text-red-100';
+                                                $textColor = 'text-red-800';
                                                 $hoverColor = 'hover:bg-red-500/40';
                                             } elseif ($item['attendance_status_color'] === 'yellow') {
                                                 $bgColor = 'bg-yellow-500/30';
-                                                $textColor = 'text-yellow-100';
+                                                $textColor = 'text-yellow-800';
                                                 $hoverColor = 'hover:bg-yellow-500/40';
                                             }
                                         }
@@ -339,11 +308,11 @@
 
         <!-- Available Rooms -->
         <div class="mt-8">
-            <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+            <div class="border border-gray-200 rounded-2xl p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-black">Ruang Meeting Tersedia</h3>
                     <a href="{{ route('user.bookings.create') }}" class="text-black hover:text-blue-600 text-sm">
-                        Pesan Sekarang <i class="fas fa-arrow-right ml-1"></i>
+                        Pesan Sekarang <i data-feather="arrow-right" class="ml-1 inline" style="width: 16px; height: 16px;"></i>
                     </a>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -356,7 +325,7 @@
                         <p class="text-black text-sm mb-2">{{ $room->location }}</p>
                         <div class="flex flex-wrap gap-1 mb-3">
                             @foreach($room->getAmenitiesList() as $amenity)
-                            <span class="px-2 py-1 bg-blue-500/20 text-blue-700 text-xs rounded">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
                                 {{ ucfirst($amenity) }}
                             </span>
                             @endforeach
@@ -370,7 +339,7 @@
                     </div>
                     @empty
                     <div class="col-span-full text-center py-8">
-                        <i class="fas fa-door-open text-black text-4xl mb-4"></i>
+                        <i data-feather="box" class="text-gray-300 mb-4" style="width: 48px; height: 48px;"></i>
                         <p class="text-black">Tidak ada ruang meeting tersedia</p>
                     </div>
                     @endforelse
@@ -378,17 +347,9 @@
             </div>
         </div>
     </div>
+@endsection
 
-    <!-- Success Message -->
-    @if (session('success'))
-        <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                {{ session('success') }}
-            </div>
-        </div>
-    @endif
-
+@push('modals')
     <!-- Attendance Confirmation Modal -->
     @if (session('show_attendance_modal') && session('invitation_id'))
         @php
@@ -400,11 +361,11 @@
         @endphp
         @if($invitation)
         <div id="attendanceConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" style="display: flex;">
-            <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="bg-white rounded-2xl max-w-full w-[700px] max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                 <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-6 flex justify-between items-center">
                     <h3 class="text-xl font-bold text-gray-800">Konfirmasi Kehadiran Anda di Meeting</h3>
                     <button type="button" onclick="closeAttendanceModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 
@@ -451,13 +412,13 @@
 
                     <div class="flex gap-4">
                         <button onclick="submitAttendanceConfirmation({{ $invitationId }}, 'confirmed')" 
-                                class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
-                            <i class="fas fa-check-circle mr-2"></i>
+                                class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center">
+                            <i data-feather="check-circle" class="mr-2" style="width: 18px; height: 18px;"></i>
                             Iya, Saya Akan Hadir
                         </button>
                         <button onclick="submitAttendanceConfirmation({{ $invitationId }}, 'declined')" 
-                                class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300">
-                            <i class="fas fa-times-circle mr-2"></i>
+                                class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center">
+                            <i data-feather="x-circle" class="mr-2" style="width: 18px; height: 18px;"></i>
                             Tidak, Saya Tidak Bisa Hadir
                         </button>
                     </div>
@@ -482,10 +443,41 @@
         </div>
     </div>
 
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
+    <!-- Booking Cancel Confirmation Modal -->
+    <div id="cancelBookingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4" onclick="closeCancelBookingModal()">
+        <div class="bg-white rounded-2xl max-w-full w-[700px]" onclick="event.stopPropagation()">
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                        <i data-feather="alert-triangle" class="text-red-600" style="width: 24px; height: 24px;"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-black">Batal Booking</h3>
+                        <p class="text-black text-sm">Tindakan ini tidak dapat dibatalkan</p>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <p class="text-black mb-3">Apakah Anda yakin ingin membatalkan pemesanan ini?</p>
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-sm">
+                        <p class="font-medium text-yellow-800" id="cancelBookingTitle"></p>
+                        <p class="text-yellow-600" id="cancelBookingDetails"></p>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button onclick="closeCancelBookingModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors">
+                        Batal
+                    </button>
+                    <button onclick="confirmCancelBooking()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                        Batal Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endpush
 
-    <script>
+@push('scripts')
+<script>
         // Notifikasi functions
         function toggleNotifikasis() {
             const dropdown = document.getElementById('notificationDropdown');
@@ -1103,7 +1095,7 @@
             
             const modalContent = `
                 <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4" onclick="closeBookingModal()">
-                    <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                    <div class="bg-white rounded-2xl max-w-full w-[700px] max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
                         <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
                             <h3 class="text-lg sm:text-xl font-bold text-black">Detail Meeting</h3>
                             <button onclick="closeBookingModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
@@ -1836,8 +1828,56 @@
                 if (modal && !modal.classList.contains('hidden')) {
                     closeAttendanceModal();
                 }
+                const cancelModal = document.getElementById('cancelBookingModal');
+                if (cancelModal && !cancelModal.classList.contains('hidden')) {
+                    closeCancelBookingModal();
+                }
             }
         });
-    </script>
-</body>
-</html>
+
+        // Cancel Booking Modal Functions
+        let currentCancelBookingId = null;
+
+        function openCancelBookingModal(bookingId, title, roomName, time) {
+            currentCancelBookingId = bookingId;
+            document.getElementById('cancelBookingTitle').textContent = title;
+            document.getElementById('cancelBookingDetails').textContent = `${roomName} • ${time}`;
+            
+            const modal = document.getElementById('cancelBookingModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+            // Initialize Feather icons in modal
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        }
+
+        function closeCancelBookingModal() {
+            const modal = document.getElementById('cancelBookingModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            currentCancelBookingId = null;
+        }
+
+        function confirmCancelBooking() {
+            if (!currentCancelBookingId) {
+                return;
+            }
+
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/user/bookings/${currentCancelBookingId}/cancel`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
+        }
+</script>
+@endpush

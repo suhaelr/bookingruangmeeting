@@ -7,7 +7,6 @@
 @endphp
 
 @push('styles')
-<link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
 <style>
     body,
     body.gradient-bg {
@@ -25,6 +24,20 @@
     .status-filter option {
         background-color: #ffffff !important;
         color: #000000 !important;
+    }
+
+    /* Loading spinner for submit button */
+    .loading-spinner {
+        display: inline-block;
+    }
+    .loading-spinner.hidden {
+        display: none;
+    }
+    .submit-text.hidden {
+        display: none;
+    }
+    button:disabled {
+        pointer-events: none;
     }
 
     /* Mobile responsive table */
@@ -59,7 +72,7 @@
 
 @section('main-content')
     <!-- Header -->
-    <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
         <div class="flex justify-between items-center">
             <div>
                 <h2 class="text-2xl font-bold text-black mb-2">Kelola Pemesanan</h2>
@@ -78,7 +91,7 @@
     </div>
 
     <!-- Bookings Table -->
-    <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+    <div class="rounded-2xl p-6 border border-gray-200">
         @if($bookings->count() > 0)
             <div class="overflow-x-auto table-responsive bg-white rounded-xl border border-gray-200">
                 <table class="w-full text-black">
@@ -96,7 +109,7 @@
                     </thead>
                     <tbody class="bg-white">
                         @foreach($bookings as $booking)
-                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors booking-row" data-status="{{ $booking->status }}">
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors booking-row" data-status="{{ $booking->status }}" data-booking-id="{{ $booking->id }}">
                             <td class="py-3 px-4">#{{ $booking->id }}</td>
                             <td class="py-3 px-4">
                                 <div class="min-w-0">
@@ -125,7 +138,7 @@
                                 </div>
                             </td>
                             <td class="py-3 px-4">
-                                <span class="px-2 py-1 rounded-full text-xs font-medium
+                                <span id="status-badge-{{ $booking->id }}" class="px-2 py-1 rounded-full text-xs font-medium
                                     @if($booking->status === 'pending') bg-yellow-100 text-yellow-800
                                     @elseif($booking->status === 'confirmed') bg-green-100 text-green-800
                                     @elseif($booking->status === 'cancelled') bg-red-100 text-red-800
@@ -144,7 +157,7 @@
                                     <a href="{{ route('admin.bookings.download', $booking->id) }}" 
                                        class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors duration-300"
                                        title="Download Dokumen Perizinan">
-                                        <i class="fas fa-download mr-1"></i>
+                                        <i data-feather="download" class="mr-1 inline" style="width: 16px; height: 16px;"></i>
                                         Download PDF
                                     </a>
                                 @else
@@ -154,10 +167,10 @@
                             <td class="py-3 px-4">
                                 <div class="flex space-x-2">
                                     <button onclick="viewBooking({{ $booking->id }})" class="text-indigo-600 hover:text-indigo-800 transition-colors" title="Lihat Detail">
-                                        <i class="fas fa-eye"></i>
+                                        <i data-feather="eye" style="width: 18px; height: 18px;"></i>
                                     </button>
                                     <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-600 hover:text-yellow-700 transition-colors" title="Perbarui Status">
-                                        <i class="fas fa-edit"></i>
+                                        <i data-feather="edit" style="width: 18px; height: 18px;"></i>
                                     </button>
                                 </div>
                             </td>
@@ -174,12 +187,12 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-download mr-2"></i>Ekspor
+                        <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Ekspor
                     </button>
                     <div class="flex space-x-2">
                     @if($bookings->previousPageUrl())
                     <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-chevron-left"></i>
+                        <i data-feather="chevron-left" style="width: 18px; height: 18px;"></i>
                     </a>
                     @endif
                     
@@ -192,7 +205,7 @@
                     
                     @if($bookings->nextPageUrl())
                     <a href="{{ $bookings->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
-                        <i class="fas fa-chevron-right"></i>
+                        <i data-feather="chevron-right" style="width: 18px; height: 18px;"></i>
                     </a>
                     @endif
                     </div>
@@ -200,7 +213,7 @@
             </div>
         @else
             <div class="text-center py-12">
-                <i class="fas fa-calendar-times text-gray-300 text-6xl mb-4"></i>
+                <i data-feather="calendar" class="text-gray-300 mb-4" style="width: 64px; height: 64px;"></i>
                 <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Booking</h3>
                 <p class="text-black">Belum ada pemesanan ruang meeting.</p>
             </div>
@@ -211,12 +224,12 @@
 @push('modals')
     <!-- Booking Detail Modal -->
     <div id="bookingDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-4xl max-w-full w-[700px] max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-2xl font-bold text-black">Detail Booking</h3>
                     <button onclick="closeModal('bookingDetailModal')" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 <div id="bookingDetailContent">
@@ -228,12 +241,12 @@
 
     <!-- Booking Status Modal -->
     <div id="bookingStatusModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full">
+        <div class="bg-white rounded-2xl max-w-full w-[700px]">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-black">Perbarui Booking Status</h3>
                     <button onclick="closeModal('bookingStatusModal')" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+                        <i data-feather="x" style="width: 20px; height: 20px;"></i>
                     </button>
                 </div>
                 <form id="statusPerbaruiForm">
@@ -249,7 +262,7 @@
                                 <option value="completed">Selesai</option>
                             </select>
                             <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
-                                <i class="fas fa-chevron-down"></i>
+                                <i data-feather="chevron-down" style="width: 18px; height: 18px;"></i>
                             </span>
                         </div>
                     </div>
@@ -261,8 +274,9 @@
                         <button type="button" onclick="closeModal('bookingStatusModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400">
                             Batal
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                            Perbarui Status
+                        <button type="submit" id="submitStatusBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                            <span class="submit-text">Perbarui Status</span>
+                            <i data-feather="loader" class="loading-spinner hidden ml-2 animate-spin inline" style="width: 18px; height: 18px;"></i>
                         </button>
                     </div>
                 </form>
@@ -284,6 +298,36 @@
     function closeModal(modalId) {
         document.getElementById(modalId).classList.add('hidden');
         document.body.style.overflow = 'auto';
+        
+        // Reset form and button state when closing status modal
+        if (modalId === 'bookingStatusModal') {
+            const statusForm = document.getElementById('statusPerbaruiForm');
+            if (statusForm) {
+                statusForm.reset();
+            }
+            
+            const submitBtn = document.getElementById('submitStatusBtn');
+            const submitText = submitBtn?.querySelector('.submit-text');
+            const loadingSpinner = submitBtn?.querySelector('.loading-spinner');
+            
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                if (submitText) submitText.classList.remove('hidden');
+                if (loadingSpinner) loadingSpinner.classList.add('hidden');
+            }
+        }
+    }
+    
+    function resetSubmitButton() {
+        const submitBtn = document.getElementById('submitStatusBtn');
+        const submitText = submitBtn?.querySelector('.submit-text');
+        const loadingSpinner = submitBtn?.querySelector('.loading-spinner');
+        
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            if (submitText) submitText.classList.remove('hidden');
+            if (loadingSpinner) loadingSpinner.classList.add('hidden');
+        }
     }
 
     // Booking actions
@@ -426,7 +470,25 @@
         if (statusForm) {
             statusForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                // Prevent double submission
+                const submitBtn = document.getElementById('submitStatusBtn');
+                if (submitBtn && submitBtn.disabled) {
+                    return;
+                }
+                
                 if (currentBookingId) {
+                    // Get submit button and loading elements
+                    const submitText = submitBtn?.querySelector('.submit-text');
+                    const loadingSpinner = submitBtn?.querySelector('.loading-spinner');
+                    
+                    // Show loading state
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        if (submitText) submitText.classList.add('hidden');
+                        if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+                    }
+                    
                     const formData = new FormData(this);
                     formData.append('_method', 'POST');
                     
@@ -459,15 +521,41 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            alert(data.message || 'Status berhasil diperbarui!');
-                            location.reload();
+                            // Get the new status from the form select
+                            const statusSelect = document.querySelector('#statusPerbaruiForm select[name="status"]');
+                            const newStatus = statusSelect ? statusSelect.value : null;
+                            
+                            if (newStatus) {
+                                // Update the table row status immediately
+                                const bookingRow = document.querySelector(`tr[data-booking-id="${currentBookingId}"]`);
+                                const statusBadge = document.getElementById(`status-badge-${currentBookingId}`);
+                                
+                                if (bookingRow && statusBadge) {
+                                    // Update data-status attribute
+                                    bookingRow.setAttribute('data-status', newStatus);
+                                    
+                                    // Update status badge
+                                    statusBadge.className = `px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(newStatus)}`;
+                                    statusBadge.textContent = getStatusText(newStatus);
+                                }
+                            }
+                            
+                            // Close modal immediately
+                            closeModal('bookingStatusModal');
+                            
+                            // Show success notification (optional - you can replace with a toast library)
+                            // For now, we'll just close the modal silently for better UX
+                            // You can uncomment the alert if you want to show a message
+                            // alert(data.message || 'Status berhasil diperbarui!');
                         } else {
                             alert(data.message || 'Gagal memperbarui status');
+                            resetSubmitButton();
                         }
                     })
                     .catch(error => {
                         console.error('Error details:', error);
                         alert('Gagal memperbarui status: ' + error.message);
+                        resetSubmitButton();
                     });
                 }
             });
