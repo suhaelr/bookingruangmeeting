@@ -204,8 +204,7 @@ src="https://www.facebook.com/tr?id={{ $facebookPixel }}&ev=PageView&noscript=1"
 
 <!-- Preload Critical Resources -->
 @if(config('seo.performance.preload_critical_resources', true))
-<link rel="preload" href="{{ asset('css/app.css') }}" as="style">
-<link rel="preload" href="{{ asset('js/app.js') }}" as="script">
+{{-- Vite handles CSS/JS preloading automatically, so we only preload external resources --}}
 <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
 @endif

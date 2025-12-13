@@ -1,225 +1,197 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Pengguna - Sistem Pemesanan Ruang Meeting</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        html,
-        body,
-        body.gradient-bg {
-            background: #ffffff !important;
-            background-image: none !important;
-            color: #000000 !important;
-        }
+@extends('layouts.admin')
 
-        .card-white {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-        }
+@section('title', 'Kelola Pengguna - Sistem Pemesanan Ruang Meeting')
 
-        /* Fix dropdown styling */
-        select {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            border: 1px solid #d1d5db !important;
-        }
-        
-        select option {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            padding: 8px 12px !important;
-        }
-        
-        select option:hover {
-            background-color: #f3f4f6 !important;
-            color: #000000 !important;
-        }
-        
-        select option:checked {
-            background-color: #6366f1 !important;
-            color: #ffffff !important;
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-white">
-    <!-- Desktop Navigation -->
-        <nav class="bg-white border-b border-gray-200 shadow-sm desktop-nav">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
-                    </div>
-                </div>
+@php
+    $pageTitle = 'Kelola Pengguna';
+@endphp
+
+@push('head')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
+@endpush
+
+@push('styles')
+<style>
+    html,
+    body,
+    body.gradient-bg {
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #000000 !important;
+    }
+
+    .card-white {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Fix dropdown styling */
+    select {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #d1d5db !important;
+    }
+    
+    select option {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 8px 12px !important;
+    }
+    
+    select option:hover {
+        background-color: #f3f4f6 !important;
+        color: #000000 !important;
+    }
+    
+    select option:checked {
+        background-color: #6366f1 !important;
+        color: #ffffff !important;
+    }
+</style>
+@endpush
+
+@section('main-content')
+    <!-- Header -->
+    <div class="card-white p-6 mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-black mb-2">Kelola Users</h2>
+                <p class="text-black">Lihat dan kelola semua pengguna sistem</p>
             </div>
-        </nav>
-
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'admin',
-        'userName' => session('user_data.full_name'),
-        'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Kelola Pengguna'
-    ])
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="card-white p-6 mb-8">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-black mb-2">Kelola Users</h2>
-                    <p class="text-black">Lihat dan kelola semua pengguna sistem</p>
-                </div>
-                <div class="flex space-x-4">
-                    <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Tambah User
-                    </a>
-                    <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-download mr-2"></i>Export
-                    </button>
-                </div>
+            <div class="flex space-x-4">
+                <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Tambah User
+                </a>
+                <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                    <i class="fas fa-download mr-2"></i>Export
+                </button>
             </div>
-        </div>
-
-        <!-- Users Table -->
-        <div class="card-white p-6">
-            @if($users->count() > 0)
-                <div class="overflow-x-auto bg-white rounded-xl border border-gray-200">
-                    <table class="w-full text-black">
-                        <thead class="bg-gray-100">
-                            <tr class="border-b border-gray-200">
-                                <th class="text-left py-3 px-4 font-semibold text-black">ID</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">User</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Email</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Unit Kerja</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Last Login</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Joined</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white">
-                            @foreach($users as $user)
-                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                <td class="py-3 px-4">#{{ $user->id }}</td>
-                                <td class="py-3 px-4">
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <i class="fas fa-user text-black"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-black font-medium">{{ $user->full_name ?? $user->name }}</p>
-                                            <p class="text-black text-sm">{{ $user->username ?? 'N/A' }}</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <p class="text-black">{{ $user->email }}</p>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <div>
-                                        <span class="text-black">{{ $user->unit_kerja ?? 'N/A' }}</span>
-                                        @if($user->role)
-                                        <div class="mt-1">
-                                            <span class="inline-block px-2 py-1 rounded-full text-xs font-medium {{ $user->role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700' }}">
-                                                {{ ucfirst($user->role) }}
-                                            </span>
-                                        </div>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4">
-                                    @if($user->last_login_at)
-                                        <p class="text-black">{{ $user->last_login_at->format('M d, Y') }}</p>
-                                        <p class="text-black text-sm">{{ $user->last_login_at->format('H:i') }}</p>
-                                    @else
-                                        <span class="text-black">Belum pernah</span>
-                                    @endif
-                                </td>
-                                <td class="py-3 px-4">
-                                    @if($user->created_at)
-                                        <p class="text-black">{{ $user->created_at->format('M d, Y') }}</p>
-                                        <p class="text-black text-sm">{{ $user->created_at->diffForHumans() }}</p>
-                                    @else
-                                        <span class="text-black">Tidak tersedia</span>
-                                    @endif
-                                </td>
-                                <td class="py-3 px-4">
-                                    <div class="flex space-x-2">
-                                        <button onclick="viewUser({{ $user->id }})" class="text-blue-500 hover:text-blue-700 transition-colors" title="Lihat Details">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button onclick="editUser({{ $user->id }})" class="text-yellow-500 hover:text-yellow-600 transition-colors" title="Edit User">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        @if($user->role !== 'admin')
-                                        <button onclick="deleteUser({{ $user->id }})" class="text-red-500 hover:text-red-600 transition-colors" title="Hapus User">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="flex justify-between items-center mt-8">
-                    <div class="text-black text-sm">
-                        Menampilkan {{ $users->firstItem() }} sampai {{ $users->lastItem() }} dari {{ $users->total() }} pengguna
-                    </div>
-                    <div class="flex space-x-2">
-                        @if($users->previousPageUrl())
-                        <a href="{{ $users->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                        @endif
-                        
-                        @for($i = 1; $i <= $users->lastPage(); $i++)
-                        <a href="{{ $users->url($i) }}" 
-                           class="px-3 py-2 rounded-lg transition-colors {{ $users->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold border border-indigo-100' : 'bg-gray-100 text-black hover:bg-gray-200' }}">
-                            {{ $i }}
-                        </a>
-                        @endfor
-                        
-                        @if($users->nextPageUrl())
-                        <a href="{{ $users->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                        @endif
-                    </div>
-                </div>
-            @else
-                <div class="text-center py-12">
-                    <i class="fas fa-users text-gray-300 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-black mb-2">No Users Found</h3>
-                    <p class="text-black">Belum ada pengguna di dalam sistem.</p>
-                </div>
-            @endif
         </div>
     </div>
 
+    <!-- Users Table -->
+    <div class="card-white p-6">
+        @if($users->count() > 0)
+            <div class="overflow-x-auto bg-white rounded-xl border border-gray-200">
+                <table class="w-full text-black">
+                    <thead class="bg-gray-100">
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 font-semibold text-black">ID</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">User</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Email</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Unit Kerja</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Last Login</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Joined</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        @foreach($users as $user)
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                            <td class="py-3 px-4">#{{ $user->id }}</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-black"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-black font-medium">{{ $user->full_name ?? $user->name }}</p>
+                                        <p class="text-black text-sm">{{ $user->username ?? 'N/A' }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <p class="text-black">{{ $user->email }}</p>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div>
+                                    <span class="text-black">{{ $user->unit_kerja ?? 'N/A' }}</span>
+                                    @if($user->role)
+                                    <div class="mt-1">
+                                        <span class="inline-block px-2 py-1 rounded-full text-xs font-medium {{ $user->role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700' }}">
+                                            {{ ucfirst($user->role) }}
+                                        </span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                @if($user->last_login_at)
+                                    <p class="text-black">{{ $user->last_login_at->format('M d, Y') }}</p>
+                                    <p class="text-black text-sm">{{ $user->last_login_at->format('H:i') }}</p>
+                                @else
+                                    <span class="text-black">Belum pernah</span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4">
+                                @if($user->created_at)
+                                    <p class="text-black">{{ $user->created_at->format('M d, Y') }}</p>
+                                    <p class="text-black text-sm">{{ $user->created_at->diffForHumans() }}</p>
+                                @else
+                                    <span class="text-black">Tidak tersedia</span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-2">
+                                    <button onclick="viewUser({{ $user->id }})" class="text-blue-500 hover:text-blue-700 transition-colors" title="Lihat Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="editUser({{ $user->id }})" class="text-yellow-500 hover:text-yellow-600 transition-colors" title="Edit User">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    @if($user->role !== 'admin')
+                                    <button onclick="deleteUser({{ $user->id }})" class="text-red-500 hover:text-red-600 transition-colors" title="Hapus User">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="flex justify-between items-center mt-8">
+                <div class="text-black text-sm">
+                    Menampilkan {{ $users->firstItem() }} sampai {{ $users->lastItem() }} dari {{ $users->total() }} pengguna
+                </div>
+                <div class="flex space-x-2">
+                    @if($users->previousPageUrl())
+                    <a href="{{ $users->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    @endif
+                    
+                    @for($i = 1; $i <= $users->lastPage(); $i++)
+                    <a href="{{ $users->url($i) }}" 
+                       class="px-3 py-2 rounded-lg transition-colors {{ $users->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold border border-indigo-100' : 'bg-gray-100 text-black hover:bg-gray-200' }}">
+                        {{ $i }}
+                    </a>
+                    @endfor
+                    
+                    @if($users->nextPageUrl())
+                    <a href="{{ $users->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    @endif
+                </div>
+            </div>
+        @else
+            <div class="text-center py-12">
+                <i class="fas fa-users text-gray-300 text-6xl mb-4"></i>
+                <h3 class="text-xl font-bold text-black mb-2">No Users Found</h3>
+                <p class="text-black">Belum ada pengguna di dalam sistem.</p>
+            </div>
+        @endif
+    </div>
+@endsection
+
+@push('modals')
     <!-- User Detail Modal -->
     <div id="userDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -290,218 +262,194 @@
             </div>
         </div>
     </div>
+@endpush
 
-    <!-- Success Message -->
-    @if (session('success'))
-        <div id="success-message" class="fixed top-4 right-4 bg-green-100 text-green-800 px-6 py-3 rounded-lg shadow-lg border border-green-200 z-50">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                {{ session('success') }}
-            </div>
-        </div>
-    @endif
+@push('scripts')
+<script>
+    let currentUserId = null;
 
-    <!-- Error Message -->
-    @if (session('error'))
-        <div id="error-message" class="fixed top-4 right-4 bg-red-100 text-red-800 px-6 py-3 rounded-lg shadow-lg border border-red-200 z-50">
-            <div class="flex items-center">
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                {{ session('error') }}
-            </div>
-        </div>
-    @endif
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-    <script>
-        let currentUserId = null;
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 
-        // Modal functions
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // User actions
-        function viewUser(userId) {
-            currentUserId = userId;
-            const user = @json($users->items()).find(u => u.id == userId);
-            
-            if (user) {
-                document.getElementById('userDetailContent').innerHTML = `
-                    <div class="space-y-6">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-user text-black text-2xl"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xl font-bold text-black">${user.full_name}</h4>
-                                <p class="text-black">@${user.username}</p>
-                            </div>
+    // User actions
+    function viewUser(userId) {
+        currentUserId = userId;
+        const user = @json($users->items()).find(u => u.id == userId);
+        
+        if (user) {
+            document.getElementById('userDetailContent').innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-black text-2xl"></i>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <p class="text-gray-900">${user.email}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
-                                <p class="text-gray-900">${user.phone || 'Not provided'}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
-                                <p class="text-gray-900">${user.department || 'Not specified'}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Peran</label>
-                                <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">
-                                    ${user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}
-                                </span>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Last Login</label>
-                                <p class="text-gray-900">${user.last_login_at ? new Tanggal(user.last_login_at).toLocaleString() : 'Never'}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Joined</label>
-                                <p class="text-gray-900">${new Tanggal(user.created_at).toLocaleTanggalString()}</p>
-                            </div>
+                        <div>
+                            <h4 class="text-xl font-bold text-black">${user.full_name || user.name}</h4>
+                            <p class="text-black">@${user.username || 'N/A'}</p>
                         </div>
                     </div>
-                `;
-                openModal('userDetailModal');
-            }
-        }
-
-        function editUser(userId) {
-            currentUserId = userId;
-            const user = @json($users->items()).find(u => u.id == userId);
-            
-            if (user) {
-                document.getElementById('userEditContent').innerHTML = `
-                    <div class="space-y-4">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Nama</label>
-                            <input type="text" name="full_name" value="${user.full_name || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <p class="text-gray-900">${user.email}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input type="email" name="email" value="${user.email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telepon</label>
+                            <p class="text-gray-900">${user.phone || 'Not provided'}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
-                            <input type="text" name="phone" value="${user.phone || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Departemen</label>
+                            <p class="text-gray-900">${user.unit_kerja || user.department || 'Not specified'}</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Departemen</label>
-                            <input type="text" name="department" value="${user.department || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Peran</label>
+                            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}">
+                                ${user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'User'}
+                            </span>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Peran</label>
-                            <select name="role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                                <option value="">Select role</option>
-                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
-                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
-                            </select>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Login</label>
+                            <p class="text-gray-900">${user.last_login_at ? new Date(user.last_login_at).toLocaleString() : 'Never'}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Joined</label>
+                            <p class="text-gray-900">${new Date(user.created_at).toLocaleDateString()}</p>
                         </div>
                     </div>
-                `;
-                openModal('userEditModal');
-            }
+                </div>
+            `;
+            openModal('userDetailModal');
+        }
+    }
+
+    function editUser(userId) {
+        currentUserId = userId;
+        const user = @json($users->items()).find(u => u.id == userId);
+        
+        if (user) {
+            document.getElementById('userEditContent').innerHTML = `
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Nama</label>
+                        <input type="text" name="full_name" value="${user.full_name || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" name="email" value="${user.email || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
+                        <input type="text" name="phone" value="${user.phone || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Departemen</label>
+                        <input type="text" name="department" value="${user.unit_kerja || user.department || ''}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Peran</label>
+                        <select name="role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            <option value="">Select role</option>
+                            <option value="user" ${user.role === 'user' ? 'selected' : ''}>User</option>
+                            <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            openModal('userEditModal');
+        }
+    }
+
+    function deleteUser(userId) {
+        currentUserId = userId;
+        openModal('userHapusModal');
+    }
+
+    function confirmHapusUser() {
+        if (currentUserId) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/users/${currentUserId}/delete`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            
+            form.appendChild(csrfToken);
+            form.appendChild(methodInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Export functionality
+        const exportBtn = document.getElementById('export-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                const users = @json($users->items());
+                
+                const data = users.map(user => ({
+                    'ID': user.id,
+                    'Username': user.username || '',
+                    'Full Nama': user.full_name || user.name || '',
+                    'Email': user.email,
+                    'Telepon': user.phone || '',
+                    'Departemen': user.unit_kerja || user.department || '',
+                    'Peran': user.role || '',
+                    'Last Login': user.last_login_at || '',
+                    'Joined': user.created_at || ''
+                }));
+
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(data);
+
+                ws['!cols'] = [
+                    { wch: 10 },
+                    { wch: 15 },
+                    { wch: 25 },
+                    { wch: 30 },
+                    { wch: 15 },
+                    { wch: 20 },
+                    { wch: 15 },
+                    { wch: 20 },
+                    { wch: 20 }
+                ];
+
+                XLSX.utils.book_append_sheet(wb, ws, 'Data Pengguna');
+
+                const filename = `users-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, filename);
+            });
         }
 
-        function deleteUser(userId) {
-            currentUserId = userId;
-            openModal('userHapusModal');
-        }
-
-        function confirmHapusUser() {
-            if (currentUserId) {
-                // Buat form and submit
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/users/${currentUserId}/delete`;
+        // Edit form submission
+        const editForm = document.getElementById('userEditForm');
+        if (editForm) {
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
+                const formData = new FormData(this);
+                const userId = currentUserId;
                 
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'DELETE';
-                
-                form.appendChild(csrfToken);
-                form.appendChild(methodInput);
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Export functionality
-            const exportBtn = document.getElementById('export-btn');
-            if (exportBtn) {
-                exportBtn.addEventListener('click', function() {
-                    const users = @json($users->items());
-                    
-                    // Prepare data for Excel
-                    const data = users.map(user => ({
-                        'ID': user.id,
-                        'Username': user.username,
-                        'Full Nama': user.full_name,
-                        'Email': user.email,
-                        'Telepon': user.phone || '',
-                        'Departemen': user.department || '',
-                        'Peran': user.role,
-                        'Last Login': user.last_login_at || '',
-                        'Joined': user.created_at || ''
-                    }));
-
-                    // Create workbook
-                    const wb = XLSX.utils.book_new();
-                    const ws = XLSX.utils.json_to_sheet(data);
-
-                    // Set column widths
-                    ws['!cols'] = [
-                        { wch: 10 }, // ID
-                        { wch: 15 }, // Username
-                        { wch: 25 }, // Full Nama
-                        { wch: 30 }, // Email
-                        { wch: 15 }, // Telepon
-                        { wch: 20 }, // Departemen
-                        { wch: 15 }, // Peran
-                        { wch: 20 }, // Last Login
-                        { wch: 20 }  // Joined
-                    ];
-
-                    // Add worksheet to workbook
-                    XLSX.utils.book_append_sheet(wb, ws, 'Data Pengguna');
-
-                    // Generate Excel file
-                    const filename = `users-export-${new Date().toISOString().split('T')[0]}.xlsx`;
-                    XLSX.writeFile(wb, filename);
-                });
-            }
-
-            // Edit form submission
-            const editForm = document.getElementById('userEditForm');
-            if (editForm) {
-                editForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const formData = new FormData(this);
-                    const userId = currentUserId;
-                    
-                    fetch(`/admin/users/${userId}`, {
-                        method: 'PUT',
-                        body: formData,
+                fetch(`/admin/users/${userId}`, {
+                    method: 'PUT',
+                    body: formData,
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'Accept': 'application/json',
@@ -513,7 +461,7 @@
                     try {
                         data = await response.json();
                     } catch (jsonError) {
-                        // ignore parse errors; will handle below
+                        // ignore parse errors
                     }
 
                     if (response.ok && data) {
@@ -530,51 +478,29 @@
                     if (data.success) {
                         alert(data.message);
                         closeModal('userEditModal');
-                            location.reload();
-                        } else {
-                            alert(data.message || 'Error updating user');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Error updating user: ' + error.message);
-                    });
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Error updating user');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating user: ' + error.message);
+                });
+            });
+        }
+
+        // Close modal on outside click
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('fixed')) {
+                const modals = ['userDetailModal', 'userEditModal', 'userHapusModal'];
+                modals.forEach(modalId => {
+                    if (!document.getElementById(modalId).classList.contains('hidden')) {
+                        closeModal(modalId);
+                    }
                 });
             }
-
-            // Close modal on outside click
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('fixed')) {
-                    const modals = ['userDetailModal', 'userEditModal', 'userHapusModal'];
-                    modals.forEach(modalId => {
-                        if (!document.getElementById(modalId).classList.contains('hidden')) {
-                            closeModal(modalId);
-                        }
-                    });
-                }
-            });
         });
-
-        // Auto-hide success and error messages
-        setWaktuout(() => {
-            const successMessage = document.getElementById('success-message');
-            const errorMessage = document.getElementById('error-message');
-            
-            if (successMessage) {
-                successMessage.style.transition = 'opacity 0.5s';
-                successMessage.style.opacity = '0';
-                setWaktuout(() => successMessage.remove(), 500);
-            }
-            
-            if (errorMessage) {
-                errorMessage.style.transition = 'opacity 0.5s';
-                errorMessage.style.opacity = '0';
-                setWaktuout(() => errorMessage.remove(), 500);
-            }
-        }, 5000);
-    </script>
-
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
-</body>
-</html>
+    });
+</script>
+@endpush

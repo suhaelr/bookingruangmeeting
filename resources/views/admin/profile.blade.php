@@ -1,62 +1,38 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Profil Admin - Sistem Pemesanan Ruang Meeting</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        .form-control { background: #ffffff !important; color: #000000 !important; border: 1px solid #d1d5db !important; border-radius: 0.5rem; }
-        .form-control:focus { outline: none !important; box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important; border-color: #6366f1 !important; }
-        .form-control::placeholder { color: #000000 !important; opacity: 1; }
-        select.form-control option { background: #ffffff; color: #000000; }
-        body.gradient-bg {
-            background: #ffffff !important;
-        }
-        .glass-effect {
-            background: #ffffff !important;
-            border: 1px solid #e5e7eb !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-        }
-    </style>
-</head>
-<body class="min-h-screen bg-white">
-    <!-- Navigation -->
-        <nav class="glass-effect shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <!-- Admin Notification Bell -->
-                        <div class="relative">
-                            <button onclick="toggleAdminNotifikasis()" class="relative p-2 text-black hover:text-indigo-600 transition-colors duration-300">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span id="admin-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                            </button>
-                        </div>
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
+@extends('layouts.admin')
 
-    <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+@section('title', 'Profil Admin - Sistem Pemesanan Ruang Meeting')
+
+@php
+    $pageTitle = 'Profil Admin';
+@endphp
+
+@push('styles')
+<link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
+<style>
+    .form-control { 
+        background: #ffffff !important; 
+        color: #000000 !important; 
+        border: 1px solid #d1d5db !important; 
+        border-radius: 0.5rem; 
+    }
+    .form-control:focus { 
+        outline: none !important; 
+        box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important; 
+        border-color: #6366f1 !important; 
+    }
+    .form-control::placeholder { 
+        color: #000000 !important; 
+        opacity: 1; 
+    }
+    select.form-control option { 
+        background: #ffffff; 
+        color: #000000; 
+    }
+</style>
+@endpush
+
+@section('main-content')
+    <div class="max-w-4xl mx-auto">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Profile Card -->
             <div class="lg:col-span-1">
@@ -197,52 +173,39 @@
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
+@endsection
 
+@push('scripts')
+<script>
+    // Auto-hide success message
+    setTimeout(() => {
+        const successMessage = document.querySelector('.bg-green-100');
+        if (successMessage) {
+            successMessage.style.transition = 'opacity 0.5s';
+            successMessage.style.opacity = '0';
+            setTimeout(() => successMessage.remove(), 500);
+        }
+    }, 5000);
 
-    <script>
-        // Auto-hide success message
-        setTimeout(() => {
-            const successMessage = document.querySelector('.bg-green-100');
-            if (successMessage) {
-                successMessage.style.transition = 'opacity 0.5s';
-                successMessage.style.opacity = '0';
-                setTimeout(() => successMessage.remove(), 500);
-            }
-        }, 5000);
-
-        // Form validation
-        document.querySelector('form[action="{{ route("admin.profile.update") }}"]').addEventListener('submit', function(e) {
-            const fullNama = document.getElementById('full_name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            
-            if (!fullNama) {
-                e.preventDefault();
-                alert('Silakan masukkan nama lengkap Anda');
-                return;
-            }
-            
-            if (!email || !email.includes('@')) {
-                e.preventDefault();
-                alert('Silakan masukkan alamat email yang valid');
-                return;
-            }
-        });
-    </script>
-
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'admin',
-        'userName' => session('user_data.full_name'),
-        'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Profil Admin'
-    ])
-
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
-</body>
-</html>
-
+    // Form validation
+    document.querySelector('form[action="{{ route("admin.profile.update") }}"]').addEventListener('submit', function(e) {
+        const fullNama = document.getElementById('full_name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        
+        if (!fullNama) {
+            e.preventDefault();
+            alert('Silakan masukkan nama lengkap Anda');
+            return;
+        }
+        
+        if (!email || !email.includes('@')) {
+            e.preventDefault();
+            alert('Silakan masukkan alamat email yang valid');
+            return;
+        }
+    });
+</script>
+@endpush

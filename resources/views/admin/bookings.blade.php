@@ -1,244 +1,214 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Kelola Bookings - Sistem Pemesanan Ruang Meeting</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        body,
-        body.gradient-bg {
-            background: #ffffff !important;
-            background-image: none !important;
-            color: #000000 !important;
-        }
+@extends('layouts.admin')
 
-        .glass-effect {
-            background: #ffffff !important;
-            border: 1px solid #e5e7eb !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04) !important;
-        }
+@section('title', 'Kelola Pemesanan - Sistem Pemesanan Ruang Meeting')
 
-        /* Filter select */
-        .status-filter {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            border: 1px solid #d1d5db !important;
-        }
-        .status-filter option {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-        }
+@php
+    $pageTitle = 'Kelola Pemesanan';
+@endphp
 
-        /* Mobile responsive table */
-        @media (max-width: 768px) {
-            .table-responsive {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .table-responsive table {
-                min-width: 800px;
-            }
-            
-            .table-responsive th,
-            .table-responsive td {
-                white-space: nowrap;
-                min-width: 120px;
-            }
-            
-            .table-responsive th:first-child,
-            .table-responsive td:first-child {
-                min-width: 60px;
-            }
-            
-            .table-responsive th:last-child,
-            .table-responsive td:last-child {
-                min-width: 100px;
-            }
+@push('styles')
+<link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
+<style>
+    body,
+    body.gradient-bg {
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #000000 !important;
+    }
+
+    /* Filter select */
+    .status-filter {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #d1d5db !important;
+    }
+    .status-filter option {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    /* Mobile responsive table */
+    @media (max-width: 768px) {
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
-    </style>
-</head>
-<body class="gradient-bg min-h-screen">
-    <!-- Navigation -->
-        <nav class="glass-effect shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
-                    </div>
-                </div>
+        
+        .table-responsive table {
+            min-width: 800px;
+        }
+        
+        .table-responsive th,
+        .table-responsive td {
+            white-space: nowrap;
+            min-width: 120px;
+        }
+        
+        .table-responsive th:first-child,
+        .table-responsive td:first-child {
+            min-width: 60px;
+        }
+        
+        .table-responsive th:last-child,
+        .table-responsive td:last-child {
+            min-width: 100px;
+        }
+    }
+</style>
+@endpush
+
+@section('main-content')
+    <!-- Header -->
+    <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-black mb-2">Kelola Pemesanan</h2>
+                <p class="text-black">Pantau dan kelola semua pemesanan ruang meeting</p>
             </div>
-        </nav>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header -->
-        <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-2xl font-bold text-black mb-2">Kelola Bookings</h2>
-                    <p class="text-black">Pantau dan kelola semua pemesanan ruang meeting</p>
-                </div>
-                <div class="flex space-x-4">
-                    <select id="status-filter" class="status-filter px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Semua Status</option>
-                        <option value="pending">Menunggu</option>
-                        <option value="confirmed">Dikonfirmasi</option>
-                        <option value="cancelled">Dibatalkan</option>
-                        <option value="completed">Selesai</option>
-                    </select>
-                </div>
+            <div class="flex space-x-4">
+                <select id="status-filter" class="status-filter px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Semua Status</option>
+                    <option value="pending">Menunggu</option>
+                    <option value="confirmed">Dikonfirmasi</option>
+                    <option value="cancelled">Dibatalkan</option>
+                    <option value="completed">Selesai</option>
+                </select>
             </div>
-        </div>
-
-        <!-- Bookings Table -->
-        <div class="glass-effect rounded-2xl p-6 shadow-2xl">
-            @if($bookings->count() > 0)
-                <div class="overflow-x-auto table-responsive bg-white rounded-xl border border-gray-200">
-                    <table class="w-full text-black">
-                        <thead class="bg-gray-100">
-                            <tr class="border-b border-gray-200">
-                                <th class="text-left py-3 px-4 font-semibold text-black">ID</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Judul</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Pengguna</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Ruang</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Tanggal & Waktu</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Status</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Dokumen</th>
-                                <th class="text-left py-3 px-4 font-semibold text-black">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white">
-                            @foreach($bookings as $booking)
-                            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors booking-row" data-status="{{ $booking->status }}">
-                                <td class="py-3 px-4">#{{ $booking->id }}</td>
-                                <td class="py-3 px-4">
-                                    <div class="min-w-0">
-                                        <p class="text-black font-medium truncate" title="{{ $booking->title }}">{{ $booking->title }}</p>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <div class="min-w-0">
-                                        <p class="text-black font-medium truncate">{{ $booking->user->full_name }}</p>
-                                        <p class="text-black text-sm truncate" title="{{ $booking->user->email }}">{{ $booking->user->email }}</p>
-                                        @if($booking->unit_kerja)
-                                            <p class="text-black text-xs truncate">Unit: {{ $booking->unit_kerja }}</p>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <div class="min-w-0">
-                                        <p class="text-black font-medium truncate">{{ $booking->meetingRoom->name }}</p>
-                                        <p class="text-black text-sm truncate">{{ $booking->meetingRoom->location }}</p>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <div>
-                                        <p class="text-black font-medium">{{ $booking->start_time->format('d M Y') }}</p>
-                                        <p class="text-black text-sm">{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
-                                    </div>
-                                </td>
-                                <td class="py-3 px-4">
-                                    <span class="px-2 py-1 rounded-full text-xs font-medium
-                                        @if($booking->status === 'pending') bg-yellow-100 text-yellow-800
-                                        @elseif($booking->status === 'confirmed') bg-green-100 text-green-800
-                                        @elseif($booking->status === 'cancelled') bg-red-100 text-red-800
-                                        @elseif($booking->status === 'completed') bg-blue-100 text-blue-800
-                                        @else bg-gray-100 text-black @endif">
-                                        @if($booking->status === 'pending') Menunggu
-                                        @elseif($booking->status === 'confirmed') Dikonfirmasi
-                                        @elseif($booking->status === 'cancelled') Dibatalkan
-                                        @elseif($booking->status === 'completed') Selesai
-                                        @else {{ ucfirst($booking->status) }}
-                                        @endif
-                                    </span>
-                                </td>
-                                <td class="py-3 px-4">
-                                    @if($booking->dokumen_perizinan)
-                                        <a href="{{ route('admin.bookings.download', $booking->id) }}" 
-                                           class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors duration-300"
-                                           title="Download Dokumen Perizinan">
-                                            <i class="fas fa-download mr-1"></i>
-                                            Download PDF
-                                        </a>
-                                    @else
-                                        <span class="text-black text-sm">Tidak ada dokumen</span>
-                                    @endif
-                                </td>
-                                <td class="py-3 px-4">
-                                    <div class="flex space-x-2">
-                                        <button onclick="viewBooking({{ $booking->id }})" class="text-indigo-600 hover:text-indigo-800 transition-colors" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-600 hover:text-yellow-700 transition-colors" title="Perbarui Status">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Pagination -->
-                <div class="flex justify-between items-center mt-8">
-                    <div class="text-black text-sm">
-                        Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-download mr-2"></i>Ekspor
-                        </button>
-                        <div class="flex space-x-2">
-                        @if($bookings->previousPageUrl())
-                        <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-chevron-left"></i>
-                        </a>
-                        @endif
-                        
-                        @for($i = 1; $i <= $bookings->lastPage(); $i++)
-                        <a href="{{ $bookings->url($i) }}" 
-                           class="px-3 py-2 rounded-lg transition-colors {{ $bookings->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold border border-indigo-100' : 'bg-gray-100 text-black hover:bg-gray-200' }}">
-                            {{ $i }}
-                        </a>
-                        @endfor
-                        
-                        @if($bookings->nextPageUrl())
-                        <a href="{{ $bookings->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
-                            <i class="fas fa-chevron-right"></i>
-                        </a>
-                        @endif
-                        </div>
-                    </div>
-                </div>
-            @else
-                <div class="text-center py-12">
-                    <i class="fas fa-calendar-times text-gray-300 text-6xl mb-4"></i>
-                    <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Booking</h3>
-                    <p class="text-black">Belum ada pemesanan ruang meeting.</p>
-                </div>
-            @endif
         </div>
     </div>
 
+    <!-- Bookings Table -->
+    <div class="glass-effect rounded-2xl p-6 shadow-2xl">
+        @if($bookings->count() > 0)
+            <div class="overflow-x-auto table-responsive bg-white rounded-xl border border-gray-200">
+                <table class="w-full text-black">
+                    <thead class="bg-gray-100">
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 font-semibold text-black">ID</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Judul</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Pengguna</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Ruang</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Tanggal & Waktu</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Status</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Dokumen</th>
+                            <th class="text-left py-3 px-4 font-semibold text-black">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        @foreach($bookings as $booking)
+                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors booking-row" data-status="{{ $booking->status }}">
+                            <td class="py-3 px-4">#{{ $booking->id }}</td>
+                            <td class="py-3 px-4">
+                                <div class="min-w-0">
+                                    <p class="text-black font-medium truncate" title="{{ $booking->title }}">{{ $booking->title }}</p>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="min-w-0">
+                                    <p class="text-black font-medium truncate">{{ $booking->user->full_name }}</p>
+                                    <p class="text-black text-sm truncate" title="{{ $booking->user->email }}">{{ $booking->user->email }}</p>
+                                    @if($booking->unit_kerja)
+                                        <p class="text-black text-xs truncate">Unit: {{ $booking->unit_kerja }}</p>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="min-w-0">
+                                    <p class="text-black font-medium truncate">{{ $booking->meetingRoom->name }}</p>
+                                    <p class="text-black text-sm truncate">{{ $booking->meetingRoom->location }}</p>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div>
+                                    <p class="text-black font-medium">{{ $booking->start_time->format('d M Y') }}</p>
+                                    <p class="text-black text-sm">{{ $booking->start_time->format('H:i') }} - {{ $booking->end_time->format('H:i') }}</p>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-1 rounded-full text-xs font-medium
+                                    @if($booking->status === 'pending') bg-yellow-100 text-yellow-800
+                                    @elseif($booking->status === 'confirmed') bg-green-100 text-green-800
+                                    @elseif($booking->status === 'cancelled') bg-red-100 text-red-800
+                                    @elseif($booking->status === 'completed') bg-blue-100 text-blue-800
+                                    @else bg-gray-100 text-black @endif">
+                                    @if($booking->status === 'pending') Menunggu
+                                    @elseif($booking->status === 'confirmed') Dikonfirmasi
+                                    @elseif($booking->status === 'cancelled') Dibatalkan
+                                    @elseif($booking->status === 'completed') Selesai
+                                    @else {{ ucfirst($booking->status) }}
+                                    @endif
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">
+                                @if($booking->dokumen_perizinan)
+                                    <a href="{{ route('admin.bookings.download', $booking->id) }}" 
+                                       class="inline-flex items-center px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors duration-300"
+                                       title="Download Dokumen Perizinan">
+                                        <i class="fas fa-download mr-1"></i>
+                                        Download PDF
+                                    </a>
+                                @else
+                                    <span class="text-black text-sm">Tidak ada dokumen</span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex space-x-2">
+                                    <button onclick="viewBooking({{ $booking->id }})" class="text-indigo-600 hover:text-indigo-800 transition-colors" title="Lihat Detail">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button onclick="updateBookingStatus({{ $booking->id }})" class="text-yellow-600 hover:text-yellow-700 transition-colors" title="Perbarui Status">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="flex justify-between items-center mt-8">
+                <div class="text-black text-sm">
+                    Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        <i class="fas fa-download mr-2"></i>Ekspor
+                    </button>
+                    <div class="flex space-x-2">
+                    @if($bookings->previousPageUrl())
+                    <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    @endif
+                    
+                    @for($i = 1; $i <= $bookings->lastPage(); $i++)
+                    <a href="{{ $bookings->url($i) }}" 
+                       class="px-3 py-2 rounded-lg transition-colors {{ $bookings->currentPage() == $i ? 'bg-white text-indigo-600 font-semibold border border-indigo-100' : 'bg-gray-100 text-black hover:bg-gray-200' }}">
+                        {{ $i }}
+                    </a>
+                    @endfor
+                    
+                    @if($bookings->nextPageUrl())
+                    <a href="{{ $bookings->nextPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    @endif
+                    </div>
+                </div>
+            </div>
+        @else
+            <div class="text-center py-12">
+                <i class="fas fa-calendar-times text-gray-300 text-6xl mb-4"></i>
+                <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Booking</h3>
+                <p class="text-black">Belum ada pemesanan ruang meeting.</p>
+            </div>
+        @endif
+    </div>
+@endsection
+
+@push('modals')
     <!-- Booking Detail Modal -->
     <div id="bookingDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -299,255 +269,221 @@
             </div>
         </div>
     </div>
+@endpush
 
-    <!-- Berhasil Message -->
-    @if (session('success'))
-        <div id="success-message" class="fixed top-4 right-4 bg-green-100 text-green-800 px-6 py-3 rounded-lg shadow-lg border border-green-200 z-50">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                {{ session('success') }}
-            </div>
-        </div>
-    @endif
+@push('scripts')
+<script>
+    let currentBookingId = null;
 
-    <script>
-        let currentBookingId = null;
+    // Modal functions
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
 
-        // Modal functions
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Booking actions
-        function viewBooking(bookingId) {
-            currentBookingId = bookingId;
-            const booking = @json($bookings->items()).find(b => b.id == bookingId);
-            
-            if (booking) {
-                document.getElementById('bookingDetailContent').innerHTML = `
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-xl font-bold text-black">${booking.title}</h4>
-                            <span class="px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(booking.status)}">
-                                ${getStatusText(booking.status)}
-                            </span>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Pengguna</label>
-                                <p class="text-gray-900">${booking.user.full_name}</p>
-                                <p class="text-black text-sm">${booking.user.email}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Ruang</label>
-                                <p class="text-gray-900">${booking.meeting_room.name}</p>
-                                <p class="text-black text-sm">${booking.meeting_room.location}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Mulai Waktu</label>
-                                <p class="text-gray-900">${new Date(booking.start_time).toLocaleString('id-ID')}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Selesai Waktu</label>
-                                <p class="text-gray-900">${new Date(booking.end_time).toLocaleString('id-ID')}</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Durasi</label>
-                                <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} jam</p>
-                            </div>
-                        </div>
-                        
-                        ${booking.description ? `
+    // Booking actions
+    function viewBooking(bookingId) {
+        currentBookingId = bookingId;
+        const booking = @json($bookings->items()).find(b => b.id == bookingId);
+        
+        if (booking) {
+            document.getElementById('bookingDetailContent').innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xl font-bold text-black">${booking.title}</h4>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(booking.status)}">
+                            ${getStatusText(booking.status)}
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
-                            <p class="text-gray-900">${booking.description}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pengguna</label>
+                            <p class="text-gray-900">${booking.user.full_name}</p>
+                            <p class="text-black text-sm">${booking.user.email}</p>
                         </div>
-                        ` : ''}
-                        
-                        ${booking.special_requirements ? `
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kebutuhan Khusus</label>
-                            <p class="text-gray-900">${booking.special_requirements}</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Ruang</label>
+                            <p class="text-gray-900">${booking.meeting_room.name}</p>
+                            <p class="text-black text-sm">${booking.meeting_room.location}</p>
                         </div>
-                        ` : ''}
-                        
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Peserta</label>
-                            <p class="text-gray-900">${booking.attendees_count} orang</p>
-                            ${booking.attendees && booking.attendees.length > 0 ? `
-                                <div class="mt-2">
-                                    ${booking.attendees.map(email => `<span class="inline-block bg-gray-100 text-black px-2 py-1 rounded text-sm mr-2 mb-1">${email}</span>`).join('')}
-                                </div>
-                            ` : ''}
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mulai Waktu</label>
+                            <p class="text-gray-900">${new Date(booking.start_time).toLocaleString('id-ID')}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Selesai Waktu</label>
+                            <p class="text-gray-900">${new Date(booking.end_time).toLocaleString('id-ID')}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Durasi</label>
+                            <p class="text-gray-900">${calculateDuration(booking.start_time, booking.end_time)} jam</p>
                         </div>
                     </div>
-                `;
-                openModal('bookingDetailModal');
-            }
-        }
-
-        function updateBookingStatus(bookingId) {
-            currentBookingId = bookingId;
-            const booking = @json($bookings->items()).find(b => b.id == bookingId);
-            
-            if (booking) {
-                const statusSelect = document.querySelector('#statusPerbaruiForm select[name="status"]');
-                statusSelect.value = booking.status;
-                openModal('bookingStatusModal');
-            }
-        }
-
-        function getStatusColor(status) {
-            const colors = {
-                'pending': 'bg-yellow-100 text-yellow-800',
-                'confirmed': 'bg-green-100 text-green-800',
-                'cancelled': 'bg-red-100 text-red-800',
-                'completed': 'bg-blue-100 text-blue-800'
-            };
-            return colors[status] || 'bg-gray-100 text-black';
-        }
-        
-        function getStatusText(status) {
-            const statusTexts = {
-                'pending': 'Menunggu',
-                'confirmed': 'Dikonfirmasi',
-                'cancelled': 'Dibatalkan',
-                'completed': 'Selesai'
-            };
-            return statusTexts[status] || status;
-        }
-
-        function calculateDuration(startWaktu, endWaktu) {
-            const start = new Date(startWaktu);
-            const end = new Date(endWaktu);
-            const diffMs = end - start;
-            const diffHours = diffMs / (1000 * 60 * 60);
-            return diffHours.toFixed(1);
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            // Status filter
-            const statusFilter = document.getElementById('status-filter');
-            if (statusFilter) {
-                statusFilter.addEventListener('change', function() {
-                    const selectedStatus = this.value;
-                    const bookingRows = document.querySelectorAll('.booking-row');
                     
-                    bookingRows.forEach(row => {
-                        if (selectedStatus === '' || row.dataset.status === selectedStatus) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
-            }
+                    ${booking.description ? `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+                        <p class="text-gray-900">${booking.description}</p>
+                    </div>
+                    ` : ''}
+                    
+                    ${booking.special_requirements ? `
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kebutuhan Khusus</label>
+                        <p class="text-gray-900">${booking.special_requirements}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Peserta</label>
+                        <p class="text-gray-900">${booking.attendees_count} orang</p>
+                        ${booking.attendees && booking.attendees.length > 0 ? `
+                            <div class="mt-2">
+                                ${booking.attendees.map(email => `<span class="inline-block bg-gray-100 text-black px-2 py-1 rounded text-sm mr-2 mb-1">${email}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            openModal('bookingDetailModal');
+        }
+    }
 
-            // Export functionality
-            const exportBtn = document.getElementById('export-btn');
-            if (exportBtn) {
-                exportBtn.addEventListener('click', function() {
-                    // Redirect to backend Excel export route
-                    window.location.href = '{{ route("admin.export.bookings.excel") }}';
-                });
-            }
+    function updateBookingStatus(bookingId) {
+        currentBookingId = bookingId;
+        const booking = @json($bookings->items()).find(b => b.id == bookingId);
+        
+        if (booking) {
+            const statusSelect = document.querySelector('#statusPerbaruiForm select[name="status"]');
+            statusSelect.value = booking.status;
+            openModal('bookingStatusModal');
+        }
+    }
 
-            // Status update form
-            const statusForm = document.getElementById('statusPerbaruiForm');
-            if (statusForm) {
-                statusForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (currentBookingId) {
-                        const formData = new FormData(this);
-                        formData.append('_method', 'POST');
-                        
-                        fetch(`/admin/bookings/${currentBookingId}/status`, {
-                            method: 'POST',
-                            body: formData,
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(async response => {
-                            console.log('Response status:', response.status);
-                            let data = null;
-                            try {
-                                data = await response.json();
-                            } catch (jsonError) {
-                                console.error('JSON parsing error:', jsonError);
-                            }
+    function getStatusColor(status) {
+        const colors = {
+            'pending': 'bg-yellow-100 text-yellow-800',
+            'confirmed': 'bg-green-100 text-green-800',
+            'cancelled': 'bg-red-100 text-red-800',
+            'completed': 'bg-blue-100 text-blue-800'
+        };
+        return colors[status] || 'bg-gray-100 text-black';
+    }
+    
+    function getStatusText(status) {
+        const statusTexts = {
+            'pending': 'Menunggu',
+            'confirmed': 'Dikonfirmasi',
+            'cancelled': 'Dibatalkan',
+            'completed': 'Selesai'
+        };
+        return statusTexts[status] || status;
+    }
 
-                            if (response.ok && data) {
-                                return data;
-                            }
+    function calculateDuration(startWaktu, endWaktu) {
+        const start = new Date(startWaktu);
+        const end = new Date(endWaktu);
+        const diffMs = end - start;
+        const diffHours = diffMs / (1000 * 60 * 60);
+        return diffHours.toFixed(1);
+    }
 
-                            const errorMessage = data?.message
-                                ?? (data?.errors ? Object.values(data.errors).flat().join(', ') : null)
-                                ?? `HTTP ${response.status}: ${response.statusText}`;
-
-                            console.error('Error response:', errorMessage);
-                            throw new Error(errorMessage);
-                        })
-                        .then(data => {
-                            console.log('Response data:', data);
-                            if (data.success) {
-                                alert(data.message || 'Status berhasil diperbarui!');
-                                location.reload();
-                            } else {
-                                alert(data.message || 'Gagal memperbarui status');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error details:', error);
-                            alert('Gagal memperbarui status: ' + error.message);
-                        });
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Status filter
+        const statusFilter = document.getElementById('status-filter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', function() {
+                const selectedStatus = this.value;
+                const bookingRows = document.querySelectorAll('.booking-row');
+                
+                bookingRows.forEach(row => {
+                    if (selectedStatus === '' || row.dataset.status === selectedStatus) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
                     }
                 });
-            }
+            });
+        }
 
-            // Close modal on outside click
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('fixed')) {
-                    const modals = ['bookingDetailModal', 'bookingStatusModal'];
-                    modals.forEach(modalId => {
-                        if (!document.getElementById(modalId).classList.contains('hidden')) {
-                            closeModal(modalId);
+        // Export functionality
+        const exportBtn = document.getElementById('export-btn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                window.location.href = '{{ route("admin.export.bookings.excel") }}';
+            });
+        }
+
+        // Status update form
+        const statusForm = document.getElementById('statusPerbaruiForm');
+        if (statusForm) {
+            statusForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (currentBookingId) {
+                    const formData = new FormData(this);
+                    formData.append('_method', 'POST');
+                    
+                    fetch(`/admin/bookings/${currentBookingId}/status`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
+                    })
+                    .then(async response => {
+                        let data = null;
+                        try {
+                            data = await response.json();
+                        } catch (jsonError) {
+                            console.error('JSON parsing error:', jsonError);
+                        }
+
+                        if (response.ok && data) {
+                            return data;
+                        }
+
+                        const errorMessage = data?.message
+                            ?? (data?.errors ? Object.values(data.errors).flat().join(', ') : null)
+                            ?? `HTTP ${response.status}: ${response.statusText}`;
+
+                        throw new Error(errorMessage);
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message || 'Status berhasil diperbarui!');
+                            location.reload();
+                        } else {
+                            alert(data.message || 'Gagal memperbarui status');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error details:', error);
+                        alert('Gagal memperbarui status: ' + error.message);
                     });
                 }
             });
-        });
+        }
 
-        // Auto-hide success message
-        setTimeout(() => {
-            const successMessage = document.getElementById('success-message');
-            if (successMessage) {
-                successMessage.style.transition = 'opacity 0.5s';
-                successMessage.style.opacity = '0';
-                setTimeout(() => successMessage.remove(), 500);
+        // Close modal on outside click
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('fixed')) {
+                const modals = ['bookingDetailModal', 'bookingStatusModal'];
+                modals.forEach(modalId => {
+                    if (!document.getElementById(modalId).classList.contains('hidden')) {
+                        closeModal(modalId);
+                    }
+                });
             }
-        }, 3000);
-    </script>
-
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'admin',
-        'userName' => session('user_data.full_name'),
-        'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Kelola Bookings'
-    ])
-
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
-</body>
-</html>
+        });
+    });
+</script>
+@endpush

@@ -9,6 +9,7 @@ use App\Models\Booking;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
@@ -67,7 +68,7 @@ class AdminController extends Controller
 
     public function users()
     {
-        return view('admin.users-enhanced');
+        return view('admin.users.index');
     }
 
     public function createUser()
@@ -104,7 +105,7 @@ class AdminController extends Controller
                 'email_verified_at' => now(),
             ]);
 
-            \Log::info('User created successfully', [
+            Log::info('User created successfully', [
                 'user_id' => $user->id,
                 'username' => $user->username,
                 'email' => $user->email,
@@ -113,13 +114,13 @@ class AdminController extends Controller
 
             return redirect()->route('admin.users')->with('success', 'User berhasil ditambahkan!');
         } catch (ValidationException $e) {
-            \Log::error('Validation error in storeUser', [
+            Log::error('Validation error in storeUser', [
                 'errors' => $e->errors(),
                 'input' => $request->all()
             ]);
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            \Log::error('Error in storeUser', [
+            Log::error('Error in storeUser', [
                 'message' => $e->getMessage(),
                 'input' => $request->all(),
                 'trace' => $e->getTraceAsString()
@@ -131,19 +132,19 @@ class AdminController extends Controller
     public function rooms()
     {
         $rooms = MeetingRoom::withCount([
-            'bookings' => function($query) {
+            'bookings' => function ($query) {
                 $query->whereIn('status', ['pending', 'confirmed'])
-                      ->where('start_time', '>=', now());
+                    ->where('start_time', '>=', now());
             }
         ])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-        
+
         // Debug: Log all rooms
-        \Log::info('Admin rooms - listing all rooms', [
+        Log::info('Admin rooms - listing all rooms', [
             'total_rooms' => MeetingRoom::count(),
             'rooms_in_page' => $rooms->count(),
-            'rooms' => $rooms->map(function($room) {
+            'rooms' => $rooms->map(function ($room) {
                 return [
                     'id' => $room->id,
                     'name' => $room->name,
@@ -154,8 +155,8 @@ class AdminController extends Controller
                 ];
             })
         ]);
-        
-        return view('admin.rooms', compact('rooms'));
+
+        return view('admin.rooms.index', compact('rooms'));
     }
 
     public function createRoom()
@@ -175,7 +176,7 @@ class AdminController extends Controller
                 'amenities' => 'nullable|string'
             ]);
 
-            $amenities = $request->amenities ? 
+            $amenities = $request->amenities ?
                 array_map('trim', explode(',', $request->amenities)) : [];
 
             // Handle is_active conversion from string to boolean
@@ -192,7 +193,7 @@ class AdminController extends Controller
             if ($request->has('capacity') && $request->capacity !== '' && $request->capacity !== null) {
                 $capacity = (int)$request->capacity;
             }
-            
+
             $room = MeetingRoom::create([
                 'name' => $request->name,
                 'description' => $request->description,
@@ -202,7 +203,7 @@ class AdminController extends Controller
                 'amenities' => $amenities
             ]);
 
-            \Log::info('Room created successfully', [
+            Log::info('Room created successfully', [
                 'room_id' => $room->id,
                 'room_name' => $room->name,
                 'location' => $room->location,
@@ -212,7 +213,7 @@ class AdminController extends Controller
 
             return redirect()->route('admin.rooms')->with('success', 'Room berhasil ditambahkan!');
         } catch (ValidationException $e) {
-            \Log::warning('Validation error in storeRoom', [
+            Log::warning('Validation error in storeRoom', [
                 'errors' => $e->errors(),
                 'input' => $request->all()
             ]);
@@ -221,7 +222,7 @@ class AdminController extends Controller
                 ->withInput()
                 ->with('error', 'Validasi gagal, periksa kembali data yang dimasukkan.');
         } catch (\Exception $e) {
-            \Log::error('Error creating room', [
+            Log::error('Error creating room', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'input' => $request->all()
@@ -235,7 +236,7 @@ class AdminController extends Controller
         $bookings = Booking::with(['user', 'meetingRoom'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
-        
+
         // Filter bookings collection
         $collection = $bookings->getCollection();
         $filtered = $collection->filter(function ($b) {
@@ -257,19 +258,19 @@ class AdminController extends Controller
     public function updateBookingStatus(Request $request, $id)
     {
         try {
-            \Log::info('AdminController::updateBookingStatus called', [
+            Log::info('AdminController::updateBookingStatus called', [
                 'booking_id' => $id,
                 'request_data' => $request->all()
             ]);
 
             $booking = Booking::findOrFail($id);
-            
+
             $request->validate([
                 'status' => 'required|in:pending,confirmed,cancelled,completed',
                 'reason' => 'nullable|string|max:255'
             ]);
 
-            \Log::info('Validation passed, updating booking status', [
+            Log::info('Validation passed, updating booking status', [
                 'booking_id' => $booking->id,
                 'old_status' => $booking->status,
                 'new_status' => $request->status
@@ -277,13 +278,13 @@ class AdminController extends Controller
 
             $booking->updateStatus($request->status, $request->reason);
 
-            \Log::info('Booking status updated successfully');
+            Log::info('Booking status updated successfully');
 
             // Create user notification
             $this->createUserNotification($booking, $request->status, $request->reason);
 
             // Send notification to admin about status change
-            $statusText = match($request->status) {
+            $statusText = match ($request->status) {
                 'pending' => 'menunggu konfirmasi',
                 'confirmed' => 'dikonfirmasi',
                 'cancelled' => 'dibatalkan',
@@ -291,7 +292,7 @@ class AdminController extends Controller
                 default => $request->status
             };
             $this->notifyAdmin(
-                'Status Booking Diperbarui', 
+                'Status Booking Diperbarui',
                 "Status booking '{$booking->title}' oleh {$booking->user->full_name} telah diubah menjadi {$statusText}",
                 'info',
                 $booking->id
@@ -302,7 +303,7 @@ class AdminController extends Controller
                 'message' => 'Status booking berhasil diupdate!'
             ]);
         } catch (ValidationException $e) {
-            \Log::warning('Validation error in updateBookingStatus', [
+            Log::warning('Validation error in updateBookingStatus', [
                 'errors' => $e->errors(),
                 'booking_id' => $id,
                 'input' => $request->all()
@@ -314,7 +315,7 @@ class AdminController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error in updateBookingStatus: ' . $e->getMessage(), [
+            Log::error('Error in updateBookingStatus: ' . $e->getMessage(), [
                 'booking_id' => $id,
                 'request_data' => $request->all(),
                 'trace' => $e->getTraceAsString()
@@ -330,7 +331,7 @@ class AdminController extends Controller
     public function deleteUser($id)
     {
         try {
-            \Log::info('Delete user request', [
+            Log::info('Delete user request', [
                 'user_id' => $id,
                 'request_method' => request()->method(),
                 'request_data' => request()->all(),
@@ -341,38 +342,38 @@ class AdminController extends Controller
             ]);
 
             $user = User::findOrFail($id);
-            
+
             // Only prevent deleting the default admin account (username: admin, email: admin@pusdatinbgn.web.id)
             if ($user->username === 'admin' && $user->email === 'admin@pusdatinbgn.web.id') {
-                \Log::warning('Attempt to delete default admin account', [
+                Log::warning('Attempt to delete default admin account', [
                     'user_id' => $id,
                     'username' => $user->username,
                     'email' => $user->email
                 ]);
                 return back()->with('error', 'Akun admin default tidak dapat dihapus.');
             }
-            
-            \Log::info('Proceeding with user deletion', [
+
+            Log::info('Proceeding with user deletion', [
                 'user_id' => $id,
                 'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role
             ]);
-            
+
             // Delete user's bookings first
             $user->bookings()->delete();
-            
+
             // Delete user's notifications
             $user->notifications()->delete();
-            
+
             // Delete the user
             $user->delete();
-            
-            \Log::info('User deleted successfully', ['user_id' => $id]);
-            
+
+            Log::info('User deleted successfully', ['user_id' => $id]);
+
             return back()->with('success', 'User berhasil dihapus.');
         } catch (\Exception $e) {
-            \Log::error('Error deleting user: ' . $e->getMessage(), [
+            Log::error('Error deleting user: ' . $e->getMessage(), [
                 'user_id' => $id,
                 'exception' => $e->getTraceAsString()
             ]);
@@ -385,16 +386,16 @@ class AdminController extends Controller
         // Create admin notification in database and send email to all admin users
         try {
             $adminUsers = \App\Models\User::where('role', 'admin')->get();
-            
+
             if ($adminUsers->isEmpty()) {
-                \Log::warning('No admin user found to send notification', [
+                Log::warning('No admin user found to send notification', [
                     'title' => $title,
                     'type' => $type,
                     'booking_id' => $bookingId
                 ]);
                 return;
             }
-            
+
             // Send notification to all admin users (email will be sent automatically via createNotification)
             foreach ($adminUsers as $adminUser) {
                 \App\Models\UserNotification::createNotification(
@@ -405,15 +406,15 @@ class AdminController extends Controller
                     $bookingId
                 );
             }
-            
-            \Log::info('Admin notifications created', [
+
+            Log::info('Admin notifications created', [
                 'title' => $title,
                 'type' => $type,
                 'booking_id' => $bookingId,
                 'admin_count' => $adminUsers->count()
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to create admin notification', [
+            Log::error('Failed to create admin notification', [
                 'title' => $title,
                 'error' => $e->getMessage()
             ]);
@@ -425,15 +426,15 @@ class AdminController extends Controller
         // Get admin notifications (where user_id is null)
         // Tampilkan notifikasi global (user_id null) atau notifikasi yang ditujukan ke akun admin
         $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
-        $notifications = \App\Models\UserNotification::where(function($query) use ($adminIds) {
-                $query->whereNull('user_id')
-                      ->orWhereIn('user_id', $adminIds);
-            })
+        $notifications = \App\Models\UserNotification::where(function ($query) use ($adminIds) {
+            $query->whereNull('user_id')
+                ->orWhereIn('user_id', $adminIds);
+        })
             ->with('booking')
             ->orderBy('created_at', 'desc')
             ->limit(50)
             ->get()
-            ->map(function($notification) {
+            ->map(function ($notification) {
                 return [
                     'id' => $notification->id,
                     'title' => $notification->title,
@@ -454,32 +455,32 @@ class AdminController extends Controller
         try {
             $admin = session('admin_data');
             $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
-            
+
             // Find notification that is either global (user_id null) or belongs to admin
             $notification = \App\Models\UserNotification::where('id', $id)
-                ->where(function($query) use ($adminIds) {
+                ->where(function ($query) use ($adminIds) {
                     $query->whereNull('user_id')
-                          ->orWhereIn('user_id', $adminIds);
+                        ->orWhereIn('user_id', $adminIds);
                 })
                 ->firstOrFail();
-            
+
             $notification->markAsRead();
-            
-            \Log::info('Admin notification marked as read', [
+
+            Log::info('Admin notification marked as read', [
                 'notification_id' => $id,
                 'admin_id' => $admin['id'] ?? 'unknown'
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Notification marked as read'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to mark admin notification as read', [
+            Log::error('Failed to mark admin notification as read', [
                 'notification_id' => $id,
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to mark notification as read: ' . $e->getMessage()
@@ -492,33 +493,33 @@ class AdminController extends Controller
         try {
             $admin = session('admin_data');
             $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
-            
+
             // Mark all admin notifications as read (global or for admin users)
-            $updatedCount = \App\Models\UserNotification::where(function($query) use ($adminIds) {
-                    $query->whereNull('user_id')
-                          ->orWhereIn('user_id', $adminIds);
-                })
+            $updatedCount = \App\Models\UserNotification::where(function ($query) use ($adminIds) {
+                $query->whereNull('user_id')
+                    ->orWhereIn('user_id', $adminIds);
+            })
                 ->where('is_read', false)
                 ->update([
                     'is_read' => true,
                     'read_at' => now()
                 ]);
-            
-            \Log::info('All admin notifications marked as read', [
+
+            Log::info('All admin notifications marked as read', [
                 'updated_count' => $updatedCount,
                 'admin_id' => $admin['id'] ?? 'unknown'
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'All notifications marked as read',
                 'updated_count' => $updatedCount
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to mark all admin notifications as read', [
+            Log::error('Failed to mark all admin notifications as read', [
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to mark all notifications as read: ' . $e->getMessage()
@@ -531,29 +532,29 @@ class AdminController extends Controller
         try {
             $admin = session('admin_data');
             $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
-            
+
             // Clear all admin notifications from database (global or for admin users)
-            $deletedCount = \App\Models\UserNotification::where(function($query) use ($adminIds) {
-                    $query->whereNull('user_id')
-                          ->orWhereIn('user_id', $adminIds);
-                })
+            $deletedCount = \App\Models\UserNotification::where(function ($query) use ($adminIds) {
+                $query->whereNull('user_id')
+                    ->orWhereIn('user_id', $adminIds);
+            })
                 ->delete();
-            
-            \Log::info('All admin notifications cleared', [
+
+            Log::info('All admin notifications cleared', [
                 'deleted_count' => $deletedCount,
                 'admin_id' => $admin['id'] ?? 'unknown'
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'All notifications cleared successfully!',
                 'deleted_count' => $deletedCount
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to clear admin notifications', [
+            Log::error('Failed to clear admin notifications', [
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to clear notifications: ' . $e->getMessage()
@@ -565,7 +566,7 @@ class AdminController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            
+
             $request->validate([
                 'full_name' => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:users,email,' . $id,
@@ -583,7 +584,7 @@ class AdminController extends Controller
                 'role' => $request->role,
             ]);
 
-            \Log::info('User updated successfully', [
+            Log::info('User updated successfully', [
                 'user_id' => $user->id,
                 'updated_fields' => $request->only(['full_name', 'email', 'phone', 'department', 'role'])
             ]);
@@ -593,7 +594,7 @@ class AdminController extends Controller
                 'message' => 'User berhasil diupdate!'
             ]);
         } catch (ValidationException $e) {
-            \Log::error('Validation error in updateUser', [
+            Log::error('Validation error in updateUser', [
                 'errors' => $e->errors(),
                 'user_id' => $id,
                 'input' => $request->all()
@@ -604,7 +605,7 @@ class AdminController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error in updateUser', [
+            Log::error('Error in updateUser', [
                 'message' => $e->getMessage(),
                 'user_id' => $id,
                 'input' => $request->all(),
@@ -620,7 +621,7 @@ class AdminController extends Controller
     public function updateRoom(Request $request, $id)
     {
         try {
-            \Log::info('updateRoom called', [
+            Log::info('updateRoom called', [
                 'room_id' => $id,
                 'payload' => $request->all(),
                 'json_payload' => $request->json()->all(),
@@ -632,12 +633,12 @@ class AdminController extends Controller
             ]);
 
             $room = MeetingRoom::findOrFail($id);
-            
+
             // Get data from JSON or form data
             $data = $request->json()->all() ?: $request->all();
-            
+
             // Debug: Log individual field values
-            \Log::info('Field values received', [
+            Log::info('Field values received', [
                 'name' => $data['name'] ?? null,
                 'capacity' => $data['capacity'] ?? null,
                 'description' => $data['description'] ?? null,
@@ -648,7 +649,7 @@ class AdminController extends Controller
                 'capacity_type' => gettype($data['capacity'] ?? null),
                 'location_type' => gettype($data['location'] ?? null)
             ]);
-            
+
             // Validate the data
             $validator = \Illuminate\Support\Facades\Validator::make($data, [
                 'name' => 'required|string|max:255',
@@ -663,7 +664,7 @@ class AdminController extends Controller
                 throw new ValidationException($validator);
             }
 
-            $amenities = isset($data['amenities']) && $data['amenities'] ? 
+            $amenities = isset($data['amenities']) && $data['amenities'] ?
                 array_map('trim', explode(',', $data['amenities'])) : [];
             $amenities = array_values(array_filter($amenities, fn($item) => $item !== ''));
 
@@ -671,11 +672,11 @@ class AdminController extends Controller
             $isActive = $room->is_active; // Default to current value
             if (isset($data['is_active'])) {
                 $isActiveValue = $data['is_active'];
-                \Log::info('is_active value received', [
+                Log::info('is_active value received', [
                     'value' => $isActiveValue,
                     'type' => gettype($isActiveValue)
                 ]);
-                
+
                 if (in_array($isActiveValue, ['1', 'true', 'on', 1, true])) {
                     $isActive = true;
                 } elseif (in_array($isActiveValue, ['0', 'false', 'off', 0, false])) {
@@ -697,7 +698,7 @@ class AdminController extends Controller
                 'message' => 'Room berhasil diupdate!'
             ]);
         } catch (ModelNotFoundException $e) {
-            \Log::warning('Room not found in updateRoom', [
+            Log::warning('Room not found in updateRoom', [
                 'room_id' => $id,
                 'input' => $request->all()
             ]);
@@ -706,7 +707,7 @@ class AdminController extends Controller
                 'message' => 'Room tidak ditemukan'
             ], 404);
         } catch (ValidationException $e) {
-            \Log::error('Validation error in updateRoom', [
+            Log::error('Validation error in updateRoom', [
                 'errors' => $e->errors(),
                 'room_id' => $id,
                 'input' => $request->all(),
@@ -724,14 +725,14 @@ class AdminController extends Controller
             foreach ($e->errors() as $field => $messages) {
                 $flattenedErrors = array_merge($flattenedErrors, $messages);
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation error: ' . implode(', ', $flattenedErrors),
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error in updateRoom', [
+            Log::error('Error in updateRoom', [
                 'message' => $e->getMessage(),
                 'room_id' => $id,
                 'input' => $request->all(),
@@ -748,7 +749,7 @@ class AdminController extends Controller
     {
         try {
             $room = MeetingRoom::findOrFail($id);
-            
+
             // Get all bookings for this room
             $allBookings = $room->bookings;
             $activeBookings = $room->bookings()
@@ -757,11 +758,11 @@ class AdminController extends Controller
             $completedBookings = $room->bookings()
                 ->where('status', 'completed')
                 ->get();
-            
+
             // Check if room can be deleted based on new logic
             $canDelete = false;
             $reason = '';
-            
+
             if ($allBookings->count() === 0) {
                 // No bookings at all
                 $canDelete = true;
@@ -777,7 +778,7 @@ class AdminController extends Controller
                 $canDelete = false;
                 $reason = 'Tidak dapat menghapus room yang aktif dan memiliki booking aktif. Nonaktifkan room terlebih dahulu atau tunggu semua booking selesai.';
             }
-            
+
             if (!$canDelete) {
                 return response()->json([
                     'success' => false,
@@ -789,7 +790,7 @@ class AdminController extends Controller
             if (!$room->is_active || $activeBookings->count() > 0) {
                 foreach ($activeBookings as $booking) {
                     $booking->updateStatus('cancelled', 'Meeting dibatalkan sistem karena sedang ada maintenance ruangan');
-                    
+
                     // Create notification for user about room maintenance
                     \App\Models\UserNotification::createNotification(
                         $booking->user_id,
@@ -798,9 +799,9 @@ class AdminController extends Controller
                         "Meeting '{$booking->title}' dibatalkan karena ruang meeting sedang dalam maintenance. Silakan buat booking baru untuk ruang lain.",
                         $booking->id
                     );
-                    
+
                     // Log the cancellation
-                    \Log::info('Booking cancelled due to room deletion', [
+                    Log::info('Booking cancelled due to room deletion', [
                         'booking_id' => $booking->id,
                         'user_id' => $booking->user_id,
                         'room_id' => $room->id,
@@ -827,7 +828,7 @@ class AdminController extends Controller
     {
         try {
             $booking = Booking::findOrFail($id);
-            
+
             if (!$booking->dokumen_perizinan) {
                 return response()->json([
                     'success' => false,
@@ -836,7 +837,7 @@ class AdminController extends Controller
             }
 
             $filePath = storage_path('app/public/' . $booking->dokumen_perizinan);
-            
+
             if (!file_exists($filePath)) {
                 return response()->json([
                     'success' => false,
@@ -846,7 +847,7 @@ class AdminController extends Controller
 
             return response()->download($filePath, 'dokumen_perizinan_' . $booking->id . '.pdf');
         } catch (\Exception $e) {
-            \Log::error('Error downloading dokumen perizinan: ' . $e->getMessage(), [
+            Log::error('Error downloading dokumen perizinan: ' . $e->getMessage(), [
                 'booking_id' => $id,
                 'trace' => $e->getTraceAsString()
             ]);
@@ -863,7 +864,7 @@ class AdminController extends Controller
         try {
             $user = $booking->user;
             $notificationData = $this->getNotificationData($booking, $status, $reason);
-            
+
             \App\Models\UserNotification::createNotification(
                 $user->id,
                 $notificationData['type'],
@@ -872,13 +873,13 @@ class AdminController extends Controller
                 $booking->id
             );
 
-            \Log::info('User notification created', [
+            Log::info('User notification created', [
                 'user_id' => $user->id,
                 'booking_id' => $booking->id,
                 'type' => $notificationData['type']
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to create user notification', [
+            Log::error('Failed to create user notification', [
                 'booking_id' => $booking->id,
                 'error' => $e->getMessage()
             ]);
@@ -911,7 +912,7 @@ class AdminController extends Controller
                     'message' => "Meeting '{$booking->title}' telah selesai. Terima kasih telah menggunakan layanan kami."
                 ];
             default:
-                $statusText = match($status) {
+                $statusText = match ($status) {
                     'pending' => 'menunggu konfirmasi',
                     'confirmed' => 'dikonfirmasi',
                     'cancelled' => 'dibatalkan',
@@ -977,7 +978,7 @@ class AdminController extends Controller
         $userData['department'] = $userModel->department ?? $request->unit_kerja;
         session(['user_data' => $userData]);
 
-        \Log::info('Admin profile updated', [
+        Log::info('Admin profile updated', [
             'admin_id' => $userId,
             'updated_fields' => $request->only(['full_name', 'email', 'phone', 'unit_kerja'])
         ]);

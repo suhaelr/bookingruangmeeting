@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class UserNotification extends Model
 {
@@ -66,9 +68,9 @@ class UserNotification extends Model
         try {
             $user = \App\Models\User::find($userId);
             if ($user && $user->email) {
-                \Mail::to($user->email)->send(new \App\Mail\NotificationEmail($user, $notification));
-                
-                \Log::info('Notification email sent', [
+                Mail::to($user->email)->send(new \App\Mail\NotificationEmail($user, $notification));
+
+                Log::info('Notification email sent', [
                     'user_id' => $userId,
                     'user_email' => $user->email,
                     'notification_id' => $notification->id,
@@ -77,7 +79,7 @@ class UserNotification extends Model
             }
         } catch (\Exception $e) {
             // Log error but don't fail notification creation
-            \Log::error('Failed to send notification email', [
+            Log::error('Failed to send notification email', [
                 'user_id' => $userId,
                 'notification_id' => $notification->id,
                 'error' => $e->getMessage()

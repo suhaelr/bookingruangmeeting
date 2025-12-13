@@ -1,57 +1,43 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Ruang - Admin Panel</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
-        /* Uniform form control styling */
-        .form-control {
-            background-color: #ffffff !important;
-            color: #000000 !important;
-            border: 1px solid #d1d5db !important;
-            border-radius: 0.5rem;
-        }
-        .form-control:focus {
-            outline: none !important;
-            box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important;
-            border-color: #6366f1 !important;
-        }
-        .form-control::placeholder { color: #000000 !important; opacity: 1; }
-        select.form-control option { background: #ffffff; color: #000000; }
-    </style>
-</head>
-<body class="min-h-screen bg-white">
-    <!-- Navigation -->
-        <nav class="glass-effect shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
+@extends('layouts.admin')
 
-    <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+@section('title', 'Tambah Ruang - Admin Panel')
+
+@php
+    $pageTitle = 'Tambah Ruang';
+@endphp
+
+@push('head')
+<link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+<link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
+@endpush
+
+@push('styles')
+<style>
+    /* Uniform form control styling */
+    .form-control {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 0.5rem;
+    }
+    .form-control:focus {
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(99,102,241,0.2) !important;
+        border-color: #6366f1 !important;
+    }
+    .form-control::placeholder { 
+        color: #000000 !important; 
+        opacity: 1; 
+    }
+    select.form-control option { 
+        background: #ffffff; 
+        color: #000000; 
+    }
+</style>
+@endpush
+
+@section('main-content')
+    <div class="max-w-4xl mx-auto">
         <!-- Header -->
         <div class="glass-effect rounded-2xl p-6 mb-8 shadow-2xl">
             <div class="flex justify-between items-center">
@@ -104,7 +90,6 @@
                                class="w-full px-3 py-2 form-control" 
                                placeholder="Masukkan lokasi" required>
                     </div>
-
                 </div>
 
                 <!-- Deskripsi -->
@@ -148,16 +133,4 @@
             </form>
         </div>
     </div>
-
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'admin',
-        'userName' => session('user_data.full_name'),
-        'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Tambah Ruang'
-    ])
-
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
-</body>
-</html>
+@endsection

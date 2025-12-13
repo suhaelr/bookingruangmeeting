@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 
 class UserAuth
 {
@@ -21,8 +22,8 @@ class UserAuth
         $request->headers->set('CF-Connecting-IP', $request->ip());
         $request->headers->set('X-Forwarded-For', $request->ip());
         $request->headers->set('X-Real-IP', $request->ip());
-        
-        \Log::info('UserAuth middleware check with Cloudflare bypass', [
+
+        Log::info('UserAuth middleware check with Cloudflare bypass', [
             'url' => $request->url(),
             'session_id' => session()->getId(),
             'user_logged_in' => Session::get('user_logged_in'),
@@ -33,17 +34,17 @@ class UserAuth
         ]);
 
         if (!Session::has('user_logged_in') || !Session::get('user_logged_in')) {
-            \Log::warning('UserAuth: User not logged in, redirecting to login', [
+            Log::warning('UserAuth: User not logged in, redirecting to login', [
                 'session_has_user_logged_in' => Session::has('user_logged_in'),
                 'user_logged_in_value' => Session::get('user_logged_in'),
                 'session_id' => session()->getId(),
                 'session_all' => Session::all(),
                 'url' => $request->url()
             ]);
-            
+
             // Save intended URL for redirect after login
             Session::put('intended_url', $request->url());
-            
+
             return redirect()->route('login')
                 ->with('error', 'Silakan login terlebih dahulu!')
                 ->with('intended', $request->url());
@@ -51,7 +52,7 @@ class UserAuth
 
         $user = Session::get('user_data');
         if (!$user || !isset($user['role'])) {
-            \Log::warning('UserAuth: No user data or role found', [
+            Log::warning('UserAuth: No user data or role found', [
                 'user_data' => $user
             ]);
             return redirect()->route('login')->with('error', 'Data pengguna tidak ditemukan!');
@@ -61,7 +62,7 @@ class UserAuth
         try {
             $userModel = \App\Models\User::find($user['id']);
             if (!$userModel) {
-                \Log::warning('UserAuth: User not found in database', [
+                Log::warning('UserAuth: User not found in database', [
                     'session_user_id' => $user['id'],
                     'session_user_data' => $user
                 ]);
@@ -70,7 +71,7 @@ class UserAuth
                 return redirect()->route('login')->with('error', 'Session tidak valid. Silakan login kembali!');
             }
         } catch (\Exception $e) {
-            \Log::error('UserAuth: Database error during user validation', [
+            Log::error('UserAuth: Database error during user validation', [
                 'error' => $e->getMessage(),
                 'session_user_id' => $user['id'],
                 'session_user_data' => $user
@@ -81,13 +82,13 @@ class UserAuth
         }
 
         if ($user['role'] !== 'user') {
-            \Log::info('UserAuth: User role is not user, redirecting to admin dashboard', [
+            Log::info('UserAuth: User role is not user, redirecting to admin dashboard', [
                 'user_role' => $user['role']
             ]);
             return redirect()->route('admin.dashboard')->with('error', 'Akses ditolak!');
         }
 
-        \Log::info('UserAuth: Access granted to user dashboard');
+        Log::info('UserAuth: Access granted to user dashboard');
         return $next($request);
     }
 }
