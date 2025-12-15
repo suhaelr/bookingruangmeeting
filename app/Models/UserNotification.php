@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class UserNotification extends Model
 {
@@ -62,13 +64,14 @@ class UserNotification extends Model
             'message' => $message,
         ]);
 
-        // Send email notification
+        // Queue email notification to avoid blocking the request
         try {
             $user = \App\Models\User::find($userId);
             if ($user && $user->email) {
-                \Mail::to($user->email)->send(new \App\Mail\NotificationEmail($user, $notification));
-                
-                \Log::info('Notification email sent', [
+                // Queue the email instead of sending synchronously
+                Mail::to($user->email)->queue(new \App\Mail\NotificationEmail($user, $notification));
+
+                Log::info('Notification email queued', [
                     'user_id' => $userId,
                     'user_email' => $user->email,
                     'notification_id' => $notification->id,
@@ -77,7 +80,7 @@ class UserNotification extends Model
             }
         } catch (\Exception $e) {
             // Log error but don't fail notification creation
-            \Log::error('Failed to send notification email', [
+            Log::error('Failed to queue notification email', [
                 'user_id' => $userId,
                 'notification_id' => $notification->id,
                 'error' => $e->getMessage()

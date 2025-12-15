@@ -1,0 +1,14 @@
+node_modules/
+vendor/
+storage/
+bootstrap/cache/
+public/build/
+*.min.js
+*.min.css
+.git/
+.env
+.env.*
+!.env.example
+package-lock.json
+composer.lock
+

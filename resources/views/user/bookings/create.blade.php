@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pesan Ruang Meeting - Sistem Pemesanan Ruang Meeting</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="{{ asset('css/dropdown-fix.css') }}" rel="stylesheet">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <style>
+@extends('layouts.user')
+
+@section('title', 'Pesan Ruang Meeting - Sistem Pemesanan Ruang Meeting')
+
+@php
+    $pageTitle = 'Pemesanan Baru';
+@endphp
+
+@push('styles')
+<style>
         /* Ensure buttons are clickable */
         button, .btn, [role="button"] {
             cursor: pointer !important;
@@ -49,45 +47,22 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
     </style>
-</head>
-<body class="min-h-screen bg-white">
-    <!-- Navigation -->
-        <nav class="glass-effect shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar-alt text-2xl text-black"></i>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('logout') }}" 
-                           class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
-                            <i class="fas fa-sign-out-alt mr-2"></i>
-                            Keluar
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </nav>
+@endpush
 
-    <!-- Main Content -->
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="glass-effect rounded-2xl p-8 shadow-2xl">
+@section('main-content')
+    <div class="max-w-4xl mx-auto">
+        <div class="border border-gray-200 rounded-2xl p-8">
             <div class="mb-8">
                 <h2 class="text-2xl font-bold text-black mb-2">Pesan Ruang Meeting</h2>
                 <p class="text-black">Isi detail di bawah untuk memesan ruang meeting Anda</p>
             </div>
 
             @if ($errors->any())
-                <div class="bg-red-500/20 border border-red-500/50 text-red-300 px-6 py-4 rounded-lg mb-6">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-lg mb-6">
                     <div class="flex items-start">
-                        <i class="fas fa-exclamation-triangle mr-3 mt-1 text-red-400"></i>
+                        <i data-feather="alert-circle" class="mr-3 mt-1" style="width: 20px; height: 20px;"></i>
                         <div class="flex-1">
-                            <h4 class="font-semibold text-red-200 mb-2">❌ Gagal Membuat Booking</h4>
+                            <h4 class="font-semibold mb-2">Gagal Membuat Booking</h4>
                             <div class="space-y-2">
                                 @foreach ($errors->all() as $error)
                                     <div class="text-sm whitespace-pre-line leading-relaxed">{{ $error }}</div>
@@ -104,7 +79,9 @@
                 <!-- Meeting Room Selection -->
                 <div>
                     <label for="meeting_room_id" class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-door-open mr-2"></i>Ruang Meeting *
+                        <i data-feather="box" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
+                        Ruang Meeting 
+                        <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <select id="meeting_room_id" name="meeting_room_id" required
@@ -120,7 +97,7 @@
                             @endforeach
                         </select>
                         <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <i class="fas fa-chevron-down text-gray-500"></i>
+                            <i data-feather="chevron-down" class="text-gray-500" style="width: 18px; height: 18px;"></i>
                         </div>
                     </div>
                 </div>
@@ -143,7 +120,9 @@
                 <!-- Meeting Judul -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-heading mr-2"></i>Judul Meeting *
+                        <i data-feather="type" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
+                        Judul Meeting
+                        <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="title" name="title" value="{{ old('title') }}" required
                            class="w-full px-4 py-3 form-control"
@@ -153,7 +132,7 @@
                 <!-- Deskripsi -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-align-left mr-2"></i>Deskripsi
+                        <i data-feather="file-text" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Deskripsi
                     </label>
                     <textarea id="description" name="description" rows="3"
                               class="w-full px-4 py-3 form-control"
@@ -164,7 +143,7 @@
                 <!-- PIC Invitations Section -->
                 <div class="pic-invitations-section">
                     <label class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-user-tie mr-2"></i>Undang PIC Lain
+                        <i data-feather="users" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Undang PIC Lain
                     </label>
                     
                     <!-- Visibility Setting -->
@@ -184,7 +163,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <h4 class="text-black font-medium">Pilih PIC yang akan diundang:</h4>
                             <button type="button" id="clear-all-pics" class="text-sm text-red-600 hover:text-red-700 font-medium px-3 py-1 rounded hover:bg-red-50 transition-colors duration-200">
-                                <i class="fas fa-times-circle mr-1"></i>Hapus Semua Pilihan
+                                <i data-feather="x-circle" class="mr-1 inline" style="width: 16px; height: 16px;"></i>Hapus Semua Pilihan
                             </button>
                         </div>
                         @foreach($allPics as $pic)
@@ -201,7 +180,7 @@
                     </div>
                     
                     <p class="text-gray-600 text-xs mt-2">
-                        <i class="fas fa-info-circle mr-1"></i>
+                        <i data-feather="info" class="mr-1 inline" style="width: 16px; height: 16px;"></i>
                         PIC yang diundang akan menerima notifikasi dan dapat melihat deskripsi meeting (termasuk link Zoom/Meet) di kalender mereka.
                     </p>
                 </div>
@@ -210,14 +189,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="start_time" class="block text-sm font-medium text-black mb-2">
-                            <i class="fas fa-clock mr-2"></i>Mulai Waktu *
+                            <i data-feather="clock" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
+                            Waktu Mulai
+                            <span class="text-red-500">*</span>
                         </label>
                         <input type="datetime-local" id="start_time" name="start_time" value="{{ old('start_time') }}" required
                                class="w-full px-4 py-3 form-control">
                     </div>
                     <div>
                         <label for="end_time" class="block text-sm font-medium text-black mb-2">
-                            <i class="fas fa-clock mr-2"></i>Selesai Waktu *
+                            <i data-feather="clock" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
+                            Waktu Selesai
+                            <span class="text-red-500">*</span>
                         </label>
                         <input type="datetime-local" id="end_time" name="end_time" value="{{ old('end_time') }}" required
                                class="w-full px-4 py-3 form-control">
@@ -227,7 +210,9 @@
                 <!-- Unit Kerja -->
                 <div>
                     <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-building mr-2"></i>Unit Kerja *
+                        <i data-feather="building" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
+                        Unit Kerja
+                        <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <select id="unit_kerja" name="unit_kerja" required
@@ -242,7 +227,7 @@
                             <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
                         </select>
                         <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <i class="fas fa-chevron-down text-gray-500"></i>
+                            <i data-feather="chevron-down" class="text-gray-500" style="width: 18px; height: 18px;"></i>
                         </div>
                     </div>
                 </div>
@@ -250,7 +235,7 @@
                 <!-- Dokumen Tambahan (Opsional) -->
                 <div>
                     <label for="dokumen_perizinan" class="block text-sm font-medium text-black mb-2">
-                        <i class="fas fa-file-pdf mr-2"></i>Dokumen Tambahan (Opsional) (PDF, Max 2MB)
+                        <i data-feather="file" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Dokumen Tambahan (Opsional) (PDF, Max 2MB)
                     </label>
                     
                     <!-- File Input -->
@@ -265,12 +250,12 @@
                     <div id="file-preview" class="hidden mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                                <i class="fas fa-file-pdf text-red-400 mr-2"></i>
+                                <i data-feather="file" class="text-red-500 mr-2" style="width: 18px; height: 18px;"></i>
                                 <span id="file-name" class="text-black text-sm"></span>
                                 <span id="file-size" class="text-gray-600 text-xs ml-2"></span>
                             </div>
-                            <button type="button" onclick="removeFile()" class="text-red-400 hover:text-red-300 transition-colors">
-                                <i class="fas fa-times"></i>
+                            <button type="button" onclick="removeFile()" class="text-red-500 hover:text-red-600 transition-colors">
+                                <i data-feather="x" style="width: 18px; height: 18px;"></i>
                             </button>
                         </div>
                     </div>
@@ -279,9 +264,9 @@
                 </div>
 
                 <!-- Captcha Section -->
-                <div class="bg-white/10 rounded-lg p-6 border border-white/20">
+                <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
                     <h3 class="text-lg font-semibold text-black mb-4 flex items-center">
-                        <i class="fas fa-shield-alt mr-2 text-black"></i>
+                        <i data-feather="shield" class="mr-2" style="width: 20px; height: 20px;"></i>
                         Verifikasi Keamanan
                     </h3>
                     
@@ -290,14 +275,14 @@
                         <!-- Captcha Question -->
                         <div>
                             <label class="block text-sm font-medium text-black mb-2">
-                                <i class="fas fa-key mr-2"></i>Masukkan angka berikut:
+                                <i data-feather="key" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Masukkan angka berikut:
                             </label>
                             <div class="flex items-center justify-center space-x-3">
                                 <div id="captcha-question" class="text-xl font-bold text-black bg-gray-50 px-4 py-4 rounded-lg border border-gray-200 text-center tracking-widest min-w-[100px] max-w-[150px]">
                                     Loading...
                                 </div>
                                 <button type="button" id="refresh-captcha" class="px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300">
-                                    <i class="fas fa-sync-alt"></i>
+                                    <i data-feather="refresh-cw" style="width: 18px; height: 18px;"></i>
                                 </button>
                             </div>
                         </div>
@@ -314,7 +299,7 @@
                     </div>
                     
                     <p class="text-gray-600 text-xs mt-3 text-center">
-                        <i class="fas fa-info-circle mr-1"></i>
+                        <i data-feather="info" class="mr-1 inline" style="width: 16px; height: 16px;"></i>
                         Silakan masukkan 4 digit angka yang ditampilkan di atas untuk melanjutkan pemesanan.
                     </p>
                 </div>
@@ -322,20 +307,22 @@
                 <!-- Kirim Button -->
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('user.dashboard') }}" 
-                       class="px-6 py-3 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors duration-300">
+                       class="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300">
                         Batal
                     </a>
                     <button type="submit" id="submit-booking-btn"
                             class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i class="fas fa-calendar-plus mr-2"></i>
+                        <i data-feather="calendar" class="mr-2" style="width: 18px; height: 18px;"></i>
                         Pesan Ruang Meeting
                     </button>
                 </div>
             </form>
         </div>
     </div>
+@endsection
 
-    <script>
+@push('scripts')
+<script>
         // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
             // File handling
@@ -682,9 +669,9 @@
                             // Show success message
                             if (availabilityDiv) {
                                 availabilityDiv.innerHTML = `
-                                    <div class="bg-green-500/20 border border-green-500/50 text-green-300 px-4 py-3 rounded-lg">
+                                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
                                         <div class="flex items-center">
-                                            <i class="fas fa-check-circle mr-2"></i>
+                                            <i data-feather="check-circle" class="mr-2" style="width: 18px; height: 18px;"></i>
                                             <span class="font-medium">${data.message}</span>
                                         </div>
                                     </div>
@@ -741,14 +728,14 @@
                             <div class="sticky top-0 bg-white border-b border-gray-200 z-10 p-4 sm:p-6 pb-4 flex justify-between items-center">
                                 <h3 class="text-lg sm:text-xl font-bold text-black">Jadwal Bentrok</h3>
                                 <button type="button" onclick="window.closeConflictModal()" class="text-gray-500 hover:text-gray-700 p-2 -mr-2">
-                                    <i class="fas fa-times text-xl sm:text-2xl"></i>
+                                    <i data-feather="x" style="width: 24px; height: 24px;"></i>
                                 </button>
                             </div>
                             
                             <div class="p-4 sm:p-6">
                                 <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                                     <div class="flex items-start">
-                                        <i class="fas fa-exclamation-triangle text-red-500 mr-2 mt-1"></i>
+                                        <i data-feather="alert-triangle" class="text-red-500 mr-2 mt-1" style="width: 20px; height: 20px;"></i>
                                         <div class="flex-1">
                                             <p class="text-sm text-red-800 whitespace-pre-line leading-relaxed">${message}</p>
                                         </div>
@@ -832,24 +819,15 @@
                     const submitBtn = form.querySelector('button[type="submit"]');
                     if (submitBtn) {
                         submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+                        submitBtn.innerHTML = '<i data-feather="loader" class="mr-2 animate-spin" style="width: 18px; height: 18px;"></i>Memproses...';
+                        if (typeof feather !== 'undefined') {
+                            feather.replace();
+                        }
                     }
                 });
             }
 
         });
-    </script>
-
-    <!-- Mobile Sidebar -->
-    @include('components.mobile-sidebar', [
-        'userRole' => 'user',
-        'userName' => session('user_data.full_name'),
-        'userEmail' => session('user_data.email'),
-        'pageTitle' => 'Pemesanan Baru'
-    ])
-
-    <!-- WhatsApp Floating Button -->
-    @include('components.whatsapp-float')
-</body>
-</html>
+</script>
+@endpush
 

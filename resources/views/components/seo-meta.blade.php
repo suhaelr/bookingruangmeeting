@@ -197,15 +197,14 @@ src="https://www.facebook.com/tr?id={{ $facebookPixel }}&ev=PageView&noscript=1"
 
 <!-- Performance and Security Headers -->
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
-<meta http-equiv="X-Frame-Options" content="DENY">
+<!-- X-Frame-Options must be set via HTTP headers, not meta tags -->
 <meta http-equiv="X-XSS-Protection" content="1; mode=block">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 
 <!-- Preload Critical Resources -->
 @if(config('seo.performance.preload_critical_resources', true))
-<link rel="preload" href="{{ asset('css/app.css') }}" as="style">
-<link rel="preload" href="{{ asset('js/app.js') }}" as="script">
+{{-- Vite handles CSS/JS preloading automatically, so we only preload external resources --}}
 <link rel="preload" href="https://cdn.tailwindcss.com" as="script">
 <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
 @endif

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('users', 'unit_kerja')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->string('unit_kerja')->nullable()->after('department');
+                $table->string('unit_kerja')->nullable();
             });
         }
     }
@@ -24,5 +24,3 @@ return new class extends Migration
         }
     }
 };
-
-

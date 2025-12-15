@@ -8,6 +8,7 @@ use App\Models\Booking;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -15,26 +16,26 @@ class UserController extends Controller
     public function dashboard(Request $request)
     {
         $user = session('user_data');
-        
+
         // Validate user exists in database
         try {
             $userModel = User::find($user['id']);
             if (!$userModel) {
-                \Log::error('User not found in database for dashboard', [
+                Log::error('User not found in database for dashboard', [
                     'session_user_id' => $user['id'],
                     'session_user_data' => $user
                 ]);
                 return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
             }
         } catch (\Exception $e) {
-            \Log::error('Database error during user validation in dashboard', [
+            Log::error('Database error during user validation in dashboard', [
                 'error' => $e->getMessage(),
                 'session_user_id' => $user['id'],
                 'session_user_data' => $user
             ]);
             return redirect()->route('login')->with('error', 'Database error. Please login again.');
         }
-        
+
         // Statistik booking user
         $stats = [
             'total_bookings' => Booking::where('user_id', $userModel->id)->count(),
@@ -74,7 +75,7 @@ class UserController extends Controller
         // Get user notifications
         $userModel = User::find($user['id']);
         $notifications = collect([]);
-        
+
         if ($userModel) {
             $notifications = $userModel->notifications()
                 ->orderBy('created_at', 'desc')
@@ -127,15 +128,15 @@ class UserController extends Controller
                 // Strict visibility: only admin, owner, or invited PIC may see description when visibility is invited_pics_only
                 $isAdmin = $userModel->role === 'admin';
                 $isOwner = (int)$booking->user_id === (int)$userModel->id;
-                
+
                 // Check if user is in the invited PICs list (check by pic_id in invitations)
                 $isInvitedPic = false;
                 if ($booking->invitations && $booking->invitations->count() > 0) {
-                    $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
+                    $isInvitedPic = $booking->invitations->contains(function ($inv) use ($userModel) {
                         return $inv && $inv->pic_id && (int)$inv->pic_id === (int)$userModel->id;
                     });
                 }
-                
+
                 $canSeeDescription = false;
                 if ($isAdmin || $isOwner) {
                     // Admin and owner always can see
@@ -147,9 +148,9 @@ class UserController extends Controller
                     // Invited PICs only: only invited PICs can see (checked via checkbox)
                     $canSeeDescription = $isInvitedPic;
                 }
-                
+
                 // Debug logging
-                \Log::info('Calendar item visibility check', [
+                Log::info('Calendar item visibility check', [
                     'booking_id' => $booking->id,
                     'booking_title' => $booking->title,
                     'user_id' => $userModel->id,
@@ -162,8 +163,8 @@ class UserController extends Controller
                     'invited_pic_ids' => $booking->invitations ? $booking->invitations->pluck('pic_id')->toArray() : [],
                     'can_see_description' => $canSeeDescription,
                 ]);
-                
-                $invitedPics = $booking->invitations->map(function($inv){
+
+                $invitedPics = $booking->invitations->map(function ($inv) {
                     return [
                         'id' => $inv->pic_id,
                         'name' => $inv->pic?->full_name,
@@ -175,7 +176,7 @@ class UserController extends Controller
                 $hasDocument = !empty($booking->dokumen_perizinan);
                 $canSeeDocument = false;
                 $documentUrl = null;
-                
+
                 if ($hasDocument) {
                     // Use same visibility logic as description
                     if ($isAdmin || $isOwner) {
@@ -188,7 +189,7 @@ class UserController extends Controller
                         // Invited PICs only: only invited PICs can see (checked via checkbox)
                         $canSeeDocument = $isInvitedPic;
                     }
-                    
+
                     if ($canSeeDocument) {
                         // Use absolute URL to ensure iframe can load it
                         $documentUrl = url(route('user.bookings.document', $booking->id, false));
@@ -199,14 +200,14 @@ class UserController extends Controller
                 $attendanceStatus = null;
                 $attendanceStatusColor = 'blue'; // default
                 $attendanceStatusText = '';
-                
+
                 if ($isOwner && $booking->invitations && $booking->invitations->count() > 0) {
                     // Check all PIC attendance statuses
                     $allConfirmed = true;
                     $hasDeclined = false;
                     $hasPending = false;
                     $hasAbsent = false;
-                    
+
                     foreach ($booking->invitations as $invitation) {
                         if ($invitation->attendance_status === 'confirmed') {
                             // At least one confirmed
@@ -221,7 +222,7 @@ class UserController extends Controller
                             $allConfirmed = false;
                         }
                     }
-                    
+
                     // Determine color and text
                     if ($allConfirmed && !$hasPending && !$hasDeclined) {
                         $attendanceStatus = 'all_confirmed';
@@ -334,17 +335,17 @@ class UserController extends Controller
     public function bookings()
     {
         $user = session('user_data');
-        
+
         // Validate user exists in database
         $userModel = User::find($user['id']);
         if (!$userModel) {
-            \Log::error('User not found in database for bookings', [
+            Log::error('User not found in database for bookings', [
                 'session_user_id' => $user['id'],
                 'session_user_data' => $user
             ]);
             return redirect()->route('login')->with('error', 'User session invalid. Please login again.');
         }
-        
+
         $bookings = Booking::with(['meetingRoom', 'invitations.pic'])
             ->where('user_id', $userModel->id)
             ->orderBy('created_at', 'desc')
@@ -353,14 +354,14 @@ class UserController extends Controller
         // All PICs for edit modal (checkbox list)
         $allPics = User::where('role', 'user')
             ->orderBy('full_name')
-            ->get(['id','full_name','unit_kerja']);
-        
-        \Log::info('User bookings retrieved', [
+            ->get(['id', 'full_name', 'unit_kerja']);
+
+        Log::info('User bookings retrieved', [
             'user_id' => $userModel->id,
             'bookings_count' => $bookings->count()
         ]);
-        
-        return view('user.bookings', compact('bookings','allPics'));
+
+        return view('user.bookings.index', compact('bookings', 'allPics'));
     }
 
     public function createBooking()
@@ -368,24 +369,24 @@ class UserController extends Controller
         $rooms = MeetingRoom::where('is_active', true)
             ->orderBy('name')
             ->get();
-        
+
         // Get all PICs (users) for invitation
         $allPics = User::where('role', 'user')
             ->orderBy('full_name')
             ->get();
-        
+
         // Get current user's unit_kerja for auto-fill
         $user = session('user_data');
         $userModel = User::find($user['id'] ?? null);
         $userUnitKerja = $userModel ? ($userModel->unit_kerja ?? null) : null;
-        
+
         // Check if no rooms are available
         if ($rooms->count() === 0) {
-            return view('user.create-booking', compact('rooms', 'allPics', 'userUnitKerja'))
+            return view('user.bookings.create', compact('rooms', 'allPics', 'userUnitKerja'))
                 ->with('warning', 'Saat ini tidak ada ruang meeting yang tersedia. Silakan hubungi administrator untuk informasi lebih lanjut.');
         }
-        
-        return view('user.create-booking', compact('rooms', 'allPics', 'userUnitKerja'));
+
+        return view('user.bookings.create', compact('rooms', 'allPics', 'userUnitKerja'));
     }
 
     public function checkAvailability(Request $request)
@@ -410,17 +411,17 @@ class UserController extends Controller
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
         $excludeBookingId = $request->input('exclude_booking_id');
-        
+
         $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime, $excludeBookingId);
-        
+
         // Debug logging
-        \Log::info('Availability check debug', [
+        Log::info('Availability check debug', [
             'user_id' => $userModel->id,
             'room_id' => $room->id,
             'start_time' => $startTime->toDateTimeString(),
             'end_time' => $endTime->toDateTimeString(),
             'conflicting_bookings_count' => $conflictingBookings->count(),
-            'conflicting_bookings' => $conflictingBookings->map(function($booking) {
+            'conflicting_bookings' => $conflictingBookings->map(function ($booking) {
                 return [
                     'id' => $booking->id,
                     'user_id' => $booking->user_id,
@@ -430,7 +431,7 @@ class UserController extends Controller
                 ];
             })
         ]);
-        
+
         if ($conflictingBookings->count() > 0) {
             // Build UI message with all conflicts (including same user) to BLOCK booking
             $conflictDetails = $this->formatConflictDetails($conflictingBookings, $room);
@@ -450,9 +451,9 @@ class UserController extends Controller
     public function storeBooking(Request $request)
     {
         $user = session('user_data');
-        
+
         // Debug timezone info
-        \Log::info('Booking validation timezone debug', [
+        Log::info('Booking validation timezone debug', [
             'current_time' => now()->format('Y-m-d H:i:s'),
             'timezone' => config('app.timezone'),
             'start_time_request' => $request->start_time,
@@ -478,7 +479,7 @@ class UserController extends Controller
         // Only validate logical time constraints (no time restrictions)
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
-        
+
         if ($startTime->gte($endTime)) {
             return back()->withErrors([
                 'end_time' => 'Waktu selesai harus setelah waktu mulai.'
@@ -488,20 +489,20 @@ class UserController extends Controller
         // Verify captcha
         $userAnswer = $request->input('captcha_answer');
         $correctAnswer = session('captcha_answer');
-        
+
         if ($userAnswer != $correctAnswer) {
             return back()->withErrors([
                 'captcha_answer' => 'Jawaban captcha salah. Silakan coba lagi.'
             ])->withInput();
         }
-        
+
         // Clear captcha from session after successful verification
         session()->forget(['captcha_answer', 'captcha_question', 'captcha_verified']);
 
         // Validate user exists in database first
         $userModel = User::find($user['id']);
         if (!$userModel) {
-            \Log::error('User not found in database', [
+            Log::error('User not found in database', [
                 'session_user_id' => $user['id'],
                 'session_user_data' => $user
             ]);
@@ -511,7 +512,7 @@ class UserController extends Controller
         $room = MeetingRoom::findOrFail($request->meeting_room_id);
         $startTime = Carbon::parse($request->start_time);
         $endTime = Carbon::parse($request->end_time);
-        
+
         // Check availability with detailed feedback (BLOCK regardless of owner)
         $conflictingBookings = $this->getConflictingBookings($room->id, $startTime, $endTime);
         if ($conflictingBookings->count() > 0) {
@@ -530,7 +531,7 @@ class UserController extends Controller
         }
 
         // Log user validation for debugging
-        \Log::info('User validation successful', [
+        Log::info('User validation successful', [
             'user_id' => $userModel->id,
             'username' => $userModel->username,
             'email' => $userModel->email
@@ -563,7 +564,7 @@ class UserController extends Controller
                         'status' => 'invited',
                         'attendance_status' => 'pending' // Default attendance status
                     ]);
-                    
+
                     // Send notification to invited PIC
                     \App\Models\UserNotification::createNotification(
                         $picId,
@@ -575,7 +576,7 @@ class UserController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('Booking creation failed', [
+            Log::error('Booking creation failed', [
                 'error' => $e->getMessage(),
                 'user_id' => $userModel->id,
                 'request_data' => $request->all()
@@ -588,7 +589,7 @@ class UserController extends Controller
         // Send notification to admin
         $this->notifyAdmin('Permintaan Booking Baru', "User {$user['full_name']} telah membuat permintaan booking baru: {$booking->title}", 'success', $booking->id);
 
-        \Log::info('New booking created', [
+        Log::info('New booking created', [
             'booking_id' => $booking->id,
             'user_id' => $user['id'],
             'title' => $booking->title,
@@ -663,7 +664,7 @@ class UserController extends Controller
             // Time validation logic
             $startTime = isset($updateData['start_time']) ? Carbon::parse($updateData['start_time']) : Carbon::parse($booking->start_time);
             $endTime = isset($updateData['end_time']) ? Carbon::parse($updateData['end_time']) : Carbon::parse($booking->end_time);
-            
+
             // Validate end time is after start time
             if ($endTime <= $startTime) {
                 return response()->json([
@@ -671,29 +672,29 @@ class UserController extends Controller
                     'message' => 'Waktu selesai harus setelah waktu mulai.'
                 ], 422);
             }
-            
+
             // Only validate future time if the time has actually changed
             $originalStartTime = Carbon::parse($booking->start_time);
             $originalEndTime = Carbon::parse($booking->end_time);
-            
+
             if ($startTime->ne($originalStartTime) && $startTime->isPast()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Waktu mulai tidak boleh di masa lalu jika diubah.'
                 ], 422);
             }
-            
+
             if ($endTime->ne($originalEndTime) && $endTime->isPast()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Waktu selesai tidak boleh di masa lalu jika diubah.'
                 ], 422);
             }
-            
+
             // Check for conflicts only if time is being changed
             if (isset($updateData['start_time']) || isset($updateData['end_time'])) {
                 $conflictingBookings = $this->getConflictingBookings($booking->meeting_room_id, $startTime, $endTime, $id);
-                
+
                 if ($conflictingBookings->count() > 0) {
                     $conflictDetails = $this->formatConflictDetails($conflictingBookings, $booking->meetingRoom);
                     return response()->json([
@@ -739,7 +740,7 @@ class UserController extends Controller
             // Send notification to admin
             $this->notifyAdmin('Booking Diperbarui', "User {$user['full_name']} telah memperbarui booking mereka: {$booking->title}");
 
-            \Log::info('Booking updated successfully', [
+            Log::info('Booking updated successfully', [
                 'booking_id' => $booking->id,
                 'user_id' => $user['id'],
                 'updated_fields' => array_keys($updateData)
@@ -750,7 +751,7 @@ class UserController extends Controller
                 'message' => 'Booking berhasil diupdate!'
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Validation error in updateBooking', [
+            Log::error('Validation error in updateBooking', [
                 'errors' => $e->errors(),
                 'booking_id' => $id,
                 'user_id' => session('user_data')['id'] ?? null,
@@ -762,7 +763,7 @@ class UserController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            \Log::error('Error in updateBooking', [
+            Log::error('Error in updateBooking', [
                 'message' => $e->getMessage(),
                 'booking_id' => $id,
                 'user_id' => session('user_data')['id'] ?? null,
@@ -795,14 +796,14 @@ class UserController extends Controller
             // Send notification to admin
             $this->notifyAdmin('Booking Dibatalkan', "User {$user['full_name']} telah membatalkan booking mereka: {$booking->title}", 'warning', $booking->id);
 
-            \Log::info('Booking cancelled successfully', [
+            Log::info('Booking cancelled successfully', [
                 'booking_id' => $booking->id,
                 'user_id' => $user['id']
             ]);
 
             return back()->with('success', 'Booking berhasil dibatalkan.');
         } catch (\Exception $e) {
-            \Log::error('Error in cancelBooking', [
+            Log::error('Error in cancelBooking', [
                 'message' => $e->getMessage(),
                 'booking_id' => $id,
                 'user_id' => session('user_data')['id'] ?? null,
@@ -819,17 +820,17 @@ class UserController extends Controller
         if ($booking->user_id == $picId) {
             return true;
         }
-        
+
         // Jika visibility public, semua PIC bisa melihat
         if ($booking->description_visibility === 'public') {
             return true;
         }
-        
+
         // Jika visibility invited_pics_only, hanya PIC yang diundang yang bisa melihat
         if ($booking->description_visibility === 'invited_pics_only') {
             return $booking->invitations->contains('pic_id', $picId);
         }
-        
+
         return false;
     }
 
@@ -838,16 +839,16 @@ class UserController extends Controller
         // Create admin notification in database and send email to all admin users
         try {
             $adminUsers = \App\Models\User::where('role', 'admin')->get();
-            
+
             if ($adminUsers->isEmpty()) {
-                \Log::warning('No admin user found to send notification', [
+                Log::warning('No admin user found to send notification', [
                     'title' => $title,
                     'type' => $type,
                     'booking_id' => $bookingId
                 ]);
                 return;
             }
-            
+
             // Send notification to all admin users (email will be sent automatically via createNotification)
             foreach ($adminUsers as $adminUser) {
                 \App\Models\UserNotification::createNotification(
@@ -858,15 +859,15 @@ class UserController extends Controller
                     $bookingId
                 );
             }
-            
-            \Log::info('Admin notifications created from UserController', [
+
+            Log::info('Admin notifications created from UserController', [
                 'title' => $title,
                 'type' => $type,
                 'booking_id' => $bookingId,
                 'admin_count' => $adminUsers->count()
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to create admin notification from UserController', [
+            Log::error('Failed to create admin notification from UserController', [
                 'title' => $title,
                 'error' => $e->getMessage()
             ]);
@@ -882,20 +883,20 @@ class UserController extends Controller
     {
         // Validate invitation exists
         $invitation = \App\Models\MeetingInvitation::find($invitationId);
-        
+
         if (!$invitation) {
             return redirect()->route('login')->with('error', 'Undangan tidak ditemukan.');
         }
-        
+
         // If user is already logged in, directly process the confirmation
         if (session('user_logged_in') && session('user_data')) {
             // Call showConfirmAttendance logic directly
             return $this->showConfirmAttendance($invitationId);
         }
-        
+
         // Save invitation_id to session for after login
         session(['pending_attendance_confirmation' => $invitationId]);
-        
+
         // Redirect to login with intended URL
         return redirect()->route('login')
             ->with('intended', route('user.confirm-attendance', $invitationId));
@@ -908,21 +909,21 @@ class UserController extends Controller
     {
         $user = session('user_data');
         $userModel = User::find($user['id']);
-        
+
         $invitation = \App\Models\MeetingInvitation::with(['booking', 'booking.meetingRoom', 'invitedByPic'])
             ->where('id', $invitationId)
             ->where('pic_id', $userModel->id)
             ->firstOrFail();
-        
+
         $booking = $invitation->booking;
-        
+
         // Cek apakah meeting sudah lewat
         $isPastMeeting = $booking->start_time < now();
-        
+
         // Jika meeting sudah lewat, auto set sebagai absent
         if ($isPastMeeting && $invitation->isAttendancePending()) {
             $invitation->markAsAbsent();
-            
+
             // Kirim notifikasi ke user yang mengundang
             if ($invitation->invitedByPic) {
                 \App\Models\UserNotification::createNotification(
@@ -934,10 +935,10 @@ class UserController extends Controller
                 );
             }
         }
-        
+
         // Simpan invitation_id di session untuk popup setelah redirect
         session(['pending_attendance_confirmation' => $invitationId]);
-        
+
         return redirect()->route('user.dashboard')
             ->with('show_attendance_modal', true)
             ->with('invitation_id', $invitationId);
@@ -950,25 +951,25 @@ class UserController extends Controller
     {
         $user = session('user_data');
         $userModel = User::find($user['id']);
-        
+
         $request->validate([
             'attendance_status' => 'required|in:confirmed,declined'
         ]);
-        
+
         $invitation = \App\Models\MeetingInvitation::with(['booking', 'booking.meetingRoom', 'invitedByPic'])
             ->where('id', $invitationId)
             ->where('pic_id', $userModel->id)
             ->firstOrFail();
-        
+
         $booking = $invitation->booking;
-        
+
         // Cek apakah meeting sudah lewat
         $isPastMeeting = $booking->start_time < now();
-        
+
         if ($isPastMeeting) {
             // Jika meeting sudah lewat, auto set sebagai absent
             $invitation->markAsAbsent();
-            
+
             // Kirim notifikasi ke user yang mengundang
             if ($invitation->invitedByPic) {
                 \App\Models\UserNotification::createNotification(
@@ -979,13 +980,13 @@ class UserController extends Controller
                     $booking->id
                 );
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Meeting sudah lewat. Status kehadiran Anda otomatis ditandai sebagai tidak hadir.'
             ], 400);
         }
-        
+
         // Update attendance status
         if ($request->attendance_status === 'confirmed') {
             $invitation->confirmAttendance();
@@ -998,7 +999,7 @@ class UserController extends Controller
             $notificationType = 'warning';
             $notificationTitle = 'PIC Tidak Bisa Hadir';
         }
-        
+
         // Kirim notifikasi ke user yang mengundang
         if ($invitation->invitedByPic) {
             \App\Models\UserNotification::createNotification(
@@ -1009,14 +1010,14 @@ class UserController extends Controller
                 $booking->id
             );
         }
-        
+
         // Hapus session pending_attendance_confirmation
         session()->forget('pending_attendance_confirmation');
-        
+
         return response()->json([
             'success' => true,
-            'message' => $request->attendance_status === 'confirmed' 
-                ? 'Terima kasih! Kehadiran Anda telah dikonfirmasi.' 
+            'message' => $request->attendance_status === 'confirmed'
+                ? 'Terima kasih! Kehadiran Anda telah dikonfirmasi.'
                 : 'Terima kasih! Status kehadiran Anda telah diperbarui.'
         ]);
     }
@@ -1032,7 +1033,7 @@ class UserController extends Controller
             ->orderBy('name')
             ->get();
 
-        \Log::info('Room availability grid - rooms found', [
+        Log::info('Room availability grid - rooms found', [
             'room_count' => $rooms->count(),
             'rooms' => $rooms->pluck('name', 'id')->toArray(),
             'selected_date' => $selectedDate->format('Y-m-d')
@@ -1041,7 +1042,7 @@ class UserController extends Controller
         $timeSlots = [];
         $startHour = 8;
         $endHour = 18; // Up to 18:30
-        
+
         // Generate all slots from 8 AM to 6:30 PM for the selected day
         for ($hour = $startHour; $hour <= $endHour; $hour++) {
             for ($minute = 0; $minute < 60; $minute += 30) {
@@ -1054,7 +1055,7 @@ class UserController extends Controller
             $timeSlots[] = $lastSlot;
         }
 
-        \Log::info('Room availability grid - time slots generated', [
+        Log::info('Room availability grid - time slots generated', [
             'time_slot_count' => count($timeSlots),
             'first_slot' => count($timeSlots) > 0 ? $timeSlots[0]->format('H:i') : 'N/A',
             'last_slot' => count($timeSlots) > 0 ? end($timeSlots)->format('H:i') : 'N/A',
@@ -1063,7 +1064,7 @@ class UserController extends Controller
         ]);
 
         $grid = [];
-        
+
         foreach ($rooms as $room) {
             $roomData = [
                 'id' => $room->id,
@@ -1075,14 +1076,14 @@ class UserController extends Controller
 
             $availableSlots = 0;
             $totalSlots = 0;
-            
+
             foreach ($timeSlots as $timeSlot) {
                 $endTime = $timeSlot->copy()->addMinutes(30);
                 $totalSlots++;
-                
+
                 // Check if this time slot has already passed (only for the selected date if it's today)
                 $isPastTime = $timeSlot->isPast() && $selectedDate->isSameDay(now());
-                
+
                 // Check if room is available for this time slot
                 $conflictingBooking = Booking::where('meeting_room_id', $room->id)
                     ->whereIn('status', ['pending', 'confirmed'])
@@ -1108,10 +1109,10 @@ class UserController extends Controller
                 if ($isAvailable) {
                     $availableSlots++;
                 }
-                
+
                 // Debug logging for first few slots or if there's a booking/previous booking
                 if ($totalSlots <= 5 || $conflictingBooking || $previousBooking) {
-                    \Log::info('Room availability grid - slot debug', [
+                    Log::info('Room availability grid - slot debug', [
                         'room_id' => $room->id,
                         'room_name' => $room->name,
                         'slot_time' => $timeSlot->format('H:i'),
@@ -1127,7 +1128,7 @@ class UserController extends Controller
                         'selected_date_is_today' => $selectedDate->isSameDay(now())
                     ]);
                 }
-                
+
                 $slotData = [
                     'time' => $timeSlot->format('H:i'),
                     'datetime' => $timeSlot->format('Y-m-d H:i:s'),
@@ -1165,7 +1166,7 @@ class UserController extends Controller
                 $roomData['timeSlots'][] = $slotData;
             }
 
-            \Log::info('Room availability grid - room processed', [
+            Log::info('Room availability grid - room processed', [
                 'room_id' => $room->id,
                 'room_name' => $room->name,
                 'total_slots' => $totalSlots,
@@ -1176,7 +1177,7 @@ class UserController extends Controller
             $grid[] = $roomData;
         }
 
-        \Log::info('Room availability grid - completed', [
+        Log::info('Room availability grid - completed', [
             'total_rooms' => count($grid),
             'total_slots_per_room' => count($timeSlots),
             'final_grid_data' => $grid // Log the final grid structure for verification
@@ -1194,10 +1195,10 @@ class UserController extends Controller
         ]);
 
         $user = session('user_data');
-        
+
         // Check if user exists in database
         $dbUser = User::find($user['id']);
-        
+
         if ($dbUser) {
             // Verify current password
             if (!Hash::check($request->current_password, $dbUser->password)) {
@@ -1206,7 +1207,7 @@ class UserController extends Controller
                     'message' => 'Current password is incorrect.'
                 ], 400);
             }
-            
+
             // Update password
             $dbUser->password = Hash::make($request->new_password);
             $dbUser->save();
@@ -1245,7 +1246,7 @@ class UserController extends Controller
         ]);
 
         $user = session('user_data');
-        
+
         // Update notification settings in session
         $userData = session('user_data');
         $userData['notification_settings'] = [
@@ -1265,11 +1266,11 @@ class UserController extends Controller
     {
         $user = session('user_data');
         $userModel = User::find($user['id']);
-        
+
         $notifications = $userModel->notifications()
             ->orderBy('created_at', 'desc')
             ->paginate(20);
-        
+
         return view('user.notifications', compact('notifications'));
     }
 
@@ -1277,12 +1278,12 @@ class UserController extends Controller
     {
         $user = session('user_data');
         $userModel = User::find($user['id']);
-        
+
         $notifications = $userModel->notifications()
             ->orderBy('created_at', 'desc')
             ->limit(50)
             ->get()
-            ->map(function($notification) {
+            ->map(function ($notification) {
                 return [
                     'id' => $notification->id,
                     'title' => $notification->title,
@@ -1305,25 +1306,25 @@ class UserController extends Controller
             $notification = \App\Models\UserNotification::where('id', $id)
                 ->where('user_id', $user['id'])
                 ->firstOrFail();
-            
+
             $notification->markAsRead();
-            
-            \Log::info('Notification marked as read', [
+
+            Log::info('Notification marked as read', [
                 'notification_id' => $id,
                 'user_id' => $user['id']
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Notification marked as read'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to mark notification as read', [
+            Log::error('Failed to mark notification as read', [
                 'notification_id' => $id,
                 'user_id' => $user['id'] ?? 'unknown',
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to mark notification as read: ' . $e->getMessage()
@@ -1336,37 +1337,37 @@ class UserController extends Controller
         try {
             $user = session('user_data');
             $userModel = User::find($user['id']);
-            
+
             if (!$userModel) {
                 return response()->json([
                     'success' => false,
                     'message' => 'User not found'
                 ], 404);
             }
-            
+
             $updatedCount = $userModel->notifications()
                 ->where('is_read', false)
                 ->update([
                     'is_read' => true,
                     'read_at' => now()
                 ]);
-            
-            \Log::info('Mark all notifications as read', [
+
+            Log::info('Mark all notifications as read', [
                 'user_id' => $user['id'],
                 'updated_count' => $updatedCount
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'All notifications marked as read',
                 'updated_count' => $updatedCount
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to mark all notifications as read', [
+            Log::error('Failed to mark all notifications as read', [
                 'user_id' => $user['id'] ?? 'unknown',
                 'error' => $e->getMessage()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to mark all notifications as read: ' . $e->getMessage()
@@ -1379,7 +1380,7 @@ class UserController extends Controller
         $query = Booking::where('meeting_room_id', $roomId)
             ->where(function ($q) {
                 $q->whereIn('status', ['pending', 'confirmed'])
-                  ->orWhere('preempt_status', 'pending');
+                    ->orWhere('preempt_status', 'pending');
             })
             ->where('start_time', '<', $endTime)
             ->where('end_time', '>', $startTime)
@@ -1398,7 +1399,7 @@ class UserController extends Controller
             return 'Ruang tersedia untuk waktu yang dipilih.';
         }
 
-        $conflictList = $conflictingBookings->map(function($booking) {
+        $conflictList = $conflictingBookings->map(function ($booking) {
             return "• {$booking->title} oleh {$booking->user->full_name} ({$booking->start_time->format('d M Y H:i')} - {$booking->end_time->format('H:i')})";
         })->join("\n");
 
@@ -1410,7 +1411,7 @@ class UserController extends Controller
         try {
             $user = session('user_data');
             $userModel = User::find($user['id']);
-            
+
             if (!$userModel) {
                 return response()->json([
                     'success' => false,
@@ -1419,7 +1420,7 @@ class UserController extends Controller
             }
 
             $booking = Booking::with('invitations.pic')->findOrFail($id);
-            
+
             if (!$booking->dokumen_perizinan) {
                 return response()->json([
                     'success' => false,
@@ -1430,15 +1431,15 @@ class UserController extends Controller
             // Check document visibility: same logic as description visibility
             $isAdmin = $userModel->role === 'admin';
             $isOwner = (int)$booking->user_id === (int)$userModel->id;
-            
+
             // Check if user is in the invited PICs list (check by pic_id in invitations)
             $isInvitedPic = false;
             if ($booking->invitations && $booking->invitations->count() > 0) {
-                $isInvitedPic = $booking->invitations->contains(function($inv) use ($userModel) {
+                $isInvitedPic = $booking->invitations->contains(function ($inv) use ($userModel) {
                     return $inv && $inv->pic_id && (int)$inv->pic_id === (int)$userModel->id;
                 });
             }
-            
+
             $canSeeDocument = false;
             if ($isAdmin || $isOwner) {
                 // Admin and owner always can see
@@ -1450,8 +1451,8 @@ class UserController extends Controller
                 // Invited PICs only: only invited PICs can see (checked via checkbox)
                 $canSeeDocument = $isInvitedPic;
             }
-            
-            \Log::info('Document visibility check', [
+
+            Log::info('Document visibility check', [
                 'booking_id' => $id,
                 'user_id' => $userModel->id,
                 'is_admin' => $isAdmin,
@@ -1471,14 +1472,14 @@ class UserController extends Controller
             }
 
             $filePath = storage_path('app/public/' . $booking->dokumen_perizinan);
-            
+
             if (!file_exists($filePath)) {
-                \Log::error('PDF file not found', [
+                Log::error('PDF file not found', [
                     'booking_id' => $id,
                     'file_path' => $filePath,
                     'dokumen_perizinan' => $booking->dokumen_perizinan
                 ]);
-                
+
                 return response()->json([
                     'success' => false,
                     'message' => 'File dokumen tidak ditemukan'
@@ -1492,17 +1493,17 @@ class UserController extends Controller
                 'Cache-Control' => 'public, max-age=3600',
                 'X-Content-Type-Options' => 'nosniff',
             ]);
-            
+
             // Allow iframe embedding from same origin
             $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
-            
+
             // Override CSP to allow iframe embedding (remove frame-ancestors restriction)
             $response->headers->remove('Content-Security-Policy');
             $response->headers->set('Content-Security-Policy', "frame-ancestors 'self'");
-            
+
             return $response;
         } catch (\Exception $e) {
-            \Log::error('Error viewing document: ' . $e->getMessage(), [
+            Log::error('Error viewing document: ' . $e->getMessage(), [
                 'booking_id' => $id,
                 'user_id' => $user['id'] ?? 'unknown',
                 'trace' => $e->getTraceAsString()
@@ -1515,4 +1516,3 @@ class UserController extends Controller
         }
     }
 }
-

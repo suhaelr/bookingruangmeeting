@@ -14,7 +14,7 @@ return new class extends Migration
         // Check if last_login_at column exists, if not add it
         if (!Schema::hasColumn('users', 'last_login_at')) {
             Schema::table('users', function (Blueprint $table) {
-                $table->timestamp('last_login_at')->nullable()->after('avatar');
+                $table->timestamp('last_login_at')->nullable();
             });
         }
     }
