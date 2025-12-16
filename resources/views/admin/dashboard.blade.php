@@ -29,7 +29,7 @@
 
 @section('main-content')
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-8">
         <div class="border border-gray-200 rounded-2xl p-6">
             <div class="flex items-center">
                 <div class="p-3 bg-blue-50 rounded-lg">
@@ -80,20 +80,20 @@
     </div>
 
     <!-- Export Section -->
-    <div class="border border-gray-200 rounded-2xl p-6  mb-8">
+    <div class="border border-[#071e48] bg-[#071e48] rounded-2xl p-6  mb-8">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h3 class="text-xl font-bold text-black mb-2">Export Data</h3>
-                <p class="text-black text-sm">Export data riwayat booking dan status ketersediaan ruangan (24 jam terakhir)</p>
+                <h3 class="text-xl font-bold text-white mb-2">Export Data</h3>
+                <p class="text-white text-sm">Export data riwayat booking dan status ketersediaan ruangan (24 jam terakhir)</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3">
                 <button onclick="exportBookingData()" 
-                        class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        class="px-6 py-3 border-2 border-white hover:bg-green-500 hover:border-green-500 text-white hover:text-white rounded-lg transition-colors duration-300 flex items-center">
                     <i data-feather="file-text" class="mr-2" style="width: 18px; height: 18px;"></i>
                     Export Excel
                 </button>
                 <button onclick="exportBookingPDF()" 
-                        class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        class="px-6 py-3 border-2 border-white hover:bg-red-500 hover:border-red-500 text-white hover:text-white rounded-lg transition-colors duration-300 flex items-center">
                     <i data-feather="file" class="mr-2" style="width: 18px; height: 18px;"></i>
                     Export PDF
                 </button>
@@ -113,10 +113,10 @@
             </div>
             <div class="space-y-4 flex-1 relative min-h-[200px] max-h-[500px] pr-1 overflow-y-auto">
                 @forelse($recentBookings as $booking)
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="flex items-center justify-between p-4 rounded-lg border @if($booking->status === 'pending') bg-yellow-50 border-yellow-500 @elseif($booking->status === 'confirmed') bg-green-50 border-green-500 @elseif($booking->status === 'cancelled') bg-red-50 border-red-500 @else bg-white border-gray-200 @endif">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                            <i data-feather="calendar" class="text-blue-500 w-[20px] h-[20px]"></i>
+                        <div class="w-10 h-10 @if($booking->status === 'pending') bg-yellow-500 @elseif($booking->status === 'confirmed') bg-green-500 @elseif($booking->status === 'cancelled') bg-red-500 @else bg-gray-500 @endif rounded-full flex items-center justify-center">
+                            <i data-feather="calendar" class="text-white w-[20px] h-[20px]"></i>
                         </div>
                         <div>
                             <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -151,10 +151,10 @@
             </div>
             <div class="space-y-4 relative min-h-[200px] flex-1 max-h-[500px] pr-1 overflow-y-auto">
                 @forelse($todayBookings as $booking)
-                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-500">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                            <i data-feather="clock" class="text-black" style="width: 20px; height: 20px;"></i>
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i data-feather="clock" class="text-white w-[20px] h-[20px]"></i>
                         </div>
                         <div>
                             <p class="text-black font-medium">{{ $booking->title }}</p>

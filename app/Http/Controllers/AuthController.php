@@ -3,19 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use App\Models\User;
-use App\Mail\WelcomeEmail;
 use App\Mail\PasswordResetEmail;
 use App\Mail\EmailVerificationMail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -108,9 +106,6 @@ class AuthController extends Controller
             Session::regenerate(true);
             Session::save();
 
-            // Add delay to ensure session is saved
-            usleep(200000); // 200ms delay
-
             // Check if there's a pending attendance confirmation
             $pendingAttendanceConfirmation = Session::get('pending_attendance_confirmation');
             $intendedUrl = Session::get('intended_url') ?? request()->session()->get('intended');
@@ -159,13 +154,13 @@ class AuthController extends Controller
                 ])->withInput($request->only('username'));
             }
 
-            Log::info('User login attempt', [
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'email' => $user->email,
-                'current_role' => $user->role,
-                'session_id' => session()->getId()
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('User login attempt', [
+                    'user_id' => $user->id,
+                    'username' => $user->username,
+                ]);
+            }
 
             // Clear only user-related session data, not all session
             Session::forget('user_logged_in');
@@ -176,13 +171,6 @@ class AuthController extends Controller
 
             // Get fresh user data from database to ensure latest role
             $freshUser = User::find($user->id);
-            Log::info('Fresh user data from database', [
-                'user_id' => $freshUser->id,
-                'username' => $freshUser->username,
-                'email' => $freshUser->email,
-                'role' => $freshUser->role,
-                'last_login_at' => $freshUser->last_login_at
-            ]);
 
             Session::put('user_logged_in', true);
             Session::put('user_data', [
@@ -199,16 +187,8 @@ class AuthController extends Controller
             Session::regenerate(true);
             Session::save();
 
-            // Add delay to ensure session is saved
-            usleep(200000); // 200ms delay
-
             // Update last login
             $freshUser->update(['last_login_at' => now()]);
-
-            Log::info('Session data set', [
-                'session_user_data' => Session::get('user_data'),
-                'session_id' => session()->getId()
-            ]);
 
             // Check if there's a pending attendance confirmation
             $pendingAttendanceConfirmation = Session::get('pending_attendance_confirmation');
@@ -273,7 +253,9 @@ class AuthController extends Controller
 
     public function showRegister()
     {
-        return view('auth.register');
+        return view('auth.register', [
+            'unitKerjaOptions' => config('unit_kerja.options', []),
+        ]);
     }
 
     public function register(Request $request)
@@ -282,7 +264,14 @@ class AuthController extends Controller
             'username' => 'required|string|max:255',
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->letters()   // wajib ada huruf
+                    ->numbers(),  // wajib ada angka
+                'confirmed',
+            ],
             'phone' => 'nullable|string|max:20',
             'unit_kerja' => 'nullable|string|max:255',
         ]);
@@ -299,19 +288,20 @@ class AuthController extends Controller
                 'phone' => $request->phone,
                 'unit_kerja' => $request->unit_kerja,
                 'role' => 'user',
-                'email_verified_at' => null, // Not verified yet
+                'email_verified_at' => config('app.env') === 'production' ? null : now(), // Not verified yet
                 'email_verification_token' => Hash::make($verificationToken),
             ]);
 
-            // Send verification email
-            $verificationUrl = route('email.verify', ['token' => $verificationToken]);
-            Mail::to($user->email)->send(new EmailVerificationMail($user, $verificationUrl));
+            if (config('app.env') === 'production') {
+                // Send verification email
+                $verificationUrl = route('email.verify', ['token' => $verificationToken]);
+                Mail::to($user->email)->send(new EmailVerificationMail($user, $verificationUrl));
+            }
 
-            Log::info('User registered successfully, verification email sent', [
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'email' => $user->email
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('User registered successfully', ['user_id' => $user->id]);
+            }
 
             return redirect()->route('login')->with('success', 'Registrasi berhasil! Silakan cek email Anda untuk verifikasi akun.');
         } catch (\Exception $e) {
@@ -352,10 +342,10 @@ class AuthController extends Controller
             // Send reset email
             Mail::to($user->email)->send(new PasswordResetEmail($user, $token));
 
-            Log::info('Password reset link sent', [
-                'email' => $request->email,
-                'user_id' => $user->id
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('Password reset link sent', ['email' => $request->email]);
+            }
 
             return back()->with('success', 'Link reset password telah dikirim ke email Anda!');
         } catch (\Exception $e) {
@@ -405,10 +395,10 @@ class AuthController extends Controller
             // Delete token
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-            Log::info('Password reset successfully', [
-                'user_id' => $user->id,
-                'email' => $request->email
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('Password reset successfully', ['user_id' => $user->id]);
+            }
 
             return redirect()->route('login')->with('success', 'Password berhasil direset! Silakan login dengan username/email dan password baru.');
         } catch (\Exception $e) {
@@ -445,10 +435,10 @@ class AuthController extends Controller
                 'email_verification_token' => null
             ]);
 
-            Log::info('Email verified successfully', [
-                'user_id' => $user->id,
-                'email' => $user->email
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('Email verified successfully', ['user_id' => $user->id]);
+            }
 
             return redirect()->route('login')->with('success', 'Email berhasil diverifikasi! Silakan login dengan akun Anda.');
         } catch (\Exception $e) {
@@ -484,10 +474,10 @@ class AuthController extends Controller
             $verificationUrl = route('email.verify', ['token' => $verificationToken]);
             Mail::to($user->email)->send(new EmailVerificationMail($user, $verificationUrl));
 
-            Log::info('Verification email resent', [
-                'user_id' => $user->id,
-                'email' => $user->email
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('Verification email resent', ['user_id' => $user->id]);
+            }
 
             return back()->with('success', 'Email verifikasi telah dikirim ulang!');
         } catch (\Exception $e) {
@@ -517,15 +507,13 @@ class AuthController extends Controller
         $clientSecret = config('services.google.client_secret') ?: env('GOOGLE_CLIENT_SECRET');
         $redirectUri = config('services.google.redirect') ?: env('GOOGLE_REDIRECT_URI', 'https://www.pusdatinbgn.web.id/auth/google/callback');
 
-        // Debug: Check if configuration is loaded
-        Log::info('Google OAuth Configuration Check', [
-            'client_id' => $clientId ? substr($clientId, 0, 20) . '...' : 'NULL',
-            'client_secret' => $clientSecret ? 'SET' : 'NULL',
-            'redirect_uri' => $redirectUri ?: 'NULL',
-            'env_client_id' => env('GOOGLE_CLIENT_ID') ? substr(env('GOOGLE_CLIENT_ID'), 0, 20) . '...' : 'NULL',
-            'config_cache_cleared' => true,
-            'timestamp' => now()->toISOString()
-        ]);
+        // Debug: Check if configuration is loaded (only in debug mode)
+        if (config('app.debug')) {
+            Log::debug('Google OAuth Configuration Check', [
+                'client_id_set' => !empty($clientId),
+                'redirect_uri' => $redirectUri ?: 'NULL',
+            ]);
+        }
 
         // Validate configuration
         if (!$clientId || !$clientSecret || !$redirectUri) {
@@ -573,16 +561,13 @@ class AuthController extends Controller
      */
     public function handleGoogleCallback(Request $request)
     {
-        // Log all request data for debugging
-        Log::info('Google OAuth callback accessed', [
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'url' => $request->url(),
-            'method' => $request->method(),
-            'all_params' => $request->all(),
-            'headers' => $request->headers->all(),
-            'session_id' => session()->getId()
-        ]);
+        // Log only in debug mode
+        if (config('app.debug')) {
+            Log::debug('Google OAuth callback accessed', [
+                'ip' => $request->ip(),
+                'has_code' => $request->has('code'),
+            ]);
+        }
 
         // Check if this is a direct access (no OAuth parameters)
         if (!$request->has('code') && !$request->has('error')) {
@@ -707,22 +692,16 @@ class AuthController extends Controller
                 }
                 // DO NOT override role - respect admin's role assignment
                 // Admin can change user's role and it should persist
-                Log::info('Existing Google user logged in', [
-                    'user_id' => $user->id,
-                    'email' => $user->email,
-                    'current_role' => $user->role,
-                    'role_preserved' => true
-                ]);
+                // Log only in debug mode
+                if (config('app.debug')) {
+                    Log::debug('Existing Google user logged in', ['user_id' => $user->id]);
+                }
             }
 
             // Store refresh token for future use (if provided)
             if (isset($tokenResponse['refresh_token'])) {
                 // Store refresh token securely (you might want to encrypt this)
                 session(['google_refresh_token' => $tokenResponse['refresh_token']]);
-                Log::info('Refresh token stored for user', [
-                    'user_id' => $user->id,
-                    'email' => $user->email
-                ]);
             }
 
             // Prepare user data
@@ -747,13 +726,13 @@ class AuthController extends Controller
                 }
             }
 
-            Log::info('Google OAuth session setup', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'is_mobile' => $isMobile,
-                'user_agent' => $userAgent,
-                'session_id_before' => session()->getId()
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('Google OAuth session setup', [
+                    'user_id' => $user->id,
+                    'is_mobile' => $isMobile,
+                ]);
+            }
 
             // Clear any existing session data first (jangan ganti session id agar cookie tetap konsisten)
             Session::forget('user_logged_in');
@@ -767,52 +746,13 @@ class AuthController extends Controller
             // Update last login
             $user->update(['last_login_at' => now()]);
 
-            // Force session save and wait for completion
+            // Force session save
             Session::save();
-
-            // Add longer delay for mobile devices to ensure session persistence
-            $delay = $isMobile ? 1000000 : 500000; // 1 second for mobile, 500ms for desktop
-            usleep($delay);
-
-            // Additional session verification for mobile
-            if ($isMobile) {
-                // Force another session save for mobile
-                Session::save();
-                usleep(200000); // Additional 200ms delay
-
-                Log::info('Mobile session double-save completed', [
-                    'session_id' => session()->getId(),
-                    'user_logged_in' => Session::get('user_logged_in'),
-                    'has_user_data' => Session::has('user_data')
-                ]);
-            }
-
-            // Verify session data is properly saved
-            Log::info('Google OAuth login successful - Final verification', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'google_id' => $userInfo['id'] ?? null,
-                'role' => $user->role,
-                'is_mobile' => $isMobile,
-                'session_id' => session()->getId(),
-                'user_logged_in' => Session::get('user_logged_in'),
-                'user_data' => Session::get('user_data')
-            ]);
 
             // Redirect based on role (admin goes to admin dashboard, user goes to user dashboard)
             $dashboardUrl = $user->role === 'admin'
                 ? url('/admin/dashboard')
                 : url('/user/dashboard');
-
-            Log::info('Redirecting to dashboard based on role', [
-                'url' => $dashboardUrl,
-                'user_id' => $user->id,
-                'user_email' => $user->email,
-                'role' => $user->role,
-                'session_id' => session()->getId(),
-                'user_logged_in' => Session::get('user_logged_in'),
-                'user_data' => Session::get('user_data')
-            ]);
 
             // Direct redirect based on role with absolute URL
             $response = redirect($dashboardUrl)->with('success', 'Berhasil masuk dengan Google!');
@@ -994,14 +934,10 @@ class AuthController extends Controller
      */
     public function updateUserRole(Request $request, $userId)
     {
-        Log::info('updateUserRole method called', [
-            'timestamp' => now(),
-            'session_id' => session()->getId(),
-            'user_id' => $userId,
-            'request_data' => $request->all(),
-            'csrf_token' => $request->input('_token'),
-            'session_token' => session()->token()
-        ]);
+        // Log only in debug mode
+        if (config('app.debug')) {
+            Log::debug('updateUserRole method called', ['user_id' => $userId]);
+        }
 
         // Check if current user is admin
         $currentUser = session('user_data');
@@ -1020,14 +956,15 @@ class AuthController extends Controller
         try {
             $user = User::findOrFail($userId);
 
-            Log::info('Role update attempt', [
-                'admin_id' => $currentUser['id'],
-                'target_user_id' => $userId,
-                'target_user_email' => $user->email,
-                'current_role' => $user->role,
-                'new_role' => $request->role,
-                'request_data' => $request->all()
-            ]);
+            // Log only in debug mode
+            if (config('app.debug')) {
+                Log::debug('Role update attempt', [
+                    'admin_id' => $currentUser['id'],
+                    'target_user_id' => $userId,
+                    'current_role' => $user->role,
+                    'new_role' => $request->role,
+                ]);
+            }
 
             // Allow admin to change their own role (with session update)
             $oldRole = $user->role;
@@ -1044,32 +981,11 @@ class AuthController extends Controller
                     'updated_at' => now()
                 ]);
 
-            Log::info('Direct database update result', [
-                'user_id' => $userId,
-                'update_result' => $updateResult,
-                'new_role' => $request->role
-            ]);
-
             // Clear all cache to ensure fresh data
             Cache::flush();
 
             // Refresh user data to ensure update
             $user = User::find($userId);
-
-            Log::info('Role update completed', [
-                'user_id' => $user->id,
-                'old_role' => $oldRole,
-                'new_role' => $user->role,
-                'updated_successfully' => $user->role === $request->role
-            ]);
-
-            // Double-check database after update
-            $userFromDB = User::find($user->id);
-            Log::info('Database verification after update', [
-                'user_id' => $userFromDB->id,
-                'role_in_db' => $userFromDB->role,
-                'role_in_model' => $user->role
-            ]);
 
             // If the user being updated is the current logged-in user, update their session
             if ($user->id == $currentUser['id']) {
@@ -1077,24 +993,7 @@ class AuthController extends Controller
                 $updatedUserData['role'] = $request->role;
                 Session::put('user_data', $updatedUserData);
                 Session::save();
-
-                Log::info('Session updated for current user', [
-                    'user_id' => $user->id,
-                    'old_role' => $oldRole,
-                    'new_role' => $request->role,
-                    'session_data' => Session::get('user_data')
-                ]);
             }
-
-            Log::info('User role updated by admin', [
-                'admin_id' => $currentUser['id'],
-                'admin_email' => $currentUser['email'],
-                'target_user_id' => $user->id,
-                'target_user_email' => $user->email,
-                'old_role' => $oldRole,
-                'new_role' => $request->role,
-                'session_updated' => $user->id == $currentUser['id']
-            ]);
 
             $response = response()->json([
                 'success' => true,
@@ -1127,10 +1026,6 @@ class AuthController extends Controller
      */
     public function getAllUsers()
     {
-        Log::info('getAllUsers method called', [
-            'timestamp' => now(),
-            'session_id' => session()->getId()
-        ]);
 
         // Check if current user is admin
         $currentUser = session('user_data');
@@ -1143,52 +1038,9 @@ class AuthController extends Controller
         }
 
         try {
-            Log::info('Getting all users for admin', [
-                'admin_id' => $currentUser['id'],
-                'admin_email' => $currentUser['email']
-            ]);
 
-            // Get all users without any filters first
-            $allUsers = User::all();
-            Log::info('All users in database (raw)', [
-                'total_count' => $allUsers->count(),
-                'user_ids' => $allUsers->pluck('id')->toArray(),
-                'users' => $allUsers->map(function ($u) {
-                    return [
-                        'id' => $u->id,
-                        'username' => $u->username,
-                        'name' => $u->name,
-                        'email' => $u->email,
-                        'role' => $u->role
-                    ];
-                })->toArray()
-            ]);
-
-            // Try without orderBy to get all users
-            $users = User::all();
-
-            // Also try without orderBy to see if that's the issue
-            $usersNoOrder = User::all();
-            Log::info('Users without orderBy', [
-                'count' => $usersNoOrder->count(),
-                'user_ids' => $usersNoOrder->pluck('id')->toArray()
-            ]);
-
-            Log::info('Users before mapping', [
-                'count' => $users->count(),
-                'user_ids' => $users->pluck('id')->toArray(),
-                'users_raw' => $users->map(function ($u) {
-                    return [
-                        'id' => $u->id,
-                        'username' => $u->username,
-                        'name' => $u->name,
-                        'email' => $u->email,
-                        'role' => $u->role,
-                        'created_at' => $u->created_at,
-                        'last_login_at' => $u->last_login_at
-                    ];
-                })->toArray()
-            ]);
+            // Get all users - single optimized query
+            $users = User::orderBy('created_at', 'desc')->get();
 
             $users = $users->map(function ($user) {
                 // Handle users with NULL name field
@@ -1206,36 +1058,6 @@ class AuthController extends Controller
                     'last_login_at' => $user->last_login_at ? $user->last_login_at->format('d/m/Y H:i') : 'Never'
                 ];
             });
-
-            Log::info('Users retrieved successfully', [
-                'user_count' => $users->count(),
-                'users' => $users->toArray()
-            ]);
-
-            // Log each user individually for debugging
-            foreach ($users as $user) {
-                Log::info('User data', [
-                    'id' => $user['id'],
-                    'name' => $user['name'],
-                    'email' => $user['email'],
-                    'role' => $user['role']
-                ]);
-            }
-
-            // Log total count for verification
-            Log::info('Total users returned by API', [
-                'count' => $users->count(),
-                'expected_count' => User::count()
-            ]);
-
-            Log::info('Returning users to frontend', [
-                'user_count' => $users->count(),
-                'user_ids' => $users->pluck('id')->toArray(),
-                'response_data' => [
-                    'success' => true,
-                    'users_count' => $users->count()
-                ]
-            ]);
 
             $response = response()->json([
                 'success' => true,

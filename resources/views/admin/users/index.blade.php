@@ -51,17 +51,17 @@
 
 @section('main-content')
     <!-- Header -->
-    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
+    <div class="border border-[#071e48] bg-[#071e48] rounded-2xl p-6 mb-8">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-black mb-2">Kelola Pengguna</h2>
-                <p class="text-black">Lihat dan kelola semua akun pengguna</p>
+                <h2 class="text-2xl font-bold text-white mb-2">Kelola Pengguna</h2>
+                <p class="text-white">Lihat dan kelola semua akun pengguna</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                <a href="{{ route('admin.users.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
+                <a href="{{ route('admin.users.create') }}" class="px-4 py-2 border-2 border-white hover:bg-blue-600 hover:border-blue-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
                     <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>Tambah Pengguna
                 </a>
-                <button onclick="exportUsers()" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
+                <button onclick="exportUsers()" class="px-4 py-2 border-2 border-white hover:bg-green-500 hover:border-green-500 text-white rounded-lg transition-colors duration-300 flex items-center justify-center">
                     <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Export
                 </button>
             </div>

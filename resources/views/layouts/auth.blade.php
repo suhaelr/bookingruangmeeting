@@ -7,15 +7,8 @@
     /* Background white */
     .gradient-bg {
         background: #ffffff !important;
+        background: rgba(255, 255, 255, 0.9) !important;
         min-height: 100vh !important;
-        position: relative;
-        overflow-x: hidden;
-        overflow-y: auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        box-sizing: border-box;
     }
     
     /* GIF Background Overlay */
@@ -105,11 +98,6 @@
         
         .text-center p {
             font-size: 0.75rem !important;
-            margin-bottom: 0.5rem !important;
-        }
-        
-        /* Ensure proper spacing - reduced */
-        .mb-8 {
             margin-bottom: 0.5rem !important;
         }
         
@@ -543,14 +531,14 @@
 @endpush
 
 @section('content')
-    <!-- GIF Background -->
-    <img src="{{ asset('3708555zcov227jtb.gif') }}" alt="Background Animation" class="gif-background" onerror="console.log('GIF failed to load'); this.style.display='none';">
+    <!-- GIF Background - Lazy loaded for performance -->
+    {{-- <img src="{{ asset('3708555zcov227jtb.gif') }}" alt="Background Animation" class="gif-background" loading="lazy" onerror="console.log('GIF failed to load'); this.style.display='none';"> --}}
     
     <div class="auth-container">
         <div class="content-overlay w-[700px] max-w-full">
             @if(isset($showLogo) && $showLogo !== false)
             <!-- Logo/Header -->
-            <div class="text-center mb-8">
+            <div class="text-center mb-5 md:mb-8">
                 <div class="logo-wrapper inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-lg mb-4">
                     <img src="{{ asset('logo-bgn.png') }}" alt="BGN Logo" class="w-12 h-12 object-contain logo-glow logo-blink">
                 </div>
@@ -566,31 +554,33 @@
             @if(isset($showFooter) && $showFooter !== false)
             <!-- Footer -->
             <div class="text-center mt-8">
-                <p class="text-black text-sm">
+                @if(isset($showFooterLinks) && $showFooterLinks !== false)
+                <p class="text-black text-xs">
                     @if(isset($versionText))
-                        <span onclick="showChangelogModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">{{ $versionText }}</span><br>
+                        <span onclick="showChangelogModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">{{ $versionText }}</span>
+                        <span class="mx-2">•</span>
                     @endif
                     @if(isset($guideText))
-                        <span onclick="showGuideModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">{{ $guideText }}</span><br>
+                        <span onclick="showGuideModal()" class="text-black font-medium cursor-pointer hover:text-gray-800 underline transition-colors duration-300">{{ $guideText }}</span>
+                        <span class="mx-2">•</span>
                     @endif
-                    @if(isset($copyrightText))
-                        {{ $copyrightText }}
-                    @else
-                        © {{ date('Y') }} SIRUPAT BGN - Sistem Informasi Ruang Rapat Badan Gizi Nasional. Semua hak dilindungi.
-                    @endif
-                </p>
-                
-                @if(isset($showFooterLinks) && $showFooterLinks !== false)
-                <p class="text-black text-xs mt-3">
-                    <a href="{{ route('privacy.policy') }}" class="text-black hover:text-gray-800 underline transition-colors duration-300">
+                    <a href="{{ route('privacy.policy') }}" class="text-black font-medium hover:text-gray-800 underline transition-colors duration-300">
                         Kebijakan Privasi
                     </a>
                     <span class="mx-2">•</span>
-                    <a href="{{ route('terms.service') }}" class="text-black hover:text-gray-800 underline transition-colors duration-300">
+                    <a href="{{ route('terms.service') }}" class="text-black font-medium hover:text-gray-800 underline transition-colors duration-300">
                         Syarat dan Ketentuan
                     </a>
                 </p>
                 @endif
+                
+                <p class="text-black text-sm mt-3">
+                    @if(isset($copyrightText))
+                        {{ $copyrightText }}
+                    @else
+                        © {{ date('Y') }} SIRUPAT BGN - Semua hak dilindungi.
+                    @endif
+                </p>
             </div>
             @endif
         </div>
@@ -651,8 +641,5 @@
             }, 2000);
         }
     });
-    
-    @stack('auth-scripts')
 </script>
-@endpush
 

@@ -18,7 +18,7 @@
 @endpush
 
 @section('auth-content')
-    <div class="rounded-2xl p-8 border border-gray-200 w-[450px] max-w-full">
+    <div class="rounded-2xl bg-white p-8 border border-gray-200 w-[450px] max-w-full">
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-key text-2xl text-indigo-600"></i>
@@ -28,7 +28,7 @@
         </div>
 
         @if ($errors->any())
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
+            <div class="mt-3 mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
                 <ul class="list-disc list-inside text-sm">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -38,18 +38,18 @@
         @endif
 
         @if (session('error'))
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
+            <div class="mt-3 mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
                 {{ session('error') }}
             </div>
         @endif
 
         @if (session('success'))
-            <div class="mb-6 bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-lg">
+            <div class="mt-3 mb-6 bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-lg">
                 {{ session('success') }}
             </div>
         @endif
 
-        <form method="POST" class="text-left" action="{{ route('password.email') }}">
+        <form method="POST" class="text-left" action="{{ route('password.email') }}" id="forgotPasswordForm">
             @csrf
             
             <div class="space-y-4">
@@ -65,9 +65,15 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-800 !text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-blue-300">
-                <i class="fas fa-paper-plane mr-2"></i>
-                Kirim Link Reset
+            <button type="submit" id="forgotPasswordButton" class="w-full bg-blue-500 hover:bg-blue-800 !text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="forgotPasswordButtonText">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Kirim Link Reset
+                </span>
+                <span id="forgotPasswordButtonLoading" class="hidden">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Memproses...
+                </span>
             </button>
         </form>
 
@@ -81,3 +87,24 @@
         </div>
     </div>
 @endsection
+
+@push('auth-scripts')
+<script>
+    // Form submission loading state
+    document.addEventListener('DOMContentLoaded', function() {
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const forgotPasswordButton = document.getElementById('forgotPasswordButton');
+        const forgotPasswordButtonText = document.getElementById('forgotPasswordButtonText');
+        const forgotPasswordButtonLoading = document.getElementById('forgotPasswordButtonLoading');
+
+        if (forgotPasswordForm && forgotPasswordButton) {
+            forgotPasswordForm.addEventListener('submit', function() {
+                // Show loading state
+                forgotPasswordButton.disabled = true;
+                forgotPasswordButtonText.classList.add('hidden');
+                forgotPasswordButtonLoading.classList.remove('hidden');
+            });
+        }
+    });
+</script>
+@endpush

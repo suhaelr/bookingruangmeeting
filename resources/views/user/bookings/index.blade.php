@@ -47,6 +47,44 @@
             color: #ffffff !important;
         }
         
+        /* Select2 styling for status filter */
+        .select2-container--default .select2-selection--single {
+            height: 48px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 48px;
+            padding-left: 16px;
+            color: #000000;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 46px;
+            right: 10px;
+        }
+        
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .select2-dropdown {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+        }
+        
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: #e5e7eb;
+        }
+        
+        .select2-container--default .select2-results__option[aria-selected=true]:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
         /* Fix button hover states */
         button:hover, .btn:hover, a:hover {
             transform: translateY(-1px);
@@ -93,20 +131,30 @@
 
 @section('main-content')
     <!-- Header -->
-    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
+    <div class="border border-[#071e48] bg-[#071e48] rounded-2xl p-6 mb-8">
             <div class="flex justify-between items-center">
                 <div>
-                    <h2 class="text-2xl font-bold text-black mb-2">Pemesanan Saya</h2>
-                    <p class="text-black">Kelola dan pantau pemesanan ruang meeting Anda</p>
+                    <h2 class="text-2xl font-bold text-white mb-2">Pemesanan Saya</h2>
+                    <p class="text-white">Kelola dan pantau pemesanan ruang meeting Anda</p>
                 </div>
-                <div class="flex space-x-4">
-                    <select id="status-filter" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-black focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Semua Status</option>
-                        <option value="pending">Menunggu</option>
-                        <option value="confirmed">Dikonfirmasi</option>
-                        <option value="cancelled">Dibatalkan</option>
-                        <option value="completed">Selesai</option>
-                    </select>
+                <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                    <a href="{{ route('user.bookings.create') }}" 
+                        class="border border-white hover:bg-blue-600 hover:border-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 flex items-center">
+                        <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>
+                        Pesan Ruang Meeting
+                    </a>
+                    <button id="export-btn" class="px-4 py-2 border border-white hover:bg-green-600 hover:border-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                        <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Export
+                    </button>
+                    <div style="width: 200px;">
+                        <select id="status-filter" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-black">
+                            <option value="">Semua Status</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="confirmed">Dikonfirmasi</option>
+                            <option value="cancelled">Dibatalkan</option>
+                            <option value="completed">Selesai</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,9 +162,21 @@
     <!-- Bookings List -->
     <div class="rounded-2xl p-6 border border-gray-200">
             @if($bookings->count() > 0)
-                <div class="space-y-4">
+                <!-- Empty state for filtered results (hidden by default) -->
+                <div id="filtered-empty-state" class="hidden text-center py-12">
+                    <i data-feather="search" class="text-gray-300 mb-4 w-[64px] h-[64px] mx-auto"></i>
+                    <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Pemesanan Ditemukan</h3>
+                    <p class="text-black mb-6">Tidak ada pemesanan yang sesuai dengan filter yang dipilih.</p>
+                    <button onclick="document.getElementById('status-filter').value = ''; $(document.getElementById('status-filter')).trigger('change');" 
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 inline-flex items-center">
+                        <i data-feather="x" class="mr-2" style="width: 18px; height: 18px;"></i>
+                        Hapus Filter
+                    </button>
+                </div>
+                
+                <div id="bookings-list" class="space-y-4">
                     @foreach($bookings as $booking)
-                    <div class="booking-item bg-gray-50 rounded-lg p-6 hover:border-blue-800 transition-colors border border-gray-200" 
+                    <div class="booking-item bg-gray-50 rounded-lg p-6 hover:border-blue-800 hover:bg-blue-50 transition-colors border border-gray-200" 
                          data-status="{{ $booking->status }}">
                         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                             <div class="flex-1">
@@ -229,14 +289,11 @@
                 </div>
                 
                 <!-- Pagination -->
-                <div class="flex justify-between items-center mt-8">
+                <div id="bookings-pagination" class="flex justify-between items-center mt-8">
                     <div class="text-black text-sm">
                         Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
                     </div>
                     <div class="flex items-center space-x-4">
-                        <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                            <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Ekspor
-                        </button>
                         <div class="flex space-x-2">
                         @if($bookings->previousPageUrl())
                         <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">
@@ -552,7 +609,7 @@
             if (currentBookingId) {
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `/user/bookings/${currentBookingId}/cancel`;
+                form.action = `{{ route('user.bookings.cancel', ['id' => '__ID__']) }}`.replace('__ID__', currentBookingId);
                 
                 const csrfToken = document.createElement('input');
                 csrfToken.type = 'hidden';
@@ -744,24 +801,63 @@
             return booking ? booking.meeting_room.id : null;
         }
 
+        // Initialize Select2 for status filter
+        function initStatusFilterSelect2() {
+            if (typeof $ === 'undefined') {
+                console.error('jQuery tidak dimuat.');
+                return;
+            }
+
+            $('#status-filter').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Semua Status',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "Tidak ada hasil";
+                    },
+                    searching: function() {
+                        return "Mencari...";
+                    }
+                }
+            });
+        }
+
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
-            // Status filter
-            const statusFilter = document.getElementById('status-filter');
-            if (statusFilter) {
-                statusFilter.addEventListener('change', function() {
-                    const selectedStatus = this.value;
-                    const bookingItems = document.querySelectorAll('.booking-item');
-                    
-                    bookingItems.forEach(item => {
-                        if (selectedStatus === '' || item.dataset.status === selectedStatus) {
-                            item.style.display = 'block';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
+            // Initialize Select2 for status filter
+            initStatusFilterSelect2();
+            
+            // Status filter change event
+            $(document).on('change', '#status-filter', function() {
+                const selectedStatus = $(this).val();
+                const bookingItems = document.querySelectorAll('.booking-item');
+                const emptyState = document.getElementById('filtered-empty-state');
+                const bookingsList = document.getElementById('bookings-list');
+                const pagination = document.getElementById('bookings-pagination');
+                let visibleCount = 0;
+                
+                bookingItems.forEach(item => {
+                    if (selectedStatus === '' || selectedStatus === null || item.dataset.status === selectedStatus) {
+                        item.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
                 });
-            }
+                
+                // Show/hide empty state and pagination based on visible items
+                if (visibleCount === 0 && (selectedStatus !== '' && selectedStatus !== null)) {
+                    emptyState.classList.remove('hidden');
+                    if (bookingsList) bookingsList.classList.add('hidden');
+                    if (pagination) pagination.classList.add('hidden');
+                } else {
+                    emptyState.classList.add('hidden');
+                    if (bookingsList) bookingsList.classList.remove('hidden');
+                    if (pagination) pagination.classList.remove('hidden');
+                }
+            });
 
             // Export functionality
             const exportBtn = document.getElementById('export-btn');
@@ -824,7 +920,7 @@
                     
                     console.log('Sending form data:', formData);
                     
-                    fetch(`/user/bookings/${bookingId}`, {
+                    fetch(`{{ route('user.bookings.update', ['id' => '__ID__']) }}`.replace('__ID__', bookingId), {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',

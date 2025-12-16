@@ -40,22 +40,20 @@
 
 @section('main-content')
     <!-- Header -->
-    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
+    <div class="border border-[#071e48] bg-[#071e48] rounded-2xl p-6 mb-8">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="text-2xl font-bold text-black mb-2">Kelola Ruang Meeting</h2>
-                <p class="text-black">Lihat dan kelola semua ruang meeting</p>
+                <h2 class="text-2xl font-bold text-white mb-2">Kelola Ruang Meeting</h2>
+                <p class="text-white">Lihat dan kelola semua ruang meeting</p>
             </div>
-            <div class="flex space-x-4">
-                <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 hover:bg-blue-600 hover:border-blue-600 text-white border-2 border-white rounded-lg transition-colors duration-300 inline-flex items-center">
+                    <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>Tambah Ruang
+                </a>
+                <button id="export-btn" class="px-4 py-2 border-2 border-white hover:bg-green-500 hover:border-green-500 text-white rounded-lg transition-colors duration-300 flex items-center">
                     <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Export
                 </button>
             </div>
-        </div>
-        <div class="mt-4">
-            <a href="{{ route('admin.rooms.create') }}" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-300 inline-flex items-center">
-                <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>Tambah Ruang
-            </a>
         </div>
     </div>
 
@@ -112,11 +110,13 @@
                 <p class="text-black text-sm mb-2">Pemesanan Hari Ini:</p>
                 <div class="space-y-2">
                     @foreach($todayBookings as $booking)
-                    <div class="border border-gray-200 rounded-xl p-3">
+                    <div class="border rounded-xl p-3 @if($booking->status === 'confirmed') bg-green-50 border-green-500
+                                    @elseif($booking->status === 'pending') bg-yellow-50 border-yellow-500
+                                    @else bg-gray-50 border-gray-500 @endif">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <p class="text-black font-medium text-sm">{{ $booking->user->full_name }}</p>
-                                <p class="text-gray-500 text-xs mb-3">{{ $booking->title }}</p>
+                                <p class="text-gray-700 text-xs mb-3">{{ $booking->title }}</p>
                                 @if($booking->unit_kerja)
                                     <p class="text-blue-600 text-xs mt-1">
                                         <i data-feather="tag" class="mr-1 inline w-[14px] h-[14px]"></i>{{ $booking->unit_kerja }}

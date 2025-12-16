@@ -27,6 +27,44 @@
         background: #ffffff; 
         color: #000000; 
     }
+    
+    /* Select2 styling to match form design */
+    .select2-container--default .select2-selection--single {
+        height: 48px;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 48px;
+        padding-left: 16px;
+        color: #000000;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 46px;
+        right: 10px;
+    }
+    
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #3b82f6;
+        color: white;
+    }
+    
+    .select2-dropdown {
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+    }
+    
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: #e5e7eb;
+    }
+    
+    .select2-container--default .select2-results__option[aria-selected=true]:hover {
+        background-color: #3b82f6;
+        color: white;
+    }
 </style>
 @endpush
 
@@ -108,7 +146,7 @@
                         <!-- Full Nama -->
                         <div>
                             <label for="full_name" class="block text-sm font-medium text-black mb-2">
-                                <i data-feather="user" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Nama Lengkap *
+                                Nama Lengkap <span class="text-red-500">*</span>
                             </label>
                             <input type="text" id="full_name" name="full_name" value="{{ old('full_name', $user['full_name'] ?? '') }}" required
                                    class="w-full px-4 py-3 form-control"
@@ -118,7 +156,7 @@
                         <!-- Email -->
                         <div>
                             <label for="email" class="block text-sm font-medium text-black mb-2">
-                                <i data-feather="mail" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Alamat Email *
+                                Alamat Email <span class="text-red-500">*</span>
                             </label>
                             <input type="email" id="email" name="email" value="{{ old('email', $user['email'] ?? '') }}" required
                                    class="w-full px-4 py-3 form-control"
@@ -128,7 +166,7 @@
                         <!-- Telepon -->
                         <div>
                             <label for="phone" class="block text-sm font-medium text-black mb-2">
-                                <i data-feather="phone" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Nomor Telepon
+                                Nomor Telepon
                             </label>
                             <input type="tel" id="phone" name="phone" value="{{ old('phone', $user['phone'] ?? '') }}"
                                    class="w-full px-4 py-3 form-control"
@@ -138,24 +176,18 @@
                         <!-- Unit Kerja -->
                         <div>
                             <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
-                                <i data-feather="building" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Unit Kerja
+                                Unit Kerja
                             </label>
-                            <div class="relative">
-                                <select id="unit_kerja" name="unit_kerja"
-                                        class="w-full px-4 py-3 pr-10 form-control appearance-none cursor-pointer">
-                                    <option value="">Pilih Unit Kerja</option>
-                                    <option value="SEKRETARIAT UTAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'SEKRETARIAT UTAMA' ? 'selected' : '' }}>SEKRETARIAT UTAMA</option>
-                                    <option value="DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN' ? 'selected' : '' }}>DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN</option>
-                                    <option value="DEPUTI BIDANG PROMOSI DAN KERJA SAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PROMOSI DAN KERJA SAMA' ? 'selected' : '' }}>DEPUTI BIDANG PROMOSI DAN KERJA SAMA</option>
-                                    <option value="DEPUTI BIDANG SISTEM DAN TATA KELOLA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG SISTEM DAN TATA KELOLA' ? 'selected' : '' }}>DEPUTI BIDANG SISTEM DAN TATA KELOLA</option>
-                                    <option value="DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN' ? 'selected' : '' }}>DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN</option>
-                                    <option value="INSPEKTORAT UTAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'INSPEKTORAT UTAMA' ? 'selected' : '' }}>INSPEKTORAT UTAMA</option>
-                                    <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
-                                </select>
-                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                                    <i data-feather="chevron-down" class="text-gray-500" style="width: 18px; height: 18px;"></i>
-                                </div>
-                            </div>
+                            <select id="unit_kerja" name="unit_kerja" class="w-full">
+                                <option value="">Pilih Unit Kerja</option>
+                                <option value="SEKRETARIAT UTAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'SEKRETARIAT UTAMA' ? 'selected' : '' }}>SEKRETARIAT UTAMA</option>
+                                <option value="DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN' ? 'selected' : '' }}>DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN</option>
+                                <option value="DEPUTI BIDANG PROMOSI DAN KERJA SAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PROMOSI DAN KERJA SAMA' ? 'selected' : '' }}>DEPUTI BIDANG PROMOSI DAN KERJA SAMA</option>
+                                <option value="DEPUTI BIDANG SISTEM DAN TATA KELOLA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG SISTEM DAN TATA KELOLA' ? 'selected' : '' }}>DEPUTI BIDANG SISTEM DAN TATA KELOLA</option>
+                                <option value="DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN' ? 'selected' : '' }}>DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN</option>
+                                <option value="INSPEKTORAT UTAMA" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'INSPEKTORAT UTAMA' ? 'selected' : '' }}>INSPEKTORAT UTAMA</option>
+                                <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
+                            </select>
                         </div>
 
                         <!-- Kirim Button -->
@@ -181,6 +213,37 @@
 
 @push('scripts')
 <script>
+    $(document).ready(function() {
+        initSelect2();
+    });
+
+    function initSelect2() {
+        if (typeof $ === 'undefined') {
+            console.error('jQuery tidak dimuat.');
+            return;
+        }
+
+        $('#unit_kerja').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Pilih Unit Kerja',
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "Tidak ada hasil";
+                },
+                searching: function() {
+                    return "Mencari...";
+                }
+            }
+        });
+
+        // Set the selected value if old input exists
+        @if(old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? ''))
+            $('#unit_kerja').val('{{ old('unit_kerja', $user['unit_kerja'] ?? $user['department'] ?? '') }}').trigger('change');
+        @endif
+    }
+
     // Auto-hide success message
     setTimeout(() => {
         const successMessage = document.querySelector('.bg-green-100');

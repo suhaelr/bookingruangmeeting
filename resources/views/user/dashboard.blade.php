@@ -82,21 +82,21 @@
 
 @section('main-content')
     <!-- Selamat Datang Section -->
-    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-black mb-2">Selamat Datang, {{ session('user_data.full_name') }}!</h2>
-                    <p class="text-black">Kelola pemesanan ruang meeting Anda dan tetap terorganisir</p>
-                </div>
-                <div class="hidden md:block">
-                    <a href="{{ route('user.bookings.create') }}" 
-                       class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 flex items-center">
-                        <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>
-                        Pesan Ruang Meeting
-                    </a>
-                </div>
+    <div class="border border-[#071e48] bg-[#071e48]  rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-2">Selamat Datang, {{ session('user_data.full_name') }}!</h2>
+                <p class="text-white">Kelola pemesanan ruang meeting Anda dan tetap terorganisir</p>
+            </div>
+            <div class="hidden md:block">
+                <a href="{{ route('user.bookings.create') }}" 
+                    class="border border-white hover:bg-blue-600 hover:border-blue-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 flex items-center">
+                    <i data-feather="plus" class="mr-2" style="width: 18px; height: 18px;"></i>
+                    Pesan Ruang Meeting
+                </a>
             </div>
         </div>
+    </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -150,10 +150,14 @@
                 </div>
                 <div class="space-y-4">
                     @forelse($activeBookings as $booking)
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div class="flex items-center justify-between p-4 @if($booking->status === 'confirmed') bg-green-50 border-green-500
+                                    @elseif($booking->status === 'pending') bg-yellow-50 border-yellow-500
+                                    @else bg-gray-50 border-gray-500 @endif rounded-lg border">
                         <div class="flex items-start space-x-3">
-                            <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                                <i data-feather="calendar" class="text-blue-500 w-[18px] h-[18px]"></i>
+                            <div class="w-10 h-10 @if($booking->status === 'confirmed') bg-green-500
+                                    @elseif($booking->status === 'pending') bg-yellow-500
+                                    @else bg-gray-500 @endif rounded-full flex items-center justify-center">
+                                <i data-feather="calendar" class="text-white w-[18px] h-[18px]"></i>
                             </div>
                             <div>
                                 <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -198,10 +202,14 @@
                 </div>
                 <div class="space-y-4">
                     @forelse($todayBookings as $booking)
-                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between p-4 rounded-lg border @if($booking->status === 'confirmed') bg-green-50 border-green-500
+                                    @elseif($booking->status === 'pending') bg-yellow-50 border-yellow-500
+                                    @else bg-gray-50 border-gray-500 @endif">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                                <i data-feather="clock" class="text-black" style="width: 18px; height: 18px;"></i>
+                            <div class="w-10 h-10 @if($booking->status === 'confirmed') bg-green-500
+                                    @elseif($booking->status === 'pending') bg-yellow-500
+                                    @else bg-gray-500 @endif rounded-full flex items-center justify-center">
+                                <i data-feather="clock" class="text-white w-[20px] h-[20px]"></i>
                             </div>
                             <div>
                                 <p class="text-black font-medium">{{ $booking->title }}</p>
@@ -317,7 +325,7 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @forelse($availableRooms as $room)
-                    <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <div class="bg-gray-50 border border-blue-500 rounded-lg p-4 hover:bg-blue-50 transition-colors relative pb-12">
                         <div class="flex items-center justify-between mb-2">
                             <h4 class="text-black font-medium">{{ $room->name }}</h4>
                             <span class="text-black text-sm">{{ $room->capacity ?? 0 }} kursi</span>
@@ -330,12 +338,10 @@
                             </span>
                             @endforeach
                         </div>
-                        <div class="flex items-center justify-between">
-                            <a href="{{ route('user.bookings.create', ['room' => $room->id]) }}" 
-                               class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors">
-                                Pesan
-                            </a>
-                        </div>
+                        <a href="{{ route('user.bookings.create', ['room' => $room->id]) }}" 
+                           class="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                            Pesan
+                        </a>
                     </div>
                     @empty
                     <div class="col-span-full text-center py-8">
@@ -495,7 +501,7 @@
             const notificationList = document.getElementById('notificationList');
             
             // Fetch notifications from backend
-            fetch('/user/notifications/api')
+            fetch('{{ route('user.notifications.api') }}')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -577,7 +583,7 @@
             }
             
             // Mark notification as read in database
-            fetch(`/user/notifications/${notificationId}/mark-read`, {
+            fetch(`{{ route('user.notifications.mark-read', ['id' => '__ID__']) }}`.replace('__ID__', notificationId), {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
@@ -618,7 +624,7 @@
             }
             
             // Mark all notifications as read in database
-            fetch('/user/notifications/mark-all-read', {
+            fetch('{{ route('user.notifications.mark-all-read') }}', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken.getAttribute('content'),
@@ -1775,7 +1781,7 @@
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
             
-            fetch(`/user/confirm-attendance/${invitationId}`, {
+            fetch(`{{ route('user.confirm-attendance.submit', ['invitationId' => '__ID__']) }}`.replace('__ID__', invitationId), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1868,7 +1874,7 @@
             // Create form and submit
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = `/user/bookings/${currentCancelBookingId}/cancel`;
+            form.action = `{{ route('user.bookings.cancel', ['id' => '__ID__']) }}`.replace('__ID__', currentCancelBookingId);
             
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';

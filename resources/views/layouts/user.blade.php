@@ -25,8 +25,8 @@
                     <button onclick="toggleMobileSidebar()" class="mobile-menu-btn mr-4">
                         <i data-feather="menu" style="width: 20px; height: 20px;"></i>
                     </button>
-                    <div class="flex-shrink-0">
-                        <i data-feather="calendar" class="text-2xl text-black" style="width: 24px; height: 24px;"></i>
+                    <div class="flex-shrink-0 pl-[50px] ">
+                        <img src="{{ asset('/logo-bgn.png') }}" alt="Logo" class="w-[40px] h-[40px]">
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -34,13 +34,13 @@
                     <!-- Avatar Dropdown -->
                     <div class="relative">
                         <button id="avatarDropdownBtn" 
-                                class="flex items-center focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-full transition-transform hover:scale-105">
+                                class="flex items-center focus:outline-none focus:ring-2 focus:ring-[#071e48] focus:ring-offset-2 rounded-full transition-transform hover:scale-105">
                             @if(session('user_data.avatar'))
                                 <img src="{{ asset('storage/' . session('user_data.avatar')) }}" 
                                      alt="{{ session('user_data.full_name') ?? 'User' }}"
-                                     class="w-10 h-10 rounded-full object-cover border-2 border-indigo-500">
+                                     class="w-10 h-10 rounded-full object-cover border-2 border-[#071e48]">
                             @else
-                                <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center border-2 border-indigo-600">
+                                <div class="w-10 h-10 bg-[#071e48] rounded-full flex items-center justify-center border-2 border-[#071e48]">
                                     <i data-feather="user" class="text-white" style="width: 18px; height: 18px;"></i>
                                 </div>
                             @endif

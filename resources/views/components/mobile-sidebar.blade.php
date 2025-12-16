@@ -119,7 +119,7 @@
 </div>
 
 <!-- Mobile Menu Button -->
-<button onclick="toggleMobileSidebar()" class="mobile-menu-btn" id="mobileMenuBtn">
+<button onclick="toggleMobileSidebar()" class="mobile-menu-btn z-30" id="mobileMenuBtn">
     <i data-feather="menu" style="width: 20px; height: 20px;"></i>
 </button>
 

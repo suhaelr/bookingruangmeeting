@@ -5,6 +5,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MeetingInvitationController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Middleware\RateLimitMiddleware;
 use Illuminate\Support\Facades\Log;
@@ -197,32 +200,35 @@ Route::get('/captcha/generate', [CaptchaController::class, 'generate'])->name('c
 Route::post('/captcha/verify', [CaptchaController::class, 'verify'])->name('captcha.verify');
 
 // Attendance Confirmation Route (accessible without login - will redirect to login first)
-Route::get('/user/confirm-attendance/{invitationId}', [UserController::class, 'prepareConfirmAttendance'])->name('user.confirm-attendance.prepare');
+Route::get('/user/confirm-attendance/{invitationId}', [MeetingInvitationController::class, 'prepareConfirmAttendance'])->name('user.confirm-attendance.prepare');
 
 // User Routes
 Route::prefix('user')->middleware('user.auth')->group(function () {
+    // User profile and settings
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');
     Route::get('/profile', [UserController::class, 'profile'])->name('user.profile');
     Route::post('/profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
     Route::post('/change-password', [UserController::class, 'changePassword'])->name('user.change-password');
     Route::post('/notification-settings', [UserController::class, 'updateNotificationSettings'])->name('user.notification-settings');
-    Route::get('/bookings', [UserController::class, 'bookings'])->name('user.bookings');
-    Route::get('/bookings/create', [UserController::class, 'createBooking'])->name('user.bookings.create');
-    Route::post('/bookings', [UserController::class, 'storeBooking'])->name('user.bookings.store');
-    Route::put('/bookings/{id}', [UserController::class, 'updateBooking'])->name('user.bookings.update');
-    Route::post('/bookings/{id}/cancel', [UserController::class, 'cancelBooking'])->name('user.bookings.cancel');
-    Route::post('/check-availability', [UserController::class, 'checkAvailability'])->name('user.check-availability');
-    Route::get('/bookings/{id}/document', [UserController::class, 'viewDocument'])->name('user.bookings.document');
+
+    // Booking routes
+    Route::get('/bookings', [BookingController::class, 'index'])->name('user.bookings');
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('user.bookings.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('user.bookings.store');
+    Route::put('/bookings/{id}', [BookingController::class, 'update'])->name('user.bookings.update');
+    Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('user.bookings.cancel');
+    Route::post('/check-availability', [BookingController::class, 'checkAvailability'])->name('user.check-availability');
+    Route::get('/bookings/{id}/document', [BookingController::class, 'viewDocument'])->name('user.bookings.document');
 
     // Attendance Confirmation Routes
-    Route::get('/confirm-attendance/{invitationId}', [UserController::class, 'showConfirmAttendance'])->name('user.confirm-attendance');
-    Route::post('/confirm-attendance/{invitationId}', [UserController::class, 'confirmAttendance'])->name('user.confirm-attendance.submit');
+    Route::get('/confirm-attendance/{invitationId}', [MeetingInvitationController::class, 'showConfirmAttendance'])->name('user.confirm-attendance');
+    Route::post('/confirm-attendance/{invitationId}', [MeetingInvitationController::class, 'confirmAttendance'])->name('user.confirm-attendance.submit');
 
     // Notification routes
-    Route::get('/notifications', [UserController::class, 'notifications'])->name('user.notifications');
-    Route::get('/notifications/api', [UserController::class, 'getUserNotifications'])->name('user.notifications.api');
-    Route::post('/notifications/{id}/mark-read', [UserController::class, 'markNotificationRead'])->name('user.notifications.mark-read');
-    Route::post('/notifications/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.mark-all-read');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('user.notifications');
+    Route::get('/notifications/api', [NotificationController::class, 'getUserNotifications'])->name('user.notifications.api');
+    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead'])->name('user.notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('user.notifications.mark-all-read');
 });
 
 // Legacy route for backward compatibility

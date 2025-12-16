@@ -29,10 +29,10 @@
 
 @section('auth-content')
     <!-- Login Form -->
-    <div class="border border-gray-200 rounded-2xl p-6 w-[450px] max-w-full">
+    <div class="border bg-white border-gray-200 rounded-2xl p-6 w-[450px] max-w-full">
         <p class="text-black font-bold text-left">Silakan masuk untuk melanjutkan</p>
         @if ($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mt-3 mb-6">
                 <div class="flex items-center">
                     <i class="fas fa-exclamation-circle mr-2"></i>
                     <span class="text-sm">{{ $errors->first() }}</span>
@@ -41,7 +41,7 @@
         @endif
 
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mt-3 mb-6">
                 <div class="flex items-center">
                     <i class="fas fa-check-circle mr-2"></i>
                     <span class="text-sm">{{ session('success') }}</span>
@@ -49,7 +49,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('login') }}" class="space-y-6">
+        <form method="POST" action="{{ route('login') }}" class="space-y-6" id="loginForm">
             @csrf
             
             <!-- Username/Email Field -->
@@ -97,10 +97,16 @@
             <button 
                 type="submit" 
                 id="loginButton"
-                class="w-full bg-blue-500 !text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 transform border border-blue-300"
+                class="w-full bg-blue-500 !text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 transform border border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <i class="fas fa-sign-in-alt mr-2"></i>
-                Masuk
+                <span id="loginButtonText">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Masuk
+                </span>
+                <span id="loginButtonLoading" class="hidden">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Memproses...
+                </span>
             </button>
         </form>
 
@@ -121,6 +127,7 @@
 @endsection
 
 @push('auth-scripts')
+<script>
     // Password toggle function
     function togglePassword() {
         const passwordInput = document.getElementById('password');
@@ -443,4 +450,5 @@
             modal.remove();
         }
     };
+</script>
 @endpush

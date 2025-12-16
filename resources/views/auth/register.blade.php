@@ -17,8 +17,53 @@
     ])
 @endpush
 
+@push('head')
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+@endpush
+
+@push('styles')
+<style>
+    /* Select2 styling to match form design */
+    .select2-container--default .select2-selection--single {
+        height: 42px;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 42px;
+        padding-left: 12px;
+        color: #000000;
+    }
+    
+    
+    
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #3b82f6;
+        color: white;
+    }
+    
+    .select2-dropdown {
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+    }
+    
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: #e5e7eb;
+    }
+    
+    .select2-container--default .select2-results__option[aria-selected=true]:hover {
+        background-color: #3b82f6;
+        color: white;
+    }
+</style>
+@endpush
+
 @section('auth-content')
-    <div class="rounded-2xl p-8 border border-gray-200 w-[700px] max-w-full">
+    <div class="rounded-2xl bg-white p-8 border border-gray-200 w-[700px] max-w-full">
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-user-plus text-2xl text-indigo-600"></i>
@@ -28,7 +73,7 @@
         </div>
 
         @if ($errors->any())
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
+            <div class="mt-3 mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
                 <ul class="list-disc list-inside text-sm">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -38,15 +83,15 @@
         @endif
 
         @if (session('error'))
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
+            <div class="mt-3 mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
                 {{ session('error') }}
             </div>
         @endif
 
-        <form method="POST" class="text-left" action="{{ route('register') }}">
+        <form method="POST" class="text-left" action="{{ route('register') }}" id="registerForm">
             @csrf
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 w-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 mb-6 gap-x-4 gap-y-6 w-full">
                 <!-- Username -->
                 <div>
                     <label for="username" class="block text-sm font-medium text-black mb-2">
@@ -87,28 +132,19 @@
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
                            placeholder="Masukkan nomor telepon">
                 </div>
-
+            </div>
+            <div class="grid grid-cols-1 gap-x-4 gap-y-6 w-full">
                 <!-- Unit Kerja -->
                 <div>
                     <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
                         Unit Kerja
                     </label>
-                    <div class="relative">
-                        <select id="unit_kerja" name="unit_kerja"
-                                class="w-full px-3 py-2 pr-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer bg-white border border-gray-300">
-                            <option value="">Pilih Unit Kerja</option>
-                            <option value="SEKRETARIAT UTAMA" {{ old('unit_kerja') == 'SEKRETARIAT UTAMA' ? 'selected' : '' }}>SEKRETARIAT UTAMA</option>
-                            <option value="DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN" {{ old('unit_kerja') == 'DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN' ? 'selected' : '' }}>DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN</option>
-                            <option value="DEPUTI BIDANG PROMOSI DAN KERJA SAMA" {{ old('unit_kerja') == 'DEPUTI BIDANG PROMOSI DAN KERJA SAMA' ? 'selected' : '' }}>DEPUTI BIDANG PROMOSI DAN KERJA SAMA</option>
-                            <option value="DEPUTI BIDANG SISTEM DAN TATA KELOLA" {{ old('unit_kerja') == 'DEPUTI BIDANG SISTEM DAN TATA KELOLA' ? 'selected' : '' }}>DEPUTI BIDANG SISTEM DAN TATA KELOLA</option>
-                            <option value="DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN" {{ old('unit_kerja') == 'DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN' ? 'selected' : '' }}>DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN</option>
-                            <option value="INSPEKTORAT UTAMA" {{ old('unit_kerja') == 'INSPEKTORAT UTAMA' ? 'selected' : '' }}>INSPEKTORAT UTAMA</option>
-                            <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
-                        </select>
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <i class="fas fa-chevron-down text-gray-500"></i>
-                        </div>
-                    </div>
+                    <select id="unit_kerja" name="unit_kerja" class="w-full">
+                        <option value="">Pilih Unit Kerja</option>
+                        @foreach(($unitKerjaOptions ?? []) as $unitKerja)
+                            <option value="{{ $unitKerja }}" {{ old('unit_kerja') == $unitKerja ? 'selected' : '' }}>{{ $unitKerja }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <!-- Password -->
@@ -119,7 +155,7 @@
                     </label>
                     <input type="password" id="password" name="password" 
                            class="w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                           placeholder="Minimal 8 karakter" required>
+                           placeholder="Minimal 8 karakter, kombinasi huruf dan angka" required>
                 </div>
 
                 <!-- Confirm Password -->
@@ -134,9 +170,15 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-800 !text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-blue-300">
-                <i class="fas fa-user-plus mr-2"></i>
-                Daftar Sekarang
+            <button type="submit" id="registerButton" class="w-full bg-blue-500 hover:bg-blue-800 !text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="registerButtonText">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Daftar Sekarang
+                </span>
+                <span id="registerButtonLoading" class="hidden">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Memproses...
+                </span>
             </button>
         </form>
 
@@ -150,3 +192,39 @@
         </div>
     </div>
 @endsection
+
+@push('auth-scripts')
+    <script>
+        $(document).ready(function() {
+            initSelect2();
+        });
+
+        function initSelect2() {
+            if (typeof $ === 'undefined') {
+                console.error('jQuery tidak dimuat.');
+                return;
+            }
+
+            $('#unit_kerja').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Pilih Unit Kerja',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "Tidak ada hasil";
+                    },
+                    searching: function() {
+                        return "Mencari...";
+                    }
+                }
+            });
+
+            // Set the selected value if old input exists
+            @if(old('unit_kerja'))
+                $('#unit_kerja').val('{{ old('unit_kerja') }}').trigger('change');
+            @endif
+        }
+
+    </script>
+@endpush

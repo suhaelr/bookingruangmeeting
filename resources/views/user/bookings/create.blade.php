@@ -35,6 +35,44 @@
         .form-control::placeholder { color: #000000 !important; opacity: 1; }
         select.form-control option { background: #ffffff; color: #000000; }
         
+        /* Select2 styling to match form design */
+        .select2-container--default .select2-selection--single {
+            height: 48px;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 48px;
+            padding-left: 16px;
+            color: #000000;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 46px;
+            right: 10px;
+        }
+        
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .select2-dropdown {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+        }
+        
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: #e5e7eb;
+        }
+        
+        .select2-container--default .select2-results__option[aria-selected=true]:hover {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
         /* Ensure proper z-index for overlays */
         .glass-effect {
             position: relative;
@@ -79,40 +117,33 @@
                 <!-- Meeting Room Selection -->
                 <div>
                     <label for="meeting_room_id" class="block text-sm font-medium text-black mb-2">
-                        <i data-feather="box" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
                         Ruang Meeting 
                         <span class="text-red-500">*</span>
                     </label>
-                    <div class="relative">
-                        <select id="meeting_room_id" name="meeting_room_id" required
-                                class="w-full px-4 py-3 pr-10 form-control appearance-none cursor-pointer">
-                            <option value="">Pilih ruang meeting</option>
-                            @foreach($rooms as $room)
-                            <option value="{{ $room->id }}" 
-                                    data-capacity="{{ $room->capacity ?? 0 }}"
-                                    data-amenities="{{ json_encode($room->getAmenitiesList()) }}"
-                                    {{ old('meeting_room_id') == $room->id ? 'selected' : '' }}>
-                                {{ $room->name }} - {{ $room->location }}@if($room->capacity && $room->capacity > 0) ({{ $room->capacity }} kursi)@endif
-                            </option>
-                            @endforeach
-                        </select>
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <i data-feather="chevron-down" class="text-gray-500" style="width: 18px; height: 18px;"></i>
-                        </div>
-                    </div>
+                    <select id="meeting_room_id" name="meeting_room_id" required class="w-full">
+                        <option value="">Pilih ruang meeting</option>
+                        @foreach($rooms as $room)
+                        <option value="{{ $room->id }}" 
+                                data-capacity="{{ $room->capacity ?? 0 }}"
+                                data-amenities="{{ json_encode($room->getAmenitiesList()) }}"
+                                {{ old('meeting_room_id') == $room->id ? 'selected' : '' }}>
+                            {{ $room->name }} - {{ $room->location }}@if($room->capacity && $room->capacity > 0) ({{ $room->capacity }} kursi)@endif
+                        </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <!-- Room Details Display -->
-                <div id="room-details" class="hidden bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <h4 class="text-black font-medium mb-2">Detail Ruang</h4>
+                <div id="room-details" class="hidden bg-[#071e48] text-white rounded-lg p-4 border border-[#071e48]">
+                    <h4 class="font-medium mb-2">Detail Ruang</h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div id="room-capacity-container" class="hidden">
-                            <span class="text-gray-600">Kapasitas:</span>
-                            <span id="room-capacity" class="text-black ml-2"></span>
+                            <span>Kapasitas:</span>
+                            <span id="room-capacity" class="ml-2"></span>
                         </div>
                         <div>
-                            <span class="text-gray-600">Fasilitas:</span>
-                            <span id="room-amenities" class="text-black ml-2"></span>
+                            <span>Fasilitas:</span>
+                            <span id="room-amenities" class="ml-2"></span>
                         </div>
                     </div>
                 </div>
@@ -120,7 +151,6 @@
                 <!-- Meeting Judul -->
                 <div>
                     <label for="title" class="block text-sm font-medium text-black mb-2">
-                        <i data-feather="type" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
                         Judul Meeting
                         <span class="text-red-500">*</span>
                     </label>
@@ -132,7 +162,7 @@
                 <!-- Deskripsi -->
                 <div>
                     <label for="description" class="block text-sm font-medium text-black mb-2">
-                        <i data-feather="file-text" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Deskripsi
+                        Deskripsi
                     </label>
                     <textarea id="description" name="description" rows="3"
                               class="w-full px-4 py-3 form-control"
@@ -143,7 +173,7 @@
                 <!-- PIC Invitations Section -->
                 <div class="pic-invitations-section">
                     <label class="block text-sm font-medium text-black mb-2">
-                        <i data-feather="users" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Undang PIC Lain
+                        Undang PIC Lain
                     </label>
                     
                     <!-- Visibility Setting -->
@@ -189,7 +219,6 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="start_time" class="block text-sm font-medium text-black mb-2">
-                            <i data-feather="clock" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
                             Waktu Mulai
                             <span class="text-red-500">*</span>
                         </label>
@@ -198,7 +227,6 @@
                     </div>
                     <div>
                         <label for="end_time" class="block text-sm font-medium text-black mb-2">
-                            <i data-feather="clock" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
                             Waktu Selesai
                             <span class="text-red-500">*</span>
                         </label>
@@ -210,32 +238,21 @@
                 <!-- Unit Kerja -->
                 <div>
                     <label for="unit_kerja" class="block text-sm font-medium text-black mb-2">
-                        <i data-feather="building" class="mr-2 inline" style="width: 18px; height: 18px;"></i>
                         Unit Kerja
                         <span class="text-red-500">*</span>
                     </label>
-                    <div class="relative">
-                        <select id="unit_kerja" name="unit_kerja" required
-                                class="w-full px-4 py-3 pr-10 form-control appearance-none cursor-pointer">
-                            <option value="">Pilih Unit Kerja</option>
-                            <option value="SEKRETARIAT UTAMA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'SEKRETARIAT UTAMA' ? 'selected' : '' }}>SEKRETARIAT UTAMA</option>
-                            <option value="DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN' ? 'selected' : '' }}>DEPUTI BIDANG PENYEDIAAN DAN PENYALURAN</option>
-                            <option value="DEPUTI BIDANG PROMOSI DAN KERJA SAMA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG PROMOSI DAN KERJA SAMA' ? 'selected' : '' }}>DEPUTI BIDANG PROMOSI DAN KERJA SAMA</option>
-                            <option value="DEPUTI BIDANG SISTEM DAN TATA KELOLA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG SISTEM DAN TATA KELOLA' ? 'selected' : '' }}>DEPUTI BIDANG SISTEM DAN TATA KELOLA</option>
-                            <option value="DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN' ? 'selected' : '' }}>DEPUTI BIDANG PEMANTAUAN DAN PENGAWASAN</option>
-                            <option value="INSPEKTORAT UTAMA" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'INSPEKTORAT UTAMA' ? 'selected' : '' }}>INSPEKTORAT UTAMA</option>
-                            <option value="PUSAT DATA DAN SISTEM INFORMASI" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == 'PUSAT DATA DAN SISTEM INFORMASI' ? 'selected' : '' }}>PUSAT DATA DAN SISTEM INFORMASI</option>
-                        </select>
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                            <i data-feather="chevron-down" class="text-gray-500" style="width: 18px; height: 18px;"></i>
-                        </div>
-                    </div>
+                    <select id="unit_kerja" name="unit_kerja" required class="w-full">
+                        <option value="">Pilih Unit Kerja</option>
+                        @foreach(($unitKerjaOptions ?? []) as $unitKerja)
+                            <option value="{{ $unitKerja }}" {{ old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '') == $unitKerja ? 'selected' : '' }}>{{ $unitKerja }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <!-- Dokumen Tambahan (Opsional) -->
                 <div>
                     <label for="dokumen_perizinan" class="block text-sm font-medium text-black mb-2">
-                        <i data-feather="file" class="mr-2 inline" style="width: 18px; height: 18px;"></i>Dokumen Tambahan (Opsional) (PDF, Max 2MB)
+                        Dokumen Tambahan (Opsional. Dokumen berformat PDF, maksimal 2MB)
                     </label>
                     
                     <!-- File Input -->
@@ -266,7 +283,6 @@
                 <!-- Captcha Section -->
                 <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
                     <h3 class="text-lg font-semibold text-black mb-4 flex items-center">
-                        <i data-feather="shield" class="mr-2" style="width: 20px; height: 20px;"></i>
                         Verifikasi Keamanan
                     </h3>
                     
@@ -325,6 +341,9 @@
 <script>
         // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Select2 for meeting room
+            initSelect2();
+            
             // File handling
             let selectedFile = null;
             
@@ -454,34 +473,106 @@
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
 
-            // Room selection handler
-            const meetingRoomSelect = document.getElementById('meeting_room_id');
-            if (meetingRoomSelect) {
-                meetingRoomSelect.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
+            // Initialize Select2
+            function initSelect2() {
+                if (typeof $ === 'undefined') {
+                    console.error('jQuery tidak dimuat.');
+                    return;
+                }
+
+                $('#meeting_room_id').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Pilih ruang meeting',
+                    allowClear: true,
+                    width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "Tidak ada hasil";
+                        },
+                        searching: function() {
+                            return "Mencari...";
+                        }
+                    }
+                });
+
+                // Set the selected value if old input exists
+                @if(old('meeting_room_id'))
+                    $('#meeting_room_id').val('{{ old('meeting_room_id') }}').trigger('change');
+                @endif
+
+                // Initialize Select2 for unit_kerja
+                $('#unit_kerja').select2({
+                    theme: 'bootstrap-5',
+                    placeholder: 'Pilih Unit Kerja',
+                    allowClear: true,
+                    width: '100%',
+                    language: {
+                        noResults: function() {
+                            return "Tidak ada hasil";
+                        },
+                        searching: function() {
+                            return "Mencari...";
+                        }
+                    }
+                });
+
+                // Set the selected value if old input exists
+                @php
+                    $selectedUnitKerja = old('unit_kerja', isset($userUnitKerja) && $userUnitKerja ? $userUnitKerja : '');
+                @endphp
+                @if($selectedUnitKerja)
+                    $('#unit_kerja').val('{{ $selectedUnitKerja }}').trigger('change');
+                @endif
+
+                // Room selection handler for Select2
+                $('#meeting_room_id').on('change', function() {
+                    const selectedValue = $(this).val();
+                    const selectedOption = $(this).find('option:selected');
                     const roomDetails = document.getElementById('room-details');
                     const capacityContainer = document.getElementById('room-capacity-container');
                     
-                    if (this.value) {
-                        const capacity = selectedOption.dataset.capacity || 0;
-                        const amenities = JSON.parse(selectedOption.dataset.amenities);
+                    if (selectedValue) {
+                        // Get capacity - use attr() to get raw value, then parse
+                        const capacityAttr = selectedOption.attr('data-capacity');
+                        const capacity = capacityAttr ? parseInt(capacityAttr) : 0;
+                        
+                        // Get amenities - use attr() to get raw JSON string, then parse
+                        let amenities = [];
+                        try {
+                            const amenitiesAttr = selectedOption.attr('data-amenities');
+                            if (amenitiesAttr) {
+                                // Parse the JSON string from the attribute
+                                amenities = JSON.parse(amenitiesAttr);
+                            }
+                        } catch (e) {
+                            console.error('Error parsing amenities:', e);
+                            amenities = [];
+                        }
                         
                         // Show/hide capacity based on value
-                        if (capacity && parseInt(capacity) > 0) {
+                        if (capacity && capacity > 0) {
                             document.getElementById('room-capacity').textContent = capacity + ' kursi';
                             capacityContainer.classList.remove('hidden');
                         } else {
                             capacityContainer.classList.add('hidden');
                         }
                         
-                        document.getElementById('room-amenities').textContent = amenities.join(', ');
+                        document.getElementById('room-amenities').textContent = Array.isArray(amenities) ? amenities.join(', ') : '';
                         
                         roomDetails.classList.remove('hidden');
                     } else {
                         roomDetails.classList.add('hidden');
                     }
+                    
+                    // Trigger availability check
+                    if (typeof debouncedCheckAvailability === 'function') {
+                        debouncedCheckAvailability();
+                    }
                 });
             }
+
+            // Room selection handler (keeping for compatibility)
+            const meetingRoomSelect = document.getElementById('meeting_room_id');
 
             // Description visibility handler - auto-check all PICs when "public" is selected
             const visibilityInvitedOnly = document.getElementById('visibility_invited_only');
@@ -531,8 +622,6 @@
         // No time restrictions - user can book anytime
         const now = new Date();
         const minTimeString = now.toISOString().slice(0, 16);
-        
-        console.log('Current time:', now.toLocaleString('id-ID', {timeZone: 'Asia/Jakarta'}));
             
             if (startWaktuInput) {
                 // No minimum time restriction
@@ -599,9 +688,8 @@
                 }, 500); // Wait 500ms after user stops typing/selecting
             }
             
-            if (meetingRoomSelect) {
-                meetingRoomSelect.addEventListener('change', debouncedCheckAvailability);
-            }
+            // Availability check is now handled by Select2 change event above
+            // The debouncedCheckAvailability will be triggered via the Select2 change handler
             if (startWaktuInput) {
                 startWaktuInput.addEventListener('change', debouncedCheckAvailability);
                 startWaktuInput.addEventListener('input', debouncedCheckAvailability);
@@ -630,14 +718,6 @@
                 const endWaktu = document.getElementById('end_time').value;
                 const submitBtn = document.getElementById('submit-booking-btn');
                 
-                // Debug logging
-                console.log('Checking availability with:', {
-                    roomId: roomId,
-                    startWaktu: startWaktu,
-                    endWaktu: endWaktu,
-                    timestamp: new Date().toISOString()
-                });
-                
                 if (roomId && startWaktu && endWaktu) {
                     fetch('{{ route("user.check-availability") }}', {
                         method: 'POST',
@@ -653,9 +733,6 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // Debug logging for response
-                        console.log('Availability check response:', data);
-                        
                         // Clear any existing availability status
                         const availabilityDiv = document.getElementById('availability-status');
                         if (availabilityDiv) {

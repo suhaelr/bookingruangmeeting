@@ -25,6 +25,44 @@
         background-color: #ffffff !important;
         color: #000000 !important;
     }
+    
+    /* Select2 styling for status filter */
+    .select2-container--default .select2-selection--single {
+        height: 48px;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 48px;
+        padding-left: 16px;
+        color: #000000;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 46px;
+        right: 10px;
+    }
+    
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #3b82f6;
+        color: white;
+    }
+    
+    .select2-dropdown {
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+    }
+    
+    .select2-container--default .select2-results__option[aria-selected=true] {
+        background-color: #e5e7eb;
+    }
+    
+    .select2-container--default .select2-results__option[aria-selected=true]:hover {
+        background-color: #3b82f6;
+        color: white;
+    }
 
     /* Loading spinner for submit button */
     .loading-spinner {
@@ -72,20 +110,22 @@
 
 @section('main-content')
     <!-- Header -->
-    <div class="border border-gray-200 rounded-2xl p-6 mb-8">
+    <div class="border border-[#071e48] bg-[#071e48] rounded-2xl p-6 mb-8">
         <div class="flex justify-between items-center">
             <div>
-                <h2 class="text-2xl font-bold text-black mb-2">Kelola Pemesanan</h2>
-                <p class="text-black">Pantau dan kelola semua pemesanan ruang meeting</p>
+                <h2 class="text-2xl font-bold text-white mb-2">Kelola Pemesanan</h2>
+                <p class="text-white">Pantau dan kelola semua pemesanan ruang meeting</p>
             </div>
             <div class="flex space-x-4">
-                <select id="status-filter" class="status-filter px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="">Semua Status</option>
-                    <option value="pending">Menunggu</option>
-                    <option value="confirmed">Dikonfirmasi</option>
-                    <option value="cancelled">Dibatalkan</option>
-                    <option value="completed">Selesai</option>
-                </select>
+                <div style="width: 200px;">
+                    <select id="status-filter" class="status-filter">
+                        <option value="">Semua Status</option>
+                        <option value="pending">Menunggu</option>
+                        <option value="confirmed">Dikonfirmasi</option>
+                        <option value="cancelled">Dibatalkan</option>
+                        <option value="completed">Selesai</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
@@ -438,24 +478,47 @@
         return diffHours.toFixed(1);
     }
 
+    // Initialize Select2 for status filter
+    function initStatusFilterSelect2() {
+        if (typeof $ === 'undefined') {
+            console.error('jQuery tidak dimuat.');
+            return;
+        }
+
+        $('#status-filter').select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Semua Status',
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "Tidak ada hasil";
+                },
+                searching: function() {
+                    return "Mencari...";
+                }
+            }
+        });
+    }
+
     // Event listeners
     document.addEventListener('DOMContentLoaded', function() {
-        // Status filter
-        const statusFilter = document.getElementById('status-filter');
-        if (statusFilter) {
-            statusFilter.addEventListener('change', function() {
-                const selectedStatus = this.value;
-                const bookingRows = document.querySelectorAll('.booking-row');
-                
-                bookingRows.forEach(row => {
-                    if (selectedStatus === '' || row.dataset.status === selectedStatus) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+        // Initialize Select2 for status filter
+        initStatusFilterSelect2();
+        
+        // Status filter change event
+        $(document).on('change', '#status-filter', function() {
+            const selectedStatus = $(this).val();
+            const bookingRows = document.querySelectorAll('.booking-row');
+            
+            bookingRows.forEach(row => {
+                if (selectedStatus === '' || selectedStatus === null || row.dataset.status === selectedStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
-        }
+        });
 
         // Export functionality
         const exportBtn = document.getElementById('export-btn');

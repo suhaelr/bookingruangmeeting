@@ -18,7 +18,7 @@
 @endpush
 
 @section('auth-content')
-    <div class="glass-effect rounded-2xl p-8 w-full max-w-md shadow-2xl">
+    <div class="rounded-2xl p-8 w-[450px] max-w-full bg-white border border-gray-200">
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i class="fas fa-envelope-open text-2xl text-indigo-600"></i>
@@ -28,7 +28,7 @@
         </div>
 
         @if (session('success'))
-            <div class="mb-6 bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-lg">
+            <div class="mt-3 mb-6 bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-lg">
                 <div class="flex items-center">
                     <i class="fas fa-check-circle mr-2"></i>
                     {{ session('success') }}
@@ -37,7 +37,7 @@
         @endif
 
         @if (session('error'))
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
+            <div class="mt-3 mb-6 bg-red-100 border border-red-400 text-red-800 px-4 py-3 rounded-lg">
                 <div class="flex items-center">
                     <i class="fas fa-exclamation-circle mr-2"></i>
                     {{ session('error') }}
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <form method="POST" class="text-left" action="{{ route('verification.resend') }}">
+        <form method="POST" class="text-left" action="{{ route('verification.resend') }}" id="verifyEmailForm">
             @csrf
             
             <div class="space-y-4">
@@ -71,9 +71,15 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-800 !text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-blue-300">
-                <i class="fas fa-paper-plane mr-2"></i>
-                Kirim Ulang Email Verifikasi
+            <button type="submit" id="verifyEmailButton" class="w-full bg-blue-500 hover:bg-blue-800 !text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-300 mt-6 flex items-center justify-center border border-blue-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="verifyEmailButtonText">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Kirim Ulang Email Verifikasi
+                </span>
+                <span id="verifyEmailButtonLoading" class="hidden">
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Memproses...
+                </span>
             </button>
         </form>
 
@@ -87,3 +93,24 @@
         </div>
     </div>
 @endsection
+
+@push('auth-scripts')
+<script>
+    // Form submission loading state
+    document.addEventListener('DOMContentLoaded', function() {
+        const verifyEmailForm = document.getElementById('verifyEmailForm');
+        const verifyEmailButton = document.getElementById('verifyEmailButton');
+        const verifyEmailButtonText = document.getElementById('verifyEmailButtonText');
+        const verifyEmailButtonLoading = document.getElementById('verifyEmailButtonLoading');
+
+        if (verifyEmailForm && verifyEmailButton) {
+            verifyEmailForm.addEventListener('submit', function() {
+                // Show loading state
+                verifyEmailButton.disabled = true;
+                verifyEmailButtonText.classList.add('hidden');
+                verifyEmailButtonLoading.classList.remove('hidden');
+            });
+        }
+    });
+</script>
+@endpush
