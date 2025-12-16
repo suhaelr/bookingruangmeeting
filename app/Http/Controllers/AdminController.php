@@ -10,7 +10,9 @@ use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 class AdminController extends Controller
 {
@@ -987,12 +989,7 @@ class AdminController extends Controller
             $userModel->name = $request->full_name;
             $userModel->email = $request->email;
             $userModel->phone = $request->phone;
-            // Update unit_kerja, fallback to department if unit_kerja column doesn't exist
-            if (isset($userModel->unit_kerja)) {
-                $userModel->unit_kerja = $request->unit_kerja;
-            } else {
-                $userModel->department = $request->unit_kerja;
-            }
+            $userModel->unit_kerja = $request->unit_kerja;
             $userModel->save();
         }
 
@@ -1001,7 +998,6 @@ class AdminController extends Controller
         $userData['email'] = $userModel->email ?? $request->email;
         $userData['phone'] = $userModel->phone ?? $request->phone;
         $userData['unit_kerja'] = $userModel->unit_kerja ?? $userModel->department ?? $request->unit_kerja;
-        $userData['department'] = $userModel->department ?? $request->unit_kerja;
         session(['user_data' => $userData]);
 
         Log::info('Admin profile updated', [
@@ -1010,5 +1006,87 @@ class AdminController extends Controller
         ]);
 
         return back()->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    /**
+     * Change admin password.
+     */
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->letters()   // wajib ada huruf
+                    ->numbers(),  // wajib ada angka
+                'confirmed',
+            ],
+        ]);
+
+        $user = session('user_data');
+
+        // Check if user exists in database
+        $dbUser = User::find($user['id']);
+
+        if ($dbUser) {
+            // Verify current password
+            if (!Hash::check($request->current_password, $dbUser->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Current password is incorrect.'
+                ], 400);
+            }
+
+            // Check if new password is the same as current password
+            if (Hash::check($request->new_password, $dbUser->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'New password must be different from current password.'
+                ], 400);
+            }
+
+            // Update password
+            $dbUser->password = Hash::make($request->new_password);
+            $dbUser->save();
+        } else {
+            // For hardcoded users, just update session
+            if ($user['username'] === 'admin' && $request->current_password === 'admin') {
+                // Check if new password is the same as current password
+                if ($request->new_password === 'admin') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'New password must be different from current password.'
+                    ], 400);
+                }
+                // Update session data
+                $userData = session('user_data');
+                $userData['password_changed'] = true;
+                session(['user_data' => $userData]);
+            } elseif ($user['username'] === 'user' && $request->current_password === 'user') {
+                // Check if new password is the same as current password
+                if ($request->new_password === 'user') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'New password must be different from current password.'
+                    ], 400);
+                }
+                // Update session data
+                $userData = session('user_data');
+                $userData['password_changed'] = true;
+                session(['user_data' => $userData]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Current password is incorrect.'
+                ], 400);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully!'
+        ]);
     }
 }

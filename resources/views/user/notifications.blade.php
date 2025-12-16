@@ -223,7 +223,7 @@
                 </div>
             </div>
         @else
-            <div class="text-center py-12">
+            <div class="flex flex-col justify-center items-center py-12">
                 <i data-feather="bell-off" class="text-gray-300 mb-4" style="width: 64px; height: 64px;"></i>
                 <h3 class="text-xl font-bold text-black mb-2">Tidak Ada Notifikasi</h3>
                 <p class="text-black">Belum ada notifikasi untuk Anda.</p>

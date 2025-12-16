@@ -44,11 +44,6 @@
                     <i data-feather="calendar" style="width: 20px; height: 20px;"></i>
                     <span>Pemesanan</span>
                 </a>
-                
-                <a href="{{ route('admin.notifications') }}" class="mobile-nav-item {{ request()->routeIs('admin.notifications*') ? 'active' : '' }}">
-                    <i data-feather="bell" style="width: 20px; height: 20px;"></i>
-                    <span>Notifikasi</span>
-                </a>
             @elseif(isset($userRole) && $userRole === 'user')
                 {{-- User Navigation --}}
                 <a href="{{ route('user.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
@@ -59,11 +54,6 @@
                 <a href="{{ route('user.bookings') }}" class="mobile-nav-item {{ request()->routeIs('user.bookings') ? 'active' : '' }}">
                     <i data-feather="calendar" style="width: 20px; height: 20px;"></i>
                     <span>Pemesanan Saya</span>
-                </a>
-                
-                <a href="{{ route('user.notifications') }}" class="mobile-nav-item {{ request()->routeIs('user.notifications*') ? 'active' : '' }}">
-                    <i data-feather="bell" style="width: 20px; height: 20px;"></i>
-                    <span>Notifikasi</span>
                 </a>
             @else
                 {{-- Guest Navigation --}}
@@ -82,7 +72,7 @@
         <!-- User Info & Actions -->
         @if(isset($userRole) && in_array($userRole, ['admin', 'user']))
             <div class="mobile-sidebar-footer">
-                <div class="mobile-user-info">
+                <div class="mobile-user-info !mb-0">
                     <div class="relative">
                         <div onclick="toggleUserDropdown()" class="cursor-pointer">
                             <div class="flex items-center justify-between">

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
@@ -319,10 +320,7 @@ class UserController extends Controller
             $userModel->name = $request->full_name;
             $userModel->email = $request->email;
             $userModel->phone = $request->phone;
-            // Prefer the unit_kerja input; if not provided, fallback to department
-            $unitKerjaInput = $request->unit_kerja ?? $request->department;
-            $userModel->department = $request->department ?? $unitKerjaInput;
-            $userModel->unit_kerja = $unitKerjaInput;
+            $userModel->unit_kerja = $request->unit_kerja;
             $userModel->save();
         }
 
@@ -330,7 +328,6 @@ class UserController extends Controller
         $userData['full_name'] = $userModel->full_name ?? $request->full_name;
         $userData['email'] = $userModel->email ?? $request->email;
         $userData['phone'] = $userModel->phone ?? $request->phone;
-        $userData['department'] = $userModel->department ?? ($request->department ?? $request->unit_kerja);
         $userData['unit_kerja'] = $userModel->unit_kerja ?? $request->unit_kerja;
         session(['user_data' => $userData]);
 
@@ -344,7 +341,14 @@ class UserController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|min:6|confirmed',
+            'new_password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->letters()   // wajib ada huruf
+                    ->numbers(),  // wajib ada angka
+                'confirmed',
+            ],
         ]);
 
         $user = session('user_data');
@@ -361,17 +365,39 @@ class UserController extends Controller
                 ], 400);
             }
 
+            // Check if new password is the same as current password
+            if (Hash::check($request->new_password, $dbUser->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'New password must be different from current password.'
+                ], 400);
+            }
+
             // Update password
             $dbUser->password = Hash::make($request->new_password);
             $dbUser->save();
         } else {
             // For hardcoded users, just update session
             if ($user['username'] === 'admin' && $request->current_password === 'admin') {
+                // Check if new password is the same as current password
+                if ($request->new_password === 'admin') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'New password must be different from current password.'
+                    ], 400);
+                }
                 // Update session data
                 $userData = session('user_data');
                 $userData['password_changed'] = true;
                 session(['user_data' => $userData]);
             } elseif ($user['username'] === 'user' && $request->current_password === 'user') {
+                // Check if new password is the same as current password
+                if ($request->new_password === 'user') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'New password must be different from current password.'
+                    ], 400);
+                }
                 // Update session data
                 $userData = session('user_data');
                 $userData['password_changed'] = true;
