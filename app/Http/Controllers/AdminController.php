@@ -29,6 +29,7 @@ class AdminController extends Controller
 
         // Booking terbaru
         $recentBookings = Booking::with(['user', 'meetingRoom'])
+            ->where('start_time', '>=', now())
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -429,6 +430,21 @@ class AdminController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
+    }
+
+    public function notifications()
+    {
+        // Get admin notifications (where user_id is null or belongs to admin)
+        $adminIds = \App\Models\User::where('role', 'admin')->pluck('id');
+        $notifications = \App\Models\UserNotification::where(function ($query) use ($adminIds) {
+            $query->whereNull('user_id')
+                ->orWhereIn('user_id', $adminIds);
+        })
+            ->with('booking')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.notifications', compact('notifications'));
     }
 
     public function getNotifications()

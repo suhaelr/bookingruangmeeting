@@ -44,6 +44,11 @@
                     <i data-feather="calendar" style="width: 20px; height: 20px;"></i>
                     <span>Pemesanan</span>
                 </a>
+                
+                <a href="{{ route('admin.notifications') }}" class="mobile-nav-item {{ request()->routeIs('admin.notifications*') ? 'active' : '' }}">
+                    <i data-feather="bell" style="width: 20px; height: 20px;"></i>
+                    <span>Notifikasi</span>
+                </a>
             @elseif(isset($userRole) && $userRole === 'user')
                 {{-- User Navigation --}}
                 <a href="{{ route('user.dashboard') }}" class="mobile-nav-item {{ request()->routeIs('user.dashboard') ? 'active' : '' }}">
@@ -54,6 +59,11 @@
                 <a href="{{ route('user.bookings') }}" class="mobile-nav-item {{ request()->routeIs('user.bookings') ? 'active' : '' }}">
                     <i data-feather="calendar" style="width: 20px; height: 20px;"></i>
                     <span>Pemesanan Saya</span>
+                </a>
+                
+                <a href="{{ route('user.notifications') }}" class="mobile-nav-item {{ request()->routeIs('user.notifications*') ? 'active' : '' }}">
+                    <i data-feather="bell" style="width: 20px; height: 20px;"></i>
+                    <span>Notifikasi</span>
                 </a>
             @else
                 {{-- Guest Navigation --}}
@@ -87,15 +97,15 @@
                                 </div>
                                 <div class="ml-3 flex-shrink-0">
                                     @if(isset($userRole) && $userRole === 'admin')
-                                    <button onclick="event.stopPropagation(); toggleAdminNotifikasis();" class="relative p-2 text-black hover:text-gray-600">
+                                    <a href="{{ route('admin.notifications') }}" onclick="event.stopPropagation();" class="relative p-2 text-black hover:text-gray-600">
                                         <i data-feather="bell" style="width: 20px; height: 20px;"></i>
                                         <span id="admin-notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                                    </button>
+                                    </a>
                                     @elseif(isset($userRole) && $userRole === 'user')
-                                    <button onclick="event.stopPropagation(); toggleNotifikasis();" class="relative p-2 text-black hover:text-gray-600">
+                                    <a href="{{ route('user.notifications') }}" onclick="event.stopPropagation();" class="relative p-2 text-black hover:text-gray-600">
                                         <i data-feather="bell" style="width: 20px; height: 20px;"></i>
                                         <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-                                    </button>
+                                    </a>
                                     @endif
                                 </div>
                             </div>
@@ -526,17 +536,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Notification functions
+// Notification functions (kept for backward compatibility, but now navigate to pages)
 function toggleNotifikasis() {
-    // Toggle notification panel for user
-    console.log('Toggle user notifications');
-    // Add your notification logic here
+    // Navigate to user notifications page
+    window.location.href = '{{ route("user.notifications") }}';
 }
 
 function toggleAdminNotifikasis() {
-    // Toggle notification panel for admin
-    console.log('Toggle admin notifications');
-    // Add your notification logic here
+    // Navigate to admin notifications page
+    window.location.href = '{{ route("admin.notifications") }}';
 }
 
 // User dropdown function

@@ -185,7 +185,8 @@ Route::prefix('admin')->middleware('admin.auth')->group(function () {
     Route::get('/bookings', [AdminController::class, 'bookings'])->name('admin.bookings');
     Route::post('/bookings/{id}/status', [AdminController::class, 'updateBookingStatus'])->name('admin.bookings.status');
     Route::get('/bookings/{id}/download', [AdminController::class, 'downloadDokumenPerizinan'])->name('admin.bookings.download');
-    Route::get('/notifications', [AdminController::class, 'getNotifications'])->name('admin.notifications');
+    Route::get('/notifications', [AdminController::class, 'notifications'])->name('admin.notifications');
+    Route::get('/notifications/api', [AdminController::class, 'getNotifications'])->name('admin.notifications.api');
     Route::post('/notifications/{id}/mark-read', [AdminController::class, 'markNotificationRead'])->name('admin.notifications.mark-read');
     Route::post('/notifications/mark-all-read', [AdminController::class, 'markAllNotificationsRead'])->name('admin.notifications.mark-all-read');
     Route::delete('/notifications/clear', [AdminController::class, 'clearAllNotifications'])->name('admin.notifications.clear');

@@ -116,22 +116,27 @@
                 <h2 class="text-2xl font-bold text-white mb-2">Kelola Pemesanan</h2>
                 <p class="text-white">Pantau dan kelola semua pemesanan ruang meeting</p>
             </div>
-            <div class="flex space-x-4">
-                <div style="width: 200px;">
-                    <select id="status-filter" class="status-filter">
-                        <option value="">Semua Status</option>
-                        <option value="pending">Menunggu</option>
-                        <option value="confirmed">Dikonfirmasi</option>
-                        <option value="cancelled">Dibatalkan</option>
-                        <option value="completed">Selesai</option>
-                    </select>
-                </div>
+            <div>
+                <button id="export-btn" class="px-4 py-2 border border-white hover:bg-green-600 hover:border-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
+                    <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Ekspor
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Bookings Table -->
     <div class="rounded-2xl p-6 border border-gray-200">
+        <div class="flex justify-end mb-5">
+            <div style="width: 200px;">
+                <select id="status-filter" class="status-filter px-4 py-2 rounded-lg border border-gray-200 bg-white text-black">
+                    <option value="">Semua Status</option>
+                    <option value="pending">Menunggu</option>
+                    <option value="confirmed">Dikonfirmasi</option>
+                    <option value="cancelled">Dibatalkan</option>
+                    <option value="completed">Selesai</option>
+                </select>
+            </div>
+        </div>
         @if($bookings->count() > 0)
             <div class="overflow-x-auto table-responsive bg-white rounded-xl border border-gray-200">
                 <table class="w-full text-black">
@@ -226,9 +231,6 @@
                     Menampilkan {{ $bookings->firstItem() }} sampai {{ $bookings->lastItem() }} dari {{ $bookings->total() }} pemesanan
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button id="export-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
-                        <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Ekspor
-                    </button>
                     <div class="flex space-x-2">
                     @if($bookings->previousPageUrl())
                     <a href="{{ $bookings->previousPageUrl() }}" class="px-3 py-2 bg-gray-100 text-black rounded-lg hover:bg-gray-200 transition-colors">

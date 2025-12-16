@@ -112,6 +112,14 @@
                 </a>
             </div>
             <div class="space-y-4 flex-1 relative min-h-[200px] max-h-[500px] pr-1 overflow-y-auto">
+                @php
+                    $status = [
+                        'pending' => 'Menunggu',
+                        'confirmed' => 'Dikonfirmasi',
+                        'cancelled' => 'Dibatalkan',
+                        'completed' => 'Selesai',
+                    ]
+                @endphp
                 @forelse($recentBookings as $booking)
                 <div class="flex items-center justify-between p-4 rounded-lg border @if($booking->status === 'pending') bg-yellow-50 border-yellow-500 @elseif($booking->status === 'confirmed') bg-green-50 border-green-500 @elseif($booking->status === 'cancelled') bg-red-50 border-red-500 @else bg-white border-gray-200 @endif">
                     <div class="flex items-center space-x-3">
@@ -129,9 +137,9 @@
                             @elseif($booking->status === 'confirmed') bg-green-50 text-green-500
                             @elseif($booking->status === 'cancelled') bg-red-50 text-red-500
                             @else bg-gray-50 text-gray-500 @endif">
-                            {{ ucfirst($booking->status) }}
+                            {{ @$status[$booking->status] ?? 'Tidak diketahui' }}
                         </span>
-                        <p class="text-black text-sm mt-1">{{ $booking->created_at ? $booking->created_at->format('M d, H:i') : 'Tidak tersedia' }}</p>
+                        <p class="text-black font-medium">{{ $booking->start_time ? $booking->start_time->format('d M Y @ H:i') : 'Tidak tersedia' }}</p>
                     </div>
                 </div>
                 @empty
@@ -214,8 +222,8 @@
     function loadAdminNotifikasis() {
         const notificationList = document.getElementById('adminNotifikasiList');
         
-        // Fetch notifications from backend
-        fetch('/admin/notifications')
+        // Fetch notifications from backend API endpoint
+        fetch('{{ route("admin.notifications.api") }}')
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

@@ -193,7 +193,7 @@
     </div>
 @endsection
 
-@push('auth-scripts')
+@push('scripts')
     <script>
         $(document).ready(function() {
             initSelect2();

@@ -367,7 +367,14 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|string|min:8|confirmed'
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->letters()   // wajib ada huruf
+                    ->numbers(),  // wajib ada angka
+                'confirmed',
+            ],
         ]);
 
         try {
