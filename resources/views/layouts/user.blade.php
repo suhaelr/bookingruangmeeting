@@ -26,7 +26,7 @@
                         <i data-feather="menu" style="width: 20px; height: 20px;"></i>
                     </button>
                     <div class="flex-shrink-0 pl-[50px] ">
-                        <img src="{{ asset('/logo-bgn.png') }}" alt="Logo" class="w-[40px] h-[40px]">
+                        <img src="{{ asset('/logo-bgn.png') }}" alt="Logo" style="width: 40px; height: 40px;">
                     </div>
                 </div>
                 <div class="flex items-center space-x-2">

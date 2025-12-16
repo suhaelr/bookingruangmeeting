@@ -141,14 +141,14 @@
         <!-- Main Content Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Active Bookings -->
-            <div class="border border-gray-200 rounded-2xl p-6">
+            <div class="border border-gray-200 rounded-2xl p-6 flex flex-col">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-black">Pemesanan Aktif</h3>
                     <a href="{{ route('user.bookings') }}" class="text-black hover:text-black text-sm">
                         Lihat Semua <i data-feather="arrow-right" class="ml-1 inline" style="width: 16px; height: 16px;"></i>
                     </a>
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-4 flex-1 relative min-h-[200px] max-h-[500px] pr-1 overflow-y-auto">
                     @forelse($activeBookings as $booking)
                     <div class="flex items-center justify-between p-4 @if($booking->status === 'confirmed') bg-green-50 border-green-500
                                     @elseif($booking->status === 'pending') bg-yellow-50 border-yellow-500
@@ -181,7 +181,7 @@
                         </div>
                     </div>
                     @empty
-                    <div class="text-center py-8">
+                    <div class="flex flex-col items-center justify-center absolute inset-0 bg-gray-50 rounded-lg border border-gray-200 border-dashed">
                         <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px] mx-auto"></i>
                         <p class="text-black mb-4">Tidak ada pemesanan aktif</p>
                         <a href="{{ route('user.bookings.create') }}" 
@@ -195,12 +195,12 @@
             </div>
 
             <!-- Today's Bookings -->
-            <div class="border border-gray-200 rounded-2xl p-6">
+            <div class="border border-gray-200 rounded-2xl p-6 flex flex-col">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold text-black">Jadwal Hari Ini</h3>
                     <span class="text-black text-sm">{{ now()->format('M d, Y') }}</span>
                 </div>
-                <div class="space-y-4">
+                <div class="space-y-4 relative min-h-[200px] flex-1 max-h-[500px] pr-1 overflow-y-auto">
                     @forelse($todayBookings as $booking)
                     <div class="flex items-center justify-between p-4 rounded-lg border @if($booking->status === 'confirmed') bg-green-50 border-green-500
                                     @elseif($booking->status === 'pending') bg-yellow-50 border-yellow-500
@@ -228,9 +228,9 @@
                         </div>
                     </div>
                     @empty
-                    <div class="text-center py-8">
-                        <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px] mx-auto"></i>
-                        <p class="text-black">Tidak ada meeting hari ini</p>
+                    <div class="flex flex-col items-center justify-center absolute inset-0 bg-gray-50 rounded-lg border border-gray-200 border-dashed">
+                        <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px]"></i>
+                        <p class="text-black text-center">Tidak ada meeting hari ini</p>
                     </div>
                     @endforelse
                 </div>

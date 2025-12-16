@@ -135,7 +135,7 @@
                     </div>
                 </div>
                 @empty
-                <div class="flex flex-col items-center justify-center absolute inset-0">
+                <div class="flex flex-col items-center justify-center absolute inset-0 bg-gray-50 rounded-lg border border-gray-200 border-dashed">
                     <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px]"></i>
                     <p class="text-black text-center">Tidak ada pemesanan terbaru</p>
                 </div>
@@ -167,7 +167,7 @@
                     </div>
                 </div>
                 @empty
-                <div class="flex flex-col items-center justify-center absolute inset-0">
+                <div class="flex flex-col items-center justify-center absolute inset-0 bg-gray-50 rounded-lg border border-gray-200 border-dashed">
                     <i data-feather="calendar" class="text-gray-300 mb-4 w-[48px] h-[48px]"></i>
                     <p class="text-black text-center">Tidak ada pemesanan hari ini</p>
                 </div>
