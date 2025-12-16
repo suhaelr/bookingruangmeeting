@@ -578,7 +578,11 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
             if (!csrfToken) {
                 console.error('CSRF token not found');
-                alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'CSRF token tidak ditemukan. Silakan refresh halaman.'
+                });
                 return;
             }
             
@@ -603,12 +607,20 @@
                     loadNotifikasis();
                 } else {
                     console.error('Failed to mark notification as read:', data.message);
-                    alert('Gagal menandai notifikasi sebagai terbaca: ' + data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Gagal menandai notifikasi sebagai terbaca: ' + data.message
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error marking notification as read:', error);
-                alert('Error: ' + error.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error: ' + error.message
+                });
             });
         }
 
@@ -619,7 +631,11 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]');
             if (!csrfToken) {
                 console.error('CSRF token not found');
-                alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'CSRF token tidak ditemukan. Silakan refresh halaman.'
+                });
                 return;
             }
             
@@ -644,12 +660,20 @@
                     loadNotifikasis();
                 } else {
                     console.error('Failed to mark all notifications as read:', data.message);
-                    alert('Gagal menandai semua notifikasi sebagai terbaca: ' + data.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Gagal menandai semua notifikasi sebagai terbaca: ' + data.message
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error marking all notifications as read:', error);
-                alert('Error: ' + error.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error: ' + error.message
+                });
             });
         }
 
@@ -1814,14 +1838,22 @@
                     }, 1000);
                 } else {
                     // Show error message
-                    alert(data.message || 'Terjadi kesalahan saat mengkonfirmasi kehadiran.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message || 'Terjadi kesalahan saat mengkonfirmasi kehadiran.'
+                    });
                     button.disabled = false;
                     button.innerHTML = originalText;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Terjadi kesalahan saat mengkonfirmasi kehadiran. Silakan coba lagi.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan saat mengkonfirmasi kehadiran. Silakan coba lagi.'
+                });
                 button.disabled = false;
                 button.innerHTML = originalText;
             });

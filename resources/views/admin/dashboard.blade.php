@@ -292,7 +292,11 @@
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (!csrfToken) {
             console.error('CSRF token not found');
-            alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'CSRF token tidak ditemukan. Silakan refresh halaman.'
+            });
             return;
         }
         
@@ -318,12 +322,20 @@
                 loadAdminNotifikasis();
             } else {
                 console.error('Failed to mark notification as read:', data.message);
-                alert('Gagal menandai notifikasi sebagai terbaca: ' + data.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Gagal menandai notifikasi sebagai terbaca: ' + data.message
+                });
             }
         })
         .catch(error => {
             console.error('Error marking notification as read:', error);
-            alert('Error: ' + error.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error: ' + error.message
+            });
         });
     }
 
@@ -334,7 +346,11 @@
         const csrfToken = document.querySelector('meta[name="csrf-token"]');
         if (!csrfToken) {
             console.error('CSRF token not found');
-            alert('Error: CSRF token tidak ditemukan. Silakan refresh halaman.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'CSRF token tidak ditemukan. Silakan refresh halaman.'
+            });
             return;
         }
         
@@ -363,12 +379,20 @@
                 }
             } else {
                 console.error('Failed to mark all notifications as read:', data.message);
-                alert('Gagal menandai semua notifikasi sebagai terbaca: ' + data.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Gagal menandai semua notifikasi sebagai terbaca: ' + data.message
+                });
             }
         })
         .catch(error => {
             console.error('Error marking all notifications as read:', error);
-            alert('Error: ' + error.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error: ' + error.message
+            });
         });
     }
 
@@ -393,14 +417,26 @@
                     loadAdminNotifikasis();
                     
                     // Show success message
-                    alert(data.message);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: data.message
+                    });
                 } else {
-                    alert(data.message || 'Failed to clear notifications');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message || 'Failed to clear notifications'
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error clearing notifications');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error clearing notifications'
+                });
             });
         }
     }

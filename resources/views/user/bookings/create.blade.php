@@ -7,6 +7,8 @@
 @endphp
 
 @push('styles')
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
         /* Ensure buttons are clickable */
         button, .btn, [role="button"] {
@@ -83,6 +85,214 @@
         button:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Flatpickr styling - Tailwind CSS design */
+        .flatpickr-calendar {
+            z-index: 9999 !important;
+            background-color: #ffffff !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            font-family: inherit !important;
+            padding: 0.75rem !important;
+            width: auto;
+            height: auto;
+        }
+
+        .flatpickr-calendar.open {
+            height: auto;
+            max-height: unset;
+        }
+        
+        /* Month header */
+        .flatpickr-months .flatpickr-month {
+            height: 50px;
+        }
+        .flatpickr-months .flatpickr-prev-month{
+            transform: translate(15px, 15px);
+        }
+        .flatpickr-months .flatpickr-next-month {
+            transform: translate(-15px, 15px);
+        }
+        .flatpickr-month {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            /* padding: 0.75rem 0.5rem !important; */
+            margin-bottom: 0.5rem !important;
+        }
+
+        .flatpickr-calendar.hasTime .flatpickr-time {
+            height: 65px;
+        }
+        
+        .flatpickr-current-month {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            color: #111827 !important;
+            padding: 0.5rem 0 !important;
+        }
+        
+        .flatpickr-prev-month,
+        .flatpickr-next-month {
+            color: #6b7280 !important;
+            fill: #6b7280 !important;
+            padding: 0.5rem !important;
+            border-radius: 0.375rem !important;
+            transition: all 0.2s !important;
+        }
+        
+        .flatpickr-prev-month:hover,
+        .flatpickr-next-month:hover {
+            background-color: #f3f4f6 !important;
+            color: #111827 !important;
+            fill: #111827 !important;
+        }
+        
+        /* Weekdays */
+        .flatpickr-weekdays {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            padding: 0.5rem 0 !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .flatpickr-weekday {
+            color: #6b7280 !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+        }
+        
+        /* Days */
+        .flatpickr-days {
+            background-color: #ffffff !important;
+        }
+        
+        .flatpickr-day {
+            color: #374151 !important;
+            border-radius: 0.375rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            transition: all 0.15s ease-in-out !important;
+        }
+        
+        .flatpickr-day:hover {
+            background-color: #f3f4f6 !important;
+            color: #111827 !important;
+            border-color: transparent !important;
+        }
+        
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
+            font-weight: 600 !important;
+        }
+        
+        .flatpickr-day.selected:hover,
+        .flatpickr-day.startRange:hover,
+        .flatpickr-day.endRange:hover {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+        }
+        
+        .flatpickr-day.today {
+            border-color: #3b82f6 !important;
+            font-weight: 600 !important;
+        }
+        
+        .flatpickr-day.today:hover {
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+        }
+        
+        .flatpickr-day.flatpickr-disabled,
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            color: #d1d5db !important;
+            background-color: transparent !important;
+        }
+        
+        .flatpickr-day.flatpickr-disabled:hover {
+            background-color: transparent !important;
+        }
+        
+        /* Time picker */
+        .flatpickr-time {
+            background-color: #ffffff !important;
+            border-top: 1px solid #e5e7eb !important;
+            padding: 0.75rem 0.5rem !important;
+            margin-top: 0.5rem !important;
+            line-height: unset;
+            max-height: unset;
+        }
+        
+        .flatpickr-time .flatpickr-time-separator {
+            color: #6b7280 !important;
+            margin: 0 0.25rem !important;
+            transform: translate(2px, 20px);
+        }
+        
+        .flatpickr-time input {
+            color: #111827 !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            background-color: #f9fafb !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem 0.75rem !important;
+            transition: all 0.15s ease-in-out !important;
+        }
+        
+        .flatpickr-time input:hover {
+            background-color: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+        
+        .flatpickr-time input:focus {
+            outline: none !important;
+            background-color: #ffffff !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+        
+        .flatpickr-time .flatpickr-am-pm {
+            color: #111827 !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            background-color: #f9fafb !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem 0.75rem !important;
+            margin-left: 0.5rem !important;
+        }
+        
+        .flatpickr-time .flatpickr-am-pm:hover {
+            background-color: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+        
+        /* Arrow */
+        .flatpickr-calendar.arrowTop:before {
+            border-bottom-color: #e5e7eb !important;
+        }
+        
+        .flatpickr-calendar.arrowTop:after {
+            border-bottom-color: #ffffff !important;
+        }
+        
+        .flatpickr-calendar.arrowBottom:before {
+            border-top-color: #e5e7eb !important;
+        }
+        
+        .flatpickr-calendar.arrowBottom:after {
+            border-top-color: #ffffff !important;
         }
     </style>
 @endpush
@@ -222,16 +432,28 @@
                             Waktu Mulai
                             <span class="text-red-500">*</span>
                         </label>
-                        <input type="datetime-local" id="start_time" name="start_time" value="{{ old('start_time') }}" required
-                               class="w-full px-4 py-3 form-control">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <i data-feather="calendar" style="width: 18px; height: 18px;" class="text-gray-500"></i>
+                            </div>
+                            <input type="text" id="start_time" name="start_time" value="{{ old('start_time') }}" required
+                                   class="block w-full ps-10 pe-3 py-3 bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 form-control" 
+                                   placeholder="Pilih tanggal dan waktu mulai">
+                        </div>
                     </div>
                     <div>
                         <label for="end_time" class="block text-sm font-medium text-black mb-2">
                             Waktu Selesai
                             <span class="text-red-500">*</span>
                         </label>
-                        <input type="datetime-local" id="end_time" name="end_time" value="{{ old('end_time') }}" required
-                               class="w-full px-4 py-3 form-control">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <i data-feather="calendar" style="width: 18px; height: 18px;" class="text-gray-500"></i>
+                            </div>
+                            <input type="text" id="end_time" name="end_time" value="{{ old('end_time') }}" required
+                                   class="block w-full ps-10 pe-3 py-3 bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 form-control"
+                                   placeholder="Pilih tanggal dan waktu selesai">
+                        </div>
                     </div>
                 </div>
 
@@ -338,9 +560,18 @@
 @endsection
 
 @push('scripts')
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+        // Datepicker instances (declared in global scope)
+        let startTimePicker = null;
+        let endTimePicker = null;
+        
         // Wait for DOM to be fully loaded
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize datepickers
+            initDatePickers();
+            
             // Initialize Select2 for meeting room
             initSelect2();
             
@@ -427,14 +658,22 @@
                 if (file) {
                     // Validate file type
                     if (file.type !== 'application/pdf') {
-                        alert('Hanya file PDF yang diizinkan!');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Format File Tidak Valid',
+                            text: 'Hanya file PDF yang diizinkan!'
+                        });
                         input.value = '';
                         return;
                     }
                     
                     // Validate file size (2MB = 2 * 1024 * 1024 bytes)
                     if (file.size > 2 * 1024 * 1024) {
-                        alert('Ukuran file terlalu besar! Maksimal 2MB.');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Ukuran File Terlalu Besar',
+                            text: 'Ukuran file terlalu besar! Maksimal 2MB.'
+                        });
                         input.value = '';
                         return;
                     }
@@ -607,60 +846,154 @@
                 });
             }
 
-            // Set up event listeners
-            const startWaktuInput = document.getElementById('start_time');
-            const endWaktuInput = document.getElementById('end_time');
-
-            if (startWaktuInput) {
-                startWaktuInput.addEventListener('change', function() {
-                    const startWaktu = new Date(this.value);
-                    const endWaktu = new Date(startWaktu.getTime() + 60 * 60 * 1000); // Add 1 hour
-                    document.getElementById('end_time').value = endWaktu.toISOString().slice(0, 16);
+            // Initialize Datepickers function
+            function initDatePickers() {
+                // Check if Flatpickr is available
+                if (typeof flatpickr === 'undefined') {
+                    console.error('Flatpickr is not loaded');
+                    return;
+                }
+                
+                // Helper function to convert old datetime-local value to Date object
+                function parseOldValue(value) {
+                    if (!value) return null;
+                    // Try to parse as ISO string (from datetime-local format: YYYY-MM-DDTHH:mm)
+                    const date = new Date(value);
+                    return isNaN(date.getTime()) ? null : date;
+                }
+                
+                // Get old values if they exist
+                const startTimeInput = document.getElementById('start_time');
+                const endTimeInput = document.getElementById('end_time');
+                
+                const startTimeOldValue = startTimeInput.value;
+                const endTimeOldValue = endTimeInput.value;
+                
+                const startTimeInitial = parseOldValue(startTimeOldValue);
+                const endTimeInitial = parseOldValue(endTimeOldValue);
+                
+                // Initialize start time picker with Flatpickr
+                startTimePicker = flatpickr(startTimeInput, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    time_24hr: true,
+                    minDate: "today",
+                    defaultDate: startTimeInitial || null,
+                    locale: {
+                        firstDayOfWeek: 1
+                    },
+                    onChange: function(selectedDates, dateStr, instance) {
+                        if (selectedDates.length > 0) {
+                            // Auto-set end time to 1 hour later
+                            const endDate = new Date(selectedDates[0].getTime() + 60 * 60 * 1000);
+                            if (endTimePicker) {
+                                endTimePicker.setDate(endDate, false);
+                            }
+                            validateEndTime();
+                            if (typeof debouncedCheckAvailability === 'function') {
+                                debouncedCheckAvailability();
+                            }
+                        }
+                    }
+                });
+                
+                // Initialize end time picker with Flatpickr
+                endTimePicker = flatpickr(endTimeInput, {
+                    enableTime: true,
+                    dateFormat: "Y-m-d H:i",
+                    time_24hr: true,
+                    minDate: "today",
+                    defaultDate: endTimeInitial || null,
+                    locale: {
+                        firstDayOfWeek: 1
+                    },
+                    onChange: function(selectedDates, dateStr, instance) {
+                        validateEndTime();
+                        if (typeof debouncedCheckAvailability === 'function') {
+                            debouncedCheckAvailability();
+                        }
+                    }
                 });
             }
-
-        // No time restrictions - user can book anytime
-        const now = new Date();
-        const minTimeString = now.toISOString().slice(0, 16);
             
-            if (startWaktuInput) {
-                // No minimum time restriction
-                startWaktuInput.addEventListener('change', function() {
-                    // Use the centralized validation function
-                    validateEndTime();
-                });
-            }
-            
-            if (endWaktuInput) {
-                // No minimum time restriction
-                endWaktuInput.addEventListener('change', validateEndTime);
+            // Helper function to get date value in ISO format for form submission
+            function getDateValue(picker) {
+                if (!picker) {
+                    // Fallback: try to get value from input element
+                    const inputId = picker === startTimePicker ? 'start_time' : 'end_time';
+                    const input = document.getElementById(inputId);
+                    if (input && input.value) {
+                        // Parse the displayed value and convert to ISO format
+                        // Flatpickr format: Y-m-d H:i
+                        const dateStr = input.value;
+                        if (dateStr) {
+                            // Convert from "Y-m-d H:i" to "YYYY-MM-DDTHH:mm"
+                            return dateStr.replace(' ', 'T');
+                        }
+                    }
+                    return '';
+                }
+                
+                // Flatpickr uses selectedDates array
+                const selectedDates = picker.selectedDates;
+                if (!selectedDates || selectedDates.length === 0) {
+                    return '';
+                }
+                
+                const date = selectedDates[0];
+                if (!date) return '';
+                
+                // Format as YYYY-MM-DDTHH:mm for datetime-local compatibility
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
             }
             
             // Separate function for time validation (only logical constraints)
             function validateEndTime() {
-                const endWaktuInput = document.getElementById('end_time');
-                const startWaktuInput = document.getElementById('start_time');
-                if (!endWaktuInput || !startWaktuInput) return;
+                if (!startTimePicker || !endTimePicker) return;
                 
-                const startTime = new Date(startWaktuInput.value);
-                const endTime = new Date(endWaktuInput.value);
+                // Flatpickr uses selectedDates array
+                const startDates = startTimePicker.selectedDates;
+                const endDates = endTimePicker.selectedDates;
+                
+                if (!startDates || startDates.length === 0 || !endDates || endDates.length === 0) {
+                    return;
+                }
+                
+                const startDate = startDates[0];
+                const endDate = endDates[0];
+                
+                if (!startDate || !endDate) {
+                    return;
+                }
+                
+                const startTimeInput = document.getElementById('start_time');
+                const endTimeInput = document.getElementById('end_time');
                 
                 // Clear previous errors
-                endWaktuInput.setCustomValidity('');
-                startWaktuInput.setCustomValidity('');
+                if (endTimeInput) endTimeInput.setCustomValidity('');
+                if (startTimeInput) startTimeInput.setCustomValidity('');
                 
                 // Only validate logical time constraints
-                if (startTime && endTime && !isNaN(startTime.getTime()) && !isNaN(endTime.getTime())) {
-                    if (endTime <= startTime) {
-                        endWaktuInput.setCustomValidity('Waktu selesai harus setelah waktu mulai');
-                    } else if (startTime >= endTime) {
-                        startWaktuInput.setCustomValidity('Waktu mulai harus sebelum waktu selesai');
+                if (startDate && endDate && startDate instanceof Date && endDate instanceof Date) {
+                    if (endDate <= startDate) {
+                        if (endTimeInput) {
+                            endTimeInput.setCustomValidity('Waktu selesai harus setelah waktu mulai');
+                        }
+                    } else if (startDate >= endDate) {
+                        if (startTimeInput) {
+                            startTimeInput.setCustomValidity('Waktu mulai harus sebelum waktu selesai');
+                        }
                     }
                 }
             }
             
             // Also validate when form loads
-            if (startWaktuInput && endWaktuInput) {
+            if (startTimePicker && endTimePicker) {
                 // Initial validation
                 setTimeout(() => {
                     validateEndTime();
@@ -688,16 +1021,8 @@
                 }, 500); // Wait 500ms after user stops typing/selecting
             }
             
-            // Availability check is now handled by Select2 change event above
-            // The debouncedCheckAvailability will be triggered via the Select2 change handler
-            if (startWaktuInput) {
-                startWaktuInput.addEventListener('change', debouncedCheckAvailability);
-                startWaktuInput.addEventListener('input', debouncedCheckAvailability);
-            }
-            if (endWaktuInput) {
-                endWaktuInput.addEventListener('change', debouncedCheckAvailability);
-                endWaktuInput.addEventListener('input', debouncedCheckAvailability);
-            }
+            // Availability check is now handled by datepicker change events
+            // The debouncedCheckAvailability will be triggered via the datepicker change handlers
 
             // Initial availability check
             let initialCheckTimeout = setTimeout(() => {
@@ -714,8 +1039,8 @@
                 }
                 
                 const roomId = document.getElementById('meeting_room_id').value;
-                const startWaktu = document.getElementById('start_time').value;
-                const endWaktu = document.getElementById('end_time').value;
+                const startWaktu = getDateValue(startTimePicker);
+                const endWaktu = getDateValue(endTimePicker);
                 const submitBtn = document.getElementById('submit-booking-btn');
                 
                 if (roomId && startWaktu && endWaktu) {
@@ -862,9 +1187,28 @@
                     // Check captcha verification
                     if (!captchaVerified) {
                         e.preventDefault();
-                        alert('Silakan jawab pertanyaan captcha dengan benar sebelum melanjutkan.');
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Captcha Belum Dijawab',
+                            text: 'Silakan jawab pertanyaan captcha dengan benar sebelum melanjutkan.'
+                        });
                         document.getElementById('captcha_answer').focus();
                         return false;
+                    }
+                    
+                    // Convert datepicker values to datetime-local format for form submission
+                    const startTimeValue = getDateValue(startTimePicker);
+                    const endTimeValue = getDateValue(endTimePicker);
+                    
+                    // Update hidden inputs or the actual inputs with the formatted values
+                    const startTimeInput = document.getElementById('start_time');
+                    const endTimeInput = document.getElementById('end_time');
+                    
+                    if (startTimeInput && startTimeValue) {
+                        startTimeInput.value = startTimeValue;
+                    }
+                    if (endTimeInput && endTimeValue) {
+                        endTimeInput.value = endTimeValue;
                     }
                     
                     // Set submitting flag to prevent availability checks
@@ -873,17 +1217,6 @@
                     // Clear any pending timeouts
                     if (initialCheckTimeout) {
                         clearTimeout(initialCheckTimeout);
-                    }
-                    
-                    // Remove event listeners to prevent further availability checks
-                    if (meetingRoomSelect) {
-                        meetingRoomSelect.removeEventListener('change', checkAvailability);
-                    }
-                    if (startWaktuInput) {
-                        startWaktuInput.removeEventListener('change', checkAvailability);
-                    }
-                    if (endWaktuInput) {
-                        endWaktuInput.removeEventListener('change', checkAvailability);
                     }
                     
                     // Clear availability status div to prevent showing conflicts

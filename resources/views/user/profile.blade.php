@@ -257,13 +257,21 @@
         
         if (!fullNama) {
             e.preventDefault();
-            alert('Silakan masukkan nama lengkap Anda');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validasi',
+                text: 'Silakan masukkan nama lengkap Anda'
+            });
             return;
         }
         
         if (!email || !email.includes('@')) {
             e.preventDefault();
-            alert('Silakan masukkan alamat email yang valid');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Validasi',
+                text: 'Silakan masukkan alamat email yang valid'
+            });
             return;
         }
         

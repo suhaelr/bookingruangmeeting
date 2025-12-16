@@ -415,16 +415,28 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: data.message
+                    });
                     closeModal('roomHapusModal');
                     location.reload();
                 } else {
-                    alert(data.message || 'Error deleting room');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message || 'Error deleting room'
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error deleting room');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error deleting room'
+                });
             });
         }
     }
@@ -513,7 +525,11 @@
             })
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: data.message
+                    });
                     closeModal('roomEditModal');
                     location.reload();
                 } else {
@@ -523,12 +539,20 @@
                     const message = [data.message || 'Gagal mengupdate ruang', validationDetails]
                         .filter(Boolean)
                         .join('\n');
-                    alert(message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: message
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Gagal mengupdate ruang: ' + error.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Gagal mengupdate ruang: ' + error.message
+                });
             });
         });
     }

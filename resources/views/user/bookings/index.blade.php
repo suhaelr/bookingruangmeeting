@@ -11,6 +11,8 @@
 @endpush
 
 @push('styles')
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
         /* Ensure buttons are clickable */
         button, .btn, [role="button"], a {
@@ -126,6 +128,213 @@
                 gap: 0.5rem;
             }
         }
+        
+        /* Flatpickr styling - Tailwind CSS design */
+        .flatpickr-calendar {
+            z-index: 9999 !important;
+            background-color: #ffffff !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            font-family: inherit !important;
+            padding: 0.75rem !important;
+            width: auto;
+            height: auto;
+        }
+
+        .flatpickr-calendar.open {
+            height: auto;
+            max-height: unset;
+        }
+        
+        /* Month header */
+        .flatpickr-months .flatpickr-month {
+            height: 50px;
+        }
+        .flatpickr-months .flatpickr-prev-month{
+            transform: translate(15px, 15px);
+        }
+        .flatpickr-months .flatpickr-next-month {
+            transform: translate(-15px, 15px);
+        }
+        .flatpickr-month {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .flatpickr-calendar.hasTime .flatpickr-time {
+            height: 65px;
+        }
+        
+        .flatpickr-current-month {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            color: #111827 !important;
+            padding: 0.5rem 0 !important;
+        }
+        
+        .flatpickr-prev-month,
+        .flatpickr-next-month {
+            color: #6b7280 !important;
+            fill: #6b7280 !important;
+            padding: 0.5rem !important;
+            border-radius: 0.375rem !important;
+            transition: all 0.2s !important;
+        }
+        
+        .flatpickr-prev-month:hover,
+        .flatpickr-next-month:hover {
+            background-color: #f3f4f6 !important;
+            color: #111827 !important;
+            fill: #111827 !important;
+        }
+        
+        /* Weekdays */
+        .flatpickr-weekdays {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            padding: 0.5rem 0 !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        .flatpickr-weekday {
+            color: #6b7280 !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+        }
+        
+        /* Days */
+        .flatpickr-days {
+            background-color: #ffffff !important;
+        }
+        
+        .flatpickr-day {
+            color: #374151 !important;
+            border-radius: 0.375rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            transition: all 0.15s ease-in-out !important;
+        }
+        
+        .flatpickr-day:hover {
+            background-color: #f3f4f6 !important;
+            color: #111827 !important;
+            border-color: transparent !important;
+        }
+        
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+            border-color: #3b82f6 !important;
+            font-weight: 600 !important;
+        }
+        
+        .flatpickr-day.selected:hover,
+        .flatpickr-day.startRange:hover,
+        .flatpickr-day.endRange:hover {
+            background-color: #2563eb !important;
+            border-color: #2563eb !important;
+        }
+        
+        .flatpickr-day.today {
+            border-color: #3b82f6 !important;
+            font-weight: 600 !important;
+        }
+        
+        .flatpickr-day.today:hover {
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+        }
+        
+        .flatpickr-day.flatpickr-disabled,
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            color: #d1d5db !important;
+            background-color: transparent !important;
+        }
+        
+        .flatpickr-day.flatpickr-disabled:hover {
+            background-color: transparent !important;
+        }
+        
+        /* Time picker */
+        .flatpickr-time {
+            background-color: #ffffff !important;
+            border-top: 1px solid #e5e7eb !important;
+            padding: 0.75rem 0.5rem !important;
+            margin-top: 0.5rem !important;
+            line-height: unset;
+            max-height: unset;
+        }
+        
+        .flatpickr-time .flatpickr-time-separator {
+            color: #6b7280 !important;
+            margin: 0 0.25rem !important;
+            transform: translate(2px, 20px);
+        }
+        
+        .flatpickr-time input {
+            color: #111827 !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            background-color: #f9fafb !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem 0.75rem !important;
+            transition: all 0.15s ease-in-out !important;
+        }
+        
+        .flatpickr-time input:hover {
+            background-color: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+        
+        .flatpickr-time input:focus {
+            outline: none !important;
+            background-color: #ffffff !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+        
+        .flatpickr-time .flatpickr-am-pm {
+            color: #111827 !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            background-color: #f9fafb !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.375rem !important;
+            padding: 0.5rem 0.75rem !important;
+            margin-left: 0.5rem !important;
+        }
+        
+        .flatpickr-time .flatpickr-am-pm:hover {
+            background-color: #f3f4f6 !important;
+            border-color: #d1d5db !important;
+        }
+        
+        /* Arrow */
+        .flatpickr-calendar.arrowTop:before {
+            border-bottom-color: #e5e7eb !important;
+        }
+        
+        .flatpickr-calendar.arrowTop:after {
+            border-bottom-color: #ffffff !important;
+        }
+        
+        .flatpickr-calendar.arrowBottom:before {
+            border-top-color: #e5e7eb !important;
+        }
+        
+        .flatpickr-calendar.arrowBottom:after {
+            border-top-color: #ffffff !important;
+        }
     </style>
 @endpush
 
@@ -146,21 +355,23 @@
                     <button id="export-btn" class="px-4 py-2 border border-white hover:bg-green-600 hover:border-green-600 text-white rounded-lg transition-colors duration-300 flex items-center">
                         <i data-feather="download" class="mr-2" style="width: 18px; height: 18px;"></i>Export
                     </button>
-                    <div style="width: 200px;">
-                        <select id="status-filter" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-black">
-                            <option value="">Semua Status</option>
-                            <option value="pending">Menunggu</option>
-                            <option value="confirmed">Dikonfirmasi</option>
-                            <option value="cancelled">Dibatalkan</option>
-                            <option value="completed">Selesai</option>
-                        </select>
-                    </div>
                 </div>
             </div>
         </div>
 
     <!-- Bookings List -->
     <div class="rounded-2xl p-6 border border-gray-200">
+            <div class="flex justify-end mb-5">
+                <div style="width: 200px;">
+                    <select id="status-filter" class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-black">
+                        <option value="">Semua Status</option>
+                        <option value="pending">Menunggu</option>
+                        <option value="confirmed">Dikonfirmasi</option>
+                        <option value="cancelled">Dibatalkan</option>
+                        <option value="completed">Selesai</option>
+                    </select>
+                </div>
+            </div>
             @if($bookings->count() > 0)
                 <!-- Empty state for filtered results (hidden by default) -->
                 <div id="filtered-empty-state" class="hidden text-center py-12">
@@ -379,7 +590,7 @@
 
     <!-- Booking Batal Modal -->
     <div id="bookingBatalModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full">
+        <div class="bg-white rounded-2xl max-w-full w-[450px]">
             <div class="p-6">
                 <div class="flex items-center mb-4">
                     <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
@@ -406,6 +617,8 @@
 @endpush
 
 @push('scripts')
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
         // Serialize bookings for client-side use (relations eager loaded in controller)
         const BOOKINGS = @json($bookings->items());
@@ -568,15 +781,25 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Mulai Waktu</label>
-                                <input type="datetime-local" name="start_time" value="${formatTanggalWaktuLocal(booking.start_time)}" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                                       required onchange="checkTimeConflict()">
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                        <i data-feather="calendar" style="width: 18px; height: 18px;" class="text-gray-500"></i>
+                                    </div>
+                                    <input type="text" id="edit_start_time" name="start_time" value="${formatTanggalWaktuLocal(booking.start_time)}" 
+                                           class="block w-full ps-10 pe-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                           required onchange="checkTimeConflict()">
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Selesai Waktu</label>
-                                <input type="datetime-local" name="end_time" value="${formatTanggalWaktuLocal(booking.end_time)}" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                                       required onchange="checkTimeConflict()">
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                        <i data-feather="calendar" style="width: 18px; height: 18px;" class="text-gray-500"></i>
+                                    </div>
+                                    <input type="text" id="edit_end_time" name="end_time" value="${formatTanggalWaktuLocal(booking.end_time)}" 
+                                           class="block w-full ps-10 pe-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                           required onchange="checkTimeConflict()">
+                                </div>
                             </div>
                         </div>
                         
@@ -597,6 +820,65 @@
                     </div>
                 `;
                 openModal('bookingEditModal');
+                
+                // Initialize Flatpickr for edit form after modal opens
+                setTimeout(function() {
+                    // Re-initialize feather icons for the calendar icons
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                    
+                    // Helper function to convert datetime-local format to Date object
+                    function parseDateTimeLocal(dateStr) {
+                        if (!dateStr) return null;
+                        // Convert from "YYYY-MM-DDTHH:mm" to Date object
+                        return new Date(dateStr);
+                    }
+                    
+                    // Initialize Flatpickr for start time
+                    const startTimeInput = document.getElementById('edit_start_time');
+                    const endTimeInput = document.getElementById('edit_end_time');
+                    
+                    if (startTimeInput && typeof flatpickr !== 'undefined') {
+                        // Destroy existing instance if any
+                        if (startTimeInput._flatpickr) {
+                            startTimeInput._flatpickr.destroy();
+                        }
+                        
+                        const startDateValue = formatTanggalWaktuLocal(booking.start_time);
+                        const startDate = parseDateTimeLocal(startDateValue);
+                        
+                        flatpickr(startTimeInput, {
+                            enableTime: true,
+                            dateFormat: "Y-m-d H:i",
+                            time_24hr: true,
+                            defaultDate: startDate || null,
+                            onChange: function(selectedDates, dateStr, instance) {
+                                checkTimeConflict();
+                            }
+                        });
+                    }
+                    
+                    if (endTimeInput && typeof flatpickr !== 'undefined') {
+                        // Destroy existing instance if any
+                        if (endTimeInput._flatpickr) {
+                            endTimeInput._flatpickr.destroy();
+                        }
+                        
+                        const endDateValue = formatTanggalWaktuLocal(booking.end_time);
+                        const endDate = parseDateTimeLocal(endDateValue);
+                        
+                        flatpickr(endTimeInput, {
+                            enableTime: true,
+                            dateFormat: "Y-m-d H:i",
+                            time_24hr: true,
+                            defaultDate: endDate || null,
+                            onChange: function(selectedDates, dateStr, instance) {
+                                checkTimeConflict();
+                            }
+                        });
+                    }
+                }, 100);
             }
         }
 
@@ -634,11 +916,19 @@
             })
             .then(res => res.json())
             .then(data => {
-                alert(data.message || 'Berhasil memproses tanggapan.');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: data.message || 'Berhasil memproses tanggapan.'
+                });
                 if (data.success) location.reload();
             })
             .catch(err => {
-                alert('Gagal memproses tanggapan.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: 'Gagal memproses tanggapan.'
+                });
             });
         }
 
@@ -661,18 +951,30 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message || 'Permintaan didahulukan berhasil dikirim!');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: data.message || 'Permintaan didahulukan berhasil dikirim!'
+                    });
                     // Tutup modal edit setelah preempt dikirim
                     closeModal('bookingEditModal');
                     // Reload untuk refresh data
                     location.reload();
                 } else {
-                    alert(data.message || 'Gagal mengirim permintaan didahulukan.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message || 'Gagal mengirim permintaan didahulukan.'
+                    });
                 }
             })
             .catch(error => {
                 console.error('Error requesting preempt:', error);
-                alert('Terjadi kesalahan saat mengirim permintaan.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Terjadi kesalahan saat mengirim permintaan.'
+                });
             });
         };
 
@@ -944,16 +1246,28 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            alert('Booking berhasil diperbarui!');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: 'Booking berhasil diperbarui!'
+                            });
                             closeModal('bookingEditModal');
                             location.reload();
                         } else {
-                            alert(data.message || 'Gagal memperbarui pemesanan');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message || 'Gagal memperbarui pemesanan'
+                            });
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert(error.message || 'Gagal memperbarui pemesanan');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'Gagal memperbarui pemesanan'
+                        });
                     });
                 });
             }

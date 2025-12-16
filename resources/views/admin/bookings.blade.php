@@ -611,13 +611,21 @@
                             // You can uncomment the alert if you want to show a message
                             // alert(data.message || 'Status berhasil diperbarui!');
                         } else {
-                            alert(data.message || 'Gagal memperbarui status');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message || 'Gagal memperbarui status'
+                            });
                             resetSubmitButton();
                         }
                     })
                     .catch(error => {
                         console.error('Error details:', error);
-                        alert('Gagal memperbarui status: ' + error.message);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Gagal memperbarui status: ' + error.message
+                        });
                         resetSubmitButton();
                     });
                 }
